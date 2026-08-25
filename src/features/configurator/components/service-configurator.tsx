@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Check, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
@@ -26,11 +27,14 @@ interface ServiceConfiguratorProps {
 }
 
 export function ServiceConfigurator({ gameSlug, service, schema }: ServiceConfiguratorProps) {
+  const router = useRouter();
   const defaults = useMemo(() => getDefaultSelection(schema), [schema]);
   const [selection, setSelection] = useState<ConfiguratorSelection>(defaults);
   const [quote, setQuote] = useState<QuotePreview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,6 +70,41 @@ export function ServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
 
   function updateSelection(key: string, value: string | number | boolean) {
     setSelection((current) => ({ ...current, [key]: value }));
+  }
+
+  async function createOrder() {
+    if (!quote || isLoading || isCreatingOrder) return;
+    setIsCreatingOrder(true);
+    setOrderError(null);
+
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection }),
+      });
+      const payload = (await response.json()) as {
+        order?: { id: string; orderNumber: string };
+        error?: string;
+      };
+
+      if (response.status === 401) {
+        const next = `/games/${gameSlug}/${service.slug}`;
+        router.push(`/login?next=${encodeURIComponent(next)}`);
+        return;
+      }
+
+      if (!response.ok || !payload.order) {
+        throw new Error(payload.error ?? "Unable to create order.");
+      }
+
+      router.push(`/dashboard/orders/${payload.order.id}`);
+      router.refresh();
+    } catch (requestError) {
+      setOrderError(requestError instanceof Error ? requestError.message : "Unable to create order.");
+    } finally {
+      setIsCreatingOrder(false);
+    }
   }
 
   return (
@@ -200,13 +239,16 @@ export function ServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
               <div className="py-6 text-sm text-[var(--muted-foreground)]">Adjust the configuration to generate a valid quote.</div>
             )}
 
-            <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading}>
-              Continue to checkout
-              <ArrowRight className="ml-2 size-4" />
+            {orderError ? (
+              <div className="mt-5 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">{orderError}</div>
+            ) : null}
+
+            <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>
+              {isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create order<ArrowRight className="ml-2 size-4" /></>}
             </Button>
             <div className="mt-4 flex gap-2 text-[11px] leading-5 text-white/40">
               <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-              <span>Checkout will recalculate this quote on the server before an order is created.</span>
+              <span>Your price is recalculated on the server before the order is stored. Payment is completed separately.</span>
             </div>
             {quote ? (
               <p className="mt-3 text-[10px] text-white/25">Pricing rules: {quote.ruleSetVersion}</p>

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
 
   return {
     title: `${service.name} for ${game.name}`,
-    description: `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and review your selections before checkout.`,
+    description: `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
     alternates: { canonical: `/games/${game.slug}/${service.slug}` },
   };
 }
@@ -75,7 +75,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 Configure {service.name} for {game.name}.
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-                {service.description} Adjust the options below and receive a server-calculated price preview before checkout.
+                {service.description} Adjust the options below and receive a server-calculated price preview before creating your order.
               </p>
             </div>
 
@@ -102,7 +102,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             {[
               { icon: ShieldCheck, title: "Server-validated pricing", text: "Your browser never controls the final payable amount." },
               { icon: LockKeyhole, title: "Secure order flow", text: "Sensitive fulfillment details are collected after authentication and purchase." },
-              { icon: CheckCircle2, title: "Review before payment", text: "Configuration and pricing are recalculated again before the order is created." },
+              { icon: CheckCircle2, title: "Review before payment", text: "Configuration and pricing are recalculated before your order is stored." },
             ].map((item) => (
               <div key={item.title} className="rounded-2xl border border-white/[0.08] bg-black/15 p-5 sm:p-6">
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>

@@ -62,3 +62,7 @@ The storefront now has a Supabase-ready repository layer for catalog, configurat
 ## Phase 7
 
 Authentication is implemented with Supabase Auth and SSR cookies. See `docs/phase-7-auth.md`.
+
+## Phase 8 — Orders
+
+Phase 8 adds server-validated order creation, customer order history, order detail pages, status history, and RLS-protected order tables. Stripe payment handling remains a later phase.
