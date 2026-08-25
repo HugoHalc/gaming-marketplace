@@ -1,0 +1,3 @@
+"use server";
+import { redirect } from "next/navigation"; import { createAuthServerClient } from "@/lib/supabase/auth"; import { isValidPassword } from "@/features/auth/server/validation";
+export async function updatePasswordAction(formData:FormData){const password=String(formData.get("password")??""); if(!isValidPassword(password)) redirect("/update-password?error=1"); const supabase=await createAuthServerClient(); const {data}=await supabase.auth.getClaims(); if(!data?.claims) redirect("/login"); const {error}=await supabase.auth.updateUser({password}); if(error) redirect("/update-password?error=1"); redirect("/dashboard?passwordUpdated=1");}
