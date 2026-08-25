@@ -70,3 +70,7 @@ Phase 8 adds server-validated order creation, customer order history, order deta
 ## Phase 9 — Stripe Checkout
 
 One-time Stripe-hosted Checkout, webhook-verified payment state, and payment persistence are implemented. See `docs/phase-9-stripe-checkout.md`.
+
+
+## Phase 11
+Customer in-app notifications, unread counters, order status guidance, and dashboard polish. Discord delivery remains a later external integration built on the same order event stream.

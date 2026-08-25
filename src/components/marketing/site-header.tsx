@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { Bell } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
+import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 
 export async function SiteHeader() {
   const identity = await getCurrentIdentity();
+  const unread = identity ? await getUnreadNotificationCount() : 0;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#070810]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#070810]/68">
@@ -20,6 +23,7 @@ export async function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {identity ? <Link href="/dashboard/notifications" className="relative grid size-9 place-items-center rounded-lg text-white/60 transition hover:bg-white/5 hover:text-white" aria-label={unread ? `${unread} unread notifications` : "Notifications"}><Bell className="size-4"/>{unread > 0 ? <span className="absolute right-0.5 top-0.5 min-w-4 rounded-full bg-violet-500 px-1 text-center text-[9px] font-bold leading-4 text-white">{unread > 9 ? "9+" : unread}</span> : null}</Link> : null}
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href={identity ? "/dashboard" : "/login"}>{identity ? "Dashboard" : "Sign in"}</Link>
           </Button>

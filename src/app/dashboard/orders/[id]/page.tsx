@@ -29,6 +29,15 @@ export default async function OrderDetailPage({
   const history = await getCurrentUserOrderHistory(order.id);
   const item = order.items[0];
   const canPay = order.status === "pending_payment" && order.paymentStatus !== "paid";
+  const statusMessage: Record<string, string> = {
+    pending_payment: "Complete payment to reserve your place in the fulfillment queue.",
+    paid: "Payment is verified. Your order is ready to enter the fulfillment queue.",
+    queued: "Your order is queued and waiting for fulfillment to begin.",
+    in_progress: "Fulfillment is currently in progress.",
+    completed: "Your service has been completed.",
+    cancelled: "This order was cancelled.",
+    refunded: "This order has been refunded.",
+  };
 
   return <><SiteHeader/><main className="py-12 sm:py-16"><Container>
     <Link href="/dashboard/orders" className="inline-flex items-center text-sm text-[var(--muted-foreground)] hover:text-white"><ArrowLeft className="mr-2 size-4"/>Back to orders</Link>
@@ -38,6 +47,8 @@ export default async function OrderDetailPage({
     {query.paymentError ? <div className="mt-6 rounded-2xl border border-rose-300/20 bg-rose-400/[0.07] p-4 text-sm text-rose-100">We could not start secure checkout. Please try again.</div> : null}
 
     <div className="mt-6 flex flex-wrap items-start justify-between gap-5"><div><div className="flex flex-wrap items-center gap-3"><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{order.orderNumber}</h1><OrderStatusBadge status={order.status}/></div><p className="mt-2 text-sm text-[var(--muted-foreground)]">Created {formatDate(order.createdAt)}</p></div><div className="text-right"><p className="text-xs text-[var(--muted-foreground)]">Order total</p><p className="mt-1 text-3xl font-bold">{formatMoney(order.total)}</p><p className="mt-1 text-xs text-white/40">{order.paymentStatus === "paid" ? "Paid" : order.paymentStatus === "pending" ? "Payment pending" : "Payment not completed"}</p></div></div>
+
+    <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-semibold text-violet-300">CURRENT STATUS</p><p className="mt-1 text-sm text-white/75">{statusMessage[order.status]}</p></div><Link href="/dashboard/notifications" className="text-sm font-semibold text-violet-300 hover:text-violet-200">View notifications</Link></div></section>
 
     {canPay ? <section className="mt-6 rounded-3xl border border-violet-300/20 bg-gradient-to-br from-violet-500/[0.12] to-transparent p-5 sm:p-6">
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
