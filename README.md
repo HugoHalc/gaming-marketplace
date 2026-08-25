@@ -66,3 +66,7 @@ Authentication is implemented with Supabase Auth and SSR cookies. See `docs/phas
 ## Phase 8 — Orders
 
 Phase 8 adds server-validated order creation, customer order history, order detail pages, status history, and RLS-protected order tables. Stripe payment handling remains a later phase.
+
+## Phase 9 — Stripe Checkout
+
+One-time Stripe-hosted Checkout, webhook-verified payment state, and payment persistence are implemented. See `docs/phase-9-stripe-checkout.md`.
