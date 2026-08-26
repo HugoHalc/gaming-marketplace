@@ -1,0 +1,9 @@
+BOOSTINGPEDIA — ROCKET LEAGUE RANK BOOST
+
+1. Open your local gaming-marketplace clone.
+2. Copy the contents of this ZIP into the repository root and allow replacement of existing files.
+3. Do NOT delete other project files.
+4. Commit with: Phase 12A - Rocket League Rank Boost
+5. Push main and wait for Vercel.
+
+No Supabase migration is required for this delivery.

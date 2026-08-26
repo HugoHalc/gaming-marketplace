@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { findCatalogGameBySlug, listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { gameThemes } from "@/features/catalog/data/game-theme";
+import { RocketLeagueRankConfigurator } from "@/features/configurator/components/rocket-league-rank-configurator";
 import { ServiceConfigurator } from "@/features/configurator/components/service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
 
@@ -29,9 +30,13 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
 
   if (!game || !service) return { title: "Service not found" };
 
+  const isRocketLeagueRank = game.slug === "rocket-league" && service.slug === "rank-boost";
+
   return {
-    title: `${service.name} for ${game.name}`,
-    description: `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
+    title: isRocketLeagueRank ? "Rocket League Rank Boost" : `${service.name} for ${game.name}`,
+    description: isRocketLeagueRank
+      ? "Configure your Rocket League Rank Boost by rank, playlist, platform and boost method with transparent server-calculated pricing."
+      : `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
     alternates: { canonical: `/games/${game.slug}/${service.slug}` },
   };
 }
@@ -44,7 +49,10 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const service = game.services.find((item) => item.slug === serviceSlug);
   if (!service) notFound();
 
-  const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
+  const isRocketLeagueRank = game.slug === "rocket-league" && service.slug === "rank-boost";
+  const schema = isRocketLeagueRank
+    ? null
+    : await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
   const theme = gameThemes[game.accent];
 
   return (
@@ -69,14 +77,28 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div className="max-w-3xl">
               <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
                 <Sparkles className="mr-2 size-3.5" />
-                {game.name} service
+                {isRocketLeagueRank ? "Rocket League Rank Boost" : `${game.name} service`}
               </Badge>
               <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
-                Configure {service.name} for {game.name}.
+                {isRocketLeagueRank
+                  ? "Reach your target rank without the unnecessary grind."
+                  : `Configure ${service.name} for ${game.name}.`}
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-                {service.description} Adjust the options below and receive a server-calculated price preview before creating your order.
+                {isRocketLeagueRank
+                  ? "Choose your current rank, target rank, playlist and preferred boost method. Add only the upgrades you want and see transparent pricing before creating your order."
+                  : `${service.description} Adjust the options below and receive a server-calculated price preview before creating your order.`}
               </p>
+
+              {isRocketLeagueRank ? (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {["Account Boost or Play With Booster", "1v1, 2v2, 3v3 & Extra Modes", "Live order tracking"].map((item) => (
+                    <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <Link
@@ -92,7 +114,11 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
       <section className="py-10 sm:py-12 lg:py-16">
         <Container>
-          <ServiceConfigurator gameSlug={game.slug} service={service} schema={schema} />
+          {isRocketLeagueRank ? (
+            <RocketLeagueRankConfigurator gameSlug={game.slug} service={service} />
+          ) : schema ? (
+            <ServiceConfigurator gameSlug={game.slug} service={service} schema={schema} />
+          ) : null}
         </Container>
       </section>
 
@@ -102,7 +128,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             {[
               { icon: ShieldCheck, title: "Server-validated pricing", text: "Your browser never controls the final payable amount." },
               { icon: LockKeyhole, title: "Secure order flow", text: "Sensitive fulfillment details are collected after authentication and purchase." },
-              { icon: CheckCircle2, title: "Review before payment", text: "Configuration and pricing are recalculated before your order is stored." },
+              { icon: CheckCircle2, title: "Track every update", text: "Follow your order status and customer notifications directly from your dashboard." },
             ].map((item) => (
               <div key={item.title} className="rounded-2xl border border-white/[0.08] bg-black/15 p-5 sm:p-6">
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>

@@ -6,6 +6,10 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 import { getActivePricingRuleSet, type PricingRule } from "./pricing-repository";
+import {
+  calculateRocketLeagueRankQuote,
+  isRocketLeagueRankQuote,
+} from "./rocket-league-rank-pricing";
 
 const MOCK_RULE_SET_VERSION = "mock-v1.0";
 
@@ -171,6 +175,10 @@ export async function calculateQuotePreview(input: {
 
   const service = game.services.find((item) => item.slug === input.serviceSlug);
   if (!service) throw new Error("Service not found.");
+
+  if (isRocketLeagueRankQuote(input)) {
+    return calculateRocketLeagueRankQuote(input.selection);
+  }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
   validateSelection(input.selection, schema);
