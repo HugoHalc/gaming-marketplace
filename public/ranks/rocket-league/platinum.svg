@@ -1,39 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 64 64" fill="none">
   <defs>
-    <radialGradient id="plate" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(26 16) rotate(50) scale(56)">
-      <stop stop-color="#2fcfc8"/>
-      <stop offset=".46" stop-color="#0e6f73"/>
-      <stop offset="1" stop-color="#111418"/>
+    <radialGradient id="plate" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(25 14) rotate(49) scale(58)">
+      <stop stop-color="#98f7ef"/>
+      <stop offset=".44" stop-color="#26bdb7"/>
+      <stop offset="1" stop-color="#0c5c60"/>
     </radialGradient>
-    <linearGradient id="frame" x1="12" y1="11" x2="52" y2="54" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#8ef8f1"/>
-      <stop offset=".5" stop-color="#2fcfc8"/>
-      <stop offset="1" stop-color="#0e6f73"/>
+    <linearGradient id="frame" x1="10" y1="12" x2="53" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#86fff3"/>
+      <stop offset=".55" stop-color="#98f7ef"/>
+      <stop offset="1" stop-color="#26bdb7"/>
     </linearGradient>
-    <radialGradient id="coreGem" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(30 22) rotate(51) scale(30)">
-      <stop stop-color="#e7fffe" stop-opacity=".98"/>
-      <stop offset=".55" stop-color="#2fcfc8" stop-opacity=".92"/>
-      <stop offset="1" stop-color="#0e6f73" stop-opacity=".98"/>
+    <radialGradient id="gem" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(31 20) rotate(51) scale(28)">
+      <stop stop-color="rgba(255,255,255,.95)"/>
+      <stop offset=".18" stop-color="#98f7ef"/>
+      <stop offset=".62" stop-color="#26bdb7"/>
+      <stop offset="1" stop-color="#0c5c60"/>
     </radialGradient>
-    <linearGradient id="edgeStroke" x1="16" y1="16" x2="48" y2="48">
-      <stop stop-color="rgba(255,255,255,.9)"/>
-      <stop offset="1" stop-color="rgba(255,255,255,.2)"/>
-    </linearGradient>
-    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#8ef8f1" flood-opacity=".3"/>
-      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="black" flood-opacity=".45"/>
+    <filter id="glowFx" x="-35%" y="-35%" width="170%" height="170%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4.5" flood-color="#86fff3" flood-opacity=".32"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="black" flood-opacity=".48"/>
     </filter>
   </defs>
 
-  <g filter="url(#glow)">
-    <path d="M32 7.5 48.5 13 56.5 32 48.5 51 32 56.5 15.5 51 7.5 32 15.5 13 32 7.5Z" fill="url(#plate)" stroke="url(#frame)" stroke-width="2"/>
-    <path d="M32 12.5 45.5 17 52 32 45.5 47 32 51.5 18.5 47 12 32 18.5 17 32 12.5Z" fill="rgba(6,8,8,.32)" stroke="rgba(255,255,255,.08)" stroke-width="1.2"/>
-    <path d="M19 18.5 32 14l13 4.5" stroke="rgba(255,255,255,.24)" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M16 47c5.4-3 10.7-4.4 16-4.4 5.3 0 10.6 1.4 16 4.4" stroke="rgba(255,255,255,.09)" stroke-width="1.2" stroke-linecap="round"/>
+  <g filter="url(#glowFx)">
+    <path d="M32 7.2 48.7 12.8 56.8 32 48.7 51.2 32 56.8 15.3 51.2 7.2 32 15.3 12.8 32 7.2Z" fill="url(#plate)" stroke="url(#frame)" stroke-width="2.1"/>
+    <path d="M32 12.3 45.6 16.9 52.1 32 45.6 47.1 32 51.7 18.4 47.1 11.9 32 18.4 16.9 32 12.3Z" fill="rgba(5,7,9,.34)" stroke="rgba(255,255,255,.09)" stroke-width="1.15"/>
+    <path d="M19.2 18.4 32 14.2 44.8 18.4" stroke="rgba(255,255,255,.26)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M16.8 47.3c5.2-3 10.3-4.5 15.2-4.5 4.9 0 10 1.5 15.2 4.5" stroke="rgba(255,255,255,.1)" stroke-width="1.2" stroke-linecap="round"/>
     
-          <path d="M32 12 39 24l13 2-9.4 8.8 2.3 13.2L32 41.6 19.1 48 21.4 34.8 12 26l13-2 7-12Z" fill="url(#coreGem)"/>
-          <path d="M32 18 36 25l8 1.2-5.7 5.4 1.4 8L32 35.7l-7.7 3.9 1.4-8-5.7-5.4L28 25l4-7Z" fill="rgba(255,255,255,.16)" />
+          <path d="M32 12.8 37.4 23.6l11.8 1.7-8.5 8 2 11.6L32 39.2l-10.7 5.7 2-11.6-8.5-8 11.8-1.7L32 12.8Z" fill="url(#gem)"/>
+          <path d="M32 18.6 35.3 25.2l7.2 1-5.2 4.9 1.2 7.1L32 34.8l-6.5 3.4 1.2-7.1-5.2-4.9 7.2-1L32 18.6Z" fill="rgba(255,255,255,.16)"/>
+          <path d="M32 22.5v14.4" stroke="#e8ffff" stroke-opacity="0.88" stroke-width="1.8" stroke-linecap="round"/>
         
-    <ellipse cx="26" cy="18" rx="10" ry="4.5" fill="white" fill-opacity=".12"/>
+    <ellipse cx="27" cy="18.2" rx="10.8" ry="4.8" fill="white" fill-opacity=".13"/>
   </g>
 </svg>
