@@ -1,21 +1,17 @@
-BOOSTINGPEDIA — PHASE 12C UX/UI PRO
+BOOSTINGPEDIA — PHASE 12D VISUAL ASSETS
 
-1. Copy this ZIP's contents into the root of your local gaming-marketplace repository.
+1. Copy this ZIP into the root of your local gaming-marketplace repository.
 2. Allow replacement of existing files.
-3. Do not delete any other project files.
-4. Confirm public/brand/boostingpedia-mark.png exists.
-5. Commit:
-   Phase 12C - BoostingPedia UX UI Pro
-6. Push main with GitHub Desktop and wait for Vercel.
+3. Confirm these were copied:
+   - public/ranks/rocket-league/*.svg
+   - src/features/configurator/components/rocket-league-rank-configurator.tsx
+4. Commit:
+   Phase 12D - Rocket League Visual Assets
+5. Push to main and wait for Vercel.
 
-NO SUPABASE MIGRATION REQUIRED.
-
-Check after deploy:
-- Official BoostingPedia logo appears in header/footer.
-- Main site palette is black + green.
-- Current Rank stops at Grand Champion III.
-- Target Rank includes Supersonic Legend.
-- Quote pricing still updates.
-- Desktop order summary remains sticky.
-- Mobile shows Total + View order.
-- Order creation / Stripe flow still works.
+CHECK AFTER DEPLOY:
+- Rank cards show custom badge images.
+- Platform cards show colored icons/logos.
+- Current Rank still stops at Grand Champion III.
+- Desired Rank still includes Supersonic Legend.
+- Quote and order flow still work.

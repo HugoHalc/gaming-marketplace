@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -22,14 +23,14 @@ import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
 const rankFamilies = [
-  { key: "bronze", label: "Bronze", short: "B", accent: "from-amber-900/60 to-amber-500/15", tiers: ["1", "2", "3"] },
-  { key: "silver", label: "Silver", short: "S", accent: "from-slate-500/45 to-white/5", tiers: ["1", "2", "3"] },
-  { key: "gold", label: "Gold", short: "G", accent: "from-yellow-500/45 to-amber-400/5", tiers: ["1", "2", "3"] },
-  { key: "platinum", label: "Platinum", short: "P", accent: "from-green-500/40 to-teal-300/5", tiers: ["1", "2", "3"] },
-  { key: "diamond", label: "Diamond", short: "D", accent: "from-emerald-500/45 to-green-400/5", tiers: ["1", "2", "3"] },
-  { key: "champion", label: "Champion", short: "C", accent: "from-fuchsia-600/45 to-rose-400/5", tiers: ["1", "2", "3"] },
-  { key: "grand-champion", label: "Grand Champion", short: "GC", accent: "from-red-600/50 to-fuchsia-500/5", tiers: ["1", "2", "3"] },
-  { key: "supersonic-legend", label: "Supersonic Legend", short: "SSL", accent: "from-green-500/55 to-green-400/10", tiers: [] },
+  { key: "bronze", label: "Bronze", short: "B", accent: "from-amber-900/60 to-amber-500/15", image: "/ranks/rocket-league/bronze.svg", tiers: ["1", "2", "3"] },
+  { key: "silver", label: "Silver", short: "S", accent: "from-slate-500/45 to-white/5", image: "/ranks/rocket-league/silver.svg", tiers: ["1", "2", "3"] },
+  { key: "gold", label: "Gold", short: "G", accent: "from-yellow-500/45 to-amber-400/5", image: "/ranks/rocket-league/gold.svg", tiers: ["1", "2", "3"] },
+  { key: "platinum", label: "Platinum", short: "P", accent: "from-green-500/40 to-teal-300/5", image: "/ranks/rocket-league/platinum.svg", tiers: ["1", "2", "3"] },
+  { key: "diamond", label: "Diamond", short: "D", accent: "from-emerald-500/45 to-green-400/5", image: "/ranks/rocket-league/diamond.svg", tiers: ["1", "2", "3"] },
+  { key: "champion", label: "Champion", short: "C", accent: "from-fuchsia-600/45 to-rose-400/5", image: "/ranks/rocket-league/champion.svg", tiers: ["1", "2", "3"] },
+  { key: "grand-champion", label: "Grand Champion", short: "GC", accent: "from-red-600/50 to-fuchsia-500/5", image: "/ranks/rocket-league/grand-champion.svg", tiers: ["1", "2", "3"] },
+  { key: "supersonic-legend", label: "Supersonic Legend", short: "SSL", accent: "from-green-500/55 to-green-400/10", image: "/ranks/rocket-league/supersonic-legend.svg", tiers: [] },
 ] as const;
 
 const rankOrder = [
@@ -58,10 +59,10 @@ const playlists = [
 ] as const;
 
 const platforms = [
-  { value: "pc", label: "PC" },
-  { value: "playstation", label: "PlayStation" },
-  { value: "xbox", label: "Xbox" },
-  { value: "switch", label: "Nintendo Switch" },
+  { value: "pc", label: "PC", color: "text-sky-300" },
+  { value: "playstation", label: "PlayStation", color: "text-blue-300" },
+  { value: "xbox", label: "Xbox", color: "text-green-300" },
+  { value: "switch", label: "Nintendo Switch", color: "text-red-300" },
 ] as const;
 
 function rankIndex(rank: string) {
@@ -111,16 +112,65 @@ function RankIcon({
   selected: boolean;
 }) {
   return (
-    <span className={`relative grid size-11 place-items-center rounded-xl border bg-gradient-to-br ${family.accent} ${
-      selected ? "border-green-400/45 shadow-[0_0_25px_-10px_rgba(0,230,90,.75)]" : "border-white/[0.08]"
+    <span className={`relative grid size-12 place-items-center overflow-hidden rounded-2xl border bg-gradient-to-br ${family.accent} ${
+      selected ? "border-green-400/45 shadow-[0_0_28px_-10px_rgba(0,230,90,.55)]" : "border-white/[0.08]"
     }`}>
-      <span className="text-[11px] font-black text-white">{family.short}</span>
+      <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.16),transparent_48%)]" />
+      <Image
+        src={family.image}
+        alt=""
+        width={40}
+        height={40}
+        className="relative z-[1] h-10 w-10 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]"
+      />
       {selected ? (
-        <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-green-400 text-[#071019]">
+        <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full bg-green-400 text-[#071019] shadow-[0_0_12px_rgba(74,222,128,.45)]">
           <Check className="size-2.5" />
         </span>
       ) : null}
     </span>
+  );
+}
+
+function PlatformIcon({ platform }: { platform: string }) {
+  if (platform === "pc") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" opacity="0.95" />
+        <circle cx="9.15" cy="14.2" r="1.85" fill="currentColor" />
+        <path d="M10.7 13.4 14.7 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="15.9" cy="10.2" r="2.15" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+
+  if (platform === "playstation") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <path d="M10 5.2v10.6c0 .9-.34 1.44-1.08 1.62L6.3 18.2v-2.1l1.62-.55c.34-.12.5-.32.5-.68V5.85l1.58-.65Z" fill="currentColor" />
+        <path d="M11.4 7.1c2.2.7 4.22 1.44 5.85 2.15.72.32 1.05.77 1.05 1.35 0 .55-.33.98-1 1.2l-6.52 2.08v-2.13l4.75-1.48c.26-.08.28-.22.05-.32-1.17-.47-2.83-1.02-4.18-1.42V7.1Z" fill="currentColor" opacity=".92" />
+        <path d="m11.18 12.75 5.05-1.6v1.85l-4.02 1.3c-.55.18-.78.4-.78.73 0 .35.25.48.72.38l2.9-.62v1.8l-3.45.78c-1.57.35-2.57-.25-2.57-1.48 0-1.03.65-1.86 2.25-2.34Z" fill="currentColor" opacity=".84" />
+      </svg>
+    );
+  }
+
+  if (platform === "xbox") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8.2 8.05c1.1.48 2.26 1.3 3.78 2.77 1.5-1.46 2.68-2.28 3.82-2.77" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M8.85 16.25c.9-1.55 1.88-2.83 3.13-4.12 1.23 1.28 2.23 2.56 3.17 4.12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+      <rect x="4.3" y="4.2" width="15.4" height="15.6" rx="6.6" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M9.55 6.65v10.7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <circle cx="8.65" cy="11.1" r="1.02" fill="currentColor" />
+      <circle cx="14.9" cy="12.9" r="1.02" fill="currentColor" />
+    </svg>
   );
 }
 
@@ -178,7 +228,7 @@ function CompactRankSelector({
               }`}
             >
               <RankIcon family={family} selected={selected} />
-              <span className="mt-1.5 w-full truncate text-center text-[10px] font-medium text-white/70">
+              <span className="mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-medium leading-3.5 text-white/75">
                 {family.label}
               </span>
             </button>
@@ -485,14 +535,28 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">Platform</p>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                {platforms.map((platform) => (
-                  <ChoicePill
-                    key={platform.value}
-                    active={selection.platform === platform.value}
-                    onClick={() => update("platform", platform.value)}
-                    label={platform.label}
-                  />
-                ))}
+                {platforms.map((platform) => {
+                  const active = selection.platform === platform.value;
+                  return (
+                    <button
+                      key={platform.value}
+                      type="button"
+                      onClick={() => update("platform", platform.value)}
+                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+                        active
+                          ? "border-green-400/35 bg-green-400/[0.08] text-white"
+                          : "border-white/[0.08] bg-black/15 text-white/65 hover:border-white/[0.16] hover:text-white"
+                      }`}
+                    >
+                      <span className={`grid size-7 place-items-center rounded-lg border ${
+                        active ? "border-green-400/20 bg-black/20" : "border-white/[0.08] bg-white/[0.02]"
+                      } ${platform.color}`}>
+                        <PlatformIcon platform={platform.value} />
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
