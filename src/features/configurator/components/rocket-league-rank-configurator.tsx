@@ -112,16 +112,16 @@ function RankIcon({
   selected: boolean;
 }) {
   return (
-    <span className={`relative grid size-12 place-items-center overflow-hidden rounded-2xl border bg-gradient-to-br ${family.accent} ${
+    <span className={`relative grid size-[3.35rem] place-items-center overflow-hidden rounded-[1.1rem] border bg-gradient-to-br ${family.accent} ${
       selected ? "border-green-400/45 shadow-[0_0_28px_-10px_rgba(0,230,90,.55)]" : "border-white/[0.08]"
     }`}>
       <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.16),transparent_48%)]" />
       <Image
         src={family.image}
         alt=""
-        width={40}
-        height={40}
-        className="relative z-[1] h-10 w-10 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]"
+        width={46}
+        height={46}
+        className="relative z-[1] h-[2.85rem] w-[2.85rem] object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]"
       />
       {selected ? (
         <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full bg-green-400 text-[#071019] shadow-[0_0_12px_rgba(74,222,128,.45)]">
@@ -228,7 +228,7 @@ function CompactRankSelector({
               }`}
             >
               <RankIcon family={family} selected={selected} />
-              <span className="mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-medium leading-3.5 text-white/75">
+              <span className="mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 text-white/80">
                 {family.label}
               </span>
             </button>

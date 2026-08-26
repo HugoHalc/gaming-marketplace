@@ -1,4 +1,4 @@
-BOOSTINGPEDIA — PHASE 12D VISUAL ASSETS
+BOOSTINGPEDIA — PHASE 12E PREMIUM RANK BADGES
 
 1. Copy this ZIP into the root of your local gaming-marketplace repository.
 2. Allow replacement of existing files.
@@ -6,12 +6,13 @@ BOOSTINGPEDIA — PHASE 12D VISUAL ASSETS
    - public/ranks/rocket-league/*.svg
    - src/features/configurator/components/rocket-league-rank-configurator.tsx
 4. Commit:
-   Phase 12D - Rocket League Visual Assets
+   Phase 12E - Premium Rank Badges
 5. Push to main and wait for Vercel.
 
 CHECK AFTER DEPLOY:
-- Rank cards show custom badge images.
-- Platform cards show colored icons/logos.
-- Current Rank still stops at Grand Champion III.
-- Desired Rank still includes Supersonic Legend.
+- Rank badges look more premium and detailed.
+- Badge size is slightly larger.
+- Platform icons still display correctly.
+- Current Rank still ends at Grand Champion III.
+- Target Rank still includes Supersonic Legend.
 - Quote and order flow still work.

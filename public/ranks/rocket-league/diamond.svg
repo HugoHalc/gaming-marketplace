@@ -1,17 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 64 64" fill="none">
   <defs>
-    <radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 16) rotate(51) scale(56)">
-      <stop stop-color="#9ed7ff" stop-opacity=".95"/>
-      <stop offset="1" stop-color="#2f6dff" stop-opacity=".82"/>
+    <radialGradient id="plate" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(26 16) rotate(50) scale(56)">
+      <stop stop-color="#338eff"/>
+      <stop offset=".46" stop-color="#1143a1"/>
+      <stop offset="1" stop-color="#111418"/>
     </radialGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="black" flood-opacity=".35"/>
+    <linearGradient id="frame" x1="12" y1="11" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9bdbff"/>
+      <stop offset=".5" stop-color="#338eff"/>
+      <stop offset="1" stop-color="#1143a1"/>
+    </linearGradient>
+    <radialGradient id="coreGem" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(30 22) rotate(51) scale(30)">
+      <stop stop-color="#e4f8ff" stop-opacity=".98"/>
+      <stop offset=".55" stop-color="#338eff" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#1143a1" stop-opacity=".98"/>
+    </radialGradient>
+    <linearGradient id="edgeStroke" x1="16" y1="16" x2="48" y2="48">
+      <stop stop-color="rgba(255,255,255,.9)"/>
+      <stop offset="1" stop-color="rgba(255,255,255,.2)"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#9bdbff" flood-opacity=".3"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="black" flood-opacity=".45"/>
     </filter>
   </defs>
-  <rect x="7" y="7" width="50" height="50" rx="16" fill="url(#bg)" stroke="#d8efff" stroke-opacity=".36" />
-  <rect x="11" y="11" width="42" height="42" rx="13" fill="black" fill-opacity=".14" stroke="white" stroke-opacity=".08" />
-  <g filter="url(#shadow)">
-    <polygon points="32,16 45,28 32,48 19,28" fill="white" opacity=".94"/>
+
+  <g filter="url(#glow)">
+    <path d="M32 7.5 48.5 13 56.5 32 48.5 51 32 56.5 15.5 51 7.5 32 15.5 13 32 7.5Z" fill="url(#plate)" stroke="url(#frame)" stroke-width="2"/>
+    <path d="M32 12.5 45.5 17 52 32 45.5 47 32 51.5 18.5 47 12 32 18.5 17 32 12.5Z" fill="rgba(6,8,8,.32)" stroke="rgba(255,255,255,.08)" stroke-width="1.2"/>
+    <path d="M19 18.5 32 14l13 4.5" stroke="rgba(255,255,255,.24)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M16 47c5.4-3 10.7-4.4 16-4.4 5.3 0 10.6 1.4 16 4.4" stroke="rgba(255,255,255,.09)" stroke-width="1.2" stroke-linecap="round"/>
+    
+          <polygon points="32,12 47,27 32,52 17,27" fill="url(#coreGem)"/>
+          <polygon points="32,17 42,28 32,46 22,28" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2.1"/>
+          <path d="M22 28h20" stroke="rgba(255,255,255,.28)" stroke-width="1.8"/>
+          <path d="M32 17v29" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+        
+    <ellipse cx="26" cy="18" rx="10" ry="4.5" fill="white" fill-opacity=".12"/>
   </g>
-  <circle cx="32" cy="32" r="28" stroke="white" stroke-opacity=".04"/>
 </svg>
