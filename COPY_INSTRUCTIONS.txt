@@ -1,20 +1,14 @@
-BOOSTINGPEDIA — PHASE 12H TRUE MOCKUP RANK MODULE
+BOOSTINGPEDIA — PHASE 12G FULL PREMIUM RANK SET
 
 1. Copy this ZIP into the root of your local gaming-marketplace repository.
 2. Allow replacement of existing files.
 3. Commit:
-   Phase 12H - True Mockup Rank Module
-4. Push main and wait for Vercel.
-
-NO SUPABASE MIGRATION REQUIRED.
+   Phase 12G - Full Premium Rank Set
+4. Push to main and wait for Vercel.
 
 CHECK AFTER DEPLOY:
-- Current Rank and Desired Rank look like the approved mockup.
-- Mini badges are visible in a top strip.
-- Selected rank artwork is large and dominant.
-- Rank names are not truncated.
-- Tier buttons are clearly integrated.
-- Champion / Grand Champion / Supersonic Legend feel premium.
+- All rank badges use the new premium visual style.
+- Champion / Grand Champion / Supersonic Legend look cleaner and more attractive.
 - Current Rank still ends at Grand Champion III.
-- Desired Rank still includes Supersonic Legend.
-- Quote/order/Stripe flow still works.
+- Target Rank still includes Supersonic Legend.
+- Quotes and order flow still work.
