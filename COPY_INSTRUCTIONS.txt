@@ -1,18 +1,23 @@
-BOOSTINGPEDIA — PHASE 12E PREMIUM RANK BADGES
+BOOSTINGPEDIA — PHASE 12I REAL RANK BADGES
 
-1. Copy this ZIP into the root of your local gaming-marketplace repository.
-2. Allow replacement of existing files.
-3. Confirm these were copied:
-   - public/ranks/rocket-league/*.svg
-   - src/features/configurator/components/rocket-league-rank-configurator.tsx
+BASE: Phase 12E - Premium Rank Badges
+
+1. Make sure your local project is already back on the Phase 12E design.
+2. Copy the contents of this ZIP into the root of gaming-marketplace.
+3. Allow replacement of existing files.
 4. Commit:
-   Phase 12E - Premium Rank Badges
-5. Push to main and wait for Vercel.
+   Phase 12I - Real Rocket League Rank Badges
+5. Push main and wait for Vercel.
 
-CHECK AFTER DEPLOY:
-- Rank badges look more premium and detailed.
-- Badge size is slightly larger.
-- Platform icons still display correctly.
-- Current Rank still ends at Grand Champion III.
-- Target Rank still includes Supersonic Legend.
-- Quote and order flow still work.
+NO SUPABASE MIGRATION REQUIRED.
+
+IMPORTANT:
+- This phase does NOT redesign the configurator.
+- It does NOT change sizes or text.
+- It only switches the rank artwork from the Phase 12E SVG badges to the new PNG badges.
+
+CHECK:
+- Bronze through Supersonic Legend use the new artwork.
+- Current Rank still stops at Grand Champion III.
+- Desired Rank still includes Supersonic Legend.
+- Pricing and checkout still work.

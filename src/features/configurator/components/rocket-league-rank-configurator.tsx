@@ -23,14 +23,14 @@ import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
 const rankFamilies = [
-  { key: "bronze", label: "Bronze", short: "B", accent: "from-amber-900/60 to-amber-500/15", image: "/ranks/rocket-league/bronze.svg", tiers: ["1", "2", "3"] },
-  { key: "silver", label: "Silver", short: "S", accent: "from-slate-500/45 to-white/5", image: "/ranks/rocket-league/silver.svg", tiers: ["1", "2", "3"] },
-  { key: "gold", label: "Gold", short: "G", accent: "from-yellow-500/45 to-amber-400/5", image: "/ranks/rocket-league/gold.svg", tiers: ["1", "2", "3"] },
-  { key: "platinum", label: "Platinum", short: "P", accent: "from-green-500/40 to-teal-300/5", image: "/ranks/rocket-league/platinum.svg", tiers: ["1", "2", "3"] },
-  { key: "diamond", label: "Diamond", short: "D", accent: "from-emerald-500/45 to-green-400/5", image: "/ranks/rocket-league/diamond.svg", tiers: ["1", "2", "3"] },
-  { key: "champion", label: "Champion", short: "C", accent: "from-fuchsia-600/45 to-rose-400/5", image: "/ranks/rocket-league/champion.svg", tiers: ["1", "2", "3"] },
-  { key: "grand-champion", label: "Grand Champion", short: "GC", accent: "from-red-600/50 to-fuchsia-500/5", image: "/ranks/rocket-league/grand-champion.svg", tiers: ["1", "2", "3"] },
-  { key: "supersonic-legend", label: "Supersonic Legend", short: "SSL", accent: "from-green-500/55 to-green-400/10", image: "/ranks/rocket-league/supersonic-legend.svg", tiers: [] },
+  { key: "bronze", label: "Bronze", short: "B", accent: "from-amber-900/60 to-amber-500/15", image: "/ranks/rocket-league/bronze.png", tiers: ["1", "2", "3"] },
+  { key: "silver", label: "Silver", short: "S", accent: "from-slate-500/45 to-white/5", image: "/ranks/rocket-league/silver.png", tiers: ["1", "2", "3"] },
+  { key: "gold", label: "Gold", short: "G", accent: "from-yellow-500/45 to-amber-400/5", image: "/ranks/rocket-league/gold.png", tiers: ["1", "2", "3"] },
+  { key: "platinum", label: "Platinum", short: "P", accent: "from-green-500/40 to-teal-300/5", image: "/ranks/rocket-league/platinum.png", tiers: ["1", "2", "3"] },
+  { key: "diamond", label: "Diamond", short: "D", accent: "from-emerald-500/45 to-green-400/5", image: "/ranks/rocket-league/diamond.png", tiers: ["1", "2", "3"] },
+  { key: "champion", label: "Champion", short: "C", accent: "from-fuchsia-600/45 to-rose-400/5", image: "/ranks/rocket-league/champion.png", tiers: ["1", "2", "3"] },
+  { key: "grand-champion", label: "Grand Champion", short: "GC", accent: "from-red-600/50 to-fuchsia-500/5", image: "/ranks/rocket-league/grand-champion.png", tiers: ["1", "2", "3"] },
+  { key: "supersonic-legend", label: "Supersonic Legend", short: "SSL", accent: "from-green-500/55 to-green-400/10", image: "/ranks/rocket-league/supersonic-legend.png", tiers: [] },
 ] as const;
 
 const rankOrder = [
