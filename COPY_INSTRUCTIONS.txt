@@ -1,14 +1,18 @@
-BOOSTINGPEDIA — PHASE 12G FULL PREMIUM RANK SET
+BOOSTINGPEDIA — PHASE 12F RANK SHOWCASE UI
 
 1. Copy this ZIP into the root of your local gaming-marketplace repository.
 2. Allow replacement of existing files.
 3. Commit:
-   Phase 12G - Full Premium Rank Set
-4. Push to main and wait for Vercel.
+   Phase 12F - Rank Showcase UI
+4. Push main and wait for Vercel.
 
-CHECK AFTER DEPLOY:
-- All rank badges use the new premium visual style.
-- Champion / Grand Champion / Supersonic Legend look cleaner and more attractive.
-- Current Rank still ends at Grand Champion III.
-- Target Rank still includes Supersonic Legend.
-- Quotes and order flow still work.
+NO SUPABASE MIGRATION REQUIRED.
+
+CHECK:
+- Current Rank uses a mini badge strip + large selected rank.
+- Target Rank uses the same premium showcase.
+- Current Rank does NOT include Supersonic Legend.
+- Target Rank DOES include Supersonic Legend.
+- Rank colors stay distinct.
+- BoostingPedia green remains the interaction/selection color.
+- Quotes, orders and Stripe still work.
