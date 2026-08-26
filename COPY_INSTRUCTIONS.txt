@@ -1,9 +1,21 @@
-BOOSTINGPEDIA — PHASE 12B COMPACT CONFIGURATOR
+BOOSTINGPEDIA — PHASE 12C UX/UI PRO
 
-1. Copy the contents of this ZIP into the root of your local gaming-marketplace repository.
-2. Allow replacement of rocket-league-rank-configurator.tsx.
+1. Copy this ZIP's contents into the root of your local gaming-marketplace repository.
+2. Allow replacement of existing files.
 3. Do not delete any other project files.
-4. Commit message: Phase 12B - Compact Rocket League Configurator
-5. Push main with GitHub Desktop.
+4. Confirm public/brand/boostingpedia-mark.png exists.
+5. Commit:
+   Phase 12C - BoostingPedia UX UI Pro
+6. Push main with GitHub Desktop and wait for Vercel.
 
-No Supabase migration is required.
+NO SUPABASE MIGRATION REQUIRED.
+
+Check after deploy:
+- Official BoostingPedia logo appears in header/footer.
+- Main site palette is black + green.
+- Current Rank stops at Grand Champion III.
+- Target Rank includes Supersonic Legend.
+- Quote pricing still updates.
+- Desktop order summary remains sticky.
+- Mobile shows Total + View order.
+- Order creation / Stripe flow still works.

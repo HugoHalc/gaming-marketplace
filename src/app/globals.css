@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070810;
-  --foreground: #f7f7fb;
-  --muted-foreground: #9d9daf;
-  --surface: rgba(17, 18, 31, 0.82);
-  --surface-raised: rgba(23, 24, 40, 0.9);
-  --surface-hover: rgba(34, 35, 54, 0.95);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --primary: #8b5cf6;
-  --primary-foreground: #ffffff;
-  --primary-glow: rgba(139, 92, 246, 0.72);
-  --ring: #a78bfa;
-  --success: #34d399;
+  --background: #030504;
+  --foreground: #f6faf7;
+  --muted-foreground: #929a94;
+  --surface: rgba(8, 12, 9, 0.94);
+  --surface-raised: rgba(12, 17, 13, 0.96);
+  --surface-hover: rgba(18, 26, 20, 0.98);
+  --border: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(74, 222, 128, 0.18);
+  --primary: #22c55e;
+  --primary-foreground: #020503;
+  --primary-glow: rgba(34, 197, 94, 0.62);
+  --ring: #4ade80;
+  --success: #4ade80;
   --warning: #fbbf24;
   --danger: #fb7185;
-  --shadow-card: 0 24px 80px -42px rgba(0, 0, 0, 0.95);
+  --shadow-card: 0 24px 80px -42px rgba(0, 0, 0, 0.98);
 }
 
 @theme inline {
@@ -31,20 +31,20 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 15% -10%, rgba(139, 92, 246, 0.16), transparent 30rem),
-    radial-gradient(circle at 95% 15%, rgba(34, 211, 238, 0.08), transparent 28rem),
-    var(--background);
+    radial-gradient(circle at 16% -12%, rgba(34, 197, 94, 0.115), transparent 31rem),
+    radial-gradient(circle at 94% 12%, rgba(16, 185, 129, 0.055), transparent 30rem),
+    linear-gradient(180deg, #030504 0%, #050706 45%, #030504 100%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
-::selection { background: rgba(139, 92, 246, 0.42); color: white; }
+::selection { background: rgba(34, 197, 94, 0.38); color: white; }
 
 .hero-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.026) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+    linear-gradient(rgba(74, 222, 128, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 222, 128, 0.025) 1px, transparent 1px);
   background-size: 56px 56px;
-  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.75) 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.72) 58%, transparent 100%);
 }
 
 details > summary::-webkit-details-marker { display: none; }

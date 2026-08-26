@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "VantaBoost",
+  name: "BoostingPedia",
   description:
     "Premium gaming services with transparent pricing, secure checkout, and clear order tracking.",
   navigation: [

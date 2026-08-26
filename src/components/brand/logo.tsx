@@ -1,12 +1,26 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-2.5" aria-label="VantaBoost home">
-      <span className="grid size-9 place-items-center rounded-xl border border-violet-300/20 bg-gradient-to-br from-violet-500/25 to-cyan-400/10 shadow-[inset_0_1px_0_rgba(255,255,255,.08)]">
-        <span className="text-sm font-black tracking-[-0.08em] text-white">VB</span>
+    <Link
+      href="/"
+      className="group inline-flex items-center gap-2.5"
+      aria-label="BoostingPedia home"
+    >
+      <span className="relative grid size-10 place-items-center overflow-hidden rounded-lg">
+        <Image
+          src="/brand/boostingpedia-mark.png"
+          alt=""
+          width={40}
+          height={48}
+          priority
+          className="h-10 w-auto object-contain drop-shadow-[0_0_14px_rgba(0,230,90,.24)] transition-transform duration-200 group-hover:scale-[1.04]"
+        />
       </span>
-      <span className="text-[15px] font-bold tracking-[-0.02em] text-white">VantaBoost</span>
+      <span className="text-[15px] font-black italic tracking-[-0.035em] text-white sm:text-base">
+        BOOSTING<span className="text-green-400">PEDIA</span>
+      </span>
     </Link>
   );
 }
