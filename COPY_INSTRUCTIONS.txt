@@ -1,9 +1,9 @@
-BOOSTINGPEDIA — ROCKET LEAGUE RANK BOOST
+BOOSTINGPEDIA — PHASE 12B COMPACT CONFIGURATOR
 
-1. Open your local gaming-marketplace clone.
-2. Copy the contents of this ZIP into the repository root and allow replacement of existing files.
-3. Do NOT delete other project files.
-4. Commit with: Phase 12A - Rocket League Rank Boost
-5. Push main and wait for Vercel.
+1. Copy the contents of this ZIP into the root of your local gaming-marketplace repository.
+2. Allow replacement of rocket-league-rank-configurator.tsx.
+3. Do not delete any other project files.
+4. Commit message: Phase 12B - Compact Rocket League Configurator
+5. Push main with GitHub Desktop.
 
-No Supabase migration is required for this delivery.
+No Supabase migration is required.
