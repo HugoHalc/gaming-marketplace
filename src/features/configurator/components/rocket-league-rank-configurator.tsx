@@ -104,39 +104,29 @@ function formatPrice(value: number) {
   }).format(value);
 }
 
-function RankBadgeArt({
+function RankIcon({
   family,
-  size = "mini",
-  selected = false,
+  selected,
 }: {
   family: (typeof rankFamilies)[number];
-  size?: "mini" | "hero";
-  selected?: boolean;
+  selected: boolean;
 }) {
-  const hero = size === "hero";
-
   return (
-    <span
-      className={`relative grid shrink-0 place-items-center ${
-        hero ? "size-[5.75rem] sm:size-[6.5rem]" : "size-10"
-      }`}
-    >
-      <span
-        className={`absolute rounded-full bg-current opacity-20 blur-2xl ${
-          hero ? "inset-3" : "inset-2"
-        }`}
-      />
+    <span className={`relative grid size-[3.35rem] place-items-center overflow-hidden rounded-[1.1rem] border bg-gradient-to-br ${family.accent} ${
+      selected ? "border-green-400/45 shadow-[0_0_28px_-10px_rgba(0,230,90,.55)]" : "border-white/[0.08]"
+    }`}>
+      <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.16),transparent_48%)]" />
       <Image
         src={family.image}
         alt=""
-        width={hero ? 104 : 44}
-        height={hero ? 104 : 44}
-        className={`relative z-[1] object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.65)] ${
-          hero ? "h-full w-full" : "h-10 w-10"
-        } ${selected ? "scale-[1.04]" : ""}`}
+        width={46}
+        height={46}
+        className="relative z-[1] h-[2.85rem] w-[2.85rem] object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]"
       />
-      {selected && !hero ? (
-        <span className="absolute -bottom-1 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,.9)]" />
+      {selected ? (
+        <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full bg-green-400 text-[#071019] shadow-[0_0_12px_rgba(74,222,128,.45)]">
+          <Check className="size-2.5" />
+        </span>
       ) : null}
     </span>
   );
@@ -216,15 +206,13 @@ function CompactRankSelector({
   return (
     <div className="min-w-0">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/70">{title}</p>
-        {target ? (
-          <span className="hidden rounded-full border border-green-400/15 bg-green-400/[0.045] px-2.5 py-1 text-[9px] font-semibold text-green-300 sm:inline-flex">
-            Higher ranks only
-          </span>
-        ) : null}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400/75">{title}</p>
+          <p className="mt-1 text-base font-bold tracking-[-0.03em] text-white">{rankLabel(value)}</p>
+        </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.055] bg-black/25 px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mt-3 grid grid-cols-4 gap-2">
         {visibleFamilies.map((family) => {
           const selected = selectedFamily.key === family.key;
           return (
@@ -233,62 +221,46 @@ function CompactRankSelector({
               type="button"
               title={family.label}
               onClick={() => chooseFamily(family.key)}
-              className={`group relative flex min-w-11 flex-1 items-center justify-center rounded-lg px-1 py-1 transition-all ${
+              className={`flex min-w-0 flex-col items-center rounded-xl border px-1.5 py-2 transition-all ${
                 selected
-                  ? "bg-white/[0.035]"
-                  : "opacity-70 hover:bg-white/[0.025] hover:opacity-100"
+                  ? "border-green-400/35 bg-green-400/[0.06]"
+                  : "border-white/[0.07] bg-black/15 hover:border-white/[0.15] hover:bg-white/[0.025]"
               }`}
             >
-              <RankBadgeArt family={family} selected={selected} />
+              <RankIcon family={family} selected={selected} />
+              <span className="mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 text-white/80">
+                {family.label}
+              </span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-4 grid min-h-[8.5rem] grid-cols-[auto_1fr] items-center gap-5 rounded-2xl border border-white/[0.06] bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,.045),transparent_42%),rgba(0,0,0,.2)] p-4 sm:p-5">
-        <RankBadgeArt family={selectedFamily} size="hero" />
-
-        <div className="min-w-0">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-green-400/65">
-            Selected rank
-          </p>
-          <h3 className="mt-1 truncate text-xl font-black uppercase tracking-[-0.035em] text-white sm:text-2xl">
-            {selectedFamily.label}
-          </h3>
-
-          {selectedFamily.key !== "supersonic-legend" ? (
-            <div className="mt-4">
-              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30">Tier</p>
-              <div className="grid max-w-56 grid-cols-3 gap-2">
-                {selectedFamily.tiers.map((tier) => {
-                  const candidate = `${selectedFamily.key}-${tier}`;
-                  const available = !target || rankIndex(candidate) > currentIndex;
-                  const active = value === candidate;
-                  return (
-                    <button
-                      key={tier}
-                      type="button"
-                      disabled={!available}
-                      onClick={() => onChange(candidate)}
-                      className={`h-9 rounded-lg border text-xs font-black transition-all ${
-                        active
-                          ? "border-green-400/60 bg-green-400/[0.10] text-green-300 shadow-[0_0_18px_-10px_rgba(74,222,128,.9)]"
-                          : "border-white/[0.08] bg-black/25 text-white/55 hover:border-white/[0.18] hover:text-white"
-                      } disabled:cursor-not-allowed disabled:opacity-15`}
-                    >
-                      {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-4 inline-flex rounded-full border border-fuchsia-300/20 bg-fuchsia-300/[0.05] px-3 py-1.5 text-[10px] font-semibold text-fuchsia-200">
-              Final competitive rank
-            </div>
-          )}
+      {selectedFamily.key !== "supersonic-legend" ? (
+        <div className="mt-3 flex items-center gap-2">
+          <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">Tier</span>
+          {selectedFamily.tiers.map((tier) => {
+            const candidate = `${selectedFamily.key}-${tier}`;
+            const available = !target || rankIndex(candidate) > currentIndex;
+            const active = value === candidate;
+            return (
+              <button
+                key={tier}
+                type="button"
+                disabled={!available}
+                onClick={() => onChange(candidate)}
+                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-colors ${
+                  active
+                    ? "border-green-400/40 bg-green-400/[0.10] text-green-100"
+                    : "border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white"
+                } disabled:cursor-not-allowed disabled:opacity-20`}
+              >
+                {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -490,7 +462,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               <Sparkles className="size-3.5" />
               Rocket League Rank Boost
             </div>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">Build your Rocket League boost with a premium, transparent configuration.</p>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">Configure your full order without leaving this panel.</p>
           </div>
           <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300">
             Live server pricing
@@ -498,30 +470,13 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
 
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-green-400/[0.08] bg-green-400/[0.025] px-4 py-3">
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
-              <span>Current</span>
-              <span className="font-bold normal-case tracking-normal text-white/80">{rankLabel(currentRank)}</span>
-              <ArrowRight className="size-3 text-green-400/70" />
-              <span>Target</span>
-              <span className="font-bold normal-case tracking-normal text-white/80">{rankLabel(targetRank)}</span>
-            </div>
-            <span className="text-[10px] font-medium text-green-300/70">Price updates automatically</span>
-          </div>
-          <div className="relative grid gap-5 lg:grid-cols-2 lg:gap-8">
+          <div className="grid gap-5 lg:grid-cols-2">
             <CompactRankSelector
               title="Current rank"
               value={currentRank}
               onChange={(value) => update("currentRank", value)}
             />
-
-            <div className="pointer-events-none absolute left-1/2 top-[48%] z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:grid">
-              <span className="grid size-10 place-items-center rounded-full border border-green-400/20 bg-[#070a08] text-green-400 shadow-[0_0_28px_-8px_rgba(74,222,128,.55)]">
-                <ArrowRight className="size-4" />
-              </span>
-            </div>
-
-            <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+            <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <CompactRankSelector
                 title="Desired rank"
                 value={targetRank}
