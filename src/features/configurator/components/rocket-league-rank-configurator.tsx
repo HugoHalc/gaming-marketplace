@@ -209,84 +209,161 @@ function CompactRankSelector({
       onChange(firstRankForFamily(familyKey));
       return;
     }
+
     const next = firstAvailableRankForFamily(familyKey, currentRank ?? "");
     if (next) onChange(next);
   }
 
+  const familyGlow =
+    selectedFamily.key === "bronze"
+      ? "rgba(217,119,6,.18)"
+      : selectedFamily.key === "silver"
+        ? "rgba(226,232,240,.14)"
+        : selectedFamily.key === "gold"
+          ? "rgba(250,204,21,.22)"
+          : selectedFamily.key === "platinum"
+            ? "rgba(45,212,191,.18)"
+            : selectedFamily.key === "diamond"
+              ? "rgba(56,189,248,.20)"
+              : selectedFamily.key === "champion"
+                ? "rgba(168,85,247,.22)"
+                : selectedFamily.key === "grand-champion"
+                  ? "rgba(244,63,94,.22)"
+                  : "rgba(244,114,182,.20)";
+
   return (
     <div className="min-w-0">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/70">{title}</p>
+        <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/80">{title}</p>
+
         {target ? (
-          <span className="hidden rounded-full border border-green-400/15 bg-green-400/[0.045] px-2.5 py-1 text-[9px] font-semibold text-green-300 sm:inline-flex">
+          <span className="hidden items-center rounded-full border border-green-400/20 bg-green-400/[0.045] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.08em] text-green-300 sm:inline-flex">
             Higher ranks only
           </span>
         ) : null}
       </div>
 
-      <div className="mt-3 flex items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.055] bg-black/25 px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {visibleFamilies.map((family) => {
-          const selected = selectedFamily.key === family.key;
-          return (
-            <button
-              key={family.key}
-              type="button"
-              title={family.label}
-              onClick={() => chooseFamily(family.key)}
-              className={`group relative flex min-w-11 flex-1 items-center justify-center rounded-lg px-1 py-1 transition-all ${
-                selected
-                  ? "bg-white/[0.035]"
-                  : "opacity-70 hover:bg-white/[0.025] hover:opacity-100"
-              }`}
-            >
-              <RankBadgeArt family={family} selected={selected} />
-            </button>
-          );
-        })}
+      <div className="mt-3 rounded-2xl border border-white/[0.06] bg-black/30 px-2 py-2.5">
+        <div className="flex items-start gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {visibleFamilies.map((family) => {
+            const selected = selectedFamily.key === family.key;
+
+            return (
+              <button
+                key={family.key}
+                type="button"
+                onClick={() => chooseFamily(family.key)}
+                className={`group relative flex min-w-[4.25rem] flex-1 flex-col items-center rounded-xl px-1 py-1.5 transition-all ${
+                  selected ? "bg-white/[0.035]" : "opacity-70 hover:bg-white/[0.02] hover:opacity-100"
+                }`}
+              >
+                <RankBadgeArt family={family} selected={selected} />
+                <span className={`mt-1.5 line-clamp-2 min-h-7 text-center text-[9px] font-semibold uppercase leading-3 ${
+                  selected ? "text-white" : "text-white/45"
+                }`}>
+                  {family.label}
+                </span>
+                <span
+                  className={`absolute inset-x-3 bottom-0 h-0.5 rounded-full transition-opacity ${
+                    selected
+                      ? "bg-green-400 opacity-100 shadow-[0_0_12px_rgba(74,222,128,.9)]"
+                      : "opacity-0"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="mt-4 grid min-h-[8.5rem] grid-cols-[auto_1fr] items-center gap-5 rounded-2xl border border-white/[0.06] bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,.045),transparent_42%),rgba(0,0,0,.2)] p-4 sm:p-5">
-        <RankBadgeArt family={selectedFamily} size="hero" />
+      <div
+        className="relative mt-4 overflow-hidden rounded-[1.4rem] border border-white/[0.08] bg-[#070a08] p-4 sm:p-5"
+        style={{
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,.025), 0 0 50px -34px ${familyGlow}`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 opacity-90"
+          style={{
+            background: `radial-gradient(circle at 20% 45%, ${familyGlow}, transparent 36%)`,
+          }}
+        />
 
-        <div className="min-w-0">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-green-400/65">
-            Selected rank
-          </p>
-          <h3 className="mt-1 truncate text-xl font-black uppercase tracking-[-0.035em] text-white sm:text-2xl">
-            {selectedFamily.label}
-          </h3>
+        <div className="relative grid min-h-[13.5rem] items-center gap-5 sm:grid-cols-[12rem_1fr]">
+          <div className="relative flex min-h-[11.5rem] items-center justify-center">
+            <div
+              className="absolute size-40 rounded-full blur-3xl"
+              style={{ backgroundColor: familyGlow }}
+            />
+            <div className="absolute size-32 rounded-full border border-white/[0.035]" />
+            <div className="absolute size-24 rounded-full border border-white/[0.04]" />
 
-          {selectedFamily.key !== "supersonic-legend" ? (
-            <div className="mt-4">
-              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30">Tier</p>
-              <div className="grid max-w-56 grid-cols-3 gap-2">
-                {selectedFamily.tiers.map((tier) => {
-                  const candidate = `${selectedFamily.key}-${tier}`;
-                  const available = !target || rankIndex(candidate) > currentIndex;
-                  const active = value === candidate;
-                  return (
-                    <button
-                      key={tier}
-                      type="button"
-                      disabled={!available}
-                      onClick={() => onChange(candidate)}
-                      className={`h-9 rounded-lg border text-xs font-black transition-all ${
-                        active
-                          ? "border-green-400/60 bg-green-400/[0.10] text-green-300 shadow-[0_0_18px_-10px_rgba(74,222,128,.9)]"
-                          : "border-white/[0.08] bg-black/25 text-white/55 hover:border-white/[0.18] hover:text-white"
-                      } disabled:cursor-not-allowed disabled:opacity-15`}
-                    >
-                      {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
-                    </button>
-                  );
-                })}
+            <Image
+              src={selectedFamily.image}
+              alt={`${selectedFamily.label} rank`}
+              width={176}
+              height={176}
+              className="relative z-[1] h-36 w-36 object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,.72)] sm:h-40 sm:w-40"
+            />
+          </div>
+
+          <div className="relative min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-green-400">
+              Selected rank
+            </p>
+
+            <h3 className="mt-2 text-3xl font-black uppercase leading-[.95] tracking-[-0.045em] text-white sm:text-[2.65rem]">
+              {selectedFamily.label}
+            </h3>
+
+            {selectedFamily.key !== "supersonic-legend" ? (
+              <>
+                <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+                  Tier
+                </p>
+
+                <div className="mt-2 grid max-w-[18rem] grid-cols-3 gap-2.5">
+                  {selectedFamily.tiers.map((tier) => {
+                    const candidate = `${selectedFamily.key}-${tier}`;
+                    const available = !target || rankIndex(candidate) > currentIndex;
+                    const active = value === candidate;
+
+                    return (
+                      <button
+                        key={tier}
+                        type="button"
+                        disabled={!available}
+                        onClick={() => onChange(candidate)}
+                        className={`h-12 rounded-xl border text-sm font-black transition-all ${
+                          active
+                            ? "border-green-400/65 bg-green-400/[0.08] text-green-300 shadow-[0_0_22px_-10px_rgba(74,222,128,.95)]"
+                            : "border-white/[0.09] bg-black/30 text-white/55 hover:border-white/[0.18] hover:text-white"
+                        } disabled:cursor-not-allowed disabled:opacity-15`}
+                      >
+                        {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="mt-6 inline-flex rounded-full border border-fuchsia-300/25 bg-fuchsia-300/[0.055] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.08em] text-fuchsia-200">
+                Final competitive rank
               </div>
-            </div>
-          ) : (
-            <div className="mt-4 inline-flex rounded-full border border-fuchsia-300/20 bg-fuchsia-300/[0.05] px-3 py-1.5 text-[10px] font-semibold text-fuchsia-200">
-              Final competitive rank
-            </div>
-          )}
+            )}
+
+            {target ? (
+              <div className="mt-5 max-w-sm rounded-xl border border-white/[0.07] bg-black/25 px-3.5 py-3 text-[10px] leading-5 text-white/40">
+                {selectedFamily.key === "supersonic-legend"
+                  ? "Supersonic Legend is the highest available target rank."
+                  : "Your target must always be higher than your current rank."}
+              </div>
+            ) : (
+              <div className="mt-5 max-w-sm rounded-xl border border-white/[0.07] bg-black/25 px-3.5 py-3 text-[10px] leading-5 text-white/40">
+                Choose the rank and tier that best matches your current competitive level.
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -482,7 +559,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
     : playlists.filter((playlist) => playlist.group === "Extra").slice(0, 2);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22.5rem] xl:items-start">
       <section className="overflow-hidden rounded-[1.6rem] border border-green-400/[0.10] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
         <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.08] via-transparent to-emerald-500/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
@@ -498,37 +575,35 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
 
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-green-400/[0.08] bg-green-400/[0.025] px-4 py-3">
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
-              <span>Current</span>
-              <span className="font-bold normal-case tracking-normal text-white/80">{rankLabel(currentRank)}</span>
-              <ArrowRight className="size-3 text-green-400/70" />
-              <span>Target</span>
-              <span className="font-bold normal-case tracking-normal text-white/80">{rankLabel(targetRank)}</span>
-            </div>
-            <span className="text-[10px] font-medium text-green-300/70">Price updates automatically</span>
-          </div>
-          <div className="relative grid gap-5 lg:grid-cols-2 lg:gap-8">
-            <CompactRankSelector
-              title="Current rank"
-              value={currentRank}
-              onChange={(value) => update("currentRank", value)}
-            />
 
-            <div className="pointer-events-none absolute left-1/2 top-[48%] z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:grid">
-              <span className="grid size-10 place-items-center rounded-full border border-green-400/20 bg-[#070a08] text-green-400 shadow-[0_0_28px_-8px_rgba(74,222,128,.55)]">
-                <ArrowRight className="size-4" />
-              </span>
-            </div>
-
-            <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+          <div className="relative rounded-[1.55rem] border border-green-400/[0.08] bg-black/20 p-3 sm:p-4">
+            <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
               <CompactRankSelector
-                title="Desired rank"
-                value={targetRank}
-                currentRank={currentRank}
-                target
-                onChange={(value) => update("targetRank", value)}
+                title="Current rank"
+                value={currentRank}
+                onChange={(value) => update("currentRank", value)}
               />
+
+              <div className="pointer-events-none absolute left-1/2 top-[58%] z-20 hidden -translate-x-1/2 -translate-y-1/2 lg:grid">
+                <span className="grid size-12 place-items-center rounded-full border border-green-400/25 bg-[#060906] text-green-400 shadow-[0_0_34px_-8px_rgba(74,222,128,.7)]">
+                  <ArrowRight className="size-5" />
+                </span>
+              </div>
+
+              <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                <CompactRankSelector
+                  title="Desired rank"
+                  value={targetRank}
+                  currentRank={currentRank}
+                  target
+                  onChange={(value) => update("targetRank", value)}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-center gap-2 border-t border-white/[0.055] pt-3 text-[10px] text-white/35">
+              <ShieldCheck className="size-3.5 text-green-400/70" />
+              <span>Target rank must be higher than your current rank.</span>
             </div>
           </div>
 
