@@ -72,26 +72,26 @@ export default function Home() {
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
-      <section className="relative isolate overflow-hidden border-b border-white/[0.05]">
+      <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
-        <div className="absolute right-[6%] top-[-12rem] -z-10 h-[31rem] w-[42rem] rounded-full bg-green-500/[0.09] blur-[115px]" />
+        <div className="absolute right-[6%] top-[-12rem] -z-10 h-[31rem] w-[42rem] rounded-full bg-[#39E56F]/[0.07] blur-[115px]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
-            <Badge className="mb-5 border-green-300/20 bg-green-400/[0.07] text-green-200">
-              <span className="mr-2 size-1.5 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,.75)]" />
+            <Badge className="mb-5 border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]">
+              <span className="mr-2 size-1.5 rounded-full bg-[#3DD9EB]" />
               BoostingPedia gaming marketplace
             </Badge>
 
-            <h1 className="text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-[4.5rem]">
+            <h1 className="text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-[#F4F7F5] sm:text-6xl lg:text-[4.5rem]">
               Professional boosting built around your game.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[#A0AAA4] sm:text-lg">
               Choose your title, open its dedicated storefront, and configure the service around your competitive goal.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="min-w-44">
+              <Button asChild size="lg" className="min-w-44 bg-[#39E56F] text-[#050807] hover:bg-[#20C95A] hover:text-[#050807]">
                 <Link href="#games">
                   Choose your game
                   <ArrowRight className="ml-2 size-4" />
@@ -115,15 +115,15 @@ export default function Home() {
           </div>
 
           <div className="relative hidden min-h-[340px] lg:block">
-            <div className="absolute inset-0 overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[#080b09]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_66%_32%,rgba(74,222,128,.17),transparent_24%),linear-gradient(145deg,rgba(255,255,255,.035),transparent_50%)]" />
+            <div className="absolute inset-0 overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[#090D0B]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_66%_32%,rgba(57,229,111,.12),transparent_24%),linear-gradient(145deg,rgba(255,255,255,.025),transparent_50%)]" />
               <div className="absolute -right-8 top-6 size-64 rotate-12 rounded-[2.5rem] border border-white/[0.06] bg-white/[0.02]" />
-              <div className="absolute right-16 top-16 grid size-44 place-items-center rounded-full border border-green-400/10 bg-green-400/[0.035]">
-                <Gamepad2 className="size-16 text-green-300/45" />
+              <div className="absolute right-16 top-16 grid size-44 place-items-center rounded-full border border-[#39E56F]/10 bg-[#39E56F]/[0.03]">
+                <Gamepad2 className="size-16 text-[#82F5A4]/45" />
               </div>
 
-              <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/[0.07] bg-black/35 p-4 backdrop-blur">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-300/70">
+              <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-[#FFFFFF14] bg-[#0E1411]/90 p-4 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#82F5A4]/70">
                   Launch lineup
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -222,8 +222,8 @@ export default function Home() {
             {launchGames.map((game) => {
               const card = (
                 <>
-                  <div className={`absolute inset-0 ${game.ready ? "bg-[#090b0a]/76" : "bg-[#090b0a]/88"}`} />
-                  <div className={`absolute -right-14 -top-16 size-64 rounded-full bg-gradient-to-br ${gameVisual[game.accent]} blur-2xl ${game.ready ? "opacity-80" : "opacity-35"}`} />
+                  <div className={`absolute inset-0 ${game.slug === "rocket-league" ? "bg-[#0E1411]" : game.ready ? "bg-[#090b0a]/76" : "bg-[#090b0a]/88"}`} />
+                  <div className={`absolute -right-14 -top-16 size-64 rounded-full blur-2xl ${game.slug === "rocket-league" ? "bg-[#39E56F]/[0.07]" : `bg-gradient-to-br ${gameVisual[game.accent]}`} ${game.ready ? "opacity-80" : "opacity-35"}`} />
                   <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
                     {game.displayName}
                   </div>
@@ -234,13 +234,13 @@ export default function Home() {
                         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
                           {game.category}
                         </p>
-                        <h3 className="mt-2 text-xl font-bold tracking-[-0.035em] text-white">
+                        <h3 className={`mt-2 text-xl font-bold tracking-[-0.035em] ${game.slug === "rocket-league" ? "text-[#F4F7F5]" : "text-white"}`}>
                           {game.displayName}
                         </h3>
                       </div>
                       <span className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] ${
                         game.ready
-                          ? "border-green-400/20 bg-green-400/[0.07] text-green-300"
+                          ? "border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]"
                           : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
                       }`}>
                         {game.ready ? "Available" : "In development"}
@@ -255,7 +255,7 @@ export default function Home() {
                       </p>
                       <span className={`grid size-10 shrink-0 place-items-center rounded-full border ${
                         game.ready
-                          ? "border-white/[0.09] bg-white/[0.035] text-white/75 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300"
+                          ? "border-[#FFFFFF14] bg-[#131B17] text-[#A0AAA4] transition-colors group-hover:border-[#39E56F]/30 group-hover:bg-[#39E56F]/[0.08] group-hover:text-[#82F5A4]"
                           : "border-white/[0.06] bg-white/[0.02] text-white/20"
                       }`}>
                         <ArrowRight className="size-4" />
@@ -269,7 +269,11 @@ export default function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
+                  className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 ${
+                    game.slug === "rocket-league"
+                      ? "border-[#FFFFFF14] bg-[#0E1411] hover:border-[#39E56F]/30"
+                      : `bg-gradient-to-br ${gameVisual[game.accent]} hover:border-white/[0.16]`
+                  } hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
                 >
                   {card}
                 </Link>

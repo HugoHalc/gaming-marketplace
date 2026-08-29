@@ -1,25 +1,23 @@
-BOOSTINGPEDIA — PHASE 13C DEVELOPMENT GAME STATES
+BOOSTINGPEDIA — PHASE 13D CONTROLLED PALETTE TEST
 
 BASE:
-Apply after Phase 13B.
+Apply after Phase 13C.
 
-1. Extract this ZIP.
-2. Copy all files into gaming-marketplace root.
-3. Allow replacement of existing files.
+1. Extract ZIP.
+2. Copy files into gaming-marketplace root.
+3. Allow replacement of:
+   - src/app/page.tsx
+   - src/components/marketing/site-header.tsx
 4. Commit:
-   Phase 13C - Development Game States
-5. Push main and wait for Vercel.
+   Phase 13D - Controlled Palette Test
+5. Push main and compare visually.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-EXPECTED:
-- Rocket League = Available and clickable.
-- League of Legends = In development.
-- Valorant = In development.
-- Marvel Rivals = In development.
-- Overwatch = In development.
-- Battlefield 6 = In development.
-- Rainbow Six Siege = In development.
+SCOPE IS COLOR ONLY:
+- Header
+- Hero
+- Main Hero button
+- Rocket League Home card
 
-This only changes launch visibility/navigation states.
-Rocket League internals are not modified.
+DO NOT treat this as the final site-wide palette migration.
