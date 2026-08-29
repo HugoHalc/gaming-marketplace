@@ -1,22 +1,30 @@
-BOOSTINGPEDIA — PHASE 12M HOTFIX: ENABLE PLACEMENTS
+BOOSTINGPEDIA — PHASE 12N ROCKET LEAGUE TOURNAMENT & REWARDS BOOST
 
-Problem fixed:
-Placements Boost already has its dedicated configurator, but the Rocket League
-service card was still treating it as an upcoming/in-development service.
+BASE:
+Current project after Phase 12M + Placements hotfix.
 
-This hotfix:
-- removes Placements Boost from "Coming soon"
-- adds the Configure link
-- displays Starting from $1.29
-- keeps Tournament Boost and Rewards Boost as In development
-- does not modify Rank Boost, Competitive Wins, pricing logic, or Placements configurator
-
-Steps:
 1. Extract this ZIP.
-2. Copy into the gaming-marketplace root.
-3. Allow replacement of service-card.tsx.
+2. Copy all files into the root of gaming-marketplace.
+3. Allow replacement of existing files.
 4. Commit:
-   Phase 12M Hotfix - Enable Placements Boost
+   Phase 12N - Rocket League Tournament & Rewards Boost
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
+
+THIS SINGLE COMMIT INCLUDES:
+- Tournament Boost configurator
+- Tournament server pricing
+- Rewards Boost configurator
+- Rewards server pricing
+- service page routing/metadata for both
+- quote routing for both
+- active Configure cards for Tournament and Rewards
+- corrected live descriptions and starting prices in Rocket League navigation
+
+EXPECTED CATALOG:
+- Rank Boost: active
+- Competitive Wins: active
+- Tournament Boost: active
+- Rewards Boost: active
+- Placements Boost: active

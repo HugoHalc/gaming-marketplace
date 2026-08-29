@@ -11,6 +11,8 @@ import { gameThemes } from "@/features/catalog/data/game-theme";
 import { RocketLeagueRankConfigurator } from "@/features/configurator/components/rocket-league-rank-configurator";
 import { RocketLeagueWinsConfigurator } from "@/features/configurator/components/rocket-league-wins-configurator";
 import { RocketLeaguePlacementsConfigurator } from "@/features/configurator/components/rocket-league-placements-configurator";
+import { RocketLeagueTournamentConfigurator } from "@/features/configurator/components/rocket-league-tournament-configurator";
+import { RocketLeagueRewardsConfigurator } from "@/features/configurator/components/rocket-league-rewards-configurator";
 import { ServiceConfigurator } from "@/features/configurator/components/service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
 
@@ -35,6 +37,8 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   const isRocketLeagueRank = game.slug === "rocket-league" && service.slug === "rank-boost";
   const isRocketLeagueWins = game.slug === "rocket-league" && service.slug === "wins";
   const isRocketLeaguePlacements = game.slug === "rocket-league" && service.slug === "placements-boost";
+  const isRocketLeagueTournament = game.slug === "rocket-league" && service.slug === "tournament-boost";
+  const isRocketLeagueRewards = game.slug === "rocket-league" && service.slug === "rewards-boost";
 
   return {
     title: isRocketLeagueRank
@@ -43,14 +47,22 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
         ? "Rocket League Competitive Wins"
         : isRocketLeaguePlacements
           ? "Rocket League Placements Boost"
-          : `${service.name} for ${game.name}`,
+          : isRocketLeagueTournament
+            ? "Rocket League Tournament Boost"
+            : isRocketLeagueRewards
+              ? "Rocket League Rewards Boost"
+              : `${service.name} for ${game.name}`,
     description: isRocketLeagueRank
       ? "Configure your Rocket League Rank Boost by rank, playlist, platform and boost method with transparent server-calculated pricing."
       : isRocketLeagueWins
         ? "Configure Rocket League Competitive Wins by current rank, number of wins, playlist, platform and boost method with server-calculated volume discounts."
         : isRocketLeaguePlacements
           ? "Configure Rocket League Placements Boost by previous season rank, placement matches, playlist, platform and boost method with server-calculated package discounts."
-          : `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
+          : isRocketLeagueTournament
+            ? "Configure Rocket League Tournament Boost by rank family, playlist, platform and boost method with server-calculated pricing."
+            : isRocketLeagueRewards
+              ? "Configure Rocket League Rewards Boost by current rank, reward wins, playlist, platform and boost method with server-calculated package discounts."
+              : `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
     alternates: { canonical: `/games/${game.slug}/${service.slug}` },
   };
 }
@@ -66,7 +78,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const isRocketLeagueRank = game.slug === "rocket-league" && service.slug === "rank-boost";
   const isRocketLeagueWins = game.slug === "rocket-league" && service.slug === "wins";
   const isRocketLeaguePlacements = game.slug === "rocket-league" && service.slug === "placements-boost";
-  const isCustomRocketLeagueService = isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements;
+  const isRocketLeagueTournament = game.slug === "rocket-league" && service.slug === "tournament-boost";
+  const isRocketLeagueRewards = game.slug === "rocket-league" && service.slug === "rewards-boost";
+  const isCustomRocketLeagueService =
+    isRocketLeagueRank ||
+    isRocketLeagueWins ||
+    isRocketLeaguePlacements ||
+    isRocketLeagueTournament ||
+    isRocketLeagueRewards;
 
   const schema = isCustomRocketLeagueService
     ? null
@@ -102,7 +121,11 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     ? "Rocket League Competitive Wins"
                     : isRocketLeaguePlacements
                       ? "Rocket League Placements Boost"
-                      : `${game.name} service`}
+                      : isRocketLeagueTournament
+                        ? "Rocket League Tournament Boost"
+                        : isRocketLeagueRewards
+                          ? "Rocket League Rewards Boost"
+                          : `${game.name} service`}
               </Badge>
 
               <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
@@ -112,7 +135,11 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     ? "Stack competitive wins with pricing that rewards larger packages."
                     : isRocketLeaguePlacements
                       ? "Complete your placement matches with transparent package pricing."
-                      : `Configure ${service.name} for ${game.name}.`}
+                      : isRocketLeagueTournament
+                        ? "Push through tournament progression with clear rank-based pricing."
+                        : isRocketLeagueRewards
+                          ? "Build your seasonal rewards progress with flexible win packages."
+                          : `Configure ${service.name} for ${game.name}.`}
               </h1>
 
               <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
@@ -122,16 +149,24 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     ? "Choose your current rank, number of wins, playlist and preferred boost method. Larger win packages automatically unlock real volume discounts."
                     : isRocketLeaguePlacements
                       ? "Choose your previous season rank, placement matches, playlist and preferred boost method. Larger placement packages automatically unlock real discounts."
-                      : `${service.description} Adjust the options below and receive a server-calculated price preview before creating your order.`}
+                      : isRocketLeagueTournament
+                        ? "Choose your current rank family, playlist and preferred boost method. Tournament pricing is calculated directly from the selected rank family."
+                        : isRocketLeagueRewards
+                          ? "Choose your current rank, number of reward wins, playlist and preferred boost method. Larger reward packages automatically unlock real discounts."
+                          : `${service.description} Adjust the options below and receive a server-calculated price preview before creating your order.`}
               </p>
 
-              {isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements ? (
+              {isCustomRocketLeagueService ? (
                 <div className="mt-6 flex flex-wrap gap-2">
                   {(isRocketLeagueWins
                     ? ["1–20 Competitive Wins", "Volume discounts up to 18%", "Account Boost or Play With Booster"]
                     : isRocketLeaguePlacements
                       ? ["1–10 Placement Matches", "Package discounts up to 21%", "1v1, 2v2, 3v3 & Extra Modes"]
-                      : ["Account Boost or Play With Booster", "1v1, 2v2, 3v3 & Extra Modes", "Live order tracking"]
+                      : isRocketLeagueTournament
+                        ? ["Rank family pricing", "No Tier I / II / III", "1v1, 2v2, 3v3 & Extra Modes"]
+                        : isRocketLeagueRewards
+                          ? ["1–10 Reward Wins", "Package discounts up to 21%", "Account Boost or Play With Booster"]
+                          : ["Account Boost or Play With Booster", "1v1, 2v2, 3v3 & Extra Modes", "Live order tracking"]
                   ).map((item) => (
                     <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                       {item}
@@ -160,6 +195,10 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <RocketLeagueWinsConfigurator gameSlug={game.slug} service={service} />
           ) : isRocketLeaguePlacements ? (
             <RocketLeaguePlacementsConfigurator gameSlug={game.slug} service={service} />
+          ) : isRocketLeagueTournament ? (
+            <RocketLeagueTournamentConfigurator gameSlug={game.slug} service={service} />
+          ) : isRocketLeagueRewards ? (
+            <RocketLeagueRewardsConfigurator gameSlug={game.slug} service={service} />
           ) : schema ? (
             <ServiceConfigurator gameSlug={game.slug} service={service} schema={schema} />
           ) : null}
