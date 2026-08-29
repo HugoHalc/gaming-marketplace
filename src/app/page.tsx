@@ -236,15 +236,7 @@ export default function Home() {
 
               const cardVisual = (
                 <>
-                  <div
-                    className={`absolute bg-[#090D0B] ${
-                      game.slug === "rocket-league" ||
-                      game.slug === "battlefield-6" ||
-                      game.slug === "rainbow-six-siege"
-                        ? "-inset-px"
-                        : "inset-0"
-                    }`}
-                  >
+                  <div className="absolute inset-0 bg-[#090D0B]">
                     <Image
                       src={imageSrc}
                       alt=""
@@ -254,6 +246,21 @@ export default function Home() {
                       className="object-cover object-center"
                     />
                   </div>
+
+                  {(game.slug === "rocket-league" ||
+                    game.slug === "battlefield-6" ||
+                    game.slug === "rainbow-six-siege") ? (
+                    <>
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-[3px] bg-[#090D0B]"
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[3px] bg-[#090D0B]"
+                      />
+                    </>
+                  ) : null}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/78 via-[#050807]/05 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/38 via-transparent to-transparent" />
