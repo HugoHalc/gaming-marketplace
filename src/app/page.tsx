@@ -243,21 +243,7 @@ export default function Home() {
                       fill
                       priority={game.slug === "rocket-league"}
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className={`object-cover ${
-                        game.slug === "rocket-league"
-                          ? "object-[46%_50%] scale-[0.93]"
-                          : game.slug === "league-of-legends"
-                            ? "object-[45%_49%] scale-[0.93]"
-                            : game.slug === "valorant"
-                              ? "object-[46%_49%] scale-[0.91]"
-                              : game.slug === "marvel-rivals"
-                                ? "object-[50%_50%] scale-[0.93]"
-                                : game.slug === "overwatch-2"
-                                  ? "object-[46%_47%] scale-[0.88]"
-                                  : game.slug === "battlefield-6"
-                                    ? "object-[41%_49%] scale-[0.90]"
-                                    : "object-[40%_49%] scale-[0.91]"
-                      }`}
+                      className="object-cover object-center"
                     />
                   </div>
 
@@ -309,7 +295,7 @@ export default function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className="group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_55px_-38px_rgba(0,0,0,.95)]"
+                  className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_55px_-38px_rgba(0,0,0,.95)]"
                 >
                   {cardVisual}
                 </Link>
@@ -317,7 +303,7 @@ export default function Home() {
                 <div
                   key={game.slug}
                   aria-label={`${game.displayName} is in development`}
-                  className="relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-80"
+                  className="relative aspect-[2048/1143] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-80"
                 >
                   {cardVisual}
                 </div>

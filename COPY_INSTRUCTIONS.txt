@@ -1,21 +1,17 @@
-BOOSTINGPEDIA — PHASE 13H FINAL GAME CARD FRAMING HOTFIX
+BOOSTINGPEDIA — PHASE 13I NATIVE GAME CARD ASPECT RATIO HOTFIX
 
 BASE:
-Apply after Phase 13G.
+Apply after Phase 13H.
 
 1. Extract ZIP.
 2. Copy all files into gaming-marketplace root.
 3. Allow replacement of src/app/page.tsx and public/game-cards assets.
 4. Commit:
-   Phase 13H - Final Game Card Framing Hotfix
+   Phase 13I - Native Game Card Aspect Ratio Hotfix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-THIS HOTFIX ONLY REFINES IMAGE FRAMING / SCALE.
-It keeps:
-- In-development cards darkened.
-- Rocket League Available.
-- Rainbow Six Siege art exactly as supplied.
-- Exact uploaded Marvel Rivals logo.
-- Existing layout, UX, sizes, grid and card structure.
+KEY CHANGE:
+Cards now use the exact 2048:1143 aspect ratio of the approved artwork.
+Individual zoom and object-position hacks from prior hotfixes are removed.
