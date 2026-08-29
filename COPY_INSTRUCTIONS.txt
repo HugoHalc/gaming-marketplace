@@ -1,31 +1,31 @@
-BOOSTINGPEDIA — PHASE 12L ROCKET LEAGUE COMPETITIVE WINS
+BOOSTINGPEDIA — PHASE 12M ROCKET LEAGUE PLACEMENTS BOOST
 
 BASE:
-Use after your current Rocket League Rank Boost build (Phase 12K) and service navigation (Phase 12J).
+Current project after Phase 12L Competitive Wins.
 
 1. Extract this ZIP.
 2. Copy all files into the root of gaming-marketplace.
 3. Allow replacement of existing files.
 4. Commit:
-   Phase 12L - Rocket League Competitive Wins
+   Phase 12M - Rocket League Placements Boost
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
 EXPECTED:
-Rocket League > Competitive Wins now has its own dedicated configurator with:
-- Current Rank (including Supersonic Legend)
-- 1–20 wins
-- visible volume discount UI
-- Playlist
-- Platform
-- Boost Method
+Rocket League > Placements Boost now has:
+- Previous Season Rank
+- Unrated option
+- Bronze I through Supersonic Legend
+- 1–10 Placement Matches
+- visible package discount
+- same Playlist / Extra Mode rules as other Rocket League services
+- same Platform options
+- Account Boost / Play With Booster
 - Appear Offline
 - Live Stream
 - Express Delivery
+- no Rank Insurance
 - sticky Order Summary
 - mobile total bar
 - server-authoritative pricing
-
-IMPORTANT:
-Rank Insurance is NOT part of Competitive Wins.
