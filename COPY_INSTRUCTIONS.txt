@@ -1,23 +1,23 @@
-BOOSTINGPEDIA — PHASE 12I REAL RANK BADGES
+BOOSTINGPEDIA — PHASE 12J ROCKET LEAGUE SERVICE NAVIGATION
 
-BASE: Phase 12E - Premium Rank Badges
+BASE: Phase 12I - Real Rocket League Rank Badges
 
-1. Make sure your local project is already back on the Phase 12E design.
-2. Copy the contents of this ZIP into the root of gaming-marketplace.
-3. Allow replacement of existing files.
-4. Commit:
-   Phase 12I - Real Rocket League Rank Badges
-5. Push main and wait for Vercel.
+1. Copy this ZIP into the root of gaming-marketplace.
+2. Allow replacement of existing files.
+3. Commit:
+   Phase 12J - Rocket League Service Navigation
+4. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-IMPORTANT:
-- This phase does NOT redesign the configurator.
-- It does NOT change sizes or text.
-- It only switches the rank artwork from the Phase 12E SVG badges to the new PNG badges.
+EXPECTED ROCKET LEAGUE SERVICES:
+- Rank Boost
+- Competitive Wins
+- Tournament Boost (Coming soon)
+- Rewards Boost (Coming soon)
+- Placements Boost (Coming soon)
 
-CHECK:
-- Bronze through Supersonic Legend use the new artwork.
-- Current Rank still stops at Grand Champion III.
-- Desired Rank still includes Supersonic Legend.
-- Pricing and checkout still work.
+REMOVED:
+- Coaching
+
+This phase does not change Rank Boost pricing or checkout behavior.

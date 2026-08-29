@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Crosshair, GraduationCap, Medal, Trophy } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  Crosshair,
+  GraduationCap,
+  Medal,
+  Trophy,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import type { ServiceCategory, ServiceSummary } from "../types/catalog";
 
@@ -8,6 +15,15 @@ const categoryMeta: Record<ServiceCategory, { label: string; icon: typeof Trophy
   wins: { label: "Competitive wins", icon: Trophy },
   placements: { label: "Placements", icon: Crosshair },
   coaching: { label: "Coaching", icon: GraduationCap },
+};
+
+const rocketLeagueUpcomingMeta: Record<
+  string,
+  { label: string; icon: typeof Trophy }
+> = {
+  "tournament-boost": { label: "Tournament", icon: Trophy },
+  "rewards-boost": { label: "Season rewards", icon: Award },
+  "placements-boost": { label: "Placements", icon: Crosshair },
 };
 
 function formatPrice(value: number) {
@@ -19,7 +35,10 @@ function formatPrice(value: number) {
 }
 
 export function ServiceCard({ service, gameSlug }: { service: ServiceSummary; gameSlug: string }) {
-  const meta = categoryMeta[service.category];
+  const upcoming =
+    gameSlug === "rocket-league" ? rocketLeagueUpcomingMeta[service.slug] : undefined;
+
+  const meta = upcoming ?? categoryMeta[service.category];
   const Icon = meta.icon;
 
   return (
@@ -38,21 +57,41 @@ export function ServiceCard({ service, gameSlug }: { service: ServiceSummary; ga
 
       <div className="mt-auto pt-8">
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.1] to-transparent" />
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs text-[var(--muted-foreground)]">Starting from</p>
-            <p className="mt-1 text-xl font-bold tracking-[-0.03em] text-white">
-              {formatPrice(service.startingPrice)}
+
+        {upcoming ? (
+          <>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs text-[var(--muted-foreground)]">Service status</p>
+                <p className="mt-1 text-sm font-semibold text-white">Coming soon</p>
+              </div>
+              <span className="rounded-full border border-green-400/15 bg-green-400/[0.05] px-3 py-1.5 text-xs font-semibold text-green-300">
+                In development
+              </span>
+            </div>
+            <p className="mt-5 text-xs leading-5 text-white/40">
+              This service is now part of the Rocket League catalog. Its dedicated configurator will be built next.
             </p>
-          </div>
-          <Link href={`/games/${gameSlug}/${service.slug}`} className="inline-flex items-center text-sm font-semibold text-violet-200 transition-colors hover:text-white">
-            Configure
-            <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
-        <p className="mt-5 text-xs leading-5 text-white/40">
-          Configure options and preview server-calculated pricing.
-        </p>
+          </>
+        ) : (
+          <>
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs text-[var(--muted-foreground)]">Starting from</p>
+                <p className="mt-1 text-xl font-bold tracking-[-0.03em] text-white">
+                  {formatPrice(service.startingPrice)}
+                </p>
+              </div>
+              <Link href={`/games/${gameSlug}/${service.slug}`} className="inline-flex items-center text-sm font-semibold text-violet-200 transition-colors hover:text-white">
+                Configure
+                <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+            <p className="mt-5 text-xs leading-5 text-white/40">
+              Configure options and preview server-calculated pricing.
+            </p>
+          </>
+        )}
       </div>
     </Card>
   );

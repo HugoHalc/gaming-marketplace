@@ -2,6 +2,7 @@ import { createPublicServerClient } from "@/lib/supabase/server";
 import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 import type { CatalogGame, GameAccent, GameStatus, ServiceCategory, ServiceStatus } from "../types/catalog";
 import { getCatalogGameBySlug as getMockGameBySlug, getCatalogGames as getMockGames } from "./catalog-selectors";
+import { withRocketLeagueServiceNavigation } from "./rocket-league-services";
 
 type DbService = {
   id: string;
@@ -44,7 +45,7 @@ function mapGame(row: DbGame): CatalogGame {
       status: service.status,
     }));
 
-  return {
+  return withRocketLeagueServiceNavigation({
     id: row.id,
     slug: row.slug,
     name: row.name,
@@ -54,11 +55,13 @@ function mapGame(row: DbGame): CatalogGame {
     featured: row.featured,
     services,
     startingPrice: services.length ? Math.min(...services.map((service) => service.startingPrice)) : null,
-  };
+  });
 }
 
 export async function listCatalogGames(): Promise<CatalogGame[]> {
-  if (!hasPublicSupabaseEnv()) return getMockGames();
+  if (!hasPublicSupabaseEnv()) {
+    return getMockGames().map(withRocketLeagueServiceNavigation);
+  }
 
   const supabase = createPublicServerClient();
   const { data, error } = await supabase
@@ -69,14 +72,17 @@ export async function listCatalogGames(): Promise<CatalogGame[]> {
 
   if (error) {
     console.error("Catalog database read failed; using mock fallback.", error.message);
-    return getMockGames();
+    return getMockGames().map(withRocketLeagueServiceNavigation);
   }
 
   return (data as unknown as DbGame[]).map(mapGame);
 }
 
 export async function findCatalogGameBySlug(slug: string): Promise<CatalogGame | undefined> {
-  if (!hasPublicSupabaseEnv()) return getMockGameBySlug(slug);
+  if (!hasPublicSupabaseEnv()) {
+    const game = getMockGameBySlug(slug);
+    return game ? withRocketLeagueServiceNavigation(game) : undefined;
+  }
 
   const supabase = createPublicServerClient();
   const { data, error } = await supabase
@@ -88,7 +94,8 @@ export async function findCatalogGameBySlug(slug: string): Promise<CatalogGame |
 
   if (error) {
     console.error("Game database read failed; using mock fallback.", error.message);
-    return getMockGameBySlug(slug);
+    const game = getMockGameBySlug(slug);
+    return game ? withRocketLeagueServiceNavigation(game) : undefined;
   }
 
   return data ? mapGame(data as unknown as DbGame) : undefined;
