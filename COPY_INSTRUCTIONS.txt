@@ -1,30 +1,30 @@
-BOOSTINGPEDIA — PHASE 12N ROCKET LEAGUE TOURNAMENT & REWARDS BOOST
+BOOSTINGPEDIA — PHASE 13A HOME & GAME PAGES UX RESTRUCTURE
 
-BASE:
-Current project after Phase 12M + Placements hotfix.
+IMPORTANT BASE:
+Apply after Phase 12N - Rocket League Tournament & Rewards Boost.
 
 1. Extract this ZIP.
 2. Copy all files into the root of gaming-marketplace.
 3. Allow replacement of existing files.
 4. Commit:
-   Phase 12N - Rocket League Tournament & Rewards Boost
+   Phase 13A - Home & Game Pages UX Restructure
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-THIS SINGLE COMMIT INCLUDES:
-- Tournament Boost configurator
-- Tournament server pricing
-- Rewards Boost configurator
-- Rewards server pricing
-- service page routing/metadata for both
-- quote routing for both
-- active Configure cards for Tournament and Rewards
-- corrected live descriptions and starting prices in Rocket League navigation
+FILES CHANGED ARE LIMITED TO:
+- Home page
+- Games index page
+- Game overview page
+- Game overview content
+- New launch-game structural data
+- Documentation
 
-EXPECTED CATALOG:
-- Rank Boost: active
-- Competitive Wins: active
-- Tournament Boost: active
-- Rewards Boost: active
-- Placements Boost: active
+ROCKET LEAGUE SERVICE CONFIGURATORS / PRICING ARE NOT INCLUDED OR MODIFIED.
+
+CHECK AFTER DEPLOY:
+- Home shows exactly seven launch games.
+- Rocket League overview opens and its existing service links still work.
+- Rank Boost / Competitive Wins / Placements / Tournament / Rewards configurators remain unchanged.
+- Battlefield 6 and Rainbow Six Siege open structural shell pages instead of 404.
+- Mobile cards scroll/stack correctly.

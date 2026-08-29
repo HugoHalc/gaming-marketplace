@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  Clock3,
+  Check,
   Gamepad2,
   Layers3,
   ShieldCheck,
@@ -16,13 +15,18 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ServiceCard } from "@/features/catalog/components/service-card";
 import {
   findCatalogGameBySlug,
   listCatalogGames,
 } from "@/features/catalog/data/catalog-repository";
 import { gameDetailContent } from "@/features/catalog/data/game-detail-content";
+import {
+  getLaunchGameDisplayName,
+  getLaunchGameShell,
+  launchGames,
+} from "@/features/catalog/data/launch-games";
 import { gameThemes } from "@/features/catalog/data/game-theme";
+import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catalog";
 
 interface GamePageProps {
   params: Promise<{ game: string }>;
@@ -36,189 +40,234 @@ function formatPrice(value: number) {
   }).format(value);
 }
 
+function categoryLabel(category: ServiceSummary["category"]) {
+  if (category === "rank") return "Rank progression";
+  if (category === "wins") return "Competitive";
+  if (category === "placements") return "Placements";
+  return "Coaching";
+}
+
 export async function generateStaticParams() {
-  const games = await listCatalogGames();
-  return games.map((game) => ({ game: game.slug }));
+  const catalogGames = await listCatalogGames();
+  const slugs = new Set([
+    ...catalogGames.map((game) => game.slug),
+    ...launchGames.map((game) => game.slug),
+  ]);
+  return Array.from(slugs).map((game) => ({ game }));
 }
 
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
   const { game: slug } = await params;
-  const game = await findCatalogGameBySlug(slug);
+  const game = (await findCatalogGameBySlug(slug)) ?? getLaunchGameShell(slug);
 
-  if (!game) {
-    return { title: "Game not found" };
-  }
+  if (!game) return { title: "Game not found" };
 
+  const displayName = getLaunchGameDisplayName(game.slug, game.name);
   return {
-    title: game.name,
-    description: `Explore ${game.name} services, compare starting prices, and choose the service model that matches your competitive goal.`,
-    alternates: {
-      canonical: `/games/${game.slug}`,
-    },
+    title: displayName,
+    description: `Explore the ${displayName} storefront and available BoostingPedia services.`,
+    alternates: { canonical: `/games/${game.slug}` },
   };
+}
+
+function ServiceShowcaseCard({
+  service,
+  gameSlug,
+  index,
+}: {
+  service: ServiceSummary;
+  gameSlug: string;
+  index: number;
+}) {
+  return (
+    <Link
+      href={`/games/${gameSlug}/${service.slug}`}
+      className="group relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-400/20 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:w-[20rem] sm:p-6"
+    >
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-green-400/[0.06] to-transparent" />
+      <div className="relative flex items-start justify-between gap-4">
+        <Badge className="border-white/[0.08] bg-black/20 text-white/55">
+          {categoryLabel(service.category)}
+        </Badge>
+        <span className="rounded-lg border border-white/[0.08] bg-black/20 px-2 py-1 text-[10px] font-black text-white/35">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
+
+      <div className="relative mt-8">
+        <h3 className="max-w-[13rem] text-2xl font-bold leading-[1.05] tracking-[-0.045em] text-white">
+          {service.name}
+        </h3>
+        <p className="mt-4 line-clamp-4 text-sm leading-6 text-[var(--muted-foreground)]">
+          {service.description}
+        </p>
+      </div>
+
+      <div className="relative mt-auto pt-8">
+        <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.13em] text-white/30">Starting from</p>
+            <p className="mt-1 text-lg font-bold text-white">{formatPrice(service.startingPrice)}</p>
+          </div>
+          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function EmptyServiceCard({ index }: { index: number }) {
+  return (
+    <div className="relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-dashed border-white/[0.08] bg-white/[0.012] p-5 sm:w-[20rem] sm:p-6">
+      <div className="flex items-start justify-between">
+        <span className="rounded-full border border-white/[0.08] bg-black/15 px-2.5 py-1 text-[10px] font-semibold text-white/30">
+          Service slot
+        </span>
+        <span className="text-[10px] font-black text-white/20">{String(index + 1).padStart(2, "0")}</span>
+      </div>
+      <div className="my-auto">
+        <div className="h-4 w-28 rounded bg-white/[0.04]" />
+        <div className="mt-3 h-4 w-40 rounded bg-white/[0.025]" />
+        <div className="mt-8 h-2 w-full rounded bg-white/[0.025]" />
+        <div className="mt-2 h-2 w-4/5 rounded bg-white/[0.02]" />
+      </div>
+      <p className="text-xs leading-5 text-white/25">
+        Ready for game-specific service content.
+      </p>
+    </div>
+  );
 }
 
 export default async function GamePage({ params }: GamePageProps) {
   const { game: slug } = await params;
-  const game = await findCatalogGameBySlug(slug);
+  const catalogGame = await findCatalogGameBySlug(slug);
+  const game: CatalogGame | undefined = catalogGame ?? getLaunchGameShell(slug);
 
-  if (!game) {
-    notFound();
-  }
+  if (!game) notFound();
 
   const content = gameDetailContent[game.slug];
-  if (!content) {
-    notFound();
-  }
+  if (!content) notFound();
 
   const theme = gameThemes[content.accent];
-  const relatedGames = (await listCatalogGames()).filter((item) => item.id !== game.id).slice(0, 3);
-  const serviceCategories = new Set(game.services.map((service) => service.category)).size;
+  const displayName = getLaunchGameDisplayName(game.slug, game.name);
+  const shell = !catalogGame;
 
   return (
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
-        <div
-          className={`absolute left-[65%] top-[-14rem] -z-10 h-[34rem] w-[44rem] rounded-full ${theme.softGlow} blur-[120px]`}
-        />
-        <Container className="py-12 sm:py-16 lg:py-20">
+        <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
+        <div className={`absolute right-[-8rem] top-[-10rem] -z-10 h-[34rem] w-[48rem] rounded-full ${theme.softGlow} blur-[125px]`} />
+        <div className="absolute right-0 top-0 hidden h-full w-[48%] overflow-hidden lg:block">
+          <div className={`absolute inset-0 bg-gradient-to-br ${theme.glow}`} />
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent" />
+          <div className="absolute bottom-10 right-10 select-none text-right text-[clamp(4rem,8vw,8.5rem)] font-black leading-[0.82] tracking-[-0.08em] text-white/[0.035]">
+            {displayName}
+          </div>
+        </div>
+
+        <Container className="relative py-12 sm:py-16 lg:min-h-[32rem] lg:py-20">
           <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
             <Link href="/" className="transition-colors hover:text-white">Home</Link>
-            <span aria-hidden="true">/</span>
+            <span>/</span>
             <Link href="/games" className="transition-colors hover:text-white">Games</Link>
-            <span aria-hidden="true">/</span>
-            <span className="text-white">{game.name}</span>
+            <span>/</span>
+            <span className="text-white">{displayName}</span>
           </div>
 
-          <div className="mt-9 grid gap-10 lg:grid-cols-[1.08fr_.92fr] lg:items-center">
-            <div>
-              <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
-                <Sparkles className="mr-2 size-3.5" />
-                {content.eyebrow}
-              </Badge>
-              <h1 className="mt-5 max-w-4xl text-balance text-4xl font-bold leading-[1.02] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-                Competitive services for {game.name}.
-              </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[var(--muted-foreground)] sm:text-lg sm:leading-8">
-                {content.heroDescription}
-              </p>
+          <div className="mt-12 max-w-3xl">
+            <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
+              <Sparkles className="mr-2 size-3.5" />
+              {content.eyebrow}
+            </Badge>
+            <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-7xl">
+              {displayName}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
+              {content.heroDescription}
+            </p>
 
-              <div className="mt-7 flex flex-wrap gap-2">
-                <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 text-xs font-medium text-white/75">
-                  {content.categoryLabel}
-                </span>
-                <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 text-xs font-medium text-white/75">
-                  {content.fulfillmentLabel}
-                </span>
-                <span className="rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1.5 text-xs font-medium text-emerald-300">
-                  Services available
-                </span>
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link href="#services">
-                    Browse services
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="secondary" size="lg">
-                  <Link href="/games">
-                    <ArrowLeft className="mr-2 size-4" />
-                    All games
-                  </Link>
-                </Button>
-              </div>
+            <div className="mt-7 flex flex-wrap gap-2">
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                {content.categoryLabel}
+              </span>
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                {content.fulfillmentLabel}
+              </span>
+              <span className="rounded-full border border-green-400/15 bg-green-400/[0.055] px-3 py-1.5 text-xs font-medium text-green-300">
+                {shell ? "Structure ready" : `${game.services.length} services`}
+              </span>
             </div>
 
-            <div className="relative">
-              <div className={`absolute inset-10 -z-10 rounded-full ${theme.softGlow} blur-3xl`} />
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[#0d0e18]/90 p-6 shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)] sm:p-7">
-                <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${theme.glow}`} />
-                <div className="relative">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className={`grid size-14 place-items-center rounded-2xl border ${theme.icon}`}>
-                      <Gamepad2 className="size-6" />
-                    </span>
-                    <Badge className="border-emerald-300/15 bg-emerald-400/[0.06] text-emerald-300">
-                      Available now
-                    </Badge>
-                  </div>
-
-                  <p className="mt-9 text-sm font-medium text-white/50">{game.name} catalog</p>
-                  <p className="mt-2 text-3xl font-bold tracking-[-0.045em] text-white">
-                    {game.services.length} services
-                  </p>
-
-                  <div className="mt-7 grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
-                      <p className="text-xs text-[var(--muted-foreground)]">Starting from</p>
-                      <p className="mt-1 text-lg font-bold text-white">
-                        {game.startingPrice === null ? "—" : formatPrice(game.startingPrice)}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
-                      <p className="text-xs text-[var(--muted-foreground)]">Service types</p>
-                      <p className="mt-1 text-lg font-bold text-white">{serviceCategories}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-7 space-y-3 border-t border-white/[0.07] pt-6">
-                    {content.trustPoints.map((point) => (
-                      <div key={point} className="flex items-center gap-3 text-sm text-white/75">
-                        <CheckCircle2 className={`size-4 shrink-0 ${theme.text}`} />
-                        <span>{point}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg">
+                <Link href="#services">
+                  View services
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/games">
+                  <ArrowLeft className="mr-2 size-4" />
+                  All games
+                </Link>
+              </Button>
             </div>
           </div>
         </Container>
       </section>
 
-      <section id="services" className="scroll-mt-20 py-16 sm:py-20 lg:py-24">
+      <section id="services" className="scroll-mt-20 py-14 sm:py-16 lg:py-20">
         <Container>
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-2xl">
-              <p className={`text-sm font-semibold ${theme.text}`}>Available services</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.045em] text-white sm:text-4xl">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className={`text-sm font-semibold ${theme.text}`}>Boosting services</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
                 {content.serviceIntro}
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] sm:text-right">
-              Starting prices are shown before game-specific options and modifiers are applied in configuration.
+            <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
+              Browse horizontally on smaller screens. Each service opens its own dedicated configurator.
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {game.services.map((service) => (
-              <ServiceCard key={service.id} service={service} gameSlug={game.slug} />
-            ))}
+          <div className="-mx-4 mt-9 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+            {game.services.length > 0
+              ? game.services.map((service, index) => (
+                  <ServiceShowcaseCard
+                    key={service.id}
+                    service={service}
+                    gameSlug={game.slug}
+                    index={index}
+                  />
+                ))
+              : Array.from({ length: 4 }).map((_, index) => (
+                  <EmptyServiceCard key={index} index={index} />
+                ))}
           </div>
         </Container>
       </section>
 
       <section className="border-y border-white/[0.06] bg-white/[0.012] py-16 sm:py-20">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-[.78fr_1.22fr] lg:items-start">
+          <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
             <div className="max-w-xl">
-              <p className={`text-sm font-semibold ${theme.text}`}>Designed around the game</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-[-0.045em] text-white sm:text-4xl">
-                A storefront that explains the choice before checkout.
+              <p className={`text-sm font-semibold ${theme.text}`}>Game storefront</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
+                More visual up front. Same service flow underneath.
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
-                Each game can present its own competitive context while still using the same catalog, pricing, and order architecture underneath.
+                The overview page now works as a stronger visual entry point while preserving the underlying service configuration routes.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
               {content.highlights.map((item, index) => {
-                const icons = [Layers3, ShieldCheck, Clock3] as const;
+                const icons = [Layers3, ShieldCheck, Gamepad2] as const;
                 const Icon = icons[index] ?? Layers3;
                 return (
                   <div key={item.title} className="rounded-2xl border border-white/[0.08] bg-black/15 p-5 sm:p-6">
@@ -226,7 +275,9 @@ export default async function GamePage({ params }: GamePageProps) {
                       <Icon className="size-4" />
                     </span>
                     <h3 className="mt-5 text-sm font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{item.description}</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+                      {item.description}
+                    </p>
                   </div>
                 );
               })}
@@ -237,45 +288,20 @@ export default async function GamePage({ params }: GamePageProps) {
 
       <section className="py-16 sm:py-20">
         <Container>
-          <div className="mb-7 flex items-end justify-between gap-5">
-            <div>
-              <p className="text-sm font-semibold text-violet-300">Explore more</p>
+          <div className="flex flex-col gap-6 rounded-[1.8rem] border border-white/[0.08] bg-[#090b0a] p-7 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold text-green-300">Need a different route?</p>
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl">
-                Other supported games
+                Explore the rest of the launch lineup.
               </h2>
             </div>
-            <Link href="/games" className="hidden items-center text-sm font-semibold text-violet-200 transition-colors hover:text-white sm:inline-flex">
-              View all games
+            <Link
+              href="/games"
+              className="inline-flex items-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
+            >
+              View all launch games
               <ArrowRight className="ml-2 size-4" />
             </Link>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {relatedGames.map((related) => {
-              const relatedTheme = gameThemes[related.accent];
-              return (
-                <Link
-                  key={related.id}
-                  href={`/games/${related.slug}`}
-                  className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[var(--surface)] p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-white/[0.14]"
-                >
-                  <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${relatedTheme.glow}`} />
-                  <div className="relative">
-                    <span className={`grid size-10 place-items-center rounded-xl border ${relatedTheme.icon}`}>
-                      <Gamepad2 className="size-4" />
-                    </span>
-                    <h3 className="mt-6 text-lg font-semibold text-white">{related.name}</h3>
-                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">
-                      {related.shortDescription}
-                    </p>
-                    <span className="mt-6 inline-flex items-center text-sm font-semibold text-white/75 transition-colors group-hover:text-white">
-                      Explore services
-                      <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
           </div>
         </Container>
       </section>
