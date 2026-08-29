@@ -1,30 +1,22 @@
-BOOSTINGPEDIA — PHASE 13A HOME & GAME PAGES UX RESTRUCTURE
+BOOSTINGPEDIA — PHASE 13B HOME BOOSTERS & PRIORITY LAYOUT
 
-IMPORTANT BASE:
-Apply after Phase 12N - Rocket League Tournament & Rewards Boost.
+BASE:
+Apply after Phase 13A.
 
-1. Extract this ZIP.
-2. Copy all files into the root of gaming-marketplace.
-3. Allow replacement of existing files.
+1. Extract ZIP.
+2. Copy all files into gaming-marketplace root.
+3. Allow replacement of src/app/page.tsx.
 4. Commit:
-   Phase 13A - Home & Game Pages UX Restructure
+   Phase 13B - Home Boosters & Priority Layout
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-FILES CHANGED ARE LIMITED TO:
-- Home page
-- Games index page
-- Game overview page
-- Game overview content
-- New launch-game structural data
-- Documentation
+ONLY HOME-LEVEL STRUCTURE IS CHANGED.
+ROCKET LEAGUE INTERNAL CONTENT / PRICING / CONFIGURATORS ARE NOT TOUCHED.
 
-ROCKET LEAGUE SERVICE CONFIGURATORS / PRICING ARE NOT INCLUDED OR MODIFIED.
+PLACEHOLDER BOOSTERS:
+src/features/marketing/booster-placeholders.ts
 
-CHECK AFTER DEPLOY:
-- Home shows exactly seven launch games.
-- Rocket League overview opens and its existing service links still work.
-- Rank Boost / Competitive Wins / Placements / Tournament / Rewards configurators remain unchanged.
-- Battlefield 6 and Rainbow Six Siege open structural shell pages instead of 404.
-- Mobile cards scroll/stack correctly.
+These are fictional structural placeholders only.
+Replace later with real profile information.

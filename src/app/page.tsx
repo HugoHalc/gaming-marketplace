@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
+  UserRound,
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
@@ -15,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { launchGames } from "@/features/catalog/data/launch-games";
+import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import {
   faqs,
   howItWorks,
@@ -56,39 +58,52 @@ function SectionHeading({
   );
 }
 
+function BoosterAvatar({ initials }: { initials: string }) {
+  return (
+    <div className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/[0.09] bg-[radial-gradient(circle_at_30%_20%,rgba(74,222,128,.18),transparent_40%),#111512] text-lg font-black tracking-[-0.04em] text-white">
+      <span className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent" />
+      <span className="relative">{initials}</span>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.05]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-35" />
-        <div className="absolute left-1/2 top-[-18rem] -z-10 h-[38rem] w-[64rem] -translate-x-1/2 rounded-full bg-green-500/[0.10] blur-[120px]" />
-        <Container className="grid min-h-[650px] items-center gap-14 py-20 lg:grid-cols-[1.08fr_.92fr] lg:py-24">
+        <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
+        <div className="absolute right-[6%] top-[-12rem] -z-10 h-[31rem] w-[42rem] rounded-full bg-green-500/[0.09] blur-[115px]" />
+        <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
-            <Badge className="mb-6 border-green-300/20 bg-green-400/[0.07] text-green-200">
+            <Badge className="mb-5 border-green-300/20 bg-green-400/[0.07] text-green-200">
               <span className="mr-2 size-1.5 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,.75)]" />
               BoostingPedia gaming marketplace
             </Badge>
-            <h1 className="text-balance text-5xl font-bold leading-[0.97] tracking-[-0.065em] text-white sm:text-6xl lg:text-[4.9rem]">
-              Find your game. Choose your goal. Configure the service.
+
+            <h1 className="text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-[4.5rem]">
+              Professional boosting built around your game.
             </h1>
-            <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-[var(--muted-foreground)] sm:text-xl">
-              A cleaner marketplace for competitive gaming services, built around transparent configuration and server-calculated pricing.
+
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
+              Choose your title, open its dedicated storefront, and configure the service around your competitive goal.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="min-w-44">
                 <Link href="#games">
-                  Explore launch games
+                  Choose your game
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="secondary" size="lg">
-                <Link href="#how-it-works">How it works</Link>
+                <Link href="#boosters">Meet our boosters</Link>
               </Button>
             </div>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-[var(--muted-foreground)]">
-              {["Transparent configuration", "Secure order architecture", "Responsive marketplace flow"].map((item) => (
+
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--muted-foreground)] sm:text-sm">
+              {["Server-calculated pricing", "Game-specific storefronts", "Order tracking"].map((item) => (
                 <span key={item} className="inline-flex items-center gap-2">
                   <span className="grid size-5 place-items-center rounded-full bg-green-400/10 text-green-300">
                     <Check className="size-3" />
@@ -99,36 +114,26 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xl lg:mx-0 lg:justify-self-end">
-            <div className="absolute inset-10 -z-10 rounded-[2rem] bg-green-500/[0.10] blur-3xl" />
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[#080b09] p-2 shadow-[0_36px_110px_-42px_rgba(0,0,0,.95)]">
-              <div className="relative min-h-[27rem] overflow-hidden rounded-[1.55rem] border border-white/[0.06] bg-[radial-gradient(circle_at_74%_30%,rgba(74,222,128,.15),transparent_25%),linear-gradient(145deg,#111713,#070908_62%)] p-6 sm:p-7">
-                <div className="absolute -right-20 top-8 size-64 rounded-full border border-green-400/10 bg-green-400/[0.035]" />
-                <div className="absolute -right-6 top-24 size-44 rotate-12 rounded-[2rem] border border-white/[0.06] bg-white/[0.025]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-green-300/75">
-                  Marketplace structure
+          <div className="relative hidden min-h-[340px] lg:block">
+            <div className="absolute inset-0 overflow-hidden rounded-[2rem] border border-white/[0.075] bg-[#080b09]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_66%_32%,rgba(74,222,128,.17),transparent_24%),linear-gradient(145deg,rgba(255,255,255,.035),transparent_50%)]" />
+              <div className="absolute -right-8 top-6 size-64 rotate-12 rounded-[2.5rem] border border-white/[0.06] bg-white/[0.02]" />
+              <div className="absolute right-16 top-16 grid size-44 place-items-center rounded-full border border-green-400/10 bg-green-400/[0.035]">
+                <Gamepad2 className="size-16 text-green-300/45" />
+              </div>
+
+              <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/[0.07] bg-black/35 p-4 backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-300/70">
+                  Launch lineup
                 </p>
-                <h2 className="mt-3 max-w-sm text-3xl font-bold tracking-[-0.045em] text-white">
-                  One visual system across every launch title.
-                </h2>
-                <div className="mt-14 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {launchGames.slice(0, 6).map((game) => (
-                    <div
-                      key={game.slug}
-                      className="rounded-xl border border-white/[0.07] bg-black/20 p-3"
-                    >
-                      <Gamepad2 className="size-4 text-green-300/75" />
-                      <p className="mt-3 text-[11px] font-semibold text-white/80">{game.displayName}</p>
-                    </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {launchGames.slice(0, 5).map((game) => (
+                    <span key={game.slug} className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[10px] font-medium text-white/55">
+                      {game.displayName}
+                    </span>
                   ))}
-                </div>
-                <div className="absolute inset-x-6 bottom-6 flex items-center justify-between rounded-xl border border-white/[0.07] bg-black/30 px-4 py-3 backdrop-blur">
-                  <div>
-                    <p className="text-[9px] uppercase tracking-[0.14em] text-white/30">Launch lineup</p>
-                    <p className="mt-1 text-sm font-semibold text-white">{launchGames.length} games</p>
-                  </div>
-                  <span className="grid size-9 place-items-center rounded-full border border-green-400/20 bg-green-400/[0.08] text-green-300">
-                    <ArrowRight className="size-4" />
+                  <span className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[10px] font-medium text-white/55">
+                    +{launchGames.length - 5} more
                   </span>
                 </div>
               </div>
@@ -137,42 +142,96 @@ export default function Home() {
         </Container>
       </section>
 
-      <section id="games" className="scroll-mt-24 py-16 sm:py-20 lg:py-24">
+      <section id="boosters" className="scroll-mt-24 py-8 sm:py-10">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold text-green-300">Launch lineup</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
-                Choose the game you want to work on.
-              </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted-foreground)] sm:text-base">
-                Large showcase cards keep discovery visual first. Final game art can be added later without changing the page structure.
-              </p>
+          <div className="relative overflow-hidden rounded-[1.8rem] border border-green-300/[0.12] bg-[#0a0d0b]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(74,222,128,.10),transparent_28%),linear-gradient(120deg,rgba(74,222,128,.055),transparent_46%)]" />
+            <div className="relative grid gap-7 p-6 sm:p-7 lg:grid-cols-[.68fr_1.32fr] lg:items-center lg:p-8">
+              <div>
+                <p className="text-sm font-semibold text-green-300">Meet Our Boosters</p>
+                <h2 className="mt-2 max-w-md text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
+                  The players behind the services.
+                </h2>
+                <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--muted-foreground)]">
+                  Preview the team format here. These profiles are placeholders and can later be replaced with real photos, nicknames, specialties, ranks, and verified performance data.
+                </p>
+                <Button asChild variant="secondary" className="mt-5">
+                  <Link href="/boosters">
+                    Meet the team
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
+                {boosterPlaceholders.map((booster) => (
+                  <div
+                    key={booster.id}
+                    className="min-w-[15.5rem] snap-start rounded-2xl border border-white/[0.075] bg-black/25 p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <BoosterAvatar initials={booster.initials} />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate text-sm font-bold text-white">{booster.nickname}</h3>
+                          <span className="rounded-full border border-green-400/15 bg-green-400/[0.06] px-2 py-0.5 text-[9px] font-bold text-green-300">
+                            PLACEHOLDER
+                          </span>
+                        </div>
+                        <p className="mt-1 truncate text-[11px] text-white/40">{booster.primaryGame}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <p className="text-[9px] uppercase tracking-[0.12em] text-white/25">Specialty</p>
+                        <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.specialty}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                        <p className="text-[9px] uppercase tracking-[0.12em] text-white/25">Rank</p>
+                        <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.rankLabel}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <Button asChild variant="secondary">
-              <Link href="/games">
-                View games page
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
+          </div>
+        </Container>
+      </section>
+
+      <section id="games" className="scroll-mt-24 pb-16 pt-8 sm:pb-20 lg:pb-24">
+        <Container>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold text-green-300">Choose your game</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
+                Jump straight into a game storefront.
+              </h2>
+            </div>
+            <Link
+              href="/games"
+              className="inline-flex items-center text-sm font-semibold text-white/60 transition-colors hover:text-white"
+            >
+              View all games
+              <ArrowRight className="ml-2 size-4" />
+            </Link>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launchGames.map((game, index) => (
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {launchGames.map((game) => (
               <Link
                 key={game.slug}
                 href={`/games/${game.slug}`}
-                className={`group relative min-h-[17.5rem] overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)] ${
-                  index === 0 ? "md:col-span-2 xl:col-span-1" : ""
-                }`}
+                className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
               >
                 <div className="absolute inset-0 bg-[#090b0a]/76" />
                 <div className={`absolute -right-14 -top-16 size-64 rounded-full bg-gradient-to-br ${gameVisual[game.accent]} blur-2xl opacity-80`} />
-                <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.5rem,5vw,5rem)] font-black tracking-[-0.07em] text-white/[0.035]">
+                <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
                   {game.displayName}
                 </div>
 
-                <div className="relative flex h-full min-h-[17.5rem] flex-col p-6">
+                <div className="relative flex h-full min-h-[16rem] flex-col p-6">
                   <div className="flex items-start justify-between gap-5">
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
@@ -188,11 +247,9 @@ export default function Home() {
                   </div>
 
                   <div className="mt-auto flex items-end justify-between gap-5">
-                    <div className="max-w-[70%]">
-                      <p className="text-xs leading-5 text-white/42">
-                        Marketplace structure prepared for game-specific services and visual art.
-                      </p>
-                    </div>
+                    <p className="max-w-[68%] text-xs leading-5 text-white/42">
+                      Open the dedicated game page and browse its service catalog.
+                    </p>
                     <span className="grid size-10 shrink-0 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/75 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
                       <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                     </span>
@@ -210,7 +267,7 @@ export default function Home() {
             <SectionHeading
               eyebrow="How it works"
               title="A simple path from game to order."
-              description="The visual hierarchy now starts with the game, then moves into the service and its configuration."
+              description="The visual hierarchy starts with the game, then moves into the service and its configuration."
               align="left"
             />
             <div className="grid gap-3">
@@ -254,7 +311,7 @@ export default function Home() {
           <SectionHeading
             eyebrow="Customer experience"
             title="Built to feel clear at every step."
-            description="Illustrative launch content can be replaced later without affecting the new page structure."
+            description="Illustrative launch content can be replaced later without affecting the structure."
           />
           <div className="mt-10 grid gap-4 lg:grid-cols-3">
             {testimonials.map((testimonial) => (
