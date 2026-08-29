@@ -89,13 +89,13 @@ function ServiceShowcaseCard({
         <Badge className="border-white/[0.08] bg-black/20 text-white/55">
           {categoryLabel(service.category)}
         </Badge>
-        <span className="rounded-lg border border-white/[0.08] bg-black/20 px-2 py-1 text-[10px] font-black text-white/35">
+        <span className="font-gaming-value rounded-lg border border-white/[0.08] bg-black/20 px-2 py-1 text-[10px] text-white/35">
           {String(index + 1).padStart(2, "0")}
         </span>
       </div>
 
       <div className="relative mt-8">
-        <h3 className="max-w-[13rem] text-2xl font-bold leading-[1.05] tracking-[-0.045em] text-white">
+        <h3 className="font-gaming-value max-w-[13rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
           {service.name}
         </h3>
         <p className="mt-4 line-clamp-4 text-sm leading-6 text-[var(--muted-foreground)]">
@@ -107,8 +107,8 @@ function ServiceShowcaseCard({
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.13em] text-white/30">Starting from</p>
-            <p className="mt-1 text-lg font-bold text-white">{formatPrice(service.startingPrice)}</p>
+            <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-white/30">Starting from</p>
+            <p className="font-gaming-value mt-1 text-lg text-white">{formatPrice(service.startingPrice)}</p>
           </div>
           <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />

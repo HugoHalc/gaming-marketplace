@@ -65,7 +65,7 @@ export default function GamesPage() {
                       <span className="grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-black/20 text-white/60">
                         <Gamepad2 className="size-5" />
                       </span>
-                      <span className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] ${
+                      <span className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] ${
                         game.ready
                           ? "border-green-400/20 bg-green-400/[0.07] text-green-300"
                           : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
@@ -74,10 +74,10 @@ export default function GamesPage() {
                       </span>
                     </div>
                     <div className="mt-auto">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                      <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
                         {game.category}
                       </p>
-                      <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white">
+                      <h2 className="font-gaming-value mt-2 text-2xl tracking-[-0.04em] text-white">
                         {game.displayName}
                       </h2>
                       <div className="mt-5 flex items-center justify-between">

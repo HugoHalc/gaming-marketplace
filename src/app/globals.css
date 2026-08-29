@@ -24,6 +24,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-gaming: var(--font-rajdhani);
 }
 
 * { box-sizing: border-box; }
@@ -45,6 +46,24 @@ body {
     linear-gradient(90deg, rgba(74, 222, 128, 0.025) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.72) 58%, transparent 100%);
+}
+
+/*
+ * BoostingPedia typography system
+ *
+ * Geist remains the global/default face.
+ * Rajdhani is opt-in only for short competitive/gaming metadata.
+ * These classes intentionally do not set font-size, line-height,
+ * spacing, text-transform, or layout properties.
+ */
+.font-gaming-label {
+  font-family: var(--font-rajdhani), var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+
+.font-gaming-value {
+  font-family: var(--font-rajdhani), var(--font-geist-sans), sans-serif;
+  font-weight: 700;
 }
 
 details > summary::-webkit-details-marker { display: none; }

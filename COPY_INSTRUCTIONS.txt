@@ -1,23 +1,31 @@
-BOOSTINGPEDIA — PHASE 13D CONTROLLED PALETTE TEST
+BOOSTINGPEDIA — PHASE 13E GEIST + RAJDHANI TYPOGRAPHY SYSTEM
 
 BASE:
-Apply after Phase 13C.
+Apply after Phase 13D.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
-3. Allow replacement of:
-   - src/app/page.tsx
-   - src/components/marketing/site-header.tsx
+3. Allow replacement of existing files.
 4. Commit:
-   Phase 13D - Controlled Palette Test
-5. Push main and compare visually.
+   Phase 13E - Geist Rajdhani Typography System
+5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-SCOPE IS COLOR ONLY:
-- Header
-- Hero
-- Main Hero button
-- Rocket League Home card
+WHAT CHANGES:
+- Geist remains global/default.
+- Rajdhani 600/700 is added through next/font/google.
+- Badge uses Rajdhani 600.
+- Gaming categories, metadata, short service/game titles and highlighted prices use the new secondary system where explicitly marked.
 
-DO NOT treat this as the final site-wide palette migration.
+WHAT DOES NOT CHANGE:
+- sizes
+- layout
+- spacing
+- navigation typography
+- buttons
+- forms
+- paragraphs
+- long text
+- service logic
+- Rocket League pricing/configuration

@@ -47,7 +47,7 @@ function SectionHeading({
   const classes = align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl";
   return (
     <div className={classes}>
-      <p className="text-sm font-semibold text-green-300">{eyebrow}</p>
+      <p className="font-gaming-label text-sm text-green-300">{eyebrow}</p>
       <h2 className="mt-3 text-3xl font-bold tracking-[-0.045em] text-white sm:text-4xl lg:text-5xl">
         {title}
       </h2>
@@ -123,7 +123,7 @@ export default function Home() {
               </div>
 
               <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-[#FFFFFF14] bg-[#0E1411]/90 p-4 backdrop-blur">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#82F5A4]/70">
+                <p className="font-gaming-label text-[10px] uppercase tracking-[0.15em] text-[#82F5A4]/70">
                   Launch lineup
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -148,7 +148,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(74,222,128,.10),transparent_28%),linear-gradient(120deg,rgba(74,222,128,.055),transparent_46%)]" />
             <div className="relative grid gap-7 p-6 sm:p-7 lg:grid-cols-[.68fr_1.32fr] lg:items-center lg:p-8">
               <div>
-                <p className="text-sm font-semibold text-green-300">Meet Our Boosters</p>
+                <p className="font-gaming-label text-sm text-green-300">Meet Our Boosters</p>
                 <h2 className="mt-2 max-w-md text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
                   The players behind the services.
                 </h2>
@@ -173,7 +173,7 @@ export default function Home() {
                       <BoosterAvatar initials={booster.initials} />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="truncate text-sm font-bold text-white">{booster.nickname}</h3>
+                          <h3 className="font-gaming-value truncate text-sm text-white">{booster.nickname}</h3>
                           <span className="rounded-full border border-green-400/15 bg-green-400/[0.06] px-2 py-0.5 text-[9px] font-bold text-green-300">
                             PLACEHOLDER
                           </span>
@@ -184,11 +184,11 @@ export default function Home() {
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
                       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <p className="text-[9px] uppercase tracking-[0.12em] text-white/25">Specialty</p>
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">Specialty</p>
                         <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.specialty}</p>
                       </div>
                       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <p className="text-[9px] uppercase tracking-[0.12em] text-white/25">Rank</p>
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">Rank</p>
                         <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.rankLabel}</p>
                       </div>
                     </div>
@@ -204,7 +204,7 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold text-green-300">Choose your game</p>
+              <p className="font-gaming-label text-sm text-green-300">Choose your game</p>
               <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
                 Jump straight into a game storefront.
               </h2>
@@ -231,14 +231,14 @@ export default function Home() {
                   <div className="relative flex h-full min-h-[16rem] flex-col p-6">
                     <div className="flex items-start justify-between gap-5">
                       <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                        <p className="font-gaming-label text-[10px] uppercase tracking-[0.16em] text-white/35">
                           {game.category}
                         </p>
-                        <h3 className={`mt-2 text-xl font-bold tracking-[-0.035em] ${game.slug === "rocket-league" ? "text-[#F4F7F5]" : "text-white"}`}>
+                        <h3 className={`font-gaming-value mt-2 text-xl tracking-[-0.035em] ${game.slug === "rocket-league" ? "text-[#F4F7F5]" : "text-white"}`}>
                           {game.displayName}
                         </h3>
                       </div>
-                      <span className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] ${
+                      <span className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] ${
                         game.ready
                           ? "border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]"
                           : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
