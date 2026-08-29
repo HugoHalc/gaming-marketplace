@@ -23,7 +23,13 @@ const rocketLeagueUpcomingMeta: Record<
 > = {
   "tournament-boost": { label: "Tournament", icon: Trophy },
   "rewards-boost": { label: "Season rewards", icon: Award },
-  "placements-boost": { label: "Placements", icon: Crosshair },
+};
+
+const rocketLeagueActiveMeta: Record<
+  string,
+  { label: string; icon: typeof Trophy; startingPrice?: number }
+> = {
+  "placements-boost": { label: "Placements", icon: Crosshair, startingPrice: 1.29 },
 };
 
 function formatPrice(value: number) {
@@ -37,9 +43,13 @@ function formatPrice(value: number) {
 export function ServiceCard({ service, gameSlug }: { service: ServiceSummary; gameSlug: string }) {
   const upcoming =
     gameSlug === "rocket-league" ? rocketLeagueUpcomingMeta[service.slug] : undefined;
+  const activeOverride =
+    gameSlug === "rocket-league" ? rocketLeagueActiveMeta[service.slug] : undefined;
 
-  const meta = upcoming ?? categoryMeta[service.category];
+  const meta = upcoming ?? activeOverride ?? categoryMeta[service.category];
   const Icon = meta.icon;
+  const displayedStartingPrice =
+    activeOverride?.startingPrice ?? service.startingPrice;
 
   return (
     <Card className="group flex h-full flex-col p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-white/[0.14] sm:p-7">
@@ -79,7 +89,7 @@ export function ServiceCard({ service, gameSlug }: { service: ServiceSummary; ga
               <div>
                 <p className="text-xs text-[var(--muted-foreground)]">Starting from</p>
                 <p className="mt-1 text-xl font-bold tracking-[-0.03em] text-white">
-                  {formatPrice(service.startingPrice)}
+                  {formatPrice(displayedStartingPrice)}
                 </p>
               </div>
               <Link href={`/games/${gameSlug}/${service.slug}`} className="inline-flex items-center text-sm font-semibold text-violet-200 transition-colors hover:text-white">

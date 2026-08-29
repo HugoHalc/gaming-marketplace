@@ -1,31 +1,22 @@
-BOOSTINGPEDIA — PHASE 12M ROCKET LEAGUE PLACEMENTS BOOST
+BOOSTINGPEDIA — PHASE 12M HOTFIX: ENABLE PLACEMENTS
 
-BASE:
-Current project after Phase 12L Competitive Wins.
+Problem fixed:
+Placements Boost already has its dedicated configurator, but the Rocket League
+service card was still treating it as an upcoming/in-development service.
 
+This hotfix:
+- removes Placements Boost from "Coming soon"
+- adds the Configure link
+- displays Starting from $1.29
+- keeps Tournament Boost and Rewards Boost as In development
+- does not modify Rank Boost, Competitive Wins, pricing logic, or Placements configurator
+
+Steps:
 1. Extract this ZIP.
-2. Copy all files into the root of gaming-marketplace.
-3. Allow replacement of existing files.
+2. Copy into the gaming-marketplace root.
+3. Allow replacement of service-card.tsx.
 4. Commit:
-   Phase 12M - Rocket League Placements Boost
+   Phase 12M Hotfix - Enable Placements Boost
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
-
-EXPECTED:
-Rocket League > Placements Boost now has:
-- Previous Season Rank
-- Unrated option
-- Bronze I through Supersonic Legend
-- 1–10 Placement Matches
-- visible package discount
-- same Playlist / Extra Mode rules as other Rocket League services
-- same Platform options
-- Account Boost / Play With Booster
-- Appear Offline
-- Live Stream
-- Express Delivery
-- no Rank Insurance
-- sticky Order Summary
-- mobile total bar
-- server-authoritative pricing
