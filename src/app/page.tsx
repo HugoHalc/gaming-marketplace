@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -32,37 +31,6 @@ const gameVisual = {
   cyan: "from-cyan-500/[0.18] via-cyan-500/[0.045] to-transparent border-cyan-300/15",
   amber: "from-amber-500/[0.18] via-amber-500/[0.045] to-transparent border-amber-300/15",
   blue: "from-blue-500/[0.22] via-blue-500/[0.05] to-transparent border-blue-300/15",
-} as const;
-
-const premiumGameCardVisuals = {
-  "rocket-league": {
-    accent: "#3DA9FC",
-    art: "/game-cards/rocket-league.svg",
-  },
-  "league-of-legends": {
-    accent: "#C89B3C",
-    art: "/game-cards/league-of-legends.svg",
-  },
-  valorant: {
-    accent: "#FF5A6B",
-    art: "/game-cards/valorant.svg",
-  },
-  "marvel-rivals": {
-    accent: "#EF4444",
-    art: "/game-cards/marvel-rivals.svg",
-  },
-  "overwatch-2": {
-    accent: "#F97316",
-    art: "/game-cards/overwatch.svg",
-  },
-  "battlefield-6": {
-    accent: "#60A5FA",
-    art: "/game-cards/battlefield-6.svg",
-  },
-  "rainbow-six-siege": {
-    accent: "#94A3B8",
-    art: "/game-cards/rainbow-six-siege.svg",
-  },
 } as const;
 
 function SectionHeading({
@@ -252,68 +220,44 @@ export default function Home() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {launchGames.map((game) => {
-              const visual =
-                premiumGameCardVisuals[game.slug as keyof typeof premiumGameCardVisuals];
               const card = (
                 <>
-                  <div className="absolute inset-0 bg-[#0E1411]" />
-                  <div
-                    className="absolute inset-0 opacity-100"
-                    style={{
-                      background: `radial-gradient(circle at 78% 48%, ${visual.accent}18 0%, transparent 38%), linear-gradient(135deg, ${visual.accent}0D 0%, transparent 47%)`,
-                    }}
-                  />
-                  <div className="absolute inset-x-5 top-1/2 -translate-y-1/2 select-none overflow-hidden whitespace-nowrap font-gaming-value text-[clamp(2.7rem,5vw,5.4rem)] font-bold tracking-[-0.075em] text-[#F4F7F5]/[0.035]">
+                  <div className={`absolute inset-0 ${game.slug === "rocket-league" ? "bg-[#0E1411]" : game.ready ? "bg-[#090b0a]/76" : "bg-[#090b0a]/88"}`} />
+                  <div className={`absolute -right-14 -top-16 size-64 rounded-full blur-2xl ${game.slug === "rocket-league" ? "bg-[#39E56F]/[0.07]" : `bg-gradient-to-br ${gameVisual[game.accent]}`} ${game.ready ? "opacity-80" : "opacity-35"}`} />
+                  <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
                     {game.displayName}
-                  </div>
-
-                  <div className="absolute bottom-0 right-0 top-10 w-[57%]">
-                    <Image
-                      src={visual.art}
-                      alt=""
-                      fill
-                      sizes="(min-width: 1280px) 300px, (min-width: 768px) 45vw, 85vw"
-                      className={`object-contain object-right-bottom transition-[opacity,filter] duration-300 ${
-                        game.ready
-                          ? "opacity-90 group-hover:opacity-100"
-                          : "opacity-34 grayscale-[0.35]"
-                      }`}
-                    />
                   </div>
 
                   <div className="relative flex h-full min-h-[16rem] flex-col p-6">
                     <div className="flex items-start justify-between gap-5">
-                      <div className="relative z-10 max-w-[58%]">
-                        <p
-                          className="font-gaming-label text-[10px] uppercase tracking-[0.16em]"
-                          style={{ color: visual.accent }}
-                        >
+                      <div>
+                        <p className="font-gaming-label text-[10px] uppercase tracking-[0.16em] text-white/35">
                           {game.category}
                         </p>
-                        <h3 className="font-gaming-value mt-2 text-xl tracking-[-0.035em] text-[#F4F7F5]">
+                        <h3 className={`font-gaming-value mt-2 text-xl tracking-[-0.035em] ${game.slug === "rocket-league" ? "text-[#F4F7F5]" : "text-white"}`}>
                           {game.displayName}
                         </h3>
                       </div>
-
-                      <span
-                        className={`relative z-10 rounded-full border px-2.5 py-1 font-gaming-label text-[9px] uppercase tracking-[0.1em] ${
-                          game.ready
-                            ? "border-[#39E56F]/20 bg-[#39E56F]/[0.055] text-[#82F5A4]"
-                            : "border-[#FFFFFF14] bg-[#131B17] text-[#667069]"
-                        }`}
-                      >
+                      <span className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] ${
+                        game.ready
+                          ? "border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]"
+                          : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
+                      }`}>
                         {game.ready ? "Available" : "In development"}
                       </span>
                     </div>
 
-                    <div className="relative z-10 mt-auto flex items-end">
-                      <span
-                        className={`grid size-10 shrink-0 place-items-center rounded-full border transition-[border-color,background-color,color] duration-200 ${
-                          game.ready
-                            ? "border-[#FFFFFF14] bg-[#131B17] text-[#A0AAA4] group-hover:border-[#39E56F]/30 group-hover:bg-[#39E56F]/[0.07] group-hover:text-[#82F5A4]"
-                            : "border-[#FFFFFF14] bg-[#090D0B] text-[#667069]"
-                        }`}
-                      >
+                    <div className="mt-auto flex items-end justify-between gap-5">
+                      <p className="max-w-[68%] text-xs leading-5 text-white/42">
+                        {game.ready
+                          ? "Open the dedicated game page and browse its service catalog."
+                          : "Game storefront and services are currently being prepared."}
+                      </p>
+                      <span className={`grid size-10 shrink-0 place-items-center rounded-full border ${
+                        game.ready
+                          ? "border-[#FFFFFF14] bg-[#131B17] text-[#A0AAA4] transition-colors group-hover:border-[#39E56F]/30 group-hover:bg-[#39E56F]/[0.08] group-hover:text-[#82F5A4]"
+                          : "border-white/[0.06] bg-white/[0.02] text-white/20"
+                      }`}>
                         <ArrowRight className="size-4" />
                       </span>
                     </div>
@@ -325,7 +269,11 @@ export default function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className="group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_55px_-38px_rgba(0,0,0,.95)]"
+                  className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 ${
+                    game.slug === "rocket-league"
+                      ? "border-[#FFFFFF14] bg-[#0E1411] hover:border-[#39E56F]/30"
+                      : `bg-gradient-to-br ${gameVisual[game.accent]} hover:border-white/[0.16]`
+                  } hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
                 >
                   {card}
                 </Link>
@@ -333,12 +281,12 @@ export default function Home() {
                 <div
                   key={game.slug}
                   aria-label={`${game.displayName} is in development`}
-                  className="relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-75"
+                  className={`relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} opacity-75`}
                 >
                   {card}
                 </div>
               );
-            })}}
+            })}
           </div>
         </Container>
       </section>
