@@ -112,20 +112,31 @@ function RankIcon({
   selected: boolean;
 }) {
   return (
-    <span className={`relative grid size-[3.35rem] place-items-center overflow-hidden rounded-[1.1rem] border bg-gradient-to-br ${family.accent} ${
-      selected ? "border-green-400/45 shadow-[0_0_28px_-10px_rgba(0,230,90,.55)]" : "border-white/[0.08]"
-    }`}>
-      <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,.16),transparent_48%)]" />
+    <span className="relative grid size-[3.35rem] place-items-center">
+      <span
+        className={`absolute inset-[0.3rem] rounded-full bg-gradient-to-br ${family.accent} blur-[11px] transition-opacity duration-200 ${
+          selected ? "opacity-65" : "opacity-22"
+        }`}
+      />
+      <span
+        className={`absolute inset-[0.12rem] rounded-[1rem] border transition-all duration-200 ${
+          selected
+            ? "border-white/[0.09] bg-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,.05)]"
+            : "border-transparent bg-transparent"
+        }`}
+      />
       <Image
         src={family.image}
         alt=""
         width={46}
         height={46}
-        className="relative z-[1] h-[2.85rem] w-[2.85rem] object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,.55)]"
+        className={`relative z-[1] h-[2.85rem] w-[2.85rem] object-contain transition-transform duration-200 drop-shadow-[0_7px_16px_rgba(0,0,0,.62)] ${
+          selected ? "scale-[1.04]" : "group-hover/rank:scale-[1.03]"
+        }`}
       />
       {selected ? (
-        <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full bg-green-400 text-[#071019] shadow-[0_0_12px_rgba(74,222,128,.45)]">
-          <Check className="size-2.5" />
+        <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full border border-green-200/40 bg-green-400 text-[#06110a] shadow-[0_0_14px_rgba(74,222,128,.5)]">
+          <Check className="size-2.5" strokeWidth={3} />
         </span>
       ) : null}
     </span>
@@ -221,14 +232,22 @@ function CompactRankSelector({
               type="button"
               title={family.label}
               onClick={() => chooseFamily(family.key)}
-              className={`flex min-w-0 flex-col items-center rounded-xl border px-1.5 py-2 transition-all ${
+              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,box-shadow,transform] duration-200 ${
                 selected
-                  ? "border-green-400/35 bg-green-400/[0.06]"
-                  : "border-white/[0.07] bg-black/15 hover:border-white/[0.15] hover:bg-white/[0.025]"
+                  ? "border-green-400/45 bg-[linear-gradient(180deg,rgba(74,222,128,.075),rgba(74,222,128,.018))] shadow-[inset_0_1px_0_rgba(255,255,255,.055),0_0_0_1px_rgba(74,222,128,.045),0_10px_28px_-22px_rgba(74,222,128,.7)]"
+                  : "border-white/[0.075] bg-[linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.008))] shadow-[inset_0_1px_0_rgba(255,255,255,.025)] hover:-translate-y-px hover:border-white/[0.17] hover:bg-[linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.012))] hover:shadow-[inset_0_1px_0_rgba(255,255,255,.045),0_12px_28px_-24px_rgba(0,0,0,.95)]"
               }`}
             >
+              <span className={`pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity ${
+                selected ? "opacity-80" : "opacity-35"
+              }`} />
+              {selected ? (
+                <span className="pointer-events-none absolute inset-x-3 bottom-0 h-px bg-gradient-to-r from-transparent via-green-400/90 to-transparent shadow-[0_0_8px_rgba(74,222,128,.55)]" />
+              ) : null}
               <RankIcon family={family} selected={selected} />
-              <span className="mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 text-white/80">
+              <span className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
+                selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
+              }`}>
                 {family.label}
               </span>
             </button>
@@ -249,10 +268,10 @@ function CompactRankSelector({
                 type="button"
                 disabled={!available}
                 onClick={() => onChange(candidate)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-colors ${
+                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color,box-shadow] ${
                   active
-                    ? "border-green-400/40 bg-green-400/[0.10] text-green-100"
-                    : "border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white"
+                    ? "border-green-400/50 bg-[linear-gradient(180deg,rgba(74,222,128,.13),rgba(74,222,128,.055))] text-green-100 shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_0_14px_-8px_rgba(74,222,128,.85)]"
+                    : "border-white/[0.085] bg-[linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))] text-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,.025)] hover:border-white/[0.16] hover:text-white"
                 } disabled:cursor-not-allowed disabled:opacity-20`}
               >
                 {tier === "1" ? "I" : tier === "2" ? "II" : "III"}

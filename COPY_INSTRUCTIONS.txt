@@ -1,23 +1,15 @@
-BOOSTINGPEDIA — PHASE 12J ROCKET LEAGUE SERVICE NAVIGATION
+BOOSTINGPEDIA — PHASE 12K PREMIUM RANK BUTTON DESIGN
 
-BASE: Phase 12I - Real Rocket League Rank Badges
+BASE: Current project after Phase 12J.
 
 1. Copy this ZIP into the root of gaming-marketplace.
-2. Allow replacement of existing files.
+2. Allow replacement of the existing file.
 3. Commit:
-   Phase 12J - Rocket League Service Navigation
+   Phase 12K - Premium Rank Button Design
 4. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-EXPECTED ROCKET LEAGUE SERVICES:
-- Rank Boost
-- Competitive Wins
-- Tournament Boost (Coming soon)
-- Rewards Boost (Coming soon)
-- Placements Boost (Coming soon)
-
-REMOVED:
-- Coaching
-
-This phase does not change Rank Boost pricing or checkout behavior.
+IMPORTANT:
+Only the visual styling of Rocket League Rank Boost rank buttons changes.
+Sizes, placement, spacing, text, pricing and logic remain unchanged.
