@@ -1,31 +1,26 @@
-BOOSTINGPEDIA — PHASE 13E GEIST + RAJDHANI TYPOGRAPHY SYSTEM
+BOOSTINGPEDIA — PHASE 13F PREMIUM HOME GAME CARDS
 
 BASE:
-Apply after Phase 13D.
+Apply after Phase 13E.
 
 1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
-3. Allow replacement of existing files.
+2. Copy all files into gaming-marketplace root.
+3. Allow replacement of src/app/page.tsx.
 4. Commit:
-   Phase 13E - Geist Rajdhani Typography System
+   Phase 13F - Premium Home Game Cards
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-WHAT CHANGES:
-- Geist remains global/default.
-- Rajdhani 600/700 is added through next/font/google.
-- Badge uses Rajdhani 600.
-- Gaming categories, metadata, short service/game titles and highlighted prices use the new secondary system where explicitly marked.
+SCOPE:
+- Only Home game cards
+- 7 local placeholder game-art SVGs
 
-WHAT DOES NOT CHANGE:
-- sizes
-- layout
-- spacing
-- navigation typography
-- buttons
-- forms
-- paragraphs
-- long text
-- service logic
-- Rocket League pricing/configuration
+UNCHANGED:
+- global layout
+- page sections
+- UX
+- availability states
+- typography system
+- Rocket League service content
+- pricing/configurators
