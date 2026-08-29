@@ -1,24 +1,23 @@
-BOOSTINGPEDIA — PHASE 13F FINAL HOME GAME CARD ASSETS
+BOOSTINGPEDIA — PHASE 13G HOME GAME CARD FRAMING HOTFIX
 
 BASE:
-Apply on the current main branch after Phase 13E.
+Apply after Phase 13F - Final Home Game Card Assets.
 
-1. Extract this ZIP.
-2. Copy all files into the gaming-marketplace root.
+1. Extract ZIP.
+2. Copy all files into gaming-marketplace root.
 3. Allow replacement of src/app/page.tsx.
-4. Add the public/game-cards/ assets.
+4. Add/replace public/game-cards assets.
 5. Commit:
-   Phase 13F - Final Home Game Card Assets
+   Phase 13G - Home Game Card Framing Hotfix
 6. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
 EXPECTED:
-- The 7 Home game cards use the approved real generated visuals.
-- Rocket League remains Available/clickable.
-- All other launch games remain In development/non-clickable.
-- Marvel Rivals receives its branding overlay in code.
-- Rainbow Six Siege receives its full watermark overlay in code.
-- Valorant no longer shows the baked outer red frame prominently.
-
-NO OTHER HOME STRUCTURE OR ROCKET LEAGUE INTERNAL LOGIC IS CHANGED.
+- Logos are no longer visibly cropped.
+- Marvel Rivals uses the exact uploaded logo asset.
+- Rainbow Six Siege no longer has duplicate watermark text.
+- Character/vehicle scale feels more consistent.
+- Valorant's baked frame is less prominent.
+- CTA and status remain in the same positions.
+- No layout or UX changes.

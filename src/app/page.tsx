@@ -236,35 +236,49 @@ export default function Home() {
 
               const cardVisual = (
                 <>
-                  <Image
-                    src={imageSrc}
-                    alt=""
-                    fill
-                    priority={game.slug === "rocket-league"}
-                    sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-cover object-center"
-                  />
+                  <div className="absolute inset-0 bg-[#090D0B]">
+                    <Image
+                      src={imageSrc}
+                      alt=""
+                      fill
+                      priority={game.slug === "rocket-league"}
+                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className={`object-cover ${
+                        game.slug === "rocket-league"
+                          ? "object-[48%_50%] scale-[0.96]"
+                          : game.slug === "league-of-legends"
+                            ? "object-[46%_50%] scale-[0.96]"
+                            : game.slug === "valorant"
+                              ? "object-[48%_50%] scale-[0.94]"
+                              : game.slug === "marvel-rivals"
+                                ? "object-[50%_50%] scale-[0.96]"
+                                : game.slug === "overwatch-2"
+                                  ? "object-[47%_48%] scale-[0.92]"
+                                  : game.slug === "battlefield-6"
+                                    ? "object-[43%_50%] scale-[0.93]"
+                                    : "object-[42%_50%] scale-[0.93]"
+                      }`}
+                    />
+                  </div>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/65 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/28 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/78 via-[#050807]/05 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/38 via-transparent to-transparent" />
 
                   {game.slug === "marvel-rivals" ? (
                     <>
-                      <div className="absolute left-5 top-5 z-10">
-                        <p className="font-gaming-value text-sm uppercase tracking-[0.13em] text-[#F4F7F5]">
-                          Marvel Rivals
-                        </p>
+                      <div className="absolute left-5 top-5 z-10 h-10 w-36">
+                        <Image
+                          src="/game-cards/marvel-rivals-logo.png"
+                          alt="Marvel Rivals"
+                          fill
+                          sizes="144px"
+                          className="object-contain object-left"
+                        />
                       </div>
-                      <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(2.35rem,4.6vw,4.7rem)] uppercase tracking-[-0.055em] text-[#F4F7F5]/[0.06]">
+                      <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(1.9rem,3.8vw,3.8rem)] uppercase tracking-[-0.045em] text-[#F4F7F5]/[0.045]">
                         Marvel Rivals
                       </div>
                     </>
-                  ) : null}
-
-                  {game.slug === "rainbow-six-siege" ? (
-                    <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(2rem,4.2vw,4.3rem)] tracking-[-0.055em] text-[#F4F7F5]/[0.055]">
-                      Rainbow Six Siege
-                    </div>
                   ) : null}
 
                   <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-5">
