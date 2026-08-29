@@ -1,22 +1,25 @@
-BOOSTINGPEDIA — PHASE 13B HOME BOOSTERS & PRIORITY LAYOUT
+BOOSTINGPEDIA — PHASE 13C DEVELOPMENT GAME STATES
 
 BASE:
-Apply after Phase 13A.
+Apply after Phase 13B.
 
-1. Extract ZIP.
+1. Extract this ZIP.
 2. Copy all files into gaming-marketplace root.
-3. Allow replacement of src/app/page.tsx.
+3. Allow replacement of existing files.
 4. Commit:
-   Phase 13B - Home Boosters & Priority Layout
+   Phase 13C - Development Game States
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-ONLY HOME-LEVEL STRUCTURE IS CHANGED.
-ROCKET LEAGUE INTERNAL CONTENT / PRICING / CONFIGURATORS ARE NOT TOUCHED.
+EXPECTED:
+- Rocket League = Available and clickable.
+- League of Legends = In development.
+- Valorant = In development.
+- Marvel Rivals = In development.
+- Overwatch = In development.
+- Battlefield 6 = In development.
+- Rainbow Six Siege = In development.
 
-PLACEHOLDER BOOSTERS:
-src/features/marketing/booster-placeholders.ts
-
-These are fictional structural placeholders only.
-Replace later with real profile information.
+This only changes launch visibility/navigation states.
+Rocket League internals are not modified.

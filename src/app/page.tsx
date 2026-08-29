@@ -219,44 +219,70 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launchGames.map((game) => (
-              <Link
-                key={game.slug}
-                href={`/games/${game.slug}`}
-                className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
-              >
-                <div className="absolute inset-0 bg-[#090b0a]/76" />
-                <div className={`absolute -right-14 -top-16 size-64 rounded-full bg-gradient-to-br ${gameVisual[game.accent]} blur-2xl opacity-80`} />
-                <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
-                  {game.displayName}
-                </div>
+            {launchGames.map((game) => {
+              const card = (
+                <>
+                  <div className={`absolute inset-0 ${game.ready ? "bg-[#090b0a]/76" : "bg-[#090b0a]/88"}`} />
+                  <div className={`absolute -right-14 -top-16 size-64 rounded-full bg-gradient-to-br ${gameVisual[game.accent]} blur-2xl ${game.ready ? "opacity-80" : "opacity-35"}`} />
+                  <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
+                    {game.displayName}
+                  </div>
 
-                <div className="relative flex h-full min-h-[16rem] flex-col p-6">
-                  <div className="flex items-start justify-between gap-5">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-                        {game.category}
-                      </p>
-                      <h3 className="mt-2 text-xl font-bold tracking-[-0.035em] text-white">
-                        {game.displayName}
-                      </h3>
+                  <div className="relative flex h-full min-h-[16rem] flex-col p-6">
+                    <div className="flex items-start justify-between gap-5">
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                          {game.category}
+                        </p>
+                        <h3 className="mt-2 text-xl font-bold tracking-[-0.035em] text-white">
+                          {game.displayName}
+                        </h3>
+                      </div>
+                      <span className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] ${
+                        game.ready
+                          ? "border-green-400/20 bg-green-400/[0.07] text-green-300"
+                          : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
+                      }`}>
+                        {game.ready ? "Available" : "In development"}
+                      </span>
                     </div>
-                    <span className="rounded-full border border-white/[0.08] bg-black/20 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white/45">
-                      Launch
-                    </span>
-                  </div>
 
-                  <div className="mt-auto flex items-end justify-between gap-5">
-                    <p className="max-w-[68%] text-xs leading-5 text-white/42">
-                      Open the dedicated game page and browse its service catalog.
-                    </p>
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/75 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
-                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                    </span>
+                    <div className="mt-auto flex items-end justify-between gap-5">
+                      <p className="max-w-[68%] text-xs leading-5 text-white/42">
+                        {game.ready
+                          ? "Open the dedicated game page and browse its service catalog."
+                          : "Game storefront and services are currently being prepared."}
+                      </p>
+                      <span className={`grid size-10 shrink-0 place-items-center rounded-full border ${
+                        game.ready
+                          ? "border-white/[0.09] bg-white/[0.035] text-white/75 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300"
+                          : "border-white/[0.06] bg-white/[0.02] text-white/20"
+                      }`}>
+                        <ArrowRight className="size-4" />
+                      </span>
+                    </div>
                   </div>
+                </>
+              );
+
+              return game.ready ? (
+                <Link
+                  key={game.slug}
+                  href={`/games/${game.slug}`}
+                  className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.16] hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
+                >
+                  {card}
+                </Link>
+              ) : (
+                <div
+                  key={game.slug}
+                  aria-label={`${game.displayName} is in development`}
+                  className={`relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} opacity-75`}
+                >
+                  {card}
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         </Container>
       </section>

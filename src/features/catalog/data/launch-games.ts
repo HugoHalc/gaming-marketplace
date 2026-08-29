@@ -24,7 +24,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "League of Legends",
     accent: "emerald",
     category: "MOBA",
-    ready: true,
+    ready: false,
   },
   {
     slug: "valorant",
@@ -32,7 +32,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Valorant",
     accent: "rose",
     category: "Tactical FPS",
-    ready: true,
+    ready: false,
   },
   {
     slug: "marvel-rivals",
@@ -40,7 +40,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Marvel Rivals",
     accent: "violet",
     category: "Hero shooter",
-    ready: true,
+    ready: false,
   },
   {
     slug: "overwatch-2",
@@ -48,7 +48,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Overwatch",
     accent: "amber",
     category: "Hero shooter",
-    ready: true,
+    ready: false,
   },
   {
     slug: "battlefield-6",
