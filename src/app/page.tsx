@@ -245,18 +245,18 @@ export default function Home() {
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className={`object-cover ${
                         game.slug === "rocket-league"
-                          ? "object-[48%_50%] scale-[0.96]"
+                          ? "object-[46%_50%] scale-[0.93]"
                           : game.slug === "league-of-legends"
-                            ? "object-[46%_50%] scale-[0.96]"
+                            ? "object-[45%_49%] scale-[0.93]"
                             : game.slug === "valorant"
-                              ? "object-[48%_50%] scale-[0.94]"
+                              ? "object-[46%_49%] scale-[0.91]"
                               : game.slug === "marvel-rivals"
-                                ? "object-[50%_50%] scale-[0.96]"
+                                ? "object-[50%_50%] scale-[0.93]"
                                 : game.slug === "overwatch-2"
-                                  ? "object-[47%_48%] scale-[0.92]"
+                                  ? "object-[46%_47%] scale-[0.88]"
                                   : game.slug === "battlefield-6"
-                                    ? "object-[43%_50%] scale-[0.93]"
-                                    : "object-[42%_50%] scale-[0.93]"
+                                    ? "object-[41%_49%] scale-[0.90]"
+                                    : "object-[40%_49%] scale-[0.91]"
                       }`}
                     />
                   </div>
@@ -266,7 +266,7 @@ export default function Home() {
 
                   {game.slug === "marvel-rivals" ? (
                     <>
-                      <div className="absolute left-5 top-5 z-10 h-10 w-36">
+                      <div className="absolute left-5 top-5 z-10 h-9 w-32">
                         <Image
                           src="/game-cards/marvel-rivals-logo.png"
                           alt="Marvel Rivals"
@@ -275,7 +275,7 @@ export default function Home() {
                           className="object-contain object-left"
                         />
                       </div>
-                      <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(1.9rem,3.8vw,3.8rem)] uppercase tracking-[-0.045em] text-[#F4F7F5]/[0.045]">
+                      <div className="pointer-events-none absolute left-5 top-[54%] z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(1.6rem,3.2vw,3.1rem)] uppercase tracking-[-0.04em] text-[#F4F7F5]/[0.035]">
                         Marvel Rivals
                       </div>
                     </>
