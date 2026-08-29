@@ -1,15 +1,31 @@
-BOOSTINGPEDIA — PHASE 12K PREMIUM RANK BUTTON DESIGN
+BOOSTINGPEDIA — PHASE 12L ROCKET LEAGUE COMPETITIVE WINS
 
-BASE: Current project after Phase 12J.
+BASE:
+Use after your current Rocket League Rank Boost build (Phase 12K) and service navigation (Phase 12J).
 
-1. Copy this ZIP into the root of gaming-marketplace.
-2. Allow replacement of the existing file.
-3. Commit:
-   Phase 12K - Premium Rank Button Design
-4. Push main and wait for Vercel.
+1. Extract this ZIP.
+2. Copy all files into the root of gaming-marketplace.
+3. Allow replacement of existing files.
+4. Commit:
+   Phase 12L - Rocket League Competitive Wins
+5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
+EXPECTED:
+Rocket League > Competitive Wins now has its own dedicated configurator with:
+- Current Rank (including Supersonic Legend)
+- 1–20 wins
+- visible volume discount UI
+- Playlist
+- Platform
+- Boost Method
+- Appear Offline
+- Live Stream
+- Express Delivery
+- sticky Order Summary
+- mobile total bar
+- server-authoritative pricing
+
 IMPORTANT:
-Only the visual styling of Rocket League Rank Boost rank buttons changes.
-Sizes, placement, spacing, text, pricing and logic remain unchanged.
+Rank Insurance is NOT part of Competitive Wins.

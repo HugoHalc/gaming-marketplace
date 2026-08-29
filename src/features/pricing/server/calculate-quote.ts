@@ -10,6 +10,10 @@ import {
   calculateRocketLeagueRankQuote,
   isRocketLeagueRankQuote,
 } from "./rocket-league-rank-pricing";
+import {
+  calculateRocketLeagueWinsQuote,
+  isRocketLeagueWinsQuote,
+} from "./rocket-league-wins-pricing";
 
 const MOCK_RULE_SET_VERSION = "mock-v1.0";
 
@@ -178,6 +182,10 @@ export async function calculateQuotePreview(input: {
 
   if (isRocketLeagueRankQuote(input)) {
     return calculateRocketLeagueRankQuote(input.selection);
+  }
+
+  if (isRocketLeagueWinsQuote(input)) {
+    return calculateRocketLeagueWinsQuote(input.selection);
   }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
