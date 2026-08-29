@@ -236,7 +236,15 @@ export default function Home() {
 
               const cardVisual = (
                 <>
-                  <div className="absolute inset-0 bg-[#090D0B]">
+                  <div
+                    className={`absolute bg-[#090D0B] ${
+                      game.slug === "rocket-league" ||
+                      game.slug === "battlefield-6" ||
+                      game.slug === "rainbow-six-siege"
+                        ? "-inset-px"
+                        : "inset-0"
+                    }`}
+                  >
                     <Image
                       src={imageSrc}
                       alt=""

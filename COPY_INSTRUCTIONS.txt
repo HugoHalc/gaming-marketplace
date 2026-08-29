@@ -1,17 +1,20 @@
-BOOSTINGPEDIA — PHASE 13I NATIVE GAME CARD ASPECT RATIO HOTFIX
+BOOSTINGPEDIA — PHASE 13J REMOVE BLUE ASSET EDGE HOTFIX
 
 BASE:
-Apply after Phase 13H.
+Apply after Phase 13I.
 
-1. Extract ZIP.
-2. Copy all files into gaming-marketplace root.
-3. Allow replacement of src/app/page.tsx and public/game-cards assets.
+1. Extract this ZIP.
+2. Copy the files into the gaming-marketplace root.
+3. Replace src/app/page.tsx when prompted.
 4. Commit:
-   Phase 13I - Native Game Card Aspect Ratio Hotfix
+   Phase 13J - Remove Blue Asset Edge Hotfix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-KEY CHANGE:
-Cards now use the exact 2048:1143 aspect ratio of the approved artwork.
-Individual zoom and object-position hacks from prior hotfixes are removed.
+This hotfix only hides the thin blue source-image edge visible on:
+- Rocket League
+- Battlefield 6
+- Rainbow Six Siege
+
+The approved image files remain unchanged.
