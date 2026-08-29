@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -31,6 +32,16 @@ const gameVisual = {
   cyan: "from-cyan-500/[0.18] via-cyan-500/[0.045] to-transparent border-cyan-300/15",
   amber: "from-amber-500/[0.18] via-amber-500/[0.045] to-transparent border-amber-300/15",
   blue: "from-blue-500/[0.22] via-blue-500/[0.05] to-transparent border-blue-300/15",
+} as const;
+
+const homeGameCardAssets = {
+  "rocket-league": "/game-cards/rocket-league.webp",
+  "league-of-legends": "/game-cards/league-of-legends.webp",
+  valorant: "/game-cards/valorant.webp",
+  "marvel-rivals": "/game-cards/marvel-rivals.webp",
+  "overwatch-2": "/game-cards/overwatch.webp",
+  "battlefield-6": "/game-cards/battlefield-6.webp",
+  "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
 function SectionHeading({
@@ -220,47 +231,62 @@ export default function Home() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {launchGames.map((game) => {
-              const card = (
+              const imageSrc =
+                homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
+
+              const cardVisual = (
                 <>
-                  <div className={`absolute inset-0 ${game.slug === "rocket-league" ? "bg-[#0E1411]" : game.ready ? "bg-[#090b0a]/76" : "bg-[#090b0a]/88"}`} />
-                  <div className={`absolute -right-14 -top-16 size-64 rounded-full blur-2xl ${game.slug === "rocket-league" ? "bg-[#39E56F]/[0.07]" : `bg-gradient-to-br ${gameVisual[game.accent]}`} ${game.ready ? "opacity-80" : "opacity-35"}`} />
-                  <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 select-none text-[clamp(2.4rem,5vw,4.8rem)] font-black tracking-[-0.07em] text-white/[0.035]">
-                    {game.displayName}
-                  </div>
+                  <Image
+                    src={imageSrc}
+                    alt=""
+                    fill
+                    priority={game.slug === "rocket-league"}
+                    sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover object-center"
+                  />
 
-                  <div className="relative flex h-full min-h-[16rem] flex-col p-6">
-                    <div className="flex items-start justify-between gap-5">
-                      <div>
-                        <p className="font-gaming-label text-[10px] uppercase tracking-[0.16em] text-white/35">
-                          {game.category}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/65 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/28 via-transparent to-transparent" />
+
+                  {game.slug === "marvel-rivals" ? (
+                    <>
+                      <div className="absolute left-5 top-5 z-10">
+                        <p className="font-gaming-value text-sm uppercase tracking-[0.13em] text-[#F4F7F5]">
+                          Marvel Rivals
                         </p>
-                        <h3 className={`font-gaming-value mt-2 text-xl tracking-[-0.035em] ${game.slug === "rocket-league" ? "text-[#F4F7F5]" : "text-white"}`}>
-                          {game.displayName}
-                        </h3>
                       </div>
-                      <span className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] ${
-                        game.ready
-                          ? "border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]"
-                          : "border-amber-300/15 bg-amber-300/[0.05] text-amber-200/75"
-                      }`}>
-                        {game.ready ? "Available" : "In development"}
-                      </span>
-                    </div>
+                      <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(2.35rem,4.6vw,4.7rem)] uppercase tracking-[-0.055em] text-[#F4F7F5]/[0.06]">
+                        Marvel Rivals
+                      </div>
+                    </>
+                  ) : null}
 
-                    <div className="mt-auto flex items-end justify-between gap-5">
-                      <p className="max-w-[68%] text-xs leading-5 text-white/42">
-                        {game.ready
-                          ? "Open the dedicated game page and browse its service catalog."
-                          : "Game storefront and services are currently being prepared."}
-                      </p>
-                      <span className={`grid size-10 shrink-0 place-items-center rounded-full border ${
-                        game.ready
-                          ? "border-[#FFFFFF14] bg-[#131B17] text-[#A0AAA4] transition-colors group-hover:border-[#39E56F]/30 group-hover:bg-[#39E56F]/[0.08] group-hover:text-[#82F5A4]"
-                          : "border-white/[0.06] bg-white/[0.02] text-white/20"
-                      }`}>
-                        <ArrowRight className="size-4" />
-                      </span>
+                  {game.slug === "rainbow-six-siege" ? (
+                    <div className="pointer-events-none absolute left-5 top-1/2 z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(2rem,4.2vw,4.3rem)] tracking-[-0.055em] text-[#F4F7F5]/[0.055]">
+                      Rainbow Six Siege
                     </div>
+                  ) : null}
+
+                  <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-5">
+                    <span
+                      className={`grid size-10 shrink-0 place-items-center rounded-full border backdrop-blur-sm transition-[border-color,background-color,color] duration-200 ${
+                        game.ready
+                          ? "border-[#FFFFFF14] bg-[#090D0B]/85 text-[#A0AAA4] group-hover:border-[#39E56F]/35 group-hover:bg-[#39E56F]/[0.10] group-hover:text-[#82F5A4]"
+                          : "border-[#FFFFFF14] bg-[#090D0B]/75 text-[#667069]"
+                      }`}
+                    >
+                      <ArrowRight className="size-4" />
+                    </span>
+
+                    <span
+                      className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] backdrop-blur-sm ${
+                        game.ready
+                          ? "border-[#39E56F]/20 bg-[#090D0B]/80 text-[#82F5A4]"
+                          : "border-[#FFFFFF14] bg-[#090D0B]/80 text-[#A0AAA4]"
+                      }`}
+                    >
+                      {game.ready ? "Available" : "In development"}
+                    </span>
                   </div>
                 </>
               );
@@ -269,21 +295,17 @@ export default function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className={`group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 ${
-                    game.slug === "rocket-league"
-                      ? "border-[#FFFFFF14] bg-[#0E1411] hover:border-[#39E56F]/30"
-                      : `bg-gradient-to-br ${gameVisual[game.accent]} hover:border-white/[0.16]`
-                  } hover:shadow-[0_26px_60px_-36px_rgba(0,0,0,.95)]`}
+                  className="group relative min-h-[16rem] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_55px_-38px_rgba(0,0,0,.95)]"
                 >
-                  {card}
+                  {cardVisual}
                 </Link>
               ) : (
                 <div
                   key={game.slug}
                   aria-label={`${game.displayName} is in development`}
-                  className={`relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${gameVisual[game.accent]} opacity-75`}
+                  className="relative min-h-[16rem] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-80"
                 >
-                  {card}
+                  {cardVisual}
                 </div>
               );
             })}

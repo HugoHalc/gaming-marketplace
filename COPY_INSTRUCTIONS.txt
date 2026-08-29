@@ -1,31 +1,24 @@
-BOOSTINGPEDIA — PHASE 13E GEIST + RAJDHANI TYPOGRAPHY SYSTEM
+BOOSTINGPEDIA — PHASE 13F FINAL HOME GAME CARD ASSETS
 
 BASE:
-Apply after Phase 13D.
+Apply on the current main branch after Phase 13E.
 
-1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
-3. Allow replacement of existing files.
-4. Commit:
-   Phase 13E - Geist Rajdhani Typography System
-5. Push main and wait for Vercel.
+1. Extract this ZIP.
+2. Copy all files into the gaming-marketplace root.
+3. Allow replacement of src/app/page.tsx.
+4. Add the public/game-cards/ assets.
+5. Commit:
+   Phase 13F - Final Home Game Card Assets
+6. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-WHAT CHANGES:
-- Geist remains global/default.
-- Rajdhani 600/700 is added through next/font/google.
-- Badge uses Rajdhani 600.
-- Gaming categories, metadata, short service/game titles and highlighted prices use the new secondary system where explicitly marked.
+EXPECTED:
+- The 7 Home game cards use the approved real generated visuals.
+- Rocket League remains Available/clickable.
+- All other launch games remain In development/non-clickable.
+- Marvel Rivals receives its branding overlay in code.
+- Rainbow Six Siege receives its full watermark overlay in code.
+- Valorant no longer shows the baked outer red frame prominently.
 
-WHAT DOES NOT CHANGE:
-- sizes
-- layout
-- spacing
-- navigation typography
-- buttons
-- forms
-- paragraphs
-- long text
-- service logic
-- Rocket League pricing/configuration
+NO OTHER HOME STRUCTURE OR ROCKET LEAGUE INTERNAL LOGIC IS CHANGED.
