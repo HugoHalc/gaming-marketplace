@@ -80,6 +80,47 @@ function BoosterAvatar({ initials }: { initials: string }) {
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
+      <style>{`
+        @keyframes boostingpediaHeroFloat {
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(-7px, -5px, 0); }
+        }
+
+        @keyframes boostingpediaHeroBreathe {
+          0%, 100% { filter: brightness(1) saturate(1); }
+          50% { filter: brightness(1.025) saturate(1.02); }
+        }
+
+        @keyframes boostingpediaHeroGlow {
+          0%, 100% { opacity: .38; transform: scale(.97); }
+          50% { opacity: .64; transform: scale(1.03); }
+        }
+
+        .hero-art-float {
+          animation: boostingpediaHeroFloat 10s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        .hero-art-breathe {
+          animation: boostingpediaHeroBreathe 7.5s ease-in-out infinite;
+          will-change: filter;
+        }
+
+        .hero-art-glow {
+          animation: boostingpediaHeroGlow 7s ease-in-out infinite;
+          will-change: opacity, transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-art-float,
+          .hero-art-breathe,
+          .hero-art-glow {
+            animation: none !important;
+            transform: none !important;
+            filter: none !important;
+          }
+        }
+      `}</style>
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
@@ -88,7 +129,7 @@ export default function Home() {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-[-5vw] -z-10 w-[78vw] sm:right-[-4vw] sm:w-[72vw] lg:right-[-3vw] lg:w-[66vw] xl:right-[-2vw] xl:w-[63vw]"
+          className="hero-art-float pointer-events-none absolute inset-y-0 right-[-5vw] -z-10 w-[78vw] sm:right-[-4vw] sm:w-[72vw] lg:right-[-3vw] lg:w-[66vw] xl:right-[-2vw] xl:w-[63vw]"
         >
           <Image
             src="/brand/boostingpedia-hero-art.webp"
@@ -96,8 +137,9 @@ export default function Home() {
             fill
             priority
             sizes="(min-width:1280px) 63vw, (min-width:1024px) 66vw, (min-width:640px) 72vw, 78vw"
-            className="object-cover object-[70%_53%] sm:object-[71%_53%] lg:object-[69%_53%] xl:object-[68%_53%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)]"
+            className="hero-art-breathe object-cover object-[70%_53%] sm:object-[71%_53%] lg:object-[69%_53%] xl:object-[68%_53%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)]"
           />
+          <div className="hero-art-glow absolute bottom-[7%] right-[11%] h-[24%] w-[34%] rounded-full bg-[#39E56F]/[0.05] blur-[64px]" />
         </div>
         <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[74%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_44%,rgba(5,8,7,.78)_66%,transparent_100%)] sm:w-[68%] lg:w-[57%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
