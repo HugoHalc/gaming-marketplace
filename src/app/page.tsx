@@ -158,13 +158,13 @@ export default function Home() {
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="min-w-44 bg-[#39E56F] text-[#050807] hover:bg-[#20C95A] hover:text-[#050807]">
+              <Button asChild size="lg" className="min-w-44 rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.60)] transition-[background-color,box-shadow,color] duration-200 hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_10px_26px_-16px_rgba(57,229,111,.68)] disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none">
                 <Link href="#games">
                   Choose your game
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="secondary" size="lg">
+              <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
                 <Link href="#boosters">Meet our boosters</Link>
               </Button>
             </div>
@@ -199,18 +199,18 @@ export default function Home() {
               <button
                 type="button"
                 aria-label="Previous boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors hover:border-[#39E56F]/30 hover:text-[#82F5A4]"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/35 hover:bg-[#39E56F]/[0.09] hover:text-[#82F5A4] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronRight className="size-4 rotate-180" />
               </button>
               <button
                 type="button"
                 aria-label="Next boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors hover:border-[#39E56F]/30 hover:text-[#82F5A4]"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/35 hover:bg-[#39E56F]/[0.09] hover:text-[#82F5A4] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronRight className="size-4" />
               </button>
-              <Button asChild variant="secondary" className="ml-1">
+              <Button asChild variant="secondary" className="ml-1 rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
                 <Link href="/boosters">View all</Link>
               </Button>
             </div>
@@ -265,7 +265,7 @@ export default function Home() {
           </div>
 
           <div className="mt-4 flex sm:hidden">
-            <Button asChild variant="secondary" className="w-full">
+            <Button asChild variant="secondary" className="w-full rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
               <Link href="/boosters">View all boosters</Link>
             </Button>
           </div>
@@ -283,7 +283,7 @@ export default function Home() {
             </div>
             <Link
               href="/games"
-              className="inline-flex items-center text-sm font-semibold text-white/60 transition-colors hover:text-white"
+              className="inline-flex items-center text-sm font-semibold bg-transparent text-[#A0AAA4] shadow-none transition-colors duration-200 hover:bg-transparent hover:text-[#82F5A4]"
             >
               View all games
               <ArrowRight className="ml-2 size-4" />
@@ -336,20 +336,20 @@ export default function Home() {
 
                   <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-5">
                     <span
-                      className={`grid size-10 shrink-0 place-items-center rounded-full border backdrop-blur-sm transition-[border-color,background-color,color] duration-200 ${
+                      className={`grid size-10 shrink-0 place-items-center rounded-full border shadow-none transition-[border-color,background-color,color,opacity] duration-200 ${
                         game.ready
-                          ? "border-[#FFFFFF14] bg-[#090D0B]/85 text-[#A0AAA4] group-hover:border-[#39E56F]/35 group-hover:bg-[#39E56F]/[0.10] group-hover:text-[#82F5A4]"
-                          : "border-[#FFFFFF14] bg-[#090D0B]/75 text-[#667069]"
+                          ? "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] group-hover:border-[#39E56F]/35 group-hover:bg-[#39E56F]/[0.09] group-hover:text-[#82F5A4]"
+                          : "border-[#FFFFFF14] bg-[#090D0B] text-[#667069] opacity-45"
                       }`}
                     >
                       <ArrowRight className="size-4" />
                     </span>
 
                     <span
-                      className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] backdrop-blur-sm ${
+                      className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] transition-colors duration-200 ${
                         game.ready
-                          ? "border-[#39E56F]/20 bg-[#090D0B]/80 text-[#82F5A4]"
-                          : "border-[#FFFFFF14] bg-[#090D0B]/80 text-[#A0AAA4]"
+                          ? "border-[#39E56F]/40 bg-[#39E56F]/[0.08] text-[#82F5A4]"
+                          : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] opacity-60"
                       }`}
                     >
                       {game.ready ? "Available" : "In development"}
