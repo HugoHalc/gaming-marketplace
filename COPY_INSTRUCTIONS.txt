@@ -1,16 +1,15 @@
-BOOSTINGPEDIA — PHASE 13Q CINEMATIC INTEGRATED HERO
+BOOSTINGPEDIA — PHASE 13R HERO POSITION TUNING
 
 BASE:
-Built from Phase 13P.
+Apply after Phase 13Q.
 
 1. Extract ZIP.
-2. Copy all files into gaming-marketplace root.
+2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
-4. Replace public/brand/boostingpedia-hero-art.webp.
-5. Commit:
-   Phase 13Q - Cinematic Integrated Hero
-6. Push main and wait for Vercel.
+4. Commit:
+   Phase 13R - Hero Position Tuning
+5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-Only the Home hero visual implementation and hero artwork asset are changed.
+This phase only moves the existing hero artwork slightly left.

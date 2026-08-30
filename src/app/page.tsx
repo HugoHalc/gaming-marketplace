@@ -88,7 +88,7 @@ export default function Home() {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-[-10vw] -z-10 w-[74vw] sm:right-[-9vw] sm:w-[68vw] lg:right-[-8vw] lg:w-[62vw] xl:right-[-7vw] xl:w-[59vw]"
+          className="pointer-events-none absolute inset-y-0 right-[-7vw] -z-10 w-[74vw] sm:right-[-6vw] sm:w-[68vw] lg:right-[-5vw] lg:w-[62vw] xl:right-[-4vw] xl:w-[59vw]"
         >
           <Image
             src="/brand/boostingpedia-hero-art.webp"
