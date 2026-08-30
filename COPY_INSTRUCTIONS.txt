@@ -1,19 +1,15 @@
-BOOSTINGPEDIA — PHASE 13L BRAND HERO + CARD EDGE FIX
+BOOSTINGPEDIA — PHASE 13M HERO ART BLENDING HOTFIX
 
 BASE:
-Apply after Phase 13K.
+Apply after Phase 13L.
 
 1. Extract ZIP.
-2. Copy all files into gaming-marketplace root.
-3. Replace src/app/page.tsx when prompted.
-4. Add public/brand/boostingpedia-hero-art.webp.
-5. Commit:
-   Phase 13L - Brand Hero and Card Edge Fix
-6. Push main and wait for Vercel.
+2. Copy files into gaming-marketplace root.
+3. Replace src/app/page.tsx.
+4. Commit:
+   Phase 13M - Hero Art Blending Hotfix
+5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-CHANGES:
-- New integrated BoostingPedia hero artwork on the right side of the existing Home hero.
-- Removes the old right-side gamepad / launch-lineup panel.
-- Fixes blue asset edges on Rocket League, Battlefield 6 and Rainbow Six Siege without gaps.
+This hotfix only softens the visible rectangular edge around the hero artwork.
