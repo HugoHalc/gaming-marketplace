@@ -39,8 +39,8 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/94 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/88">
       <Container>
-        <div className="flex h-16 items-center justify-between gap-4 sm:h-[4.35rem]">
-          <div className="flex min-w-0 items-center gap-6">
+        <div className="flex h-[3.9rem] items-center justify-between gap-4 sm:h-16">
+          <div className="flex min-w-0 items-center gap-7">
             <Logo />
 
             <Link
@@ -48,7 +48,7 @@ export async function SiteHeader() {
               className="hidden items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] lg:inline-flex"
             >
               <Grid2X2 className="size-4 text-[#A0AAA4]" />
-              Explore games
+              Games
               <ChevronDown className="size-3.5 text-[#667069]" />
             </Link>
           </div>
@@ -140,7 +140,7 @@ export async function SiteHeader() {
                   <Link href="/login">Sign in</Link>
                 </Button>
                 <Button asChild size="sm" className="rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.55)] hover:bg-[#20C95A] hover:text-[#050807]">
-                  <Link href="/games">Explore games</Link>
+                  <Link href="/games">Start boosting</Link>
                 </Button>
               </>
             )}
@@ -148,14 +148,15 @@ export async function SiteHeader() {
         </div>
 
         <div className="hidden border-t border-white/[0.05] lg:block">
-          <div className="flex h-12 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex h-[2.7rem] items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {launchGames.map((game) =>
               game.ready ? (
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#39E56F]/35 bg-[#39E56F]/[0.07] px-3 text-xs font-semibold text-[#82F5A4] transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/45 hover:bg-[#39E56F]/[0.10]"
+                  className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#39E56F]/[0.06]"
                 >
+                  <span className="size-1.5 rounded-full bg-[#39E56F]" />
                   {game.displayName}
                 </Link>
               ) : (
@@ -171,7 +172,7 @@ export async function SiteHeader() {
           </div>
         </div>
 
-        <div className="flex h-11 items-center gap-2 overflow-x-auto border-t border-white/[0.05] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex h-10 items-center gap-2 overflow-x-auto border-t border-white/[0.05] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link
             href="/games"
             className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#131B17] px-3 text-xs font-semibold text-[#F4F7F5]"
@@ -185,8 +186,9 @@ export async function SiteHeader() {
               <Link
                 key={game.slug}
                 href={`/games/${game.slug}`}
-                className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#39E56F]/35 bg-[#39E56F]/[0.07] px-3 text-xs font-semibold text-[#82F5A4]"
+                className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
               >
+                <span className="size-1.5 rounded-full bg-[#39E56F]" />
                 {game.displayName}
               </Link>
             ) : (

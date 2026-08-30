@@ -1,19 +1,18 @@
-BOOSTINGPEDIA — PHASE 14A WIDER GLOBAL CONTAINER
+BOOSTINGPEDIA — PHASE 14B HEADER MICRO POLISH
 
 BASE:
-Apply after Phase 13Z.
+Apply after Phase 14A.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace:
-   - src/components/layout/container.tsx
    - src/components/marketing/site-header.tsx
+   - src/components/layout/container.tsx
    - src/app/page.tsx
 4. Commit:
-   Phase 14A - Wider Global Container
+   Phase 14B - Header Micro Polish
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-Key change:
-Global content max width becomes 1520 px while remaining centered.
+This phase only refines the visual density and hierarchy of the current two-tier header.
