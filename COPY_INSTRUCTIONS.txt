@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13Y HOME COLOR BALANCE PASS
+BOOSTINGPEDIA — PHASE 13Z TWO-TIER MARKETPLACE HEADER
 
 BASE:
-Apply after Phase 13X.
+Apply after Phase 13Y.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
-3. Replace src/app/page.tsx.
+3. Replace:
+   - src/app/page.tsx
+   - src/components/marketing/site-header.tsx
 4. Commit:
-   Phase 13Y - Home Color Balance Pass
+   Phase 13Z - Two-tier Marketplace Header
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
-
-This phase changes ONLY color emphasis / hover color treatment on the Home page.

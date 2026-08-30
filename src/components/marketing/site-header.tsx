@@ -1,48 +1,203 @@
 import Link from "next/link";
-import { Bell } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  Grid2X2,
+  LayoutDashboard,
+  Package,
+  UserRound,
+} from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { launchGames } from "@/features/catalog/data/launch-games";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
+
+function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCurrentIdentity>>>) {
+  const source =
+    identity.profile?.gamer_tag?.trim() ||
+    identity.profile?.full_name?.trim() ||
+    identity.email.trim() ||
+    "BP";
+
+  const words = source.split(/[\s@._-]+/).filter(Boolean);
+
+  if (words.length >= 2) {
+    return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
+  }
+
+  return source.slice(0, 2).toUpperCase();
+}
 
 export async function SiteHeader() {
   const identity = await getCurrentIdentity();
   const unread = identity ? await getUnreadNotificationCount() : 0;
+  const initials = identity ? getAvatarInitials(identity) : null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/90 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/82">
-      <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
-        <Logo />
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">
-          {siteConfig.navigation.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm font-medium text-[#A0AAA4] transition-colors hover:text-[#82F5A4] focus-visible:outline-none focus-visible:text-[#82F5A4]">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {identity ? (
+    <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/94 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/88">
+      <Container>
+        <div className="flex h-16 items-center justify-between gap-4 sm:h-[4.35rem]">
+          <div className="flex min-w-0 items-center gap-6">
+            <Logo />
+
             <Link
-              href="/dashboard/notifications"
-              className="relative grid size-9 place-items-center rounded-lg text-[#A0AAA4] transition hover:bg-[#131B17] hover:text-[#82F5A4]"
-              aria-label={unread ? `${unread} unread notifications` : "Notifications"}
+              href="/games"
+              className="hidden items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] lg:inline-flex"
             >
-              <Bell className="size-4"/>
-              {unread > 0 ? (
-                <span className="absolute right-0.5 top-0.5 min-w-4 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-4 text-[#050807]">
-                  {unread > 9 ? "9+" : unread}
-                </span>
-              ) : null}
+              <Grid2X2 className="size-4 text-[#A0AAA4]" />
+              Explore games
+              <ChevronDown className="size-3.5 text-[#667069]" />
             </Link>
-          ) : null}
-          <Button asChild variant="ghost" size="sm" className="hidden text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
-            <Link href={identity ? "/dashboard" : "/login"}>{identity ? "Dashboard" : "Sign in"}</Link>
-          </Button>
-          <Button asChild size="sm" className="bg-[#39E56F] text-[#050807] hover:bg-[#20C95A] hover:text-[#050807]">
-            <Link href="/games">Explore games</Link>
-          </Button>
+          </div>
+
+          <nav className="hidden items-center gap-6 xl:flex" aria-label="Primary navigation">
+            {siteConfig.navigation
+              .filter((item) => item.label !== "Games")
+              .map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm font-medium text-[#A0AAA4] transition-colors duration-200 hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:text-[#F4F7F5]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            {identity ? (
+              <>
+                <Link
+                  href="/dashboard/notifications"
+                  className="relative grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5]"
+                  aria-label={unread ? `${unread} unread notifications` : "Notifications"}
+                >
+                  <Bell className="size-4" />
+                  {unread > 0 ? (
+                    <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-4 text-[#050807]">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  ) : null}
+                </Link>
+
+                <div
+                  className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#131B17] text-xs font-bold text-[#F4F7F5]"
+                  aria-label="Account avatar"
+                  title={identity.profile?.gamer_tag || identity.profile?.full_name || identity.email}
+                >
+                  {initials}
+                </div>
+
+                <details className="group relative">
+                  <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2.5 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] [&::-webkit-details-marker]:hidden">
+                    <Grid2X2 className="size-4 text-[#A0AAA4]" />
+                    <span className="hidden sm:inline">Menu</span>
+                    <ChevronDown className="size-3.5 text-[#667069] transition-transform duration-200 group-open:rotate-180" />
+                  </summary>
+
+                  <div className="absolute right-0 top-[calc(100%+0.65rem)] w-64 overflow-hidden rounded-2xl border border-[#FFFFFF14] bg-[#090D0B] p-2 shadow-[0_24px_60px_-28px_rgba(0,0,0,.95)]">
+                    <div className="border-b border-white/[0.06] px-3 pb-3 pt-2">
+                      <p className="truncate text-sm font-semibold text-[#F4F7F5]">
+                        {identity.profile?.gamer_tag || identity.profile?.full_name || "BoostingPedia account"}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-[#667069]">{identity.email}</p>
+                    </div>
+
+                    <nav className="mt-2 grid gap-1" aria-label="Account menu">
+                      <Link href="/dashboard" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
+                        <LayoutDashboard className="size-4" />
+                        Dashboard
+                      </Link>
+                      <Link href="/dashboard/orders" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
+                        <Package className="size-4" />
+                        My Orders
+                      </Link>
+                      <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
+                        <UserRound className="size-4" />
+                        Profile
+                      </Link>
+                      <Link href="/dashboard/notifications" className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
+                        <span className="flex items-center gap-3">
+                          <Bell className="size-4" />
+                          Notifications
+                        </span>
+                        {unread > 0 ? (
+                          <span className="rounded-full bg-[#39E56F]/[0.10] px-2 py-0.5 text-[10px] font-bold text-[#82F5A4]">
+                            {unread > 9 ? "9+" : unread}
+                          </span>
+                        ) : null}
+                      </Link>
+                    </nav>
+                  </div>
+                </details>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
+                  <Link href="/login">Sign in</Link>
+                </Button>
+                <Button asChild size="sm" className="rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.55)] hover:bg-[#20C95A] hover:text-[#050807]">
+                  <Link href="/games">Explore games</Link>
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="hidden border-t border-white/[0.05] lg:block">
+          <div className="flex h-12 items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {launchGames.map((game) =>
+              game.ready ? (
+                <Link
+                  key={game.slug}
+                  href={`/games/${game.slug}`}
+                  className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#39E56F]/35 bg-[#39E56F]/[0.07] px-3 text-xs font-semibold text-[#82F5A4] transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/45 hover:bg-[#39E56F]/[0.10]"
+                >
+                  {game.displayName}
+                </Link>
+              ) : (
+                <span
+                  key={game.slug}
+                  className="inline-flex h-8 shrink-0 cursor-default items-center rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
+                  title="In development"
+                >
+                  {game.displayName}
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+
+        <div className="flex h-11 items-center gap-2 overflow-x-auto border-t border-white/[0.05] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Link
+            href="/games"
+            className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#131B17] px-3 text-xs font-semibold text-[#F4F7F5]"
+          >
+            <Grid2X2 className="size-3.5 text-[#A0AAA4]" />
+            Games
+          </Link>
+
+          {launchGames.slice(0, 4).map((game) =>
+            game.ready ? (
+              <Link
+                key={game.slug}
+                href={`/games/${game.slug}`}
+                className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#39E56F]/35 bg-[#39E56F]/[0.07] px-3 text-xs font-semibold text-[#82F5A4]"
+              >
+                {game.displayName}
+              </Link>
+            ) : (
+              <span
+                key={game.slug}
+                className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs text-[#667069]"
+              >
+                {game.displayName}
+              </span>
+            ),
+          )}
         </div>
       </Container>
     </header>
