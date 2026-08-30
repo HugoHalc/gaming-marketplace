@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13X MARKETPLACE FOUNDATION EDITORIAL
+BOOSTINGPEDIA — PHASE 13Y HOME COLOR BALANCE PASS
 
 BASE:
-Apply after Phase 13W.
+Apply after Phase 13X.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13X - Marketplace Foundation Editorial
+   Phase 13Y - Home Color Balance Pass
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase changes ONLY the visual treatment of the Home "Marketplace Foundation" section.
+This phase changes ONLY color emphasis / hover color treatment on the Home page.

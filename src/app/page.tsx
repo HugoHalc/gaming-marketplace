@@ -59,7 +59,7 @@ function SectionHeading({
   const classes = align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-2xl";
   return (
     <div className={classes}>
-      <p className="font-gaming-label text-sm text-green-300">{eyebrow}</p>
+      <p className="font-gaming-label text-sm text-[#A0AAA4]">{eyebrow}</p>
       <h2 className="mt-3 text-3xl font-bold tracking-[-0.045em] text-white sm:text-4xl lg:text-5xl">
         {title}
       </h2>
@@ -166,7 +166,7 @@ export default function Home() {
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
+              <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
                 <Link href="#boosters">Meet our boosters</Link>
               </Button>
             </div>
@@ -174,7 +174,7 @@ export default function Home() {
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--muted-foreground)] sm:text-sm">
               {["Server-calculated pricing", "Game-specific storefronts", "Order tracking"].map((item) => (
                 <span key={item} className="inline-flex items-center gap-2">
-                  <span className="grid size-5 place-items-center rounded-full bg-green-400/10 text-green-300">
+                  <span className="grid size-5 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]">
                     <Check className="size-3" />
                   </span>
                   {item}
@@ -191,7 +191,7 @@ export default function Home() {
         <Container>
           <div className="flex items-center justify-between gap-5">
             <div>
-              <p className="font-gaming-label text-sm text-[#82F5A4]">Boosters</p>
+              <p className="font-gaming-label text-sm text-[#A0AAA4]">Boosters</p>
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.045em] text-[#F4F7F5] sm:text-3xl">
                 Meet the players behind the services.
               </h2>
@@ -201,18 +201,18 @@ export default function Home() {
               <button
                 type="button"
                 aria-label="Previous boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/35 hover:bg-[#39E56F]/[0.09] hover:text-[#82F5A4] disabled:cursor-not-allowed disabled:opacity-40"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronRight className="size-4 rotate-180" />
               </button>
               <button
                 type="button"
                 aria-label="Next boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/35 hover:bg-[#39E56F]/[0.09] hover:text-[#82F5A4] disabled:cursor-not-allowed disabled:opacity-40"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronRight className="size-4" />
               </button>
-              <Button asChild variant="secondary" className="ml-1 rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
+              <Button asChild variant="secondary" className="ml-1 rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
                 <Link href="/boosters">View all</Link>
               </Button>
             </div>
@@ -223,7 +223,7 @@ export default function Home() {
               {boosterPlaceholders.map((booster) => (
                 <article
                   key={booster.id}
-                  className="group relative w-[13.8rem] shrink-0 overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#090D0B] p-4 transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-[#39E56F]/20 hover:bg-[#0E1411]"
+                  className="group relative w-[13.8rem] shrink-0 overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#090D0B] p-4 transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-white/[0.15] hover:bg-[#0E1411]"
                 >
                   <div className="absolute left-4 top-4 size-1.5 rounded-full bg-[#39E56F]" />
                   <div className="absolute right-4 top-4 font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">
@@ -231,7 +231,7 @@ export default function Home() {
                   </div>
 
                   <div className="pt-4">
-                    <div className="mx-auto grid size-20 place-items-center rounded-full border border-[#FFFFFF14] bg-[radial-gradient(circle_at_35%_25%,rgba(57,229,111,.13),transparent_42%),#0E1411] shadow-[inset_0_0_0_1px_rgba(255,255,255,.015)]">
+                    <div className="mx-auto grid size-20 place-items-center rounded-full border border-[#FFFFFF14] bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,.055),transparent_42%),#0E1411] shadow-[inset_0_0_0_1px_rgba(255,255,255,.015)]">
                       <span className="font-gaming-value text-xl text-[#F4F7F5]">
                         {booster.initials}
                       </span>
@@ -248,7 +248,7 @@ export default function Home() {
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
                       <div className="rounded-full border border-[#FFFFFF14] bg-[#050807]/80 px-3 py-1.5 text-center">
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#82F5A4]">
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#F4F7F5]">
                           4.9
                         </p>
                         <p className="mt-0.5 text-[9px] text-[#667069]">Rating</p>
@@ -267,7 +267,7 @@ export default function Home() {
           </div>
 
           <div className="mt-4 flex sm:hidden">
-            <Button asChild variant="secondary" className="w-full rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#18211C] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-45">
+            <Button asChild variant="secondary" className="w-full rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
               <Link href="/boosters">View all boosters</Link>
             </Button>
           </div>
@@ -278,14 +278,14 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="font-gaming-label text-sm text-green-300">Choose your game</p>
+              <p className="font-gaming-label text-sm text-[#A0AAA4]">Choose your game</p>
               <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
                 Jump straight into a game storefront.
               </h2>
             </div>
             <Link
               href="/games"
-              className="inline-flex items-center text-sm font-semibold bg-transparent text-[#A0AAA4] shadow-none transition-colors duration-200 hover:bg-transparent hover:text-[#82F5A4]"
+              className="inline-flex items-center text-sm font-semibold bg-transparent text-[#A0AAA4] shadow-none transition-colors duration-200 hover:bg-transparent hover:text-[#F4F7F5]"
             >
               View all games
               <ArrowRight className="ml-2 size-4" />
@@ -406,16 +406,16 @@ export default function Home() {
                   return (
                     <article
                       key={item.step}
-                      className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[#0E1411]/88 p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-[#39E56F]/25 hover:bg-[#131B17]"
+                      className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[#0E1411]/88 p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-white/[0.16] hover:bg-[#131B17]"
                     >
-                      <div className="absolute left-[1.72rem] top-8 h-3 w-3 rounded-full border border-[#39E56F]/40 bg-[#39E56F]/[0.14] lg:left-1/2 lg:-translate-x-1/2" />
+                      <div className="absolute left-[1.72rem] top-8 h-3 w-3 rounded-full border border-[#FFFFFF14] bg-[#A0AAA4]/[0.10] lg:left-1/2 lg:-translate-x-1/2" />
 
                       <div className="flex items-start justify-between gap-4 lg:pt-6">
                         <span className="font-gaming-value text-5xl leading-none tracking-[-0.06em] text-[#82F5A4]/85">
                           {item.step}
                         </span>
 
-                        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:border-[#39E56F]/25 group-hover:text-[#82F5A4]">
+                        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:border-white/[0.16] group-hover:text-[#F4F7F5]">
                           <Icon className="size-4" />
                         </span>
                       </div>
@@ -426,7 +426,7 @@ export default function Home() {
                       </div>
 
                       <div className="mt-6 flex items-center gap-2">
-                        <span className="h-px flex-1 bg-gradient-to-r from-[#39E56F]/0 via-[#39E56F]/18 to-[#39E56F]/0" />
+                        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
                         <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
                           Progress
                         </span>
@@ -452,25 +452,26 @@ export default function Home() {
             {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }, index) => {
               const stepLabel = `SYS-0${index + 1}`;
               const accentWidth = ["w-16", "w-20", "w-12", "w-24", "w-14", "w-16"][index] ?? "w-16";
+              const isAccent = index === 1 || index === 4;
 
               return (
                 <article
                   key={title}
-                  className="group relative overflow-hidden rounded-[1.55rem] border border-[#FFFFFF14] bg-[linear-gradient(180deg,rgba(14,20,17,.92),rgba(9,13,11,.98))] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-[#39E56F]/25 hover:bg-[#131B17]"
+                  className="group relative overflow-hidden rounded-[1.55rem] border border-[#FFFFFF14] bg-[linear-gradient(180deg,rgba(14,20,17,.92),rgba(9,13,11,.98))] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-white/[0.16] hover:bg-[#131B17]"
                 >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
                   <div className="pointer-events-none absolute right-5 top-5 flex items-center gap-1.5 opacity-80">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#39E56F]/60" />
-                    <span className={`${accentWidth} h-px bg-gradient-to-r from-[#39E56F]/30 to-transparent`} />
+                    <span className={`h-1.5 w-1.5 rounded-full ${isAccent ? "bg-[#39E56F]/55" : "bg-white/20"}`} />
+                    <span className={`${accentWidth} h-px bg-gradient-to-r ${isAccent ? "from-[#39E56F]/24" : "from-white/[0.10]"} to-transparent`} />
                   </div>
                   <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-1.5 opacity-75">
                     <span className="h-px w-8 bg-white/[0.08]" />
-                    <span className="h-1.5 w-1.5 rounded-full border border-[#39E56F]/35 bg-[#39E56F]/[0.10]" />
-                    <span className="h-px w-10 bg-gradient-to-r from-[#39E56F]/18 to-transparent" />
+                    <span className={`h-1.5 w-1.5 rounded-full border ${isAccent ? "border-[#39E56F]/30 bg-[#39E56F]/[0.08]" : "border-[#FFFFFF14] bg-white/[0.04]"}`} />
+                    <span className={`h-px w-10 bg-gradient-to-r ${isAccent ? "from-[#39E56F]/14" : "from-white/[0.08]"} to-transparent`} />
                   </div>
 
                   <div className="relative flex items-start justify-between gap-4">
-                    <div className="grid size-11 place-items-center rounded-[0.95rem] border border-[#FFFFFF14] bg-[#39E56F]/[0.05] text-[#82F5A4]">
+                    <div className={`grid size-11 place-items-center rounded-[0.95rem] border border-[#FFFFFF14] ${isAccent ? "bg-[#39E56F]/[0.045] text-[#82F5A4]" : "bg-[#090D0B] text-[#A0AAA4]"}`}>
                       <Icon className="size-4.5" />
                     </div>
 
@@ -478,7 +479,7 @@ export default function Home() {
                       <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-[#667069]">
                         Foundation
                       </p>
-                      <p className="font-gaming-label mt-1 text-[10px] uppercase tracking-[0.14em] text-[#82F5A4]">
+                      <p className={`font-gaming-label mt-1 text-[10px] uppercase tracking-[0.14em] ${isAccent ? "text-[#82F5A4]" : "text-[#667069]"}`}>
                         {stepLabel}
                       </p>
                     </div>
@@ -491,7 +492,7 @@ export default function Home() {
 
                   <div className="relative mt-6 flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4">
                     <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#39E56F]/60" />
+                      <span className={`h-1.5 w-1.5 rounded-full ${isAccent ? "bg-[#39E56F]/55" : "bg-white/20"}`} />
                       <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
                         Active module
                       </span>
@@ -499,7 +500,7 @@ export default function Home() {
 
                     <div className="flex items-center gap-1.5 opacity-80">
                       <span className="h-px w-4 bg-white/[0.08]" />
-                      <span className="h-px w-6 bg-[#39E56F]/20" />
+                      <span className={`h-px w-6 ${isAccent ? "bg-[#39E56F]/16" : "bg-white/[0.08]"}`} />
                     </div>
                   </div>
                 </article>
@@ -565,8 +566,8 @@ export default function Home() {
 
       <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="relative overflow-hidden rounded-[2rem] border border-green-300/15 bg-gradient-to-br from-green-500/[0.12] via-[#0b0f0c] to-transparent p-8 sm:p-10 lg:p-12">
-            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-green-500/[0.12] blur-3xl" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[#090D0B] p-8 sm:p-10 lg:p-12">
+            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-[#39E56F]/[0.045] blur-3xl" />
             <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-3xl">
                 <Badge className="border-white/10 bg-white/[0.05] text-white/75">
@@ -580,7 +581,7 @@ export default function Home() {
                   Explore the launch lineup and enter a dedicated game storefront before choosing a service.
                 </p>
               </div>
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.56)] transition-[background-color,box-shadow,color] duration-200 hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_10px_26px_-16px_rgba(57,229,111,.62)]">
                 <Link href="/games">
                   Browse games
                   <ChevronRight className="ml-2 size-4" />
