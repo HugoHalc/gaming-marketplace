@@ -125,18 +125,15 @@ export default function Home() {
           </div>
 
           <div className="relative hidden min-h-[340px] lg:block">
-            <div className="absolute -inset-y-16 -left-24 right-[-16vw]">
+            <div className="absolute -inset-y-8 -left-10 right-[-8vw] overflow-hidden">
               <Image
                 src="/brand/boostingpedia-hero-art.webp"
                 alt=""
                 fill
                 priority
                 sizes="50vw"
-                className="object-cover object-[68%_52%] scale-[1.035]"
+                className="object-cover object-[68%_52%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_10%,rgba(0,0,0,.48)_24%,rgba(0,0,0,.82)_38%,black_52%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_10%,rgba(0,0,0,.48)_24%,rgba(0,0,0,.82)_38%,black_52%,black_100%)]"
               />
-
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_8%,rgba(5,8,7,.84)_18%,rgba(5,8,7,.58)_30%,rgba(5,8,7,.28)_43%,rgba(5,8,7,.08)_55%,transparent_68%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,7,.16)_0%,transparent_18%,transparent_82%,rgba(5,8,7,.18)_100%)]" />
             </div>
           </div>
         </Container>

@@ -1,15 +1,16 @@
-BOOSTINGPEDIA — PHASE 13O HERO SEAMLESS BLENDING FIX
+BOOSTINGPEDIA — PHASE 13P HERO CSS MASK BLENDING FIX
 
 BASE:
-Apply after Phase 13N.
+This package is built from Phase 13L.
+Use it instead of 13M / 13N / 13O for the hero blending.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13O - Hero Seamless Blending Fix
+   Phase 13P - Hero CSS Mask Blending Fix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase changes ONLY the blending of the existing BoostingPedia hero artwork.
+Only the hero artwork blending method changes.
