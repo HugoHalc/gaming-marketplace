@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Check,
   ChevronRight,
-  Gamepad2,
   ShieldCheck,
   Sparkles,
   Star,
@@ -126,28 +125,18 @@ export default function Home() {
           </div>
 
           <div className="relative hidden min-h-[340px] lg:block">
-            <div className="absolute inset-0 overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[#090D0B]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_66%_32%,rgba(57,229,111,.12),transparent_24%),linear-gradient(145deg,rgba(255,255,255,.025),transparent_50%)]" />
-              <div className="absolute -right-8 top-6 size-64 rotate-12 rounded-[2.5rem] border border-white/[0.06] bg-white/[0.02]" />
-              <div className="absolute right-16 top-16 grid size-44 place-items-center rounded-full border border-[#39E56F]/10 bg-[#39E56F]/[0.03]">
-                <Gamepad2 className="size-16 text-[#82F5A4]/45" />
-              </div>
-
-              <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-[#FFFFFF14] bg-[#0E1411]/90 p-4 backdrop-blur">
-                <p className="font-gaming-label text-[10px] uppercase tracking-[0.15em] text-[#82F5A4]/70">
-                  Launch lineup
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {launchGames.slice(0, 5).map((game) => (
-                    <span key={game.slug} className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[10px] font-medium text-white/55">
-                      {game.displayName}
-                    </span>
-                  ))}
-                  <span className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[10px] font-medium text-white/55">
-                    +{launchGames.length - 5} more
-                  </span>
-                </div>
-              </div>
+            <div className="absolute -inset-y-8 -left-10 right-[-8vw] overflow-hidden">
+              <Image
+                src="/brand/boostingpedia-hero-art.webp"
+                alt=""
+                fill
+                priority
+                sizes="50vw"
+                className="object-cover object-[68%_52%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#050807] via-[#050807]/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/45 via-transparent to-[#050807]/10" />
+              <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050807] to-transparent" />
             </div>
           </div>
         </Container>
@@ -243,24 +232,15 @@ export default function Home() {
                       fill
                       priority={game.slug === "rocket-league"}
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover object-center"
+                      className={`object-cover object-center ${
+                        game.slug === "rocket-league" ||
+                        game.slug === "battlefield-6" ||
+                        game.slug === "rainbow-six-siege"
+                          ? "scale-[1.004]"
+                          : ""
+                      }`}
                     />
                   </div>
-
-                  {(game.slug === "rocket-league" ||
-                    game.slug === "battlefield-6" ||
-                    game.slug === "rainbow-six-siege") ? (
-                    <>
-                      <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-[3px] bg-[#090D0B]"
-                      />
-                      <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[3px] bg-[#090D0B]"
-                      />
-                    </>
-                  ) : null}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/78 via-[#050807]/05 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/38 via-transparent to-transparent" />

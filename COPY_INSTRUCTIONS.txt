@@ -1,16 +1,19 @@
-BOOSTINGPEDIA — PHASE 13K MASK BLUE ASSET EDGE HOTFIX
+BOOSTINGPEDIA — PHASE 13L BRAND HERO + CARD EDGE FIX
 
 BASE:
-Apply after Phase 13J.
+Apply after Phase 13K.
 
 1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
-3. Replace src/app/page.tsx.
-4. Commit:
-   Phase 13K - Mask Blue Asset Edge Hotfix
-5. Push main and wait for Vercel.
+2. Copy all files into gaming-marketplace root.
+3. Replace src/app/page.tsx when prompted.
+4. Add public/brand/boostingpedia-hero-art.webp.
+5. Commit:
+   Phase 13L - Brand Hero and Card Edge Fix
+6. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This fixes the visible blue right/bottom source edge directly in the page with a 3 px internal mask.
-The image files themselves are NOT modified.
+CHANGES:
+- New integrated BoostingPedia hero artwork on the right side of the existing Home hero.
+- Removes the old right-side gamepad / launch-lineup panel.
+- Fixes blue asset edges on Rocket League, Battlefield 6 and Rainbow Six Siege without gaps.
