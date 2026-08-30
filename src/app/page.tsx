@@ -85,6 +85,21 @@ export default function Home() {
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
         <div className="absolute right-[6%] top-[-12rem] -z-10 h-[31rem] w-[42rem] rounded-full bg-[#39E56F]/[0.07] blur-[115px]" />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-[-10vw] -z-10 w-[74vw] sm:right-[-9vw] sm:w-[68vw] lg:right-[-8vw] lg:w-[62vw] xl:right-[-7vw] xl:w-[59vw]"
+        >
+          <Image
+            src="/brand/boostingpedia-hero-art.webp"
+            alt=""
+            fill
+            priority
+            sizes="(min-width:1280px) 59vw, (min-width:1024px) 62vw, (min-width:640px) 68vw, 74vw"
+            className="object-cover object-[68%_52%] sm:object-[69%_52%] lg:object-[67%_52%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_11%,rgba(0,0,0,.46)_25%,rgba(0,0,0,.76)_39%,black_53%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_11%,rgba(0,0,0,.46)_25%,rgba(0,0,0,.76)_39%,black_53%,black_100%)]"
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-gradient-to-r from-[#050807] via-[#050807]/94 to-transparent sm:w-[65%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
             <Badge className="mb-5 border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]">
@@ -124,18 +139,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative hidden min-h-[340px] lg:block">
-            <div className="absolute -inset-y-8 -left-10 right-[-8vw] overflow-hidden">
-              <Image
-                src="/brand/boostingpedia-hero-art.webp"
-                alt=""
-                fill
-                priority
-                sizes="50vw"
-                className="object-cover object-[68%_52%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_10%,rgba(0,0,0,.48)_24%,rgba(0,0,0,.82)_38%,black_52%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_10%,rgba(0,0,0,.48)_24%,rgba(0,0,0,.82)_38%,black_52%,black_100%)]"
-              />
-            </div>
-          </div>
+          <div className="relative hidden min-h-[340px] lg:block" aria-hidden="true" />
         </Container>
       </section>
 

@@ -1,16 +1,16 @@
-BOOSTINGPEDIA — PHASE 13P HERO CSS MASK BLENDING FIX
+BOOSTINGPEDIA — PHASE 13Q CINEMATIC INTEGRATED HERO
 
 BASE:
-This package is built from Phase 13L.
-Use it instead of 13M / 13N / 13O for the hero blending.
+Built from Phase 13P.
 
 1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
+2. Copy all files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
-4. Commit:
-   Phase 13P - Hero CSS Mask Blending Fix
-5. Push main and wait for Vercel.
+4. Replace public/brand/boostingpedia-hero-art.webp.
+5. Commit:
+   Phase 13Q - Cinematic Integrated Hero
+6. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-Only the hero artwork blending method changes.
+Only the Home hero visual implementation and hero artwork asset are changed.
