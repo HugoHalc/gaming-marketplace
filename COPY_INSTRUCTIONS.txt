@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13T SUBTLE ANIMATED HOME HERO
+BOOSTINGPEDIA — PHASE 13U PREMIUM BOOSTERS ROSTER
 
 BASE:
-Apply after Phase 13S.
+Apply after Phase 13T.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13T - Subtle Animated Home Hero
+   Phase 13U - Premium Boosters Roster
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase only adds subtle animation to the existing hero artwork.
+This phase changes ONLY the Home boosters presentation.

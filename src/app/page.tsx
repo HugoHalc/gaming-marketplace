@@ -187,58 +187,87 @@ export default function Home() {
 
       <section id="boosters" className="scroll-mt-24 py-8 sm:py-10">
         <Container>
-          <div className="relative overflow-hidden rounded-[1.8rem] border border-green-300/[0.12] bg-[#0a0d0b]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(74,222,128,.10),transparent_28%),linear-gradient(120deg,rgba(74,222,128,.055),transparent_46%)]" />
-            <div className="relative grid gap-7 p-6 sm:p-7 lg:grid-cols-[.68fr_1.32fr] lg:items-center lg:p-8">
-              <div>
-                <p className="font-gaming-label text-sm text-green-300">Meet Our Boosters</p>
-                <h2 className="mt-2 max-w-md text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-                  The players behind the services.
-                </h2>
-                <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--muted-foreground)]">
-                  Preview the team format here. These profiles are placeholders and can later be replaced with real photos, nicknames, specialties, ranks, and verified performance data.
-                </p>
-                <Button asChild variant="secondary" className="mt-5">
-                  <Link href="/boosters">
-                    Meet the team
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </div>
+          <div className="flex items-center justify-between gap-5">
+            <div>
+              <p className="font-gaming-label text-sm text-[#82F5A4]">Boosters</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.045em] text-[#F4F7F5] sm:text-3xl">
+                Meet the players behind the services.
+              </h2>
+            </div>
 
-              <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
-                {boosterPlaceholders.map((booster) => (
-                  <div
-                    key={booster.id}
-                    className="min-w-[15.5rem] snap-start rounded-2xl border border-white/[0.075] bg-black/25 p-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <BoosterAvatar initials={booster.initials} />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-gaming-value truncate text-sm text-white">{booster.nickname}</h3>
-                          <span className="rounded-full border border-green-400/15 bg-green-400/[0.06] px-2 py-0.5 text-[9px] font-bold text-green-300">
-                            PLACEHOLDER
-                          </span>
-                        </div>
-                        <p className="mt-1 truncate text-[11px] text-white/40">{booster.primaryGame}</p>
-                      </div>
+            <div className="hidden items-center gap-2 sm:flex">
+              <button
+                type="button"
+                aria-label="Previous boosters"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors hover:border-[#39E56F]/30 hover:text-[#82F5A4]"
+              >
+                <ChevronRight className="size-4 rotate-180" />
+              </button>
+              <button
+                type="button"
+                aria-label="Next boosters"
+                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors hover:border-[#39E56F]/30 hover:text-[#82F5A4]"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+              <Button asChild variant="secondary" className="ml-1">
+                <Link href="/boosters">View all</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-6 -mx-2 overflow-x-auto px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex min-w-max gap-3">
+              {boosterPlaceholders.map((booster) => (
+                <article
+                  key={booster.id}
+                  className="group relative w-[13.8rem] shrink-0 overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#090D0B] p-4 transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-[#39E56F]/20 hover:bg-[#0E1411]"
+                >
+                  <div className="absolute left-4 top-4 size-1.5 rounded-full bg-[#39E56F]" />
+                  <div className="absolute right-4 top-4 font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">
+                    {booster.primaryGame}
+                  </div>
+
+                  <div className="pt-4">
+                    <div className="mx-auto grid size-20 place-items-center rounded-full border border-[#FFFFFF14] bg-[radial-gradient(circle_at_35%_25%,rgba(57,229,111,.13),transparent_42%),#0E1411] shadow-[inset_0_0_0_1px_rgba(255,255,255,.015)]">
+                      <span className="font-gaming-value text-xl text-[#F4F7F5]">
+                        {booster.initials}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 text-center">
+                      <h3 className="font-gaming-value truncate text-sm text-[#F4F7F5]">
+                        {booster.nickname}
+                      </h3>
+                      <p className="mt-1 truncate text-[10px] text-[#667069]">
+                        {booster.rankLabel}
+                      </p>
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
-                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">Specialty</p>
-                        <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.specialty}</p>
+                      <div className="rounded-full border border-[#FFFFFF14] bg-[#050807]/80 px-3 py-1.5 text-center">
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#82F5A4]">
+                          4.9
+                        </p>
+                        <p className="mt-0.5 text-[9px] text-[#667069]">Rating</p>
                       </div>
-                      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">Rank</p>
-                        <p className="mt-1 truncate text-[11px] font-semibold text-white/70">{booster.rankLabel}</p>
+                      <div className="rounded-full border border-[#FFFFFF14] bg-[#050807]/80 px-3 py-1.5 text-center">
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#A0AAA4]">
+                          {booster.specialty}
+                        </p>
+                        <p className="mt-0.5 text-[9px] text-[#667069]">Specialty</p>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </article>
+              ))}
             </div>
+          </div>
+
+          <div className="mt-4 flex sm:hidden">
+            <Button asChild variant="secondary" className="w-full">
+              <Link href="/boosters">View all boosters</Link>
+            </Button>
           </div>
         </Container>
       </section>
