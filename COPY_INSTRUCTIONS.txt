@@ -1,18 +1,20 @@
-BOOSTINGPEDIA — PHASE 14B HEADER MICRO POLISH
+BOOSTINGPEDIA — PHASE 14C GAMES PAGE HOME CARD PARITY
 
 BASE:
-Apply after Phase 14A.
+Apply after Phase 14B.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
-3. Replace:
+3. Replace / add:
+   - src/app/games/page.tsx
+   - src/app/page.tsx
    - src/components/marketing/site-header.tsx
    - src/components/layout/container.tsx
-   - src/app/page.tsx
+   - public/game-cards/*
 4. Commit:
-   Phase 14B - Header Micro Polish
+   Phase 14C - Games Page Home Card Parity
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase only refines the visual density and hierarchy of the current two-tier header.
+This phase changes only the visual game-card grid on /games.
