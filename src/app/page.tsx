@@ -88,18 +88,18 @@ export default function Home() {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-[-7vw] -z-10 w-[74vw] sm:right-[-6vw] sm:w-[68vw] lg:right-[-5vw] lg:w-[62vw] xl:right-[-4vw] xl:w-[59vw]"
+          className="pointer-events-none absolute inset-y-0 right-[-5vw] -z-10 w-[78vw] sm:right-[-4vw] sm:w-[72vw] lg:right-[-3vw] lg:w-[66vw] xl:right-[-2vw] xl:w-[63vw]"
         >
           <Image
             src="/brand/boostingpedia-hero-art.webp"
             alt=""
             fill
             priority
-            sizes="(min-width:1280px) 59vw, (min-width:1024px) 62vw, (min-width:640px) 68vw, 74vw"
-            className="object-cover object-[68%_52%] sm:object-[69%_52%] lg:object-[67%_52%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_11%,rgba(0,0,0,.46)_25%,rgba(0,0,0,.76)_39%,black_53%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.16)_11%,rgba(0,0,0,.46)_25%,rgba(0,0,0,.76)_39%,black_53%,black_100%)]"
+            sizes="(min-width:1280px) 63vw, (min-width:1024px) 66vw, (min-width:640px) 72vw, 78vw"
+            className="object-cover object-[70%_53%] sm:object-[71%_53%] lg:object-[69%_53%] xl:object-[68%_53%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)]"
           />
         </div>
-        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-gradient-to-r from-[#050807] via-[#050807]/94 to-transparent sm:w-[65%] lg:w-[55%]" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[74%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_44%,rgba(5,8,7,.78)_66%,transparent_100%)] sm:w-[68%] lg:w-[57%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
             <Badge className="mb-5 border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]">

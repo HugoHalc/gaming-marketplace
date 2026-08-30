@@ -1,15 +1,16 @@
-BOOSTINGPEDIA — PHASE 13R HERO POSITION TUNING
+BOOSTINGPEDIA — PHASE 13S FINAL CINEMATIC HOME HERO
 
 BASE:
-Apply after Phase 13Q.
+Apply after Phase 13R.
 
 1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
+2. Copy all files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
-4. Commit:
-   Phase 13R - Hero Position Tuning
-5. Push main and wait for Vercel.
+4. Replace public/brand/boostingpedia-hero-art.webp.
+5. Commit:
+   Phase 13S - Final Cinematic Home Hero
+6. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase only moves the existing hero artwork slightly left.
+This phase finalizes only the visual treatment of the Home hero.
