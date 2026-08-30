@@ -125,25 +125,18 @@ export default function Home() {
           </div>
 
           <div className="relative hidden min-h-[340px] lg:block">
-            <div className="absolute -inset-y-14 -left-16 right-[-11vw] overflow-hidden">
+            <div className="absolute -inset-y-16 -left-24 right-[-16vw]">
               <Image
                 src="/brand/boostingpedia-hero-art.webp"
                 alt=""
                 fill
                 priority
                 sizes="50vw"
-                className="object-cover object-[68%_52%]"
+                className="object-cover object-[68%_52%] scale-[1.035]"
               />
 
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.97)_11%,rgba(5,8,7,.74)_25%,rgba(5,8,7,.26)_44%,transparent_64%)]" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.82)_9%,rgba(5,8,7,.34)_18%,transparent_31%,transparent_72%,rgba(5,8,7,.52)_91%,#050807_100%)]" />
-
-              <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-[#050807] via-[#050807]/92 to-transparent" />
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#050807] via-[#050807]/82 to-transparent" />
-              <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#050807] via-[#050807]/72 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#050807] via-[#050807]/70 to-transparent" />
-
-              <div className="absolute -right-24 -top-24 size-72 rounded-full bg-[#050807] blur-[70px]" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_8%,rgba(5,8,7,.84)_18%,rgba(5,8,7,.58)_30%,rgba(5,8,7,.28)_43%,rgba(5,8,7,.08)_55%,transparent_68%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,7,.16)_0%,transparent_18%,transparent_82%,rgba(5,8,7,.18)_100%)]" />
             </div>
           </div>
         </Container>

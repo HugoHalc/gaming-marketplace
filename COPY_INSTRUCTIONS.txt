@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13N HERO EDGE BLEND FIX
+BOOSTINGPEDIA — PHASE 13O HERO SEAMLESS BLENDING FIX
 
 BASE:
-Apply after Phase 13M.
+Apply after Phase 13N.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13N - Hero Edge Blend Fix
+   Phase 13O - Hero Seamless Blending Fix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This hotfix only removes the remaining visible top/right rectangular boundary of the hero artwork.
+This phase changes ONLY the blending of the existing BoostingPedia hero artwork.
