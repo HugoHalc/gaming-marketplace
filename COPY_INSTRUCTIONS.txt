@@ -1,15 +1,19 @@
-BOOSTINGPEDIA — PHASE 13Z TWO-TIER MARKETPLACE HEADER
+BOOSTINGPEDIA — PHASE 14A WIDER GLOBAL CONTAINER
 
 BASE:
-Apply after Phase 13Y.
+Apply after Phase 13Z.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace:
-   - src/app/page.tsx
+   - src/components/layout/container.tsx
    - src/components/marketing/site-header.tsx
+   - src/app/page.tsx
 4. Commit:
-   Phase 13Z - Two-tier Marketplace Header
+   Phase 14A - Wider Global Container
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
+
+Key change:
+Global content max width becomes 1520 px while remaining centered.
