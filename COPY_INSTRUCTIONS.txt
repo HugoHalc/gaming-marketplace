@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13M HERO ART BLENDING HOTFIX
+BOOSTINGPEDIA — PHASE 13N HERO EDGE BLEND FIX
 
 BASE:
-Apply after Phase 13L.
+Apply after Phase 13M.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13M - Hero Art Blending Hotfix
+   Phase 13N - Hero Edge Blend Fix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This hotfix only softens the visible rectangular edge around the hero artwork.
+This hotfix only removes the remaining visible top/right rectangular boundary of the hero artwork.
