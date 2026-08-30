@@ -447,16 +447,64 @@ export default function Home() {
             title="Designed to stay consistent as the catalog grows."
             description="The structure is ready for custom art, game-specific service catalogs, and future content without rebuilding the visual system."
           />
-          <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }) => (
-              <div key={title}>
-                <span className="grid size-10 place-items-center rounded-xl border border-green-300/15 bg-green-400/[0.06] text-green-300">
-                  <Icon className="size-5" />
-                </span>
-                <h3 className="mt-5 font-semibold text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{description}</p>
-              </div>
-            ))}
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }, index) => {
+              const stepLabel = `SYS-0${index + 1}`;
+              const accentWidth = ["w-16", "w-20", "w-12", "w-24", "w-14", "w-16"][index] ?? "w-16";
+
+              return (
+                <article
+                  key={title}
+                  className="group relative overflow-hidden rounded-[1.55rem] border border-[#FFFFFF14] bg-[linear-gradient(180deg,rgba(14,20,17,.92),rgba(9,13,11,.98))] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-[#39E56F]/25 hover:bg-[#131B17]"
+                >
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                  <div className="pointer-events-none absolute right-5 top-5 flex items-center gap-1.5 opacity-80">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#39E56F]/60" />
+                    <span className={`${accentWidth} h-px bg-gradient-to-r from-[#39E56F]/30 to-transparent`} />
+                  </div>
+                  <div className="pointer-events-none absolute bottom-5 left-6 flex items-center gap-1.5 opacity-75">
+                    <span className="h-px w-8 bg-white/[0.08]" />
+                    <span className="h-1.5 w-1.5 rounded-full border border-[#39E56F]/35 bg-[#39E56F]/[0.10]" />
+                    <span className="h-px w-10 bg-gradient-to-r from-[#39E56F]/18 to-transparent" />
+                  </div>
+
+                  <div className="relative flex items-start justify-between gap-4">
+                    <div className="grid size-11 place-items-center rounded-[0.95rem] border border-[#FFFFFF14] bg-[#39E56F]/[0.05] text-[#82F5A4]">
+                      <Icon className="size-4.5" />
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-[#667069]">
+                        Foundation
+                      </p>
+                      <p className="font-gaming-label mt-1 text-[10px] uppercase tracking-[0.14em] text-[#82F5A4]">
+                        {stepLabel}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative mt-6">
+                    <h3 className="text-lg font-semibold text-[#F4F7F5]">{title}</h3>
+                    <p className="mt-2 max-w-[32ch] text-sm leading-6 text-[#A0AAA4]">{description}</p>
+                  </div>
+
+                  <div className="relative mt-6 flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4">
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#39E56F]/60" />
+                      <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
+                        Active module
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 opacity-80">
+                      <span className="h-px w-4 bg-white/[0.08]" />
+                      <span className="h-px w-6 bg-[#39E56F]/20" />
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </Container>
       </section>
