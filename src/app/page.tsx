@@ -43,6 +43,8 @@ const homeGameCardAssets = {
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
+const howItWorksIcons = [Sparkles, Check, ShieldCheck] as const;
+
 function SectionHeading({
   eyebrow,
   title,
@@ -380,7 +382,10 @@ export default function Home() {
         </Container>
       </section>
 
-      <section id="how-it-works" className="scroll-mt-24 border-y border-white/[0.06] bg-white/[0.012] py-20 sm:py-24">
+      <section
+        id="how-it-works"
+        className="scroll-mt-24 border-y border-white/[0.06] bg-[linear-gradient(180deg,rgba(9,13,11,.88),rgba(5,8,7,.96))] py-20 sm:py-24"
+      >
         <Container>
           <div className="grid gap-12 lg:grid-cols-[.78fr_1.22fr] lg:items-start">
             <SectionHeading
@@ -389,16 +394,47 @@ export default function Home() {
               description="The visual hierarchy starts with the game, then moves into the service and its configuration."
               align="left"
             />
-            <div className="grid gap-3">
-              {howItWorks.map((item) => (
-                <Card key={item.step} className="grid gap-5 p-6 sm:grid-cols-[auto_1fr] sm:items-start">
-                  <span className="text-3xl font-bold tracking-[-0.05em] text-green-400/70">{item.step}</span>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{item.description}</p>
-                  </div>
-                </Card>
-              ))}
+
+            <div className="relative">
+              <div className="absolute bottom-8 left-[2rem] top-8 w-px bg-gradient-to-b from-transparent via-white/[0.09] to-transparent lg:hidden" />
+              <div className="absolute left-[8%] right-[8%] top-12 hidden h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent lg:block" />
+
+              <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
+                {howItWorks.map((item, index) => {
+                  const Icon = howItWorksIcons[index] ?? Sparkles;
+
+                  return (
+                    <article
+                      key={item.step}
+                      className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[#0E1411]/88 p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-[#39E56F]/25 hover:bg-[#131B17]"
+                    >
+                      <div className="absolute left-[1.72rem] top-8 h-3 w-3 rounded-full border border-[#39E56F]/40 bg-[#39E56F]/[0.14] lg:left-1/2 lg:-translate-x-1/2" />
+
+                      <div className="flex items-start justify-between gap-4 lg:pt-6">
+                        <span className="font-gaming-value text-5xl leading-none tracking-[-0.06em] text-[#82F5A4]/85">
+                          {item.step}
+                        </span>
+
+                        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:border-[#39E56F]/25 group-hover:text-[#82F5A4]">
+                          <Icon className="size-4" />
+                        </span>
+                      </div>
+
+                      <div className="mt-5">
+                        <h3 className="text-lg font-semibold text-[#F4F7F5]">{item.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-[#A0AAA4]">{item.description}</p>
+                      </div>
+
+                      <div className="mt-6 flex items-center gap-2">
+                        <span className="h-px flex-1 bg-gradient-to-r from-[#39E56F]/0 via-[#39E56F]/18 to-[#39E56F]/0" />
+                        <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
+                          Progress
+                        </span>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </Container>

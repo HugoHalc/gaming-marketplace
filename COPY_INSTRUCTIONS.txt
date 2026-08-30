@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 13V UNIFIED HOME CTA SYSTEM
+BOOSTINGPEDIA — PHASE 13W HOW IT WORKS PREMIUM FLOW
 
 BASE:
-Apply after Phase 13U.
+Apply after Phase 13V.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace src/app/page.tsx.
 4. Commit:
-   Phase 13V - Unified Home CTA System
+   Phase 13W - How It Works Premium Flow
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase changes ONLY visual treatment of Home CTA/buttons/action links/compact controls.
+This phase changes ONLY the visual treatment of the Home "How it Works" section.
