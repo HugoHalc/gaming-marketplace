@@ -164,9 +164,6 @@ export async function SiteHeader() {
                 <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
                   <Link href="/login">Sign in</Link>
                 </Button>
-                <Button asChild size="sm" className="rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.55)] hover:bg-[#20C95A] hover:text-[#050807]">
-                  <Link href="/games">Start boosting</Link>
-                </Button>
               </>
             )}
           </div>

@@ -1,15 +1,16 @@
-BOOSTINGPEDIA — PHASE 14X FINAL CTA BRAND POLISH
+BOOSTINGPEDIA — PHASE 14Y HEADER SIGN IN ONLY
 
 BASE:
-Apply after Phase 14W / current main.
+Apply after Phase 14X / current main.
 
 SCOPE:
-Final CTA on Home only.
+Logged-out header account actions only.
 
 1. Extract ZIP into project root.
-2. Replace/add included files.
+2. Replace included file(s).
 3. No Supabase migration required.
-4. Deploy and review the final CTA on desktop and mobile.
+4. Deploy.
+5. Confirm logged-out header shows only `Sign in`.
 
 Commit:
-Phase 14X - Final CTA Brand Polish
+Phase 14Y - Header Sign In Only
