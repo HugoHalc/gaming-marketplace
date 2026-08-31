@@ -1,23 +1,12 @@
-BOOSTINGPEDIA — PHASE 15I PREMIUM ORDER SUMMARY SYSTEM
+BOOSTINGPEDIA — PHASE 15J
 
-Extract this ZIP into the project root and replace the five included configurator files.
+Replace:
+src/app/games/[game]/[service]/page.tsx
 
-Files:
-- src/features/configurator/components/rocket-league-rank-configurator.tsx
-- src/features/configurator/components/rocket-league-wins-configurator.tsx
-- src/features/configurator/components/rocket-league-tournament-configurator.tsx
-- src/features/configurator/components/rocket-league-rewards-configurator.tsx
-- src/features/configurator/components/rocket-league-placements-configurator.tsx
-
-No script required.
+No scripts required.
 No Supabase migration required.
 
-Test all five Rocket League services and verify:
-- quote totals remain identical
-- discounts remain identical
-- create-order behavior remains identical
-- loading/disabled behavior remains identical
-- payment trust text only references Stripe
+Test all five Rocket League service routes on desktop and mobile.
 
 Commit:
-Phase 15I - Rocket League Premium Order Summary System
+Phase 15J - Rocket League Service Navigation System
