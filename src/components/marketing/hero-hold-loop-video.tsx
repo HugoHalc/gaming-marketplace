@@ -3,24 +3,25 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-type HeroHoldLoopVideoProps = {
-  src: string;
+type HeroPingPongVideoProps = {
+  introSrc: string;
+  loopSrc: string;
   poster: string;
   className?: string;
   sizes?: string;
-  holdSeconds?: number;
 };
 
 export function HeroHoldLoopVideo({
-  src,
+  introSrc,
+  loopSrc,
   poster,
   className = "",
   sizes = "100vw",
-  holdSeconds = 2,
-}: HeroHoldLoopVideoProps) {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+}: HeroPingPongVideoProps) {
+  const introRef = useRef<HTMLVideoElement | null>(null);
+  const loopRef = useRef<HTMLVideoElement | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const holdLoopStartedRef = useRef(false);
+  const [showLoop, setShowLoop] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -34,45 +35,34 @@ export function HeroHoldLoopVideo({
   }, []);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || prefersReducedMotion) return;
+    if (prefersReducedMotion) return;
 
-    const startHoldLoop = async () => {
-      if (!video.duration || Number.isNaN(video.duration)) return;
+    const intro = introRef.current;
+    const loop = loopRef.current;
+    if (!intro || !loop) return;
 
-      holdLoopStartedRef.current = true;
-      video.currentTime = Math.max(0, video.duration - holdSeconds);
+    // Preload the hold loop while the cinematic intro is playing.
+    loop.load();
+
+    const beginHoldLoop = async () => {
+      loop.currentTime = 0;
 
       try {
-        await video.play();
+        await loop.play();
       } catch {}
+
+      // Reveal only after playback starts to avoid a blank transition frame.
+      requestAnimationFrame(() => setShowLoop(true));
     };
 
-    const handleEnded = () => {
-      void startHoldLoop();
-    };
-
-    const handleTimeUpdate = () => {
-      if (!holdLoopStartedRef.current || !video.duration) return;
-
-      const loopStart = Math.max(0, video.duration - holdSeconds);
-      if (video.currentTime >= video.duration - 0.045) {
-        video.currentTime = loopStart;
-        void video.play().catch(() => {});
-      }
-    };
-
-    video.addEventListener("ended", handleEnded);
-    video.addEventListener("timeupdate", handleTimeUpdate);
-
-    video.currentTime = 0;
-    void video.play().catch(() => {});
+    intro.addEventListener("ended", beginHoldLoop);
+    intro.currentTime = 0;
+    void intro.play().catch(() => {});
 
     return () => {
-      video.removeEventListener("ended", handleEnded);
-      video.removeEventListener("timeupdate", handleTimeUpdate);
+      intro.removeEventListener("ended", beginHoldLoop);
     };
-  }, [holdSeconds, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
 
   if (prefersReducedMotion) {
     return (
@@ -88,17 +78,36 @@ export function HeroHoldLoopVideo({
   }
 
   return (
-    <video
-      ref={videoRef}
-      className={className}
-      autoPlay
-      muted
-      playsInline
-      preload="metadata"
-      poster={poster}
-      tabIndex={-1}
-    >
-      <source src={src} type="video/webm" />
-    </video>
+    <>
+      <video
+        ref={introRef}
+        className={`${className} absolute inset-0 transition-opacity duration-200 ${
+          showLoop ? "opacity-0" : "opacity-100"
+        }`}
+        autoPlay
+        muted
+        playsInline
+        preload="metadata"
+        poster={poster}
+        tabIndex={-1}
+      >
+        <source src={introSrc} type="video/webm" />
+      </video>
+
+      <video
+        ref={loopRef}
+        className={`${className} absolute inset-0 transition-opacity duration-200 ${
+          showLoop ? "opacity-100" : "opacity-0"
+        }`}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster={poster}
+        tabIndex={-1}
+      >
+        <source src={loopSrc} type="video/webm" />
+      </video>
+    </>
   );
 }
