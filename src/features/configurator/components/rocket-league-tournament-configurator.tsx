@@ -638,82 +638,77 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
       </section>
 
       <aside id="tournament-summary" className="scroll-mt-24 xl:sticky xl:top-24">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.045] via-transparent to-transparent p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-green-300">
-                  Your order
-                </p>
-                <p className="mt-1 text-base font-semibold text-white">
-                  Tournament Boost
-                </p>
+        <div className="space-y-3">
+          <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
+            <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.05] via-transparent to-transparent px-4 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                    Order Summary
+                  </p>
+                  <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">Tournament Boost</p>
+                </div>
+                {isLoading ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]">
+                    <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                    Updating
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/18 bg-[#39E56F]/[0.035] px-2.5 py-1 text-[9px] font-medium text-[#82F5A4]">
+                    <Check className="size-3" strokeWidth={2.5} />
+                    Ready
+                  </span>
+                )}
               </div>
-              {isLoading ? (
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-[#A0AAA4]">
-                  <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
-                  Updating price…
-                </span>
-              ) : null}
             </div>
-          </div>
 
-          <div className="p-4">
-            <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] p-3">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <Image src={selectedRank.image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
-                <div className="min-w-0">
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current rank</p>
-                  <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(String(selection.currentRank))}</p>
+            <div className="p-4">
+              <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                <div className="flex items-center gap-2.5">
+                  <Image src={selectedRank.image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current rank</p>
+                    <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(String(selection.currentRank))}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-3 grid gap-1.5 text-[11px]">
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Playlist</span>
-                <span className="font-medium text-white/70">{selectedPlaylist.label}</span>
+              <div className="mt-2 divide-y divide-white/[0.06]">
+                <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Playlist</span><span className="font-medium text-white/78">{selectedPlaylist.label}</span></div>
+                <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Platform</span><span className="font-medium text-white/78">{platforms.find((item) => item.value === selection.platform)?.label}</span></div>
+                <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
               </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Platform</span>
-                <span className="font-medium text-white/70">
-                  {platforms.find((item) => item.value === selection.platform)?.label}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Method</span>
-                <span className="font-medium text-white/70">
-                  {boostMethod === "account" ? "Account Boost" : "Play With Booster"}
-                </span>
-              </div>
-            </div>
 
-            {error ? (
-              <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
-                {error}
-              </div>
-            ) : null}
+              {error ? (
+                <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
+                  {error}
+                </div>
+              ) : null}
 
             {quote ? (
               <>
-                <div className="my-3 h-px bg-white/[0.08]" />
+                <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="space-y-2">
                   {quote.breakdown.map((item, index) => (
                     <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
-                      <span className="text-[var(--muted-foreground)]">{item.label}</span>
-                      <span className={item.amount < 0 ? "font-medium text-emerald-300" : "font-medium text-white"}>
+                      <span className="text-[#A0AAA4]">{item.label}</span>
+                      <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
                         {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
                       </span>
                     </div>
                   ))}
                 </div>
+
                 <div className="my-4 h-px bg-white/[0.08]" />
+
                 <div className="flex items-end justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
-                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                    <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">
+                      {formatPrice(quote.total)}
+                    </p>
                     {!isLoading ? (
-                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38 transition-opacity duration-200 motion-reduce:transition-none">
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
                         <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
                         Server-validated price
                       </p>
@@ -724,15 +719,17 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                       </p>
                     )}
                   </div>
-                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">USD</span>
+                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">
+                    USD
+                  </span>
                 </div>
               </>
             ) : isLoading ? (
               <>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 <div>
-                  <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
-                  <p className="font-gaming-value mt-1 text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">—</p>
+                  <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                  <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
                   <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
                     <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                     Updating price…
@@ -748,7 +745,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
             ) : null}
 
             <Button
-              className="mt-4 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
+              className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
               disabled={!quote || isLoading || isCreatingOrder}
               onClick={createOrder}
@@ -766,13 +763,25 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               )}
             </Button>
 
-            <div className="mt-3 flex gap-2 text-[10px] leading-4 text-white/35">
-              <ShieldCheck className="mt-0.5 size-3 shrink-0" />
-              <span>
-                Final price is server-validated. Stripe payment follows after order creation.
-              </span>
+            <p className="mt-3 text-center text-[10px] leading-4 text-white/35">
+              Final price is server-validated before Stripe payment.
+            </p>
             </div>
           </div>
+
+        <div className="rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5">
+          <div className="flex items-start gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-300/[0.14] bg-blue-400/[0.045] text-blue-200/75">
+              <ShieldCheck className="size-4" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p>
+              <p className="mt-1 text-[10px] leading-4 text-white/40">
+                Payment is processed by Stripe after your order is created.
+              </p>
+            </div>
+          </div>
+        </div>
         </div>
       </aside>
 
