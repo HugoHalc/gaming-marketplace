@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock3,
-  Globe2,
   Languages,
   MapPin,
   ShieldCheck,
@@ -21,6 +20,11 @@ import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boo
 export const metadata: Metadata = {
   title: "Rocket League Boosters",
   description: "Meet the Rocket League boosters behind BoostingPedia services.",
+};
+
+const boosterPortraitPosition: Record<string, string> = {
+  brunspart: "center 18%",
+  fastbooster: "58% 18%",
 };
 
 export default function RocketLeagueBoostersPage() {
@@ -61,18 +65,24 @@ export default function RocketLeagueBoostersPage() {
                 className="overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[#0E1411]"
               >
                 <div className="grid md:grid-cols-[220px_1fr]">
-                  <div className="relative min-h-[260px] overflow-hidden bg-[#090D0B] md:min-h-full">
-                    <Image
-                      src={booster.image}
-                      alt={`${booster.nickname} Rocket League booster`}
-                      fill
-                      sizes="(min-width: 768px) 220px, 100vw"
-                      className="object-cover object-center"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/65 via-transparent to-transparent" />
+                  <div className="relative flex min-h-[260px] items-center justify-center overflow-hidden bg-[#090D0B] p-6 md:min-h-full">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(57,229,111,0.08),_transparent_62%)]" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050807]/18" />
+
                     <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#39E56F]/25 bg-[#050807]/80 px-3 py-1.5 text-xs font-semibold text-[#F4F7F5] backdrop-blur-sm">
                       <span className="size-1.5 rounded-full bg-[#39E56F]" />
                       {booster.status}
+                    </div>
+
+                    <div className="relative size-[156px] overflow-hidden rounded-full border border-white/[0.08] bg-[#050807] shadow-[0_0_0_1px_rgba(255,255,255,0.04)] sm:size-[168px]">
+                      <Image
+                        src={booster.image}
+                        alt={`${booster.nickname} Rocket League booster`}
+                        fill
+                        sizes="168px"
+                        className="object-cover"
+                        style={{ objectPosition: boosterPortraitPosition[booster.slug] ?? 'center 18%' }}
+                      />
                     </div>
                   </div>
 

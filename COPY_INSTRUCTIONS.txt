@@ -1,15 +1,14 @@
-BOOSTINGPEDIA — PHASE 14O HOME REAL BOOSTERS FIX
+BOOSTINGPEDIA — PHASE 14O2 ROCKET LEAGUE AVATAR CIRCLE FIX
 
 BASE:
-Apply after Phase 14N.
+Apply after your current Rocket League boosters implementation.
 
 1. Extract ZIP.
-2. Copy files into gaming-marketplace root.
+2. Copy files into the project root.
 3. Replace/add included files.
 4. Commit:
-   Phase 14O - Home Real Boosters Fix
-5. Push main and wait for Vercel.
+   Phase 14O2 - Rocket League Avatar Circle Fix
+5. Push and wait for deploy.
 
-NO SUPABASE MIGRATION REQUIRED.
-
-This specifically replaces the old Home placeholder booster cards with Brunspart and FastBooster.
+This only refines the avatar framing on:
+- /boosters/rocket-league
