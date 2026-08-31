@@ -1,20 +1,15 @@
-BOOSTINGPEDIA — PHASE 14N ROCKET LEAGUE BOOSTERS
+BOOSTINGPEDIA — PHASE 14O HOME REAL BOOSTERS FIX
 
 BASE:
-Apply after Phase 14L.
+Apply after Phase 14N.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
-3. Replace/add:
-   - src/app/page.tsx
-   - src/app/boosters/rocket-league/page.tsx
-   - src/features/boosters/data/rocket-league-boosters.ts
-   - public/boosters/rocket-league/brunspart.jpeg
-   - public/boosters/rocket-league/fastbooster.jpg
-   - existing Phase 14L files/assets included in ZIP
-
+3. Replace/add included files.
 4. Commit:
-   Phase 14N - Rocket League Boosters
+   Phase 14O - Home Real Boosters Fix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
+
+This specifically replaces the old Home placeholder booster cards with Brunspart and FastBooster.

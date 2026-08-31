@@ -244,90 +244,90 @@ export default function Home() {
         </Container>
       </section>
 
-      <section id="boosters" className="scroll-mt-24 py-8 sm:py-10">
+      <section id="boosters" className="border-b border-white/[0.06] py-10 sm:py-12 lg:py-14">
         <Container>
-          <div className="flex items-center justify-between gap-5">
+          <div className="flex items-end justify-between gap-6">
             <div>
-              <p className="font-gaming-label text-sm text-[#A0AAA4]">Boosters</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-[-0.045em] text-[#F4F7F5] sm:text-3xl">
+              <p className="font-gaming-label text-[11px] uppercase tracking-[0.14em] text-[#A0AAA4]">
+                Boosters
+              </p>
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-[#F4F7F5] sm:text-3xl">
                 Meet the players behind the services.
               </h2>
             </div>
 
-            <div className="hidden items-center gap-2 sm:flex">
-              <button
-                type="button"
-                aria-label="Previous boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ChevronRight className="size-4 rotate-180" />
-              </button>
-              <button
-                type="button"
-                aria-label="Next boosters"
-                className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ChevronRight className="size-4" />
-              </button>
-              <Button asChild variant="secondary" className="ml-1 rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-                <Link href="/boosters/rocket-league">View all</Link>
-              </Button>
-            </div>
+            <Link
+              href="/boosters/rocket-league"
+              className="hidden text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:inline-flex"
+            >
+              View all
+            </Link>
           </div>
 
-          <div className="mt-6 -mx-2 overflow-x-auto px-2 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex min-w-max gap-3">
-              {boosterPlaceholders.map((booster) => (
-                <article
-                  key={booster.id}
-                  className="group relative w-[13.8rem] shrink-0 overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#090D0B] p-4 transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-white/[0.15] hover:bg-[#0E1411]"
-                >
-                  <div className="absolute left-4 top-4 size-1.5 rounded-full bg-[#39E56F]" />
-                  <div className="absolute right-4 top-4 font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/25">
-                    {booster.primaryGame}
+          <div className="mt-7 grid gap-4 md:grid-cols-2">
+            {rocketLeagueBoosters.map((booster) => (
+              <Link
+                key={booster.slug}
+                href="/boosters/rocket-league"
+                className="group overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.14] hover:bg-[#131B17]"
+              >
+                <div className="grid sm:grid-cols-[150px_1fr]">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#090D0B] sm:aspect-auto sm:min-h-[190px]">
+                    <Image
+                      src={booster.image}
+                      alt={`${booster.nickname} Rocket League booster`}
+                      fill
+                      sizes="(min-width: 640px) 150px, 100vw"
+                      className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/40 via-transparent to-transparent" />
+                    <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/25 bg-[#050807]/80 px-2.5 py-1 text-[10px] font-semibold text-[#F4F7F5] backdrop-blur-sm">
+                      <span className="size-1.5 rounded-full bg-[#39E56F]" />
+                      {booster.status}
+                    </div>
                   </div>
 
-                  <div className="pt-4">
-                    <div className="mx-auto grid size-20 place-items-center rounded-full border border-[#FFFFFF14] bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,.055),transparent_42%),#0E1411] shadow-[inset_0_0_0_1px_rgba(255,255,255,.015)]">
-                      <span className="font-gaming-value text-xl text-[#F4F7F5]">
-                        {booster.initials}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 text-center">
-                      <h3 className="font-gaming-value truncate text-sm text-[#F4F7F5]">
-                        {booster.nickname}
-                      </h3>
-                      <p className="mt-1 truncate text-[10px] text-[#667069]">
-                        {booster.rankLabel}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <div className="rounded-full border border-[#FFFFFF14] bg-[#050807]/80 px-3 py-1.5 text-center">
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#F4F7F5]">
-                          4.9
+                  <div className="flex flex-col p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+                          Rocket League
                         </p>
-                        <p className="mt-0.5 text-[9px] text-[#667069]">Rating</p>
+                        <h3 className="mt-1.5 text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+                          {booster.nickname}
+                        </h3>
+                        <p className="mt-1 text-xs text-[#A0AAA4]">{booster.rank}</p>
                       </div>
-                      <div className="rounded-full border border-[#FFFFFF14] bg-[#050807]/80 px-3 py-1.5 text-center">
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.1em] text-[#A0AAA4]">
-                          {booster.specialty}
-                        </p>
-                        <p className="mt-0.5 text-[9px] text-[#667069]">Specialty</p>
+
+                      <div className="flex items-center gap-1 text-xs font-semibold text-[#F4F7F5]">
+                        <Star className="size-3.5 fill-[#F4F7F5] text-[#F4F7F5]" />
+                        {booster.rating.toFixed(1)}
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-sm font-semibold leading-5 text-[#F4F7F5]">
+                      {booster.specialty}
+                    </p>
+
+                    <div className="mt-auto pt-5">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#667069]">
+                        <span>{booster.experience} experience</span>
+                        <span>{booster.region}</span>
+                        <span>{booster.languages.join(" / ")}</span>
                       </div>
                     </div>
                   </div>
-                </article>
-              ))}
-            </div>
+                </div>
+              </Link>
+            ))}
           </div>
 
-          <div className="mt-4 flex sm:hidden">
-            <Button asChild variant="secondary" className="w-full rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-              <Link href="/boosters/rocket-league">View all boosters</Link>
-            </Button>
-          </div>
+          <Link
+            href="/boosters/rocket-league"
+            className="mt-5 inline-flex text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:hidden"
+          >
+            View all Rocket League boosters
+          </Link>
         </Container>
       </section>
 
