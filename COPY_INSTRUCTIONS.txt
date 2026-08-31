@@ -1,24 +1,27 @@
-BOOSTINGPEDIA — PHASE 15B ROCKET LEAGUE HERO ARTWORK
+BOOSTINGPEDIA — PHASE 15C / RL-3 PREMIUM SERVICE CARD MICROVISUALS
 
 BASE:
-Apply after Phase 15A.
+Apply after Phase 15B.
 
 SCOPE:
-Rocket League hero artwork only.
+Five Rocket League service catalog cards only.
 
 1. Extract ZIP into project root.
-2. Replace/add included files.
-3. No Supabase migration required.
-4. Deploy.
-5. Review:
+2. Replace:
+   src/app/games/[game]/page.tsx
+3. No new rank assets are included because the implementation uses the existing files already present under:
+   public/ranks/rocket-league/
+4. No Supabase migration required.
+5. Deploy and review:
    /games/rocket-league
 
 Verify:
-- supplied artwork appears on the right
-- car remains fully visible on desktop
-- left copy remains high-contrast
-- old blue glow/watermark is gone for Rocket League
-- no other storefront or service logic changed
+- Rank Boost uses real Diamond → Champion → Grand Champion badges
+- Competitive Wins shows +1 WIN visual
+- Tournament Boost shows compact bracket
+- Rewards Boost shows SEASON REWARDS segmented bar
+- Placements Boost shows ten abstract slots
+- card size/order/copy/pricing/routes are unchanged
 
 Commit:
-Phase 15B - Rocket League Hero Artwork
+Phase 15C - RL3 Premium Service Card Microvisuals
