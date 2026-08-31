@@ -49,10 +49,10 @@ const playlists = [
 ] as const;
 
 const platforms = [
-  { value: "pc", label: "PC" },
-  { value: "playstation", label: "PlayStation" },
-  { value: "xbox", label: "Xbox" },
-  { value: "switch", label: "Nintendo Switch" },
+  { value: "pc", label: "PC", color: "text-sky-300" },
+  { value: "playstation", label: "PlayStation", color: "text-blue-300" },
+  { value: "xbox", label: "Xbox", color: "text-green-300" },
+  { value: "switch", label: "Nintendo Switch", color: "text-red-300" },
 ] as const;
 
 function formatPrice(value: number) {
@@ -119,18 +119,21 @@ function ChoicePill({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
         active
-          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-          : "border-white/[0.08] bg-black/15 text-white/60 hover:border-white/[0.16] hover:text-white"
+          ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
+          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
       <span className="truncate text-xs font-semibold">{label}</span>
-      {meta ? (
-        <span className={`shrink-0 text-[10px] font-bold ${active ? "text-green-300" : "text-white/35"}`}>
-          {meta}
-        </span>
-      ) : null}
+      <span className="flex shrink-0 items-center gap-2">
+        {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
+        {active ? (
+          <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+            <Check className="size-2.5" strokeWidth={3} />
+          </span>
+        ) : null}
+      </span>
     </button>
   );
 }
@@ -215,6 +218,45 @@ function CompactExtra({
   );
 }
 
+
+function PlatformIcon({ platform }: { platform: string }) {
+  if (platform === "pc") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="9.15" cy="14.2" r="1.85" fill="currentColor" />
+        <path d="M10.7 13.4 14.7 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="15.9" cy="10.2" r="2.15" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (platform === "playstation") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <path d="M10 5.2v10.6c0 .9-.34 1.44-1.08 1.62L6.3 18.2v-2.1l1.62-.55c.34-.12.5-.32.5-.68V5.85l1.58-.65Z" fill="currentColor" />
+        <path d="M11.4 7.1c2.2.7 4.22 1.44 5.85 2.15.72.32 1.05.77 1.05 1.35 0 .55-.33.98-1 1.2l-6.52 2.08v-2.13l4.75-1.48c.26-.08.28-.22.05-.32-1.17-.47-2.83-1.02-4.18-1.42V7.1Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (platform === "xbox") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8.2 8.05c1.1.48 2.26 1.3 3.78 2.77 1.5-1.46 2.68-2.28 3.82-2.77" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M8.85 16.25c.9-1.55 1.88-2.83 3.13-4.12 1.23 1.28 2.23 2.56 3.17 4.12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+      <rect x="4.3" y="4.2" width="15.4" height="15.6" rx="6.6" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M9.55 6.65v10.7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <circle cx="8.65" cy="11.1" r="1.02" fill="currentColor" />
+      <circle cx="14.9" cy="12.9" r="1.02" fill="currentColor" />
+    </svg>
+  );
+}
+
 function PreviousRankSelector({
   value,
   onChange,
@@ -227,10 +269,10 @@ function PreviousRankSelector({
   return (
     <div>
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400/75">
+        <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-200/65">
           Previous season rank
         </p>
-        <p className="mt-1 text-base font-bold tracking-[-0.03em] text-white">
+        <p className="font-gaming-value mt-0.5 text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
           {rankLabel(value)}
         </p>
       </div>
@@ -246,8 +288,8 @@ function PreviousRankSelector({
               onClick={() => onChange(firstRankForFamily(item.key))}
               className={`group relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,box-shadow,transform] duration-200 ${
                 selected
-                  ? "border-green-400/45 bg-[linear-gradient(180deg,rgba(74,222,128,.075),rgba(74,222,128,.018))] shadow-[inset_0_1px_0_rgba(255,255,255,.055),0_10px_28px_-22px_rgba(74,222,128,.7)]"
-                  : "border-white/[0.075] bg-[linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.008))] hover:-translate-y-px hover:border-white/[0.17]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
               {item.image ? (
@@ -299,7 +341,7 @@ function PreviousRankSelector({
                 onClick={() => onChange(candidate)}
                 className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-colors ${
                   active
-                    ? "border-green-400/50 bg-green-400/[0.10] text-green-100"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
                     : "border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white"
                 }`}
               >
@@ -453,10 +495,10 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
-      <section className="overflow-hidden rounded-[1.6rem] border border-green-400/[0.10] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.08] via-transparent to-emerald-500/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
+        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/80">
+            <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/65">
               <Trophy className="size-3.5" />
               Rocket League Placements Boost
             </div>
@@ -524,10 +566,10 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <span>10</span>
               </div>
 
-              <div className="mt-3 rounded-xl border border-green-400/15 bg-green-400/[0.045] p-3">
+              <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-green-400/70">
+                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">
                       Package Discount
                     </p>
                     <p className="mt-1 text-sm font-bold text-white">
@@ -535,9 +577,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                     </p>
                   </div>
                   {discountRate > 0 ? (
-                    <span className="rounded-full border border-green-400/25 bg-green-400/[0.10] px-2.5 py-1 text-[10px] font-black text-green-300">
-                      SAVE {discountRate}%
-                    </span>
+                    
                   ) : null}
                 </div>
 
@@ -555,7 +595,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Playlist
                 </p>
                 <p className="mt-1 text-sm font-semibold text-white">
@@ -604,7 +644,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
           <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
@@ -615,14 +655,21 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                       key={platform.value}
                       type="button"
                       onClick={() => update("platform", platform.value)}
-                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                         active
-                          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-                          : "border-white/[0.08] bg-black/15 text-white/65 hover:border-white/[0.16] hover:text-white"
+                          ? "border-blue-300/[0.18] bg-[#131B17] text-white"
+                          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                       }`}
                     >
-                      <span className="text-xs font-semibold">{platform.label}</span>
-                      {active ? <Check className="size-3.5 text-green-300" /> : null}
+                      <span className={`grid size-7 place-items-center rounded-lg border ${active ? "border-white/[0.12] bg-[#090D0B]" : "border-white/[0.08] bg-white/[0.02]"} ${platform.color}`}>
+                        <PlatformIcon platform={platform.value} />
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
+                      {active ? (
+                        <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                          <Check className="size-2.5" strokeWidth={3} />
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}
@@ -630,31 +677,31 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             </div>
 
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost Method
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "account")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "account"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300">
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75">
                       <Gauge className="size-4" />
                     </span>
-                    <span className="text-[10px] font-bold text-green-300">
+                    <span className="text-[10px] font-bold text-[#82F5A4]">
                       Base price
                     </span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                     Account Boost
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
                     We play on your account.
                   </p>
                 </button>
@@ -662,24 +709,24 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "play-with-booster"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300">
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75">
                       <Users className="size-4" />
                     </span>
-                    <span className="text-[10px] font-bold text-green-300">
+                    <span className="text-[10px] font-bold text-blue-200/65">
                       +45%
                     </span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                     Play With Booster
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
                     You play while we boost with you.
                   </p>
                 </button>
@@ -690,7 +737,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Customize
                 </p>
                 <p className="mt-1 text-sm font-semibold text-white">
@@ -747,8 +794,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
       </section>
 
       <aside id="placements-summary" className="scroll-mt-24 xl:sticky xl:top-24">
-        <div className="overflow-hidden rounded-[1.6rem] border border-green-400/20 bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.14] via-emerald-500/[0.04] to-transparent p-4">
+        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
+          <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.045] via-transparent to-transparent p-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-green-300">
@@ -759,7 +806,10 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 </p>
               </div>
               {isLoading ? (
-                <LoaderCircle className="size-4 animate-spin text-green-400" />
+                <span className="inline-flex items-center gap-1.5 text-[10px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating price…
+                </span>
               ) : null}
             </div>
           </div>
@@ -817,40 +867,44 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div className="my-3 h-px bg-white/[0.08]" />
                 <div className="space-y-2">
                   {quote.breakdown.map((item, index) => (
-                    <div
-                      key={`${item.label}-${index}`}
-                      className="flex items-center justify-between gap-4 text-[11px]"
-                    >
-                      <span className="text-[var(--muted-foreground)]">
-                        {item.label}
-                      </span>
-                      <span
-                        className={
-                          item.amount < 0
-                            ? "font-medium text-emerald-300"
-                            : "font-medium text-white"
-                        }
-                      >
-                        {item.amount < 0 ? "−" : ""}
-                        {formatPrice(Math.abs(item.amount))}
+                    <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
+                      <span className="text-[var(--muted-foreground)]">{item.label}</span>
+                      <span className={item.amount < 0 ? "font-medium text-emerald-300" : "font-medium text-white"}>
+                        {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
                       </span>
                     </div>
                   ))}
                 </div>
-
-                <div className="my-3 h-px bg-white/[0.08]" />
+                <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] text-[var(--muted-foreground)]">
-                      Total
-                    </p>
-                    <p className="mt-0.5 text-2xl font-bold tracking-[-0.045em] text-white">
-                      {formatPrice(quote.total)}
-                    </p>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                    {!isLoading ? (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38 transition-opacity duration-200 motion-reduce:transition-none">
+                        <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
+                        Server-validated price
+                      </p>
+                    ) : (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                        <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                        Updating price…
+                      </p>
+                    )}
                   </div>
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">
-                    USD
-                  </span>
+                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">USD</span>
+                </div>
+              </>
+            ) : isLoading ? (
+              <>
+                <div className="my-4 h-px bg-white/[0.08]" />
+                <div>
+                  <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
+                  <p className="font-gaming-value mt-1 text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">—</p>
+                  <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                    <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                    Updating price…
+                  </p>
                 </div>
               </>
             ) : null}
@@ -862,7 +916,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             ) : null}
 
             <Button
-              className="mt-4 w-full"
+              className="mt-4 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
               disabled={!quote || isLoading || isCreatingOrder}
               onClick={createOrder}
@@ -883,26 +937,30 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             <div className="mt-3 flex gap-2 text-[10px] leading-4 text-white/35">
               <ShieldCheck className="mt-0.5 size-3 shrink-0" />
               <span>
-                Final price is validated on the server. Stripe payment follows after order creation.
+                Final price is server-validated. Stripe payment follows after order creation.
               </span>
             </div>
           </div>
         </div>
       </aside>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-green-400/15 bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
-          <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">
-              Your total
-            </p>
-            <p className="mt-0.5 text-xl font-black tracking-[-0.045em] text-white">
-              {quote ? formatPrice(quote.total) : "—"}
-            </p>
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{quote ? formatPrice(quote.total) : "—"}</p>
+              {isLoading ? (
+                <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-2.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating…
+                </span>
+              ) : null}
+            </div>
           </div>
           <a
             href="#placements-summary"
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-green-400/30 bg-green-500 px-5 text-sm font-bold text-black shadow-[0_12px_35px_-16px_rgba(0,230,90,.85)] transition hover:brightness-110"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-[#39E56F]/35 bg-[#39E56F] px-5 text-sm font-bold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] motion-reduce:transition-none"
           >
             View order
             <ArrowRight className="ml-2 size-4" />
