@@ -1,20 +1,20 @@
-BOOSTINGPEDIA — PHASE 14C GAMES PAGE HOME CARD PARITY
+BOOSTINGPEDIA — PHASE 14D PREMIUM GAME SELECTOR + ONLINE BOOSTERS
 
 BASE:
-Apply after Phase 14B.
+Apply after Phase 14C.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
-3. Replace / add:
-   - src/app/games/page.tsx
-   - src/app/page.tsx
+3. Replace:
    - src/components/marketing/site-header.tsx
    - src/components/layout/container.tsx
-   - public/game-cards/*
+   - src/app/page.tsx
+   - src/app/games/page.tsx
 4. Commit:
-   Phase 14C - Games Page Home Card Parity
+   Phase 14D - Premium Game Selector and Online Boosters
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
 
-This phase changes only the visual game-card grid on /games.
+Temporary header metric:
+37 Online Boosters

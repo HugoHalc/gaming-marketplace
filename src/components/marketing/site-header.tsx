@@ -2,7 +2,9 @@ import Link from "next/link";
 import {
   Bell,
   ChevronDown,
+  Crosshair,
   Grid2X2,
+  Radio,
   LayoutDashboard,
   Package,
   UserRound,
@@ -43,14 +45,28 @@ export async function SiteHeader() {
           <div className="flex min-w-0 items-center gap-7">
             <Logo />
 
-            <Link
-              href="/games"
-              className="hidden items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] lg:inline-flex"
-            >
-              <Grid2X2 className="size-4 text-[#A0AAA4]" />
-              Games
-              <ChevronDown className="size-3.5 text-[#667069]" />
-            </Link>
+            <div className="hidden items-center gap-4 lg:flex">
+              <Link
+                href="/games"
+                className="group inline-flex h-10 items-center gap-2.5 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 text-sm font-semibold text-[#F4F7F5] shadow-[inset_0_1px_0_rgba(255,255,255,.025)] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C]"
+              >
+                <span className="grid size-7 place-items-center rounded-full border border-white/[0.08] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:text-[#F4F7F5]">
+                  <Crosshair className="size-3.5" />
+                </span>
+                <span>Select your game</span>
+                <ChevronDown className="size-3.5 text-[#667069]" />
+              </Link>
+
+              <div className="flex items-center gap-2.5">
+                <span className="grid size-8 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]">
+                  <Radio className="size-4" />
+                </span>
+                <div className="leading-none">
+                  <p className="font-gaming-value text-sm text-[#F4F7F5]">37</p>
+                  <p className="mt-1 text-[10px] font-medium text-[#667069]">Online Boosters</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <nav className="hidden items-center gap-6 xl:flex" aria-label="Primary navigation">
