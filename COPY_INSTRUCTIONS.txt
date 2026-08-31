@@ -1,7 +1,7 @@
-BOOSTINGPEDIA — PHASE 14E CENTERED HEADER NAVIGATION
+BOOSTINGPEDIA — PHASE 14F REMOVE GAME SELECTOR CHEVRON
 
 BASE:
-Apply after Phase 14D.
+Apply after Phase 14E.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
@@ -11,7 +11,7 @@ Apply after Phase 14D.
    - src/app/page.tsx
    - src/app/games/page.tsx
 4. Commit:
-   Phase 14E - Centered Header Navigation
+   Phase 14F - Remove Game Selector Chevron
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.

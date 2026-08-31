@@ -54,7 +54,6 @@ export async function SiteHeader() {
                   <Crosshair className="size-3.5" />
                 </span>
                 <span>Select your game</span>
-                <ChevronDown className="size-3.5 text-[#667069]" />
               </Link>
 
               <div className="flex items-center gap-2.5">
