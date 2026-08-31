@@ -1,20 +1,20 @@
-BOOSTINGPEDIA — PHASE 14L HOLD LAST TWO SECONDS HERO LOOP
+BOOSTINGPEDIA — PHASE 14N ROCKET LEAGUE BOOSTERS
 
 BASE:
-Apply after Phase 14K.
+Apply after Phase 14L.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace/add:
    - src/app/page.tsx
-   - src/app/games/page.tsx
-   - src/components/layout/container.tsx
-   - src/components/marketing/site-header.tsx
-   - src/components/marketing/hero-hold-loop-video.tsx
-   - public/brand/boostingpedia-hooded-rogue.png
-   - public/brand/boostingpedia-hooded-rogue-loop.webm
+   - src/app/boosters/rocket-league/page.tsx
+   - src/features/boosters/data/rocket-league-boosters.ts
+   - public/boosters/rocket-league/brunspart.jpeg
+   - public/boosters/rocket-league/fastbooster.jpg
+   - existing Phase 14L files/assets included in ZIP
+
 4. Commit:
-   Phase 14L - Hold Last Two Seconds Hero Loop
+   Phase 14N - Rocket League Boosters
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.

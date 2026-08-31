@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { launchGames } from "@/features/catalog/data/launch-games";
+import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import {
   faqs,
@@ -223,7 +224,7 @@ export default function Home() {
                 </Link>
               </Button>
               <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-                <Link href="#boosters">Meet our boosters</Link>
+                <Link href="/boosters/rocket-league">Meet our boosters</Link>
               </Button>
             </div>
 
@@ -269,7 +270,7 @@ export default function Home() {
                 <ChevronRight className="size-4" />
               </button>
               <Button asChild variant="secondary" className="ml-1 rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-                <Link href="/boosters">View all</Link>
+                <Link href="/boosters/rocket-league">View all</Link>
               </Button>
             </div>
           </div>
@@ -324,7 +325,7 @@ export default function Home() {
 
           <div className="mt-4 flex sm:hidden">
             <Button asChild variant="secondary" className="w-full rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-              <Link href="/boosters">View all boosters</Link>
+              <Link href="/boosters/rocket-league">View all boosters</Link>
             </Button>
           </div>
         </Container>
