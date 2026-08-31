@@ -1,12 +1,8 @@
-BOOSTINGPEDIA — PHASE 15G
+Phase 15H – Tournament Boost Visual System Alignment
 
-1. Extract into the project root.
-2. Replace:
-   src/features/configurator/components/rocket-league-wins-configurator.tsx
-3. No scripts required.
-4. No Supabase migration required.
-5. Deploy and test:
-   /games/rocket-league/wins
+Replace this file in your project:
 
-Commit:
-Phase 15G - Competitive Wins Visual System Alignment
+- src/features/configurator/components/rocket-league-tournament-configurator.tsx
+
+Optional reference note included:
+- docs/phase-15h-tournament-boost-visual-system-alignment.md
