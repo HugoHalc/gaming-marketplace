@@ -243,7 +243,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
 
                     <div className="space-y-1.5">
-                      {rocketLeagueServiceNavigation.map((item, index) => {
+                      {rocketLeagueServiceNavigation.map((item) => {
                         const active = service.slug === item.slug;
 
                         return (
@@ -251,22 +251,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                             key={item.slug}
                             href={`/games/rocket-league/${item.slug}`}
                             aria-current={active ? "page" : undefined}
-                            className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                            className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                               active
                                 ? "border-blue-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
                                 : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"
                             }`}
                           >
-                            <span
-                              className={`font-gaming-value grid size-6 shrink-0 place-items-center rounded-lg border text-[10px] font-bold ${
-                                active
-                                  ? "border-blue-300/[0.16] bg-blue-400/[0.045] text-blue-200/75"
-                                  : "border-white/[0.07] bg-white/[0.02] text-white/28 group-hover:text-white/45"
-                              }`}
-                            >
-                              {String(index + 1).padStart(2, "0")}
-                            </span>
-
                             <span className="min-w-0 flex-1 truncate text-xs font-semibold">
                               {item.label}
                             </span>
