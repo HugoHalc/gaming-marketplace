@@ -145,9 +145,9 @@ export default function Home() {
         >
           <div className="absolute inset-y-[2%] left-[5%] right-[2%] overflow-hidden">
             <HeroHoldLoopVideo
-              introSrc="/brand/boostingpedia-hooded-rogue-intro.webm"
-              loopSrc="/brand/boostingpedia-hooded-rogue-hold-loop.webm"
+              src="/brand/boostingpedia-hooded-rogue-loop.webm"
               poster="/brand/boostingpedia-hooded-rogue.png"
+              holdSeconds={2}
               className="h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
               sizes="(min-width:1280px) 52vw, 54vw"
             />

@@ -1,7 +1,7 @@
-BOOSTINGPEDIA — PHASE 14M SEAMLESS PING-PONG HOLD LOOP
+BOOSTINGPEDIA — PHASE 14L HOLD LAST TWO SECONDS HERO LOOP
 
 BASE:
-Apply after Phase 14L.
+Apply after Phase 14K.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
@@ -12,11 +12,9 @@ Apply after Phase 14L.
    - src/components/marketing/site-header.tsx
    - src/components/marketing/hero-hold-loop-video.tsx
    - public/brand/boostingpedia-hooded-rogue.png
-   - public/brand/boostingpedia-hooded-rogue-intro.webm
-   - public/brand/boostingpedia-hooded-rogue-hold-loop.webm
-
+   - public/brand/boostingpedia-hooded-rogue-loop.webm
 4. Commit:
-   Phase 14M - Seamless Ping Pong Hold Loop
+   Phase 14L - Hold Last Two Seconds Hero Loop
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
