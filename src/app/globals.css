@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030504;
+  --foreground: #f6faf7;
+  --muted-foreground: #929a94;
+  --surface: rgba(8, 12, 9, 0.94);
+  --surface-raised: rgba(12, 17, 13, 0.96);
+  --surface-hover: rgba(18, 26, 20, 0.98);
+  --border: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(74, 222, 128, 0.18);
+  --primary: #22c55e;
+  --primary-foreground: #020503;
+  --primary-glow: rgba(34, 197, 94, 0.62);
+  --ring: #4ade80;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --shadow-card: 0 24px 80px -42px rgba(0, 0, 0, 0.98);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-gaming: var(--font-rajdhani);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 16% -12%, rgba(34, 197, 94, 0.115), transparent 31rem),
+    radial-gradient(circle at 94% 12%, rgba(16, 185, 129, 0.055), transparent 30rem),
+    linear-gradient(180deg, #030504 0%, #050706 45%, #030504 100%);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+::selection { background: rgba(34, 197, 94, 0.38); color: white; }
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(74, 222, 128, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 222, 128, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.72) 58%, transparent 100%);
+}
+
+/*
+ * BoostingPedia typography system
+ *
+ * Geist remains the global/default face.
+ * Rajdhani is opt-in only for short competitive/gaming metadata.
+ * These classes intentionally do not set font-size, line-height,
+ * spacing, text-transform, or layout properties.
+ */
+.font-gaming-label {
+  font-family: var(--font-rajdhani), var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+
+.font-gaming-value {
+  font-family: var(--font-rajdhani), var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+}
+
+details > summary::-webkit-details-marker { display: none; }
