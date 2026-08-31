@@ -98,9 +98,9 @@ function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }
 
   if (serviceName === "Rank Boost") {
     const ranks = [
-      { src: "/ranks/rocket-league/diamond.svg", alt: "Diamond" },
-      { src: "/ranks/rocket-league/champion.svg", alt: "Champion" },
-      { src: "/ranks/rocket-league/grand-champion.svg", alt: "Grand Champion" },
+      { src: "/ranks/rocket-league/diamond.png", alt: "Diamond" },
+      { src: "/ranks/rocket-league/champion.png", alt: "Champion" },
+      { src: "/ranks/rocket-league/grand-champion.png", alt: "Grand Champion" },
     ];
 
     return (

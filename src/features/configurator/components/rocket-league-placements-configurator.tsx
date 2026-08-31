@@ -152,38 +152,66 @@ function CompactExtra({
   price: string;
   description: string;
 }) {
+  const isFree = price === "FREE";
+
   return (
-    <label
-      className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 transition-colors ${
+    <button
+      type="button"
+      aria-pressed={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-black/10 opacity-45"
           : checked
-            ? "border-green-400/30 bg-green-400/[0.055]"
-            : "cursor-pointer border-white/[0.07] bg-black/15 hover:border-white/[0.14]"
+            ? "border-blue-300/[0.18] bg-[#131B17]"
+            : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300">
+      <span
+        className={`grid size-8 shrink-0 place-items-center rounded-lg border transition-colors duration-200 motion-reduce:transition-none ${
+          checked
+            ? "border-white/[0.12] bg-[#090D0B] text-blue-200/80"
+            : "border-white/[0.07] bg-white/[0.025] text-white/55 group-hover/extra:text-white/75"
+        }`}
+      >
         {icon}
       </span>
+
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="truncate text-xs font-semibold text-white">{title}</span>
-          <span className="shrink-0 text-[10px] font-bold text-green-300">
+          <span className="truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
+          <span
+            className={`shrink-0 text-[10px] font-bold ${
+              disabled
+                ? "text-white/35"
+                : isFree
+                  ? "text-[#82F5A4]"
+                  : "text-blue-200/60"
+            }`}
+          >
             {disabled ? "Not needed" : price}
           </span>
         </span>
-        <span className="mt-0.5 block truncate text-[10px] text-[var(--muted-foreground)]" title={description}>
+        <span
+          className="mt-0.5 block truncate text-[10px] text-[#A0AAA4]"
+          title={description}
+        >
           {description}
         </span>
       </span>
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-        className="size-4 shrink-0 accent-green-500"
-      />
-    </label>
+
+      <span
+        aria-hidden="true"
+        className={`grid size-4 shrink-0 place-items-center rounded-full border transition-[border-color,background-color,color] duration-200 motion-reduce:transition-none ${
+          checked
+            ? "border-[#39E56F]/40 bg-[#39E56F] text-[#050807]"
+            : "border-white/[0.12] bg-white/[0.02] text-transparent"
+        }`}
+      >
+        <Check className="size-2.5" strokeWidth={3} />
+      </span>
+    </button>
   );
 }
 
