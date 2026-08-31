@@ -1,27 +1,18 @@
-BOOSTINGPEDIA — PHASE 15C / RL-3 PREMIUM SERVICE CARD MICROVISUALS
+BOOSTINGPEDIA — PHASE 15D DIRECT REPLACEMENT
 
-BASE:
-Apply after Phase 15B.
+1. Extract the ZIP into the root of your project.
 
-SCOPE:
-Five Rocket League service catalog cards only.
+2. Replace this file when prompted:
+   src/features/configurator/components/rocket-league-rank-configurator.tsx
 
-1. Extract ZIP into project root.
-2. Replace:
-   src/app/games/[game]/page.tsx
-3. No new rank assets are included because the implementation uses the existing files already present under:
-   public/ranks/rocket-league/
-4. No Supabase migration required.
-5. Deploy and review:
-   /games/rocket-league
+3. No script is required.
 
-Verify:
-- Rank Boost uses real Diamond → Champion → Grand Champion badges
-- Competitive Wins shows +1 WIN visual
-- Tournament Boost shows compact bracket
-- Rewards Boost shows SEASON REWARDS segmented bar
-- Placements Boost shows ten abstract slots
-- card size/order/copy/pricing/routes are unchanged
+4. No Supabase migration is required.
+
+5. Commit and push normally.
+
+6. Test:
+   /games/rocket-league/rank-boost
 
 Commit:
-Phase 15C - RL3 Premium Service Card Microvisuals
+Phase 15D - Rank Configurator Visual Hierarchy

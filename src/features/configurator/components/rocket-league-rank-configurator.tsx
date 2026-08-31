@@ -112,30 +112,16 @@ function RankIcon({
   selected: boolean;
 }) {
   return (
-    <span className="relative grid size-[3.35rem] place-items-center">
-      <span
-        className={`absolute inset-[0.3rem] rounded-full bg-gradient-to-br ${family.accent} blur-[11px] transition-opacity duration-200 ${
-          selected ? "opacity-65" : "opacity-22"
-        }`}
-      />
-      <span
-        className={`absolute inset-[0.12rem] rounded-[1rem] border transition-all duration-200 ${
-          selected
-            ? "border-white/[0.09] bg-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,.05)]"
-            : "border-transparent bg-transparent"
-        }`}
-      />
+    <span className="relative grid size-[3.1rem] place-items-center">
       <Image
         src={family.image}
         alt=""
         width={46}
         height={46}
-        className={`relative z-[1] h-[2.85rem] w-[2.85rem] object-contain transition-transform duration-200 drop-shadow-[0_7px_16px_rgba(0,0,0,.62)] ${
-          selected ? "scale-[1.04]" : "group-hover/rank:scale-[1.03]"
-        }`}
+        className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
       />
       {selected ? (
-        <span className="absolute -right-1 -top-1 z-[2] grid size-4 place-items-center rounded-full border border-green-200/40 bg-green-400 text-[#06110a] shadow-[0_0_14px_rgba(74,222,128,.5)]">
+        <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
           <Check className="size-2.5" strokeWidth={3} />
         </span>
       ) : null}
@@ -216,14 +202,27 @@ function CompactRankSelector({
 
   return (
     <div className="min-w-0">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400/75">{title}</p>
-          <p className="mt-1 text-base font-bold tracking-[-0.03em] text-white">{rankLabel(value)}</p>
+      <div className="flex items-center gap-3">
+        <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.035]">
+          <Image
+            src={selectedFamily.image}
+            alt=""
+            width={44}
+            height={44}
+            className="h-10 w-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-200/65">
+            {target ? "Target rank" : "Current rank"}
+          </p>
+          <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+            {rankLabel(value)}
+          </p>
         </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-4 gap-2">
+      <div className="mt-4 grid grid-cols-4 gap-2">
         {visibleFamilies.map((family) => {
           const selected = selectedFamily.key === family.key;
           return (
@@ -232,17 +231,17 @@ function CompactRankSelector({
               type="button"
               title={family.label}
               onClick={() => chooseFamily(family.key)}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,box-shadow,transform] duration-200 ${
+              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
                 selected
-                  ? "border-green-400/45 bg-[linear-gradient(180deg,rgba(74,222,128,.075),rgba(74,222,128,.018))] shadow-[inset_0_1px_0_rgba(255,255,255,.055),0_0_0_1px_rgba(74,222,128,.045),0_10px_28px_-22px_rgba(74,222,128,.7)]"
-                  : "border-white/[0.075] bg-[linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.008))] shadow-[inset_0_1px_0_rgba(255,255,255,.025)] hover:-translate-y-px hover:border-white/[0.17] hover:bg-[linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.012))] hover:shadow-[inset_0_1px_0_rgba(255,255,255,.045),0_12px_28px_-24px_rgba(0,0,0,.95)]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
               <span className={`pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity ${
                 selected ? "opacity-80" : "opacity-35"
               }`} />
               {selected ? (
-                <span className="pointer-events-none absolute inset-x-3 bottom-0 h-px bg-gradient-to-r from-transparent via-green-400/90 to-transparent shadow-[0_0_8px_rgba(74,222,128,.55)]" />
+                <span className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/55 to-transparent" />
               ) : null}
               <RankIcon family={family} selected={selected} />
               <span className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
@@ -270,8 +269,8 @@ function CompactRankSelector({
                 onClick={() => onChange(candidate)}
                 className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color,box-shadow] ${
                   active
-                    ? "border-green-400/50 bg-[linear-gradient(180deg,rgba(74,222,128,.13),rgba(74,222,128,.055))] text-green-100 shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_0_14px_-8px_rgba(74,222,128,.85)]"
-                    : "border-white/[0.085] bg-[linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))] text-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,.025)] hover:border-white/[0.16] hover:text-white"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
+                    : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                 } disabled:cursor-not-allowed disabled:opacity-20`}
               >
                 {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
@@ -299,14 +298,21 @@ function ChoicePill({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-colors ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
         active
-          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-          : "border-white/[0.08] bg-black/15 text-white/65 hover:border-white/[0.16] hover:text-white"
+          ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
+          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
       <span className="truncate text-xs font-semibold">{label}</span>
-      {meta ? <span className={`shrink-0 text-[10px] font-bold ${active ? "text-green-300" : "text-white/40"}`}>{meta}</span> : null}
+      <span className="flex shrink-0 items-center gap-2">
+        {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
+        {active ? (
+          <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+            <Check className="size-2.5" strokeWidth={3} />
+          </span>
+        ) : null}
+      </span>
     </button>
   );
 }
@@ -330,7 +336,7 @@ function CompactExtra({
 }) {
   return (
     <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors ${
-      checked ? "border-green-400/30 bg-green-400/[0.06]" : "border-white/[0.07] bg-black/15"
+      checked ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]" : "border-white/[0.07] bg-[#090D0B]"
     } ${disabled ? "cursor-not-allowed opacity-40" : "hover:border-white/[0.15]"}`}>
       <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-white/55">
         {icon}
@@ -338,7 +344,15 @@ function CompactExtra({
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-xs font-semibold text-white">{title}</span>
-          <span className="shrink-0 text-[10px] font-bold text-green-300">{disabled ? "Not needed" : price}</span>
+          <span className={`shrink-0 text-[10px] font-bold ${
+            disabled
+              ? "text-white/35"
+              : price === "FREE"
+                ? "text-[#82F5A4]"
+                : "text-blue-200/60"
+          }`}>
+            {disabled ? "Not needed" : price}
+          </span>
         </span>
         <span className="mt-0.5 block truncate text-[10px] text-[var(--muted-foreground)]" title={description}>
           {description}
@@ -474,10 +488,10 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
-      <section className="overflow-hidden rounded-[1.6rem] border border-green-400/[0.10] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.08] via-transparent to-emerald-500/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
+        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/80">
+            <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/65">
               <Sparkles className="size-3.5" />
               Rocket League Rank Boost
             </div>
@@ -489,7 +503,10 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
 
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="relative grid gap-5 lg:grid-cols-2">
+            <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-blue-200/45 lg:grid">
+              <ArrowRight className="size-3.5" />
+            </span>
             <CompactRankSelector
               title="Current rank"
               value={currentRank}
@@ -511,7 +528,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">Playlist</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Playlist</p>
                 <p className="mt-1 text-sm font-semibold text-white">Choose your playlist.</p>
               </div>
               <span className="text-[10px] text-white/35">Price modifiers shown upfront</span>
@@ -552,7 +569,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
           <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">Platform</p>
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {platforms.map((platform) => {
                   const active = selection.platform === platform.value;
@@ -563,16 +580,21 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                       onClick={() => update("platform", platform.value)}
                       className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
                         active
-                          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-                          : "border-white/[0.08] bg-black/15 text-white/65 hover:border-white/[0.16] hover:text-white"
+                          ? "border-blue-300/[0.18] bg-[#131B17] text-white"
+                          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                       }`}
                     >
                       <span className={`grid size-7 place-items-center rounded-lg border ${
-                        active ? "border-green-400/20 bg-black/20" : "border-white/[0.08] bg-white/[0.02]"
+                        active ? "border-white/[0.12] bg-[#090D0B]" : "border-white/[0.08] bg-white/[0.02]"
                       } ${platform.color}`}>
                         <PlatformIcon platform={platform.value} />
                       </span>
                       <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
+                      {active ? (
+                        <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                          <Check className="size-2.5" strokeWidth={3} />
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}
@@ -580,40 +602,40 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             </div>
 
             <div className="lg:border-l lg:border-white/[0.07] lg:pl-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">Boost method</p>
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost method</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "account")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "account"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300"><Gauge className="size-4" /></span>
-                    <span className="text-[10px] font-bold text-green-300">Base price</span>
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75"><Gauge className="size-4" /></span>
+                    <span className="text-[10px] font-bold text-[#82F5A4]">Base price</span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">Account Boost</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">We play on your account.</p>
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">Account Boost</p>
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">We play on your account.</p>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "play-with-booster"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300"><Users className="size-4" /></span>
-                    <span className="text-[10px] font-bold text-green-300">+45%</span>
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75"><Users className="size-4" /></span>
+                    <span className="text-[10px] font-bold text-blue-200/65">+45%</span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">Play With Booster</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">You play while we boost with you.</p>
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">Play With Booster</p>
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">You play while we boost with you.</p>
                 </button>
               </div>
             </div>
@@ -622,7 +644,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">Customize</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p>
                 <p className="mt-1 text-sm font-semibold text-white">Optional upgrades.</p>
               </div>
               <span className="text-[10px] text-white/35">Nothing preselected</span>
@@ -681,27 +703,50 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
       </section>
 
       <aside id="boost-summary" className="scroll-mt-24 xl:sticky xl:top-24">
-        <div className="overflow-hidden rounded-[1.6rem] border border-green-400/20 bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.14] via-emerald-500/[0.04] to-transparent p-4">
+        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
+          <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.045] via-transparent to-transparent p-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-green-300">Your boost</p>
                 <p className="mt-1 text-base font-semibold text-white">Rocket League Rank Boost</p>
               </div>
-              {isLoading ? <LoaderCircle className="size-4 animate-spin text-green-400" /> : null}
+              {isLoading ? (
+                <span className="inline-flex items-center gap-2 text-[10px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-3.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating price…
+                </span>
+              ) : null}
             </div>
           </div>
 
           <div className="p-4">
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-white/[0.07] bg-black/20 p-3">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
-                <p className="mt-1 text-xs font-semibold text-white">{rankLabel(currentRank)}</p>
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <Image
+                  src={familyForRank(currentRank).image}
+                  alt=""
+                  width={30}
+                  height={30}
+                  className="size-7 shrink-0 object-contain"
+                />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
+                  <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(currentRank)}</p>
+                </div>
               </div>
-              <ArrowRight className="size-3.5 text-green-400/70" />
-              <div className="text-right">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
-                <p className="mt-1 text-xs font-semibold text-white">{rankLabel(targetRank)}</p>
+              <ArrowRight className="size-3.5 text-blue-200/40" />
+              <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
+                  <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(targetRank)}</p>
+                </div>
+                <Image
+                  src={familyForRank(targetRank).image}
+                  alt=""
+                  width={30}
+                  height={30}
+                  className="size-7 shrink-0 object-contain"
+                />
               </div>
             </div>
 
@@ -731,8 +776,9 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                 <div className="my-3 h-px bg-white/[0.08]" />
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[10px] text-[var(--muted-foreground)]">Total</p>
-                    <p className="mt-0.5 text-2xl font-bold tracking-[-0.045em] text-white">{formatPrice(quote.total)}</p>
+                    <p className="text-[10px] text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-0.5 text-4xl font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                    <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Server-validated price</p>
                   </div>
                   <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">USD</span>
                 </div>
@@ -743,7 +789,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
             ) : null}
 
-            <Button className="mt-4 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>
+            <Button className="mt-4 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>
               {isCreatingOrder ? (
                 <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></>
               ) : (
@@ -759,7 +805,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
       </aside>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-green-400/15 bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
           <div>
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
@@ -769,7 +815,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
           </div>
           <a
             href="#boost-summary"
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-green-400/30 bg-green-500 px-5 text-sm font-bold text-black shadow-[0_12px_35px_-16px_rgba(0,230,90,.85)] transition hover:brightness-110"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-[#39E56F]/35 bg-[#39E56F] px-5 text-sm font-bold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] motion-reduce:transition-none"
           >
             View order
             <ArrowRight className="ml-2 size-4" />
