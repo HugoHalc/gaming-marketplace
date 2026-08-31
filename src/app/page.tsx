@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
+import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,20 +92,6 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
       <style>{`
-        .boostingpedia-hero-video-fallback {
-          display: none;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .boostingpedia-hero-video {
-            display: none;
-          }
-
-          .boostingpedia-hero-video-fallback {
-            display: block;
-            opacity: 1;
-          }
-        }
 
         @keyframes boostingpediaHeroFloat {
           0%, 100% { transform: translate3d(0, 0, 0); }
@@ -157,25 +144,12 @@ export default function Home() {
           className="pointer-events-none absolute inset-y-0 right-[1%] -z-10 hidden w-[54%] overflow-hidden lg:block xl:right-[3%] xl:w-[52%]"
         >
           <div className="absolute inset-y-[2%] left-[5%] right-[2%] overflow-hidden">
-            <video
-              className="boostingpedia-hero-video h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
+            <HeroHoldLoopVideo
+              src="/brand/boostingpedia-hooded-rogue-loop.webm"
               poster="/brand/boostingpedia-hooded-rogue.png"
-              tabIndex={-1}
-            >
-              <source src="/brand/boostingpedia-hooded-rogue-loop.webm" type="video/webm" />
-            </video>
-
-            <Image
-              src="/brand/boostingpedia-hooded-rogue.png"
-              alt=""
-              fill
+              holdSeconds={2}
+              className="h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
               sizes="(min-width:1280px) 52vw, 54vw"
-              className="boostingpedia-hero-video-fallback object-cover object-[58%_50%] opacity-0 xl:object-[60%_50%]"
             />
           </div>
 

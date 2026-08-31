@@ -1,19 +1,20 @@
-BOOSTINGPEDIA — PHASE 14K LOOP VIDEO HERO
+BOOSTINGPEDIA — PHASE 14L HOLD LAST TWO SECONDS HERO LOOP
 
 BASE:
-Apply after Phase 14J.
+Apply after Phase 14K.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace/add:
    - src/app/page.tsx
    - src/app/games/page.tsx
-   - src/components/marketing/site-header.tsx
    - src/components/layout/container.tsx
+   - src/components/marketing/site-header.tsx
+   - src/components/marketing/hero-hold-loop-video.tsx
    - public/brand/boostingpedia-hooded-rogue.png
    - public/brand/boostingpedia-hooded-rogue-loop.webm
 4. Commit:
-   Phase 14K - Loop Video Hero
+   Phase 14L - Hold Last Two Seconds Hero Loop
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
