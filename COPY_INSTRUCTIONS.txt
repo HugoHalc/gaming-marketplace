@@ -1,7 +1,7 @@
-BOOSTINGPEDIA — PHASE 14I ANIMATED ROGUE EYES
+BOOSTINGPEDIA — PHASE 14J ROGUE HERO FRAMING FIX
 
 BASE:
-Apply after Phase 14H.
+Apply after Phase 14I.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
@@ -12,7 +12,7 @@ Apply after Phase 14H.
    - src/components/layout/container.tsx
    - public/brand/boostingpedia-hooded-rogue.png
 4. Commit:
-   Phase 14I - Animated Rogue Eyes
+   Phase 14J - Rogue Hero Framing Fix
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.

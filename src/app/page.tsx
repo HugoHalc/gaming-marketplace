@@ -139,27 +139,28 @@ export default function Home() {
 
         <div
           aria-hidden="true"
-          className="hero-art-float pointer-events-none absolute inset-y-0 right-[-5vw] -z-10 w-[78vw] sm:right-[-4vw] sm:w-[72vw] lg:right-[-3vw] lg:w-[66vw] xl:right-[-2vw] xl:w-[63vw]"
+          className="hero-art-float pointer-events-none absolute bottom-[-9%] right-[4%] -z-10 hidden aspect-[1225/1284] h-[94%] max-h-[610px] lg:block xl:right-[7%] xl:h-[98%]"
         >
           <Image
             src="/brand/boostingpedia-hooded-rogue.png"
             alt=""
             fill
             priority
-            sizes="(min-width:1280px) 63vw, (min-width:1024px) 66vw, (min-width:640px) 72vw, 78vw"
-            className="hero-art-breathe object-cover object-[70%_53%] sm:object-[71%_53%] lg:object-[69%_53%] xl:object-[68%_53%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)]"
+            sizes="(min-width:1280px) 560px, 48vw"
+            className="hero-art-breathe object-contain object-bottom"
           />
 
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-[32.5%] z-10 h-[7%] w-[19%] -translate-x-1/2"
-                >
-                  <span className="boostingpedia-eye-glow absolute left-[7%] top-1/2 h-[55%] w-[32%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/55 blur-[10px]" />
-                  <span className="boostingpedia-eye-glow absolute right-[7%] top-1/2 h-[55%] w-[32%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/55 blur-[10px]" />
-                </div>
-          <div className="hero-art-glow absolute bottom-[7%] right-[11%] h-[24%] w-[34%] rounded-full bg-[#39E56F]/[0.05] blur-[64px]" />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-[31.2%] z-10 h-[5.2%] w-[22%] -translate-x-1/2"
+          >
+            <span className="boostingpedia-eye-glow absolute left-[5%] top-1/2 h-[62%] w-[34%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/50 blur-[8px]" />
+            <span className="boostingpedia-eye-glow absolute right-[5%] top-1/2 h-[62%] w-[34%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/50 blur-[8px]" />
+          </div>
+
+          <div className="hero-art-glow absolute bottom-[11%] left-1/2 h-[19%] w-[58%] -translate-x-1/2 rounded-full bg-[#39E56F]/[0.035] blur-[56px]" />
         </div>
-        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[74%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_44%,rgba(5,8,7,.78)_66%,transparent_100%)] sm:w-[68%] lg:w-[57%]" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_46%,rgba(5,8,7,.72)_68%,transparent_100%)] sm:w-[66%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
             <Badge className="mb-5 border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]">
