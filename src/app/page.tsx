@@ -532,10 +532,7 @@ export default function Home() {
           />
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }, index) => {
-              const isAccent = index === 0 || index === 3;
-
-              return (
+            {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }) => (
                 <article
                   key={title}
                   className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[linear-gradient(180deg,#0E1411_0%,#090D0B_100%)] p-6 transition-[border-color,background-color] duration-200 ease-out hover:border-white/[0.15] hover:bg-[#101713] motion-reduce:transition-none sm:p-7"
@@ -543,13 +540,7 @@ export default function Home() {
                   <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 
                   <div className="relative">
-                    <div
-                      className={`grid size-11 place-items-center rounded-xl border border-[#FFFFFF14] ${
-                        isAccent
-                          ? "bg-[#39E56F]/[0.045] text-[#82F5A4]"
-                          : "bg-[#090D0B] text-[#A0AAA4]"
-                      }`}
-                    >
+                    <div className="grid size-11 place-items-center rounded-xl border border-[#39E56F]/25 bg-[#39E56F]/[0.045] text-[#82F5A4]">
                       <Icon className="size-4.5" strokeWidth={1.8} />
                     </div>
 
@@ -563,19 +554,14 @@ export default function Home() {
                     </div>
 
                     <div className="mt-7 flex items-center gap-3 border-t border-white/[0.06] pt-4">
-                      <span
-                        className={`h-px w-8 ${
-                          isAccent ? "bg-[#39E56F]/20" : "bg-white/[0.08]"
-                        }`}
-                      />
+                      <span className="h-px w-8 bg-[#39E56F]/20" />
                       <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
                         Built into every order
                       </span>
                     </div>
                   </div>
                 </article>
-              );
-            })}
+            ))}
           </div>
         </Container>
       </section>

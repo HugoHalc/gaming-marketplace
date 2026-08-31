@@ -1,18 +1,15 @@
-BOOSTINGPEDIA — PHASE 14Z MARKETPLACE FOUNDATION POLISH
+BOOSTINGPEDIA — PHASE 14Z2 UNIFIED FOUNDATION ACCENTS
 
 BASE:
-Apply after Phase 14Y / current main.
+Apply after Phase 14Z.
 
 SCOPE:
-Marketplace Foundation on Home only.
-
-IMPORTANT:
-Phase 14Y changed only the header. This ZIP intentionally contains only the Home Marketplace Foundation change and does not overwrite the header.
+Marketplace Foundation card accents only.
 
 1. Extract ZIP into project root.
-2. Replace/add included files.
+2. Replace included files.
 3. No Supabase migration required.
-4. Deploy and review Marketplace Foundation on desktop/mobile.
+4. Deploy and verify all six cards now use the same green accent treatment.
 
 Commit:
-Phase 14Z - Marketplace Foundation Polish
+Phase 14Z2 - Unified Foundation Accents
