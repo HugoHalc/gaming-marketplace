@@ -711,8 +711,8 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                 <p className="mt-1 text-base font-semibold text-white">Rocket League Rank Boost</p>
               </div>
               {isLoading ? (
-                <span className="inline-flex items-center gap-2 text-[10px] text-[#A0AAA4]">
-                  <LoaderCircle className="size-3.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                <span className="inline-flex items-center gap-1.5 text-[10px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                   Updating price…
                 </span>
               ) : null}
@@ -773,14 +773,43 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                     </div>
                   ))}
                 </div>
-                <div className="my-3 h-px bg-white/[0.08]" />
+
+                <div className="my-4 h-px bg-white/[0.08]" />
+
                 <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] text-[#A0AAA4]">Total</p>
-                    <p className="font-gaming-value mt-0.5 text-4xl font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
-                    <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Server-validated price</p>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                      {formatPrice(quote.total)}
+                    </p>
+                    {!isLoading ? (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38 transition-opacity duration-200 motion-reduce:transition-none">
+                        <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
+                        Server-validated price
+                      </p>
+                    ) : (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                        <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                        Updating price…
+                      </p>
+                    )}
                   </div>
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">USD</span>
+
+                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">
+                    USD
+                  </span>
+                </div>
+              </>
+            ) : isLoading ? (
+              <>
+                <div className="my-4 h-px bg-white/[0.08]" />
+                <div>
+                  <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
+                  <p className="font-gaming-value mt-1 text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">—</p>
+                  <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                    <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                    Updating price…
+                  </p>
                 </div>
               </>
             ) : null}
@@ -799,19 +828,27 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
             <div className="mt-3 flex gap-2 text-[10px] leading-4 text-white/35">
               <ShieldCheck className="mt-0.5 size-3 shrink-0" />
-              <span>Final price is validated on the server. Stripe payment follows after order creation.</span>
+              <span>Final price is server-validated. Stripe payment follows after order creation.</span>
             </div>
           </div>
         </div>
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
-          <div>
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
+          <div className="min-w-0">
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
-            <p className="mt-0.5 text-xl font-black tracking-[-0.045em] text-white">
-              {quote ? formatPrice(quote.total) : "—"}
-            </p>
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                {quote ? formatPrice(quote.total) : "—"}
+              </p>
+              {isLoading ? (
+                <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-2.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating…
+                </span>
+              ) : null}
+            </div>
           </div>
           <a
             href="#boost-summary"

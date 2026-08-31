@@ -1,18 +1,29 @@
-BOOSTINGPEDIA — PHASE 15D DIRECT REPLACEMENT
+BOOSTINGPEDIA — PHASE 15E PRICE SUMMARY & MOBILE CONVERSION POLISH
 
-1. Extract the ZIP into the root of your project.
+BASE:
+Apply after Phase 15D.
 
-2. Replace this file when prompted:
+1. Extract this ZIP into the root of your project.
+
+2. Replace:
    src/features/configurator/components/rocket-league-rank-configurator.tsx
 
-3. No script is required.
+3. No scripts required.
 
-4. No Supabase migration is required.
+4. No Supabase migration required.
 
 5. Commit and push normally.
 
 6. Test:
    /games/rocket-league/rank-boost
 
+Verify:
+- selectors behave exactly as before
+- quote pricing is unchanged
+- loading shows Updating price…
+- no $0.00 placeholder appears
+- validated total is large, white, and readable
+- mobile shows Your total + View order without overflow
+
 Commit:
-Phase 15D - Rank Configurator Visual Hierarchy
+Phase 15E - Price Summary and Mobile Conversion Polish
