@@ -1,15 +1,19 @@
-BOOSTINGPEDIA — PHASE 14Z2 UNIFIED FOUNDATION ACCENTS
-
-BASE:
-Apply after Phase 14Z.
+BOOSTINGPEDIA — PHASE 15A ROCKET LEAGUE STOREFRONT POLISH
 
 SCOPE:
-Marketplace Foundation card accents only.
+Rocket League storefront presentation only.
 
 1. Extract ZIP into project root.
-2. Replace included files.
+2. Replace:
+   src/app/games/[game]/page.tsx
 3. No Supabase migration required.
-4. Deploy and verify all six cards now use the same green accent treatment.
+4. Deploy and review:
+   /games/rocket-league
+5. Verify:
+   - hero layout is unchanged
+   - service cards are unchanged
+   - pricing/configurators are unchanged
+   - Rocket League no longer exposes internal development language
 
 Commit:
-Phase 14Z2 - Unified Foundation Accents
+Phase 15A - Rocket League Storefront Polish

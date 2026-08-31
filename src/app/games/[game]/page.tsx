@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  Activity,
   ArrowLeft,
   ArrowRight,
   Check,
   Gamepad2,
   Layers3,
+  ReceiptText,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -31,6 +33,24 @@ import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catal
 interface GamePageProps {
   params: Promise<{ game: string }>;
 }
+
+const rocketLeagueStorefrontHighlights = [
+  {
+    title: "Built around your rank",
+    description:
+      "Configure eligible services using your current competitive position, target, playlist, and the options relevant to your goal.",
+  },
+  {
+    title: "Clear pricing before checkout",
+    description:
+      "Your configuration updates the service price before you place the order, helping you understand exactly what you are paying for.",
+  },
+  {
+    title: "Track your progress",
+    description:
+      "Once your order is placed, follow its status and key order details directly from your BoostingPedia account.",
+  },
+] as const;
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -154,6 +174,7 @@ export default async function GamePage({ params }: GamePageProps) {
   const theme = gameThemes[content.accent];
   const displayName = getLaunchGameDisplayName(game.slug, game.name);
   const shell = !catalogGame;
+  const isRocketLeague = game.slug === "rocket-league";
 
   return (
     <main className="min-h-screen overflow-hidden">
@@ -188,12 +209,14 @@ export default async function GamePage({ params }: GamePageProps) {
               {displayName}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-              {content.heroDescription}
+              {isRocketLeague
+                ? "Choose the service that matches your competitive goal and configure your boost around your rank, playlist, and preferred progression."
+                : content.heroDescription}
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2">
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                {content.categoryLabel}
+                {isRocketLeague ? "Competitive boosting" : content.categoryLabel}
               </span>
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                 {content.fulfillmentLabel}
@@ -231,7 +254,9 @@ export default async function GamePage({ params }: GamePageProps) {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              Browse horizontally on smaller screens. Each service opens its own dedicated configurator.
+              {isRocketLeague
+                ? "Browse the available services and choose the option that best matches your competitive goal."
+                : "Browse horizontally on smaller screens. Each service opens its own dedicated configurator."}
             </p>
           </div>
 
@@ -256,26 +281,49 @@ export default async function GamePage({ params }: GamePageProps) {
         <Container>
           <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
             <div className="max-w-xl">
-              <p className={`text-sm font-semibold ${theme.text}`}>Game storefront</p>
+              <p className={`text-sm font-semibold ${theme.text}`}>
+                {isRocketLeague ? "Built for Rocket League" : "Game storefront"}
+              </p>
               <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-                More visual up front. Same service flow underneath.
+                {isRocketLeague
+                  ? "Everything you need to configure your boost with confidence."
+                  : "More visual up front. Same service flow underneath."}
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
-                The overview page now works as a stronger visual entry point while preserving the underlying service configuration routes.
+                {isRocketLeague
+                  ? "Choose your service, configure the details that matter, and see exactly what you are ordering before checkout."
+                  : "The overview page now works as a stronger visual entry point while preserving the underlying service configuration routes."}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {content.highlights.map((item, index) => {
-                const icons = [Layers3, ShieldCheck, Gamepad2] as const;
-                const Icon = icons[index] ?? Layers3;
+              {(isRocketLeague ? rocketLeagueStorefrontHighlights : content.highlights).map((item, index) => {
+                const defaultIcons = [Layers3, ShieldCheck, Gamepad2] as const;
+                const rocketLeagueIcons = [Layers3, ReceiptText, Activity] as const;
+                const Icon = isRocketLeague
+                  ? rocketLeagueIcons[index] ?? Layers3
+                  : defaultIcons[index] ?? Layers3;
+
                 return (
-                  <div key={item.title} className="rounded-2xl border border-white/[0.08] bg-black/15 p-5 sm:p-6">
-                    <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>
-                      <Icon className="size-4" />
+                  <div
+                    key={item.title}
+                    className={`rounded-2xl border border-white/[0.08] bg-black/15 p-5 transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none sm:p-6 ${
+                      isRocketLeague
+                        ? "hover:border-blue-300/[0.16] hover:bg-[#0E1411]"
+                        : ""
+                    }`}
+                  >
+                    <span
+                      className={
+                        isRocketLeague
+                          ? "grid size-10 place-items-center rounded-xl border border-blue-300/[0.16] bg-blue-400/[0.04] text-blue-200/80"
+                          : `grid size-10 place-items-center rounded-xl border ${theme.icon}`
+                      }
+                    >
+                      <Icon className="size-4" strokeWidth={1.8} />
                     </span>
-                    <h3 className="mt-5 text-sm font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+                    <h3 className="mt-5 text-sm font-semibold text-[#F4F7F5]">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#A0AAA4]">
                       {item.description}
                     </p>
                   </div>
