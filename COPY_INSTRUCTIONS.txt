@@ -1,15 +1,15 @@
-BOOSTINGPEDIA — PHASE 14W HOME FAQ FINAL POLISH
+BOOSTINGPEDIA — PHASE 14X FINAL CTA BRAND POLISH
 
 BASE:
-Apply after Phase 14V / current main.
+Apply after Phase 14W / current main.
 
 SCOPE:
-Home FAQ only.
+Final CTA on Home only.
 
-1. Extract ZIP into the project root.
-2. Replace/add the included files.
+1. Extract ZIP into project root.
+2. Replace/add included files.
 3. No Supabase migration required.
-4. Deploy and review only the FAQ section on Home.
+4. Deploy and review the final CTA on desktop and mobile.
 
 Commit:
-Phase 14W - Home FAQ Final Polish
+Phase 14X - Final CTA Brand Polish

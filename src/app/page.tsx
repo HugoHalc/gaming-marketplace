@@ -750,22 +750,44 @@ export default function Home() {
 
       <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="relative overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[#090D0B] p-8 sm:p-10 lg:p-12">
-            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-[#39E56F]/[0.045] blur-3xl" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[linear-gradient(135deg,#090D0B_0%,#0E1411_100%)] p-8 sm:p-10 lg:p-12">
+            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-[#39E56F]/[0.035] blur-3xl" />
+
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 hidden w-[38%] lg:block"
+            >
+              <div className="absolute right-[8%] top-[18%] h-px w-44 -rotate-[28deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+              <div className="absolute right-[15%] top-[30%] h-24 w-36 -skew-x-[28deg] border-l border-t border-white/[0.055]" />
+              <span className="absolute right-[11%] top-[47%] size-1.5 rounded-full border border-[#FFFFFF14] bg-[#131B17]" />
+            </div>
+
             <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <div className="max-w-3xl">
-                <Badge className="border-white/10 bg-white/[0.05] text-white/75">
-                  <Sparkles className="mr-2 size-3.5" />
+                <Badge className="border-[#FFFFFF14] bg-[#0E1411] text-[#A0AAA4]">
+                  <Sparkles className="mr-2 size-3.5 text-[#A0AAA4]" />
                   BoostingPedia
                 </Badge>
-                <h2 className="mt-5 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
+
+                <h2 className="mt-5 text-3xl font-bold tracking-[-0.05em] text-[#F4F7F5] sm:text-4xl">
                   Start with the game. The rest becomes simpler.
                 </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted-foreground)] sm:text-base">
+
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-[#A0AAA4] sm:text-base">
                   Explore the launch lineup and enter a dedicated game storefront before choosing a service.
                 </p>
+
+                <div className="mt-6 hidden items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[#667069] sm:flex">
+                  <span className="h-px w-8 bg-white/[0.08]" />
+                  Marketplace entry point
+                </div>
               </div>
-              <Button asChild size="lg" className="rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.56)] transition-[background-color,box-shadow,color] duration-200 hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_10px_26px_-16px_rgba(57,229,111,.62)]">
+
+              <Button
+                asChild
+                size="lg"
+                className="w-full rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_22px_-17px_rgba(57,229,111,.52)] transition-[background-color,box-shadow] duration-200 ease-out hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_9px_24px_-17px_rgba(57,229,111,.58)] motion-reduce:transition-none sm:w-auto"
+              >
                 <Link href="/games">
                   Browse games
                   <ChevronRight className="ml-2 size-4" />
