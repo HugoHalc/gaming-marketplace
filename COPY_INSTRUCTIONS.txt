@@ -1,7 +1,7 @@
-BOOSTINGPEDIA — PHASE 14D PREMIUM GAME SELECTOR + ONLINE BOOSTERS
+BOOSTINGPEDIA — PHASE 14E CENTERED HEADER NAVIGATION
 
 BASE:
-Apply after Phase 14C.
+Apply after Phase 14D.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
@@ -11,10 +11,7 @@ Apply after Phase 14C.
    - src/app/page.tsx
    - src/app/games/page.tsx
 4. Commit:
-   Phase 14D - Premium Game Selector and Online Boosters
+   Phase 14E - Centered Header Navigation
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
-
-Temporary header metric:
-37 Online Boosters

@@ -41,7 +41,7 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/94 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/88">
       <Container>
-        <div className="flex h-[3.9rem] items-center justify-between gap-4 sm:h-16">
+        <div className="relative flex h-[3.9rem] items-center justify-between gap-4 sm:h-16">
           <div className="flex min-w-0 items-center gap-7">
             <Logo />
 
@@ -69,9 +69,9 @@ export async function SiteHeader() {
             </div>
           </div>
 
-          <nav className="hidden items-center gap-6 xl:flex" aria-label="Primary navigation">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 xl:flex" aria-label="Primary navigation">
             {siteConfig.navigation
-              .filter((item) => item.label !== "Games")
+              .filter((item) => item.label === "How it works" || item.label === "FAQ")
               .map((item) => (
                 <Link
                   key={item.href}
