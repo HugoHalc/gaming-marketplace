@@ -43,6 +43,14 @@ const homeGameCardAssets = {
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
+const heroTrustpilot = {
+  brand: "Trustpilot",
+  ratingLabel: "Excellent",
+  score: 4.3,
+  reviewCount: 9,
+  profileUrl: "https://www.trustpilot.com/review/boostingpedia.com",
+} as const;
+
 const howItWorksIcons = [Sparkles, Check, ShieldCheck] as const;
 
 function SectionHeading({
@@ -159,7 +167,49 @@ export default function Home() {
               Choose your title, open its dedicated storefront, and configure the service around your competitive goal.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <a
+              href={heroTrustpilot.profileUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`BoostingPedia on Trustpilot: ${heroTrustpilot.score} out of 5 from ${heroTrustpilot.reviewCount} reviews`}
+              className="mt-5 inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm"
+            >
+              <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.ratingLabel}</span>
+
+              <span className="flex items-center gap-0.5" aria-hidden="true">
+                {Array.from({ length: 5 }).map((_, index) => {
+                  const fill = Math.max(0, Math.min(1, heroTrustpilot.score - index));
+
+                  return (
+                    <span
+                      key={index}
+                      className="relative grid size-[18px] place-items-center overflow-hidden rounded-[2px] bg-[#667069]/25"
+                    >
+                      <span
+                        className="absolute inset-y-0 left-0 bg-[#00B67A]"
+                        style={{ width: `${fill * 100}%` }}
+                      />
+                      <Star className="relative z-10 size-3 fill-white text-white" strokeWidth={1.8} />
+                    </span>
+                  );
+                })}
+              </span>
+
+              <span className="text-[#A0AAA4]">
+                <span className="font-medium text-[#F4F7F5]">{heroTrustpilot.score.toFixed(1)}</span>
+                <span className="px-1 text-[#667069]">/</span>
+                <span>5</span>
+                <span className="mx-2 text-[#667069]">·</span>
+                Based on {heroTrustpilot.reviewCount} reviews
+              </span>
+
+              <span className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5]">
+                <Star className="size-4 fill-[#00B67A] text-[#00B67A]" strokeWidth={1.6} />
+                {heroTrustpilot.brand}
+              </span>
+            </a>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="min-w-44 rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_24px_-16px_rgba(57,229,111,.60)] transition-[background-color,box-shadow,color] duration-200 hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_10px_26px_-16px_rgba(57,229,111,.68)] disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none">
                 <Link href="#games">
                   Choose your game

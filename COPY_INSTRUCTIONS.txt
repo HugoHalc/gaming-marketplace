@@ -1,17 +1,22 @@
-BOOSTINGPEDIA — PHASE 14F REMOVE GAME SELECTOR CHEVRON
+BOOSTINGPEDIA — PHASE 14G HERO TRUSTPILOT PROOF
 
 BASE:
-Apply after Phase 14E.
+Apply after Phase 14F.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
 3. Replace:
-   - src/components/marketing/site-header.tsx
-   - src/components/layout/container.tsx
    - src/app/page.tsx
    - src/app/games/page.tsx
+   - src/components/marketing/site-header.tsx
+   - src/components/layout/container.tsx
 4. Commit:
-   Phase 14F - Remove Game Selector Chevron
+   Phase 14G - Hero Trustpilot Proof
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
+
+Displayed Trustpilot data:
+Excellent
+4.3 / 5
+9 reviews
