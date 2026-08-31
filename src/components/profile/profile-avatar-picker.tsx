@@ -82,12 +82,11 @@ export function ProfileAvatarPicker({ currentAvatarUrl }: ProfileAvatarPickerPro
 
           <div className="mt-7 flex justify-center">
             <div className="relative size-48 overflow-hidden rounded-full border border-[#39E56F]/35 bg-[#090D0B] shadow-[0_0_34px_rgba(57,229,111,0.08)]">
-              <Image
+              <img
                 src={preview}
                 alt="Profile avatar preview"
-                fill
-                sizes="192px"
-                className="object-cover"
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer"
               />
             </div>
           </div>
