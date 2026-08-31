@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   Bell,
@@ -100,11 +99,20 @@ export async function SiteHeader() {
                 </Link>
 
                 <div
-                  className="grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#131B17] text-xs font-bold text-[#F4F7F5]"
+                  className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-[#FFFFFF14] bg-[#131B17] text-xs font-bold text-[#F4F7F5]"
                   aria-label="Account avatar"
                   title={identity.profile?.gamer_tag || identity.profile?.full_name || identity.email}
                 >
-                  {initials}
+                  {identity.profile?.avatar_url ? (
+                    <img
+                      src={identity.profile.avatar_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    initials
+                  )}
                 </div>
 
                 <details className="group relative">

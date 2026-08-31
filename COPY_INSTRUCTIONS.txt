@@ -1,21 +1,16 @@
-BOOSTINGPEDIA — PHASE 14P PROFILE AVATAR SYSTEM
+BOOSTINGPEDIA — PHASE 14Q HEADER PROFILE AVATAR FIX
 
 BASE:
-Apply after the current Phase 14O2 state.
+Apply after Phase 14P.
 
-1. Extract ZIP into project root.
-2. Run Supabase migration:
-   supabase/migrations/20260830_profile_avatars.sql
-3. Deploy.
+1. Extract ZIP into the project root.
+2. Replace included files.
+3. No new Supabase migration is required beyond the Phase 14P migration.
 4. Test:
-   - /dashboard/profile
-   - select a preset avatar + Save profile
-   - upload JPG/PNG/WebP + Save profile
-   - refresh page
-   - confirm logged-in header displays saved avatar
+   - save a preset or custom avatar in /dashboard/profile
+   - refresh
+   - verify the circular header account avatar shows the saved image
+   - users without a saved avatar should still see initials
 
 Commit:
-Phase 14P - Profile Avatar System
-
-IMPORTANT:
-This phase DOES require a Supabase migration.
+Phase 14Q - Header Profile Avatar Fix
