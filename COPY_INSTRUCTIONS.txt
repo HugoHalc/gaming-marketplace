@@ -1,19 +1,24 @@
-BOOSTINGPEDIA — PHASE 15A ROCKET LEAGUE STOREFRONT POLISH
+BOOSTINGPEDIA — PHASE 15B ROCKET LEAGUE HERO ARTWORK
+
+BASE:
+Apply after Phase 15A.
 
 SCOPE:
-Rocket League storefront presentation only.
+Rocket League hero artwork only.
 
 1. Extract ZIP into project root.
-2. Replace:
-   src/app/games/[game]/page.tsx
+2. Replace/add included files.
 3. No Supabase migration required.
-4. Deploy and review:
+4. Deploy.
+5. Review:
    /games/rocket-league
-5. Verify:
-   - hero layout is unchanged
-   - service cards are unchanged
-   - pricing/configurators are unchanged
-   - Rocket League no longer exposes internal development language
+
+Verify:
+- supplied artwork appears on the right
+- car remains fully visible on desktop
+- left copy remains high-contrast
+- old blue glow/watermark is gone for Rocket League
+- no other storefront or service logic changed
 
 Commit:
-Phase 15A - Rocket League Storefront Polish
+Phase 15B - Rocket League Hero Artwork

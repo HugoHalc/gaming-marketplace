@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -180,16 +181,38 @@ export default async function GamePage({ params }: GamePageProps) {
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
-      <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
-        <div className={`absolute right-[-8rem] top-[-10rem] -z-10 h-[34rem] w-[48rem] rounded-full ${theme.softGlow} blur-[125px]`} />
-        <div className="absolute right-0 top-0 hidden h-full w-[48%] overflow-hidden lg:block">
-          <div className={`absolute inset-0 bg-gradient-to-br ${theme.glow}`} />
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent" />
-          <div className="absolute bottom-10 right-10 select-none text-right text-[clamp(4rem,8vw,8.5rem)] font-black leading-[0.82] tracking-[-0.08em] text-white/[0.035]">
-            {displayName}
+      <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
+        <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-15" />
+
+        {isRocketLeague ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full overflow-hidden sm:w-[72%] lg:w-[62%]"
+          >
+            <Image
+              src="/game-heroes/rocket-league-storefront.jpeg"
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 1024px) 62vw, (min-width: 640px) 72vw, 100vw"
+              className="object-cover object-[72%_50%] opacity-45 sm:object-[70%_50%] sm:opacity-70 lg:object-[68%_50%] lg:opacity-100"
+            />
+
+            <div className="absolute inset-0 bg-black/[0.06]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_18%,rgba(5,8,7,.86)_35%,rgba(5,8,7,.48)_52%,rgba(5,8,7,.08)_72%,transparent_100%)]" />
           </div>
-        </div>
+        ) : (
+          <>
+            <div className={`absolute right-[-8rem] top-[-10rem] -z-10 h-[34rem] w-[48rem] rounded-full ${theme.softGlow} blur-[125px]`} />
+            <div className="absolute right-0 top-0 hidden h-full w-[48%] overflow-hidden lg:block">
+              <div className={`absolute inset-0 bg-gradient-to-br ${theme.glow}`} />
+              <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent" />
+              <div className="absolute bottom-10 right-10 select-none text-right text-[clamp(4rem,8vw,8.5rem)] font-black leading-[0.82] tracking-[-0.08em] text-white/[0.035]">
+                {displayName}
+              </div>
+            </div>
+          </>
+        )}
 
         <Container className="relative py-12 sm:py-16 lg:min-h-[32rem] lg:py-20">
           <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
