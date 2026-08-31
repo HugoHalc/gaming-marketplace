@@ -1,14 +1,21 @@
-BOOSTINGPEDIA — PHASE 14O2 ROCKET LEAGUE AVATAR CIRCLE FIX
+BOOSTINGPEDIA — PHASE 14P PROFILE AVATAR SYSTEM
 
 BASE:
-Apply after your current Rocket League boosters implementation.
+Apply after the current Phase 14O2 state.
 
-1. Extract ZIP.
-2. Copy files into the project root.
-3. Replace/add included files.
-4. Commit:
-   Phase 14O2 - Rocket League Avatar Circle Fix
-5. Push and wait for deploy.
+1. Extract ZIP into project root.
+2. Run Supabase migration:
+   supabase/migrations/20260830_profile_avatars.sql
+3. Deploy.
+4. Test:
+   - /dashboard/profile
+   - select a preset avatar + Save profile
+   - upload JPG/PNG/WebP + Save profile
+   - refresh page
+   - confirm logged-in header displays saved avatar
 
-This only refines the avatar framing on:
-- /boosters/rocket-league
+Commit:
+Phase 14P - Profile Avatar System
+
+IMPORTANT:
+This phase DOES require a Supabase migration.

@@ -13,7 +13,7 @@ export async function getCurrentIdentity() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, phone, gamer_tag, role")
+    .select("id, full_name, phone, gamer_tag, role, avatar_url")
     .eq("id", claims.sub)
     .maybeSingle();
 
@@ -26,6 +26,7 @@ export async function getCurrentIdentity() {
       phone: string | null;
       gamer_tag: string | null;
       role: AppRole;
+      avatar_url: string | null;
     },
   };
 }
