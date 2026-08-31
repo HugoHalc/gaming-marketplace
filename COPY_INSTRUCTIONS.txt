@@ -1,21 +1,20 @@
-BOOSTINGPEDIA — PHASE 14U LEGAL PAGES + FOOTER
+BOOSTINGPEDIA — PHASE 14V REGISTRATION LEGAL CONSENT
 
 BASE:
-Apply after Phase 14T.
+Apply after Phase 14U.
 
 1. Extract ZIP into project root.
-2. Replace/add included files.
-3. No Supabase migration required.
-4. Deploy.
-5. Validate:
-   - /terms
-   - /privacy
-   - /cookies
-   - /refunds
-   - footer links from Home and internal pages
+2. Run the Supabase migration:
+   supabase/migrations/20260830_registration_legal_consent.sql
+3. Deploy.
+4. Test /register:
+   - submit without checking legal consent -> account must not be created
+   - click all four policy links
+   - accept checkbox and register a test account
+5. In Supabase verify:
+   public.legal_consents contains one row for the new test user.
 
 Commit:
-Phase 14U - Legal Pages and Footer
+Phase 14V - Registration Legal Consent
 
-NOTE:
-The legal copy is a launch-ready operational draft, not a substitute for review by qualified legal counsel.
+THIS PHASE REQUIRES A SUPABASE MIGRATION.
