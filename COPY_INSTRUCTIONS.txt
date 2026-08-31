@@ -1,16 +1,18 @@
-BOOSTINGPEDIA — PHASE 14Y HEADER SIGN IN ONLY
+BOOSTINGPEDIA — PHASE 14Z MARKETPLACE FOUNDATION POLISH
 
 BASE:
-Apply after Phase 14X / current main.
+Apply after Phase 14Y / current main.
 
 SCOPE:
-Logged-out header account actions only.
+Marketplace Foundation on Home only.
+
+IMPORTANT:
+Phase 14Y changed only the header. This ZIP intentionally contains only the Home Marketplace Foundation change and does not overwrite the header.
 
 1. Extract ZIP into project root.
-2. Replace included file(s).
+2. Replace/add included files.
 3. No Supabase migration required.
-4. Deploy.
-5. Confirm logged-out header shows only `Sign in`.
+4. Deploy and review Marketplace Foundation on desktop/mobile.
 
 Commit:
-Phase 14Y - Header Sign In Only
+Phase 14Z - Marketplace Foundation Polish
