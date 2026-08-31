@@ -1,39 +1,12 @@
-BOOSTINGPEDIA — PHASE 15F
-ROCKET LEAGUE MULTISELECT UPGRADES + RANK BADGE CONSISTENCY
+BOOSTINGPEDIA — PHASE 15G
 
-BASE:
-Apply after Phase 15E.
-
-1. Extract this ZIP into your project root.
-
-2. Replace the included files when prompted.
-
-Files:
-- src/app/games/[game]/page.tsx
-- src/features/configurator/components/rocket-league-rank-configurator.tsx
-- src/features/configurator/components/rocket-league-wins-configurator.tsx
-- src/features/configurator/components/rocket-league-tournament-configurator.tsx
-- src/features/configurator/components/rocket-league-rewards-configurator.tsx
-- src/features/configurator/components/rocket-league-placements-configurator.tsx
-
+1. Extract into the project root.
+2. Replace:
+   src/features/configurator/components/rocket-league-wins-configurator.tsx
 3. No scripts required.
 4. No Supabase migration required.
-
-TEST:
-- /games/rocket-league
-- /games/rocket-league/rank-boost
-- Competitive Wins
-- Tournament Boost
-- Rewards Boost
-- Placements Boost
-
-Verify:
-- Optional upgrades have no visible checkboxes.
-- Multiple upgrades can be selected simultaneously.
-- Clicking an active upgrade deselects only that upgrade.
-- Disabled Appear Offline behavior is unchanged.
-- Prices recalculate exactly as before.
-- Rank Boost storefront card uses the same Diamond / Champion / Grand Champion PNG badges as the configurator.
+5. Deploy and test:
+   /games/rocket-league/wins
 
 Commit:
-Phase 15F - RL Multiselect Upgrades and Rank Badge Consistency
+Phase 15G - Competitive Wins Visual System Alignment
