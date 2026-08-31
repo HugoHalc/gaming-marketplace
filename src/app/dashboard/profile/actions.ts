@@ -12,29 +12,40 @@ const ALLOWED_AVATARS = new Set(
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-export async function updateProfileAction(formData: FormData) {
+async function getAuthenticatedProfileClient() {
   const supabase = await createAuthServerClient();
   const { data } = await supabase.auth.getClaims();
   const id = data?.claims?.sub;
+
   if (!id) redirect("/login");
 
-  const fullName = normalizeText(formData.get("fullName"), 100);
-  const phone = normalizeText(formData.get("phone"), 40) || null;
-  const gamerTag = normalizeText(formData.get("gamerTag"), 80) || null;
+  return { supabase, id };
+}
+
+export async function saveAvatarAction(formData: FormData) {
+  const { supabase, id } = await getAuthenticatedProfileClient();
+
   const avatarPreset = normalizeText(formData.get("avatarPreset"), 40);
   const avatarFile = formData.get("avatarFile");
 
-  if (fullName.length < 2) redirect("/dashboard/profile?error=1");
-
-  let avatarUrl: string | undefined;
+  let avatarUrl: string | null = null;
 
   if (avatarFile instanceof File && avatarFile.size > 0) {
-    if (!ALLOWED_TYPES.has(avatarFile.type) || avatarFile.size > MAX_FILE_SIZE) {
-      redirect("/dashboard/profile?error=1");
+    if (!ALLOWED_TYPES.has(avatarFile.type)) {
+      redirect("/dashboard/profile?avatarError=type");
+    }
+
+    if (avatarFile.size > MAX_FILE_SIZE) {
+      redirect("/dashboard/profile?avatarError=size");
     }
 
     const extension =
-      avatarFile.type === "image/png" ? "png" : avatarFile.type === "image/webp" ? "webp" : "jpg";
+      avatarFile.type === "image/png"
+        ? "png"
+        : avatarFile.type === "image/webp"
+          ? "webp"
+          : "jpg";
+
     const storagePath = `${id}/avatar.${extension}`;
     const buffer = await avatarFile.arrayBuffer();
 
@@ -46,7 +57,10 @@ export async function updateProfileAction(formData: FormData) {
         cacheControl: "3600",
       });
 
-    if (uploadError) redirect("/dashboard/profile?error=1");
+    if (uploadError) {
+      console.error("Profile avatar upload failed:", uploadError);
+      redirect("/dashboard/profile?avatarError=upload");
+    }
 
     const { data: publicUrlData } = supabase.storage
       .from("profile-avatars")
@@ -57,26 +71,57 @@ export async function updateProfileAction(formData: FormData) {
     avatarUrl = `/avatars/${avatarPreset}.webp`;
   }
 
-  const updatePayload: {
-    full_name: string;
-    phone: string | null;
-    gamer_tag: string | null;
-    updated_at: string;
-    avatar_url?: string;
-  } = {
-    full_name: fullName,
-    phone,
-    gamer_tag: gamerTag,
-    updated_at: new Date().toISOString(),
-  };
+  if (!avatarUrl) {
+    redirect("/dashboard/profile?avatarError=selection");
+  }
 
-  if (avatarUrl) updatePayload.avatar_url = avatarUrl;
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
 
-  const { error } = await supabase.from("profiles").update(updatePayload).eq("id", id);
-  if (error) redirect("/dashboard/profile?error=1");
+  if (error) {
+    console.error("Profile avatar update failed:", error);
+    redirect("/dashboard/profile?avatarError=save");
+  }
 
   revalidatePath("/dashboard/profile");
   revalidatePath("/dashboard");
   revalidatePath("/");
-  redirect("/dashboard/profile?saved=1");
+  redirect("/dashboard/profile?avatarSaved=1");
+}
+
+export async function updateProfileAction(formData: FormData) {
+  const { supabase, id } = await getAuthenticatedProfileClient();
+
+  const fullName = normalizeText(formData.get("fullName"), 100);
+  const phone = normalizeText(formData.get("phone"), 40) || null;
+  const gamerTag = normalizeText(formData.get("gamerTag"), 80) || null;
+
+  if (fullName.length < 2) {
+    redirect("/dashboard/profile?profileError=validation");
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      full_name: fullName,
+      phone,
+      gamer_tag: gamerTag,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Profile details update failed:", error);
+    redirect("/dashboard/profile?profileError=save");
+  }
+
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard");
+  revalidatePath("/");
+  redirect("/dashboard/profile?profileSaved=1");
 }

@@ -6,6 +6,7 @@ import {
   Grid2X2,
   Radio,
   LayoutDashboard,
+  Menu,
   Package,
   UserRound,
 } from "lucide-react";
@@ -117,7 +118,7 @@ export async function SiteHeader() {
 
                 <details className="group relative">
                   <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2.5 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] [&::-webkit-details-marker]:hidden">
-                    <Grid2X2 className="size-4 text-[#A0AAA4]" />
+                    <Menu className="size-4 text-[#A0AAA4]" strokeWidth={1.8} />
                     <span className="hidden sm:inline">Menu</span>
                     <ChevronDown className="size-3.5 text-[#667069] transition-transform duration-200 group-open:rotate-180" />
                   </summary>

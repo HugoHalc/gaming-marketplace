@@ -1,16 +1,20 @@
-BOOSTINGPEDIA — PHASE 14Q HEADER PROFILE AVATAR FIX
+BOOSTINGPEDIA — PHASE 14R AVATAR SAVE FIX + MENU POLISH
 
 BASE:
-Apply after Phase 14P.
+Apply after Phase 14Q.
 
-1. Extract ZIP into the project root.
-2. Replace included files.
-3. No new Supabase migration is required beyond the Phase 14P migration.
-4. Test:
-   - save a preset or custom avatar in /dashboard/profile
-   - refresh
-   - verify the circular header account avatar shows the saved image
-   - users without a saved avatar should still see initials
+1. Extract ZIP into project root.
+2. Replace/add included files.
+3. No additional Supabase migration is required if Phase 14P migration was already run.
+4. Deploy.
+5. Test:
+   - /dashboard/profile
+   - select a preset
+   - click Save avatar
+   - confirm "Avatar updated."
+   - confirm avatar appears in header
+   - test custom JPG/PNG/WebP upload separately
+   - confirm Save profile still updates name/phone/gamer tag
 
 Commit:
-Phase 14Q - Header Profile Avatar Fix
+Phase 14R - Avatar Save Fix and Menu Polish
