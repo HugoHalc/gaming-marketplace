@@ -1,8 +1,13 @@
-Phase 15H – Tournament Boost Visual System Alignment
+BOOSTINGPEDIA — PHASE 15H2
 
-Replace this file in your project:
+Replace:
+src/features/configurator/components/rocket-league-tournament-configurator.tsx
 
-- src/features/configurator/components/rocket-league-tournament-configurator.tsx
+No scripts.
+No migration.
 
-Optional reference note included:
-- docs/phase-15h-tournament-boost-visual-system-alignment.md
+Test:
+/games/rocket-league/tournament-boost
+
+Commit:
+Phase 15H2 - Tournament Current Rank Full Width

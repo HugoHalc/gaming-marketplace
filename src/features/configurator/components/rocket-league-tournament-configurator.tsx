@@ -53,13 +53,6 @@ const platforms = [
   { value: "switch", label: "Nintendo Switch", color: "text-red-300" },
 ] as const;
 
-const tournamentPath = [
-  { key: "round-1", label: "Round 1", state: "context" },
-  { key: "quarterfinal", label: "Quarterfinal", state: "context" },
-  { key: "semifinal", label: "Semifinal", state: "context" },
-  { key: "final", label: "Final", state: "context" },
-  { key: "win", label: "Win", state: "goal" },
-] as const;
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -290,59 +283,6 @@ function CurrentRankSelector({
   );
 }
 
-function TournamentProgression() {
-  return (
-    <div className="rounded-[1.1rem] border border-white/[0.07] bg-[#090D0B] p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
-            Tournament progression
-          </p>
-          <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-            From opening round to final win.
-          </p>
-        </div>
-        <span className="inline-flex h-8 items-center rounded-full border border-white/[0.08] bg-white/[0.025] px-3 text-[10px] font-medium text-white/45">
-          Bracket path
-        </span>
-      </div>
-
-      <div className="mt-4 overflow-x-auto pb-1">
-        <div className="flex min-w-max items-center gap-2 pr-2">
-          {tournamentPath.map((step, index) => {
-            const isGoal = step.state === "goal";
-            const nodeClass = isGoal
-              ? "border-[#39E56F]/35 bg-[#39E56F]/12 text-[#82F5A4]"
-              : "border-blue-300/[0.18] bg-blue-400/[0.05] text-blue-200/78";
-
-            return (
-              <div key={step.key} className="flex items-center gap-2">
-                <div className="min-w-[6.3rem] rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`grid size-5 shrink-0 place-items-center rounded-full border text-[10px] font-semibold ${nodeClass}`}>
-                      {index + 1}
-                    </span>
-                    <span className={`font-gaming-label text-[10px] font-semibold uppercase tracking-[0.12em] ${isGoal ? "text-[#82F5A4]" : "text-white/42"}`}>
-                      {isGoal ? "Goal" : "Step"}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs font-semibold text-[#F4F7F5]">{step.label}</p>
-                </div>
-
-                {index < tournamentPath.length - 1 ? (
-                  <div className="relative h-px w-5 shrink-0 bg-white/[0.10]">
-                    <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border-r border-t border-white/[0.18]" />
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 interface Props {
   gameSlug: string;
   service: ServiceSummary;
@@ -497,16 +437,10 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
         </div>
 
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
-          <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
-            <CurrentRankSelector
-              value={String(selection.currentRank)}
-              onChange={(value) => update("currentRank", value)}
-            />
-
-            <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-              <TournamentProgression />
-            </div>
-          </div>
+          <CurrentRankSelector
+            value={String(selection.currentRank)}
+            onChange={(value) => update("currentRank", value)}
+          />
 
           <div className="h-px bg-white/[0.07]" />
 
@@ -691,7 +625,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
           <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
             {[
               "Server-calculated final pricing.",
-              "Tournament path shown upfront.",
+              "Tournament configuration shown upfront.",
               "Live order tracking included.",
             ].map((note) => (
               <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
@@ -731,18 +665,6 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                 <div className="min-w-0">
                   <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current rank</p>
                   <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(String(selection.currentRank))}</p>
-                </div>
-              </div>
-              <div className="mt-3 border-t border-white/[0.06] pt-3">
-                <div className="flex items-start gap-2.5">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg border border-blue-300/[0.14] bg-blue-400/[0.045] text-blue-200/75">
-                    <Trophy className="size-3.5" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Tournament path</p>
-                    <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">Round 1 → Win</p>
-                    <p className="mt-1 text-[10px] leading-4 text-white/38">Bracket progression remains visible while your pricing stays based on the live configuration.</p>
-                  </div>
                 </div>
               </div>
             </div>
