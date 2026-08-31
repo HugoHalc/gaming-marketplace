@@ -142,13 +142,21 @@ export default function Home() {
           className="hero-art-float pointer-events-none absolute inset-y-0 right-[-5vw] -z-10 w-[78vw] sm:right-[-4vw] sm:w-[72vw] lg:right-[-3vw] lg:w-[66vw] xl:right-[-2vw] xl:w-[63vw]"
         >
           <Image
-            src="/brand/boostingpedia-hero-art.webp"
+            src="/brand/boostingpedia-hooded-rogue.png"
             alt=""
             fill
             priority
             sizes="(min-width:1280px) 63vw, (min-width:1024px) 66vw, (min-width:640px) 72vw, 78vw"
             className="hero-art-breathe object-cover object-[70%_53%] sm:object-[71%_53%] lg:object-[69%_53%] xl:object-[68%_53%] [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)] [-webkit-mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.10)_9%,rgba(0,0,0,.34)_20%,rgba(0,0,0,.66)_34%,rgba(0,0,0,.90)_46%,black_56%,black_100%)]"
           />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-[32.5%] z-10 h-[7%] w-[19%] -translate-x-1/2"
+                >
+                  <span className="boostingpedia-eye-glow absolute left-[7%] top-1/2 h-[55%] w-[32%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/55 blur-[10px]" />
+                  <span className="boostingpedia-eye-glow absolute right-[7%] top-1/2 h-[55%] w-[32%] -translate-y-1/2 rounded-[50%] bg-[#39E56F]/55 blur-[10px]" />
+                </div>
           <div className="hero-art-glow absolute bottom-[7%] right-[11%] h-[24%] w-[34%] rounded-full bg-[#39E56F]/[0.05] blur-[64px]" />
         </div>
         <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[74%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_44%,rgba(5,8,7,.78)_66%,transparent_100%)] sm:w-[68%] lg:w-[57%]" />
@@ -643,6 +651,33 @@ export default function Home() {
       </section>
 
       <SiteFooter />
+      <style>{`
+        @keyframes boostingpedia-eye-breathe {
+          0%, 100% {
+            opacity: 0.28;
+            transform: translateY(-50%) scale(0.92);
+            filter: blur(10px);
+          }
+          50% {
+            opacity: 0.58;
+            transform: translateY(-50%) scale(1.04);
+            filter: blur(12px);
+          }
+        }
+
+        .boostingpedia-eye-glow {
+          animation: boostingpedia-eye-breathe 5.5s ease-in-out infinite;
+          will-change: opacity, transform, filter;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .boostingpedia-eye-glow {
+            animation: none;
+            opacity: 0.38;
+          }
+        }
+      `}</style>
+
     </main>
   );
 }

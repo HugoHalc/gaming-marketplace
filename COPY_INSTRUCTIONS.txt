@@ -1,7 +1,7 @@
-BOOSTINGPEDIA — PHASE 14G HERO TRUSTPILOT PROOF
+BOOSTINGPEDIA — PHASE 14I ANIMATED ROGUE EYES
 
 BASE:
-Apply after Phase 14F.
+Apply after Phase 14H.
 
 1. Extract ZIP.
 2. Copy files into gaming-marketplace root.
@@ -10,13 +10,9 @@ Apply after Phase 14F.
    - src/app/games/page.tsx
    - src/components/marketing/site-header.tsx
    - src/components/layout/container.tsx
+   - public/brand/boostingpedia-hooded-rogue.png
 4. Commit:
-   Phase 14G - Hero Trustpilot Proof
+   Phase 14I - Animated Rogue Eyes
 5. Push main and wait for Vercel.
 
 NO SUPABASE MIGRATION REQUIRED.
-
-Displayed Trustpilot data:
-Excellent
-4.3 / 5
-9 reviews
