@@ -103,18 +103,18 @@ export const testimonials = [
 export const faqs = [
   {
     question: "How is the final service price calculated?",
-    answer: "Pricing is based on the configuration you select, including the service type, progression target, region, queue, priority, and eligible modifiers. The final amount will always be validated on the server before checkout.",
+    answer: "Your final price is based on the service configuration you select, including your current position, target, region, queue, priority, and any eligible options. The total is validated before checkout so there are no unexpected price changes.",
   },
   {
     question: "Can I track my order after purchase?",
-    answer: "Yes. Orders are designed to include a clear status timeline and a dedicated order page inside your customer dashboard.",
+    answer: "Yes. Once your order is placed, you can follow its progress from your account with clear status updates and order details.",
   },
   {
-    question: "What payment methods will be available?",
-    answer: "The production checkout will use Stripe. Available payment methods may vary by country, currency, and device once payments are enabled.",
+    question: "What payment methods are available?",
+    answer: "Payments are processed securely through Stripe. Available payment methods may vary depending on your country, currency, and device.",
   },
   {
     question: "Will more games and services be added?",
-    answer: "Yes. Games, services, configurable options, and pricing rules are designed to be data-driven so the catalog can expand without rebuilding the storefront for every new offering.",
+    answer: "Yes. BoostingPedia is built to expand over time with additional games, services, and configurable options without changing the core marketplace experience.",
   },
 ] as const;

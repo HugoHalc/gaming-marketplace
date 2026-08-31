@@ -1,20 +1,15 @@
-BOOSTINGPEDIA — PHASE 14V REGISTRATION LEGAL CONSENT
+BOOSTINGPEDIA — PHASE 14W HOME FAQ FINAL POLISH
 
 BASE:
-Apply after Phase 14U.
+Apply after Phase 14V / current main.
 
-1. Extract ZIP into project root.
-2. Run the Supabase migration:
-   supabase/migrations/20260830_registration_legal_consent.sql
-3. Deploy.
-4. Test /register:
-   - submit without checking legal consent -> account must not be created
-   - click all four policy links
-   - accept checkbox and register a test account
-5. In Supabase verify:
-   public.legal_consents contains one row for the new test user.
+SCOPE:
+Home FAQ only.
+
+1. Extract ZIP into the project root.
+2. Replace/add the included files.
+3. No Supabase migration required.
+4. Deploy and review only the FAQ section on Home.
 
 Commit:
-Phase 14V - Registration Legal Consent
-
-THIS PHASE REQUIRES A SUPABASE MIGRATION.
+Phase 14W - Home FAQ Final Polish

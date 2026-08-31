@@ -710,23 +710,36 @@ export default function Home() {
       </section>
 
       <section id="faq" className="scroll-mt-24 py-20 sm:py-24">
-        <Container className="grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
-          <SectionHeading
-            eyebrow="FAQ"
-            title="Straight answers before checkout."
-            description="This section remains ready for final policy and launch copy."
-            align="left"
-          />
+        <Container className="grid gap-10 lg:grid-cols-[.7fr_1.3fr] lg:gap-12">
+          <div className="max-w-2xl">
+            <SectionHeading
+              eyebrow="FAQ"
+              title="Straight answers before checkout."
+              description="Everything you need to know before placing your order."
+              align="left"
+            />
+            <p className="mt-5 max-w-md text-xs leading-6 text-[#667069]">
+              Still have questions? Support is available before and after your order.
+            </p>
+          </div>
+
           <div className="divide-y divide-white/[0.07] border-y border-white/[0.07]">
             {faqs.map((item) => (
-              <details key={item.question} className="group py-5 open:pb-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-left font-semibold text-white marker:hidden">
-                  {item.question}
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white/[0.08] text-[var(--muted-foreground)] transition-transform group-open:rotate-45">
+              <details
+                key={item.question}
+                className="group py-[1.15rem] open:pb-5 sm:py-5"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-left marker:hidden">
+                  <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
+                    {item.question}
+                  </span>
+
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-hover:border-white/[0.12] group-hover:bg-[#0E1411] group-hover:text-[#82F5A4] group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none">
                     +
                   </span>
                 </summary>
-                <p className="mt-4 max-w-3xl pr-10 text-sm leading-7 text-[var(--muted-foreground)]">
+
+                <p className="mt-4 max-w-3xl pr-9 text-sm leading-7 text-[#A0AAA4] sm:mt-[1.1rem] sm:text-[15px]">
                   {item.answer}
                 </p>
               </details>
