@@ -22,7 +22,6 @@ import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import {
   faqs,
   howItWorks,
-  testimonials,
   trustFeatures,
 } from "@/features/marketing/content";
 
@@ -52,6 +51,33 @@ const heroTrustpilot = {
   reviewCount: 9,
   profileUrl: "https://www.trustpilot.com/review/boostingpedia.com",
 } as const;
+
+const trustpilotReviews = [
+  {
+    name: "Tyler",
+    date: "Jul 9, 2025",
+    verified: true,
+    rating: 5,
+    summary:
+      "A verified reviewer described the experience positively and encouraged other players not to hesitate.",
+  },
+  {
+    name: "joe a",
+    date: "Jul 8, 2025",
+    verified: false,
+    rating: 5,
+    summary:
+      "Praised the players as reliable after a rematch boost and said they would order again.",
+  },
+  {
+    name: "Jose Maria Mendoza",
+    date: "Jul 5, 2025",
+    verified: false,
+    rating: 5,
+    summary:
+      "Highlighted the fast service and good pricing, describing the overall experience positively.",
+  },
+] as const;
 
 const howItWorksIcons = [Sparkles, Check, ShieldCheck] as const;
 
@@ -571,26 +597,114 @@ export default function Home() {
         <Container>
           <SectionHeading
             eyebrow="Customer experience"
-            title="Built to feel clear at every step."
-            description="Illustrative launch content can be replaced later without affecting the structure."
+            title="Trusted by players who’ve used BoostingPedia."
+            description="Real customer feedback from our public Trustpilot profile."
           />
+
+          <a
+            href={heroTrustpilot.profileUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mx-auto mt-8 flex max-w-fit flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-4 py-2.5 text-xs transition-[border-color,background-color] duration-200 hover:border-white/[0.16] hover:bg-[#0E1411] sm:text-sm"
+            aria-label={`BoostingPedia on Trustpilot: ${heroTrustpilot.score} out of 5 from ${heroTrustpilot.reviewCount} reviews`}
+          >
+            <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.ratingLabel}</span>
+
+            <span className="flex items-center gap-0.5" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, index) => {
+                const fill = Math.max(0, Math.min(1, heroTrustpilot.score - index));
+
+                return (
+                  <span
+                    key={index}
+                    className="relative grid size-[18px] place-items-center overflow-hidden rounded-[2px] bg-[#667069]/25"
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 bg-[#00B67A]"
+                      style={{ width: `${fill * 100}%` }}
+                    />
+                    <Star className="relative z-10 size-3 fill-white text-white" strokeWidth={1.8} />
+                  </span>
+                );
+              })}
+            </span>
+
+            <span className="text-[#A0AAA4]">
+              <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.score.toFixed(1)}</span>
+              <span className="px-1 text-[#667069]">/</span>
+              5
+              <span className="mx-2 text-[#667069]">·</span>
+              {heroTrustpilot.reviewCount} reviews
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5]">
+              <Star className="size-4 fill-[#00B67A] text-[#00B67A]" strokeWidth={1.6} />
+              {heroTrustpilot.brand}
+            </span>
+          </a>
+
           <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            {testimonials.map((testimonial) => (
-              <Card key={testimonial.name} className="p-6 sm:p-7">
-                <div className="flex gap-1 text-amber-300" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star key={index} className="size-4 fill-current" />
-                  ))}
+            {trustpilotReviews.map((review) => (
+              <a
+                key={review.name}
+                href={heroTrustpilot.profileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="group rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.15] hover:bg-[#131B17] sm:p-7"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex gap-0.5" aria-label={`${review.rating} out of 5 stars`}>
+                    {Array.from({ length: review.rating }).map((_, index) => (
+                      <span
+                        key={index}
+                        className="grid size-[18px] place-items-center rounded-[2px] bg-[#00B67A]"
+                      >
+                        <Star className="size-3 fill-white text-white" strokeWidth={1.8} />
+                      </span>
+                    ))}
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#A0AAA4]">
+                    <Star className="size-3.5 fill-[#00B67A] text-[#00B67A]" />
+                    Trustpilot
+                  </span>
                 </div>
-                <blockquote className="mt-6 text-[15px] leading-7 text-white/90">
-                  “{testimonial.quote}”
-                </blockquote>
-                <div className="mt-7 border-t border-white/[0.06] pt-5">
-                  <p className="text-sm font-semibold text-white">{testimonial.name}</p>
-                  <p className="mt-1 text-xs text-[var(--muted-foreground)]">{testimonial.detail}</p>
+
+                <p className="mt-6 text-[15px] leading-7 text-[#F4F7F5]">
+                  {review.summary}
+                </p>
+
+                <div className="mt-7 flex items-end justify-between gap-4 border-t border-white/[0.06] pt-5">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-semibold text-[#F4F7F5]">{review.name}</p>
+                      {review.verified ? (
+                        <span className="rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#A0AAA4]">
+                          Verified
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-1 text-xs text-[#667069]">{review.date}</p>
+                  </div>
+
+                  <span className="text-xs font-semibold text-[#A0AAA4] transition-colors group-hover:text-[#F4F7F5]">
+                    Read on Trustpilot
+                  </span>
                 </div>
-              </Card>
+              </a>
             ))}
+          </div>
+
+          <div className="mt-7 flex justify-center">
+            <a
+              href={heroTrustpilot.profileUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#A0AAA4] transition-colors duration-200 hover:text-[#F4F7F5]"
+            >
+              View all reviews on Trustpilot
+              <ArrowRight className="size-4" />
+            </a>
           </div>
         </Container>
       </section>

@@ -1,17 +1,13 @@
-BOOSTINGPEDIA — PHASE 14S CUSTOM AVATAR PREVIEW FIX
+BOOSTINGPEDIA — PHASE 14T TRUSTPILOT CUSTOMER EXPERIENCE
 
 BASE:
-Apply after Phase 14R.
+Apply after Phase 14S.
 
 1. Extract ZIP into project root.
 2. Replace included files.
 3. No Supabase migration required.
-4. Test:
-   - upload a custom profile image
-   - click Save avatar
-   - refresh /dashboard/profile
-   - confirm the custom image appears in Profile preview
-   - confirm header avatar still displays it
+4. Deploy.
+5. Review Home → Customer Experience.
 
 Commit:
-Phase 14S - Custom Avatar Preview Fix
+Phase 14T - Trustpilot Customer Experience
