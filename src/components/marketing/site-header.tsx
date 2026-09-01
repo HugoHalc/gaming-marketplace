@@ -1,14 +1,9 @@
 import Link from "next/link";
 import {
   Bell,
-  ChevronDown,
   Crosshair,
   Grid2X2,
   Radio,
-  LayoutDashboard,
-  Menu,
-  Package,
-  UserRound,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
@@ -17,6 +12,7 @@ import { siteConfig } from "@/config/site";
 import { launchGames } from "@/features/catalog/data/launch-games";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
+import { AccountDrawer } from "./account-drawer";
 
 function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCurrentIdentity>>>) {
   const source =
@@ -84,7 +80,7 @@ export async function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
-            {identity ? (
+            {identity && initials ? (
               <>
                 <Link
                   href="/dashboard/notifications"
@@ -99,72 +95,22 @@ export async function SiteHeader() {
                   ) : null}
                 </Link>
 
-                <div
-                  className="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-[#FFFFFF14] bg-[#131B17] text-xs font-bold text-[#F4F7F5]"
-                  aria-label="Account avatar"
-                  title={identity.profile?.gamer_tag || identity.profile?.full_name || identity.email}
-                >
-                  {identity.profile?.avatar_url ? (
-                    <img
-                      src={identity.profile.avatar_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    initials
-                  )}
-                </div>
-
-                <details className="group relative">
-                  <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 py-2.5 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] [&::-webkit-details-marker]:hidden">
-                    <Menu className="size-4 text-[#A0AAA4]" strokeWidth={1.8} />
-                    <span className="hidden sm:inline">Menu</span>
-                    <ChevronDown className="size-3.5 text-[#667069] transition-transform duration-200 group-open:rotate-180" />
-                  </summary>
-
-                  <div className="absolute right-0 top-[calc(100%+0.65rem)] w-64 overflow-hidden rounded-2xl border border-[#FFFFFF14] bg-[#090D0B] p-2 shadow-[0_24px_60px_-28px_rgba(0,0,0,.95)]">
-                    <div className="border-b border-white/[0.06] px-3 pb-3 pt-2">
-                      <p className="truncate text-sm font-semibold text-[#F4F7F5]">
-                        {identity.profile?.gamer_tag || identity.profile?.full_name || "BoostingPedia account"}
-                      </p>
-                      <p className="mt-0.5 truncate text-xs text-[#667069]">{identity.email}</p>
-                    </div>
-
-                    <nav className="mt-2 grid gap-1" aria-label="Account menu">
-                      <Link href="/dashboard" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
-                        <LayoutDashboard className="size-4" />
-                        Dashboard
-                      </Link>
-                      <Link href="/dashboard/orders" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
-                        <Package className="size-4" />
-                        My Orders
-                      </Link>
-                      <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
-                        <UserRound className="size-4" />
-                        Profile
-                      </Link>
-                      <Link href="/dashboard/notifications" className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-[#A0AAA4] transition-colors duration-200 hover:bg-[#131B17] hover:text-[#F4F7F5]">
-                        <span className="flex items-center gap-3">
-                          <Bell className="size-4" />
-                          Notifications
-                        </span>
-                        {unread > 0 ? (
-                          <span className="rounded-full bg-[#39E56F]/[0.10] px-2 py-0.5 text-[10px] font-bold text-[#82F5A4]">
-                            {unread > 9 ? "9+" : unread}
-                          </span>
-                        ) : null}
-                      </Link>
-                    </nav>
-                  </div>
-                </details>
+                <AccountDrawer
+                  displayName={
+                    identity.profile?.gamer_tag ||
+                    identity.profile?.full_name ||
+                    "BoostingPedia account"
+                  }
+                  email={identity.email}
+                  avatarUrl={identity.profile?.avatar_url ?? null}
+                  initials={initials}
+                  unread={unread}
+                />
               </>
             ) : (
-              <>
-                <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
-                  <Link href="/login">Sign in</Link>
-                </Button>
-              </>
+              <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
+                <Link href="/login">Sign in</Link>
+              </Button>
             )}
           </div>
         </div>

@@ -1,23 +1,41 @@
-BOOSTINGPEDIA — PHASE 15J
-PLACEMENTS BOOST VISUAL SYSTEM ALIGNMENT
+BOOSTINGPEDIA — PHASE 15L
+PREMIUM ACCOUNT NAVIGATION DRAWER
 
 WINDOWS DIRECT-REPLACEMENT ZIP
 
-Extract/copy into the project root and replace the included file.
+Extract/copy this ZIP into the project root and allow Windows to merge folders / replace files.
+
+Adds:
+src/components/marketing/account-drawer.tsx
 
 Replaces:
-src/features/configurator/components/rocket-league-placements-configurator.tsx
+src/components/marketing/site-header.tsx
 
-No migration.
+No database migration.
 No API changes.
-No schema changes.
+No auth changes.
+No pricing changes.
 
-Verify:
-- Placements Boost keeps the same real pricing and order flow.
-- Previous Rank remains the real pricing context.
-- Placement Matches still allow 1 to 10.
-- Playlist / Platform / Method / Customize still behave the same.
-- Order Summary and mobile sticky bar show the premium aligned styling.
+TEST:
+1. Logged in desktop:
+   - click avatar
+   - close with X
+   - open with Menu
+   - click outside
+   - press Escape
+   - navigate from quick actions and menu rows
+   - test Log out
+2. Logged in mobile:
+   - drawer should fit within viewport
+   - no horizontal overflow
+   - drawer interior scroll only
+3. Guest:
+   - only Sign in remains in the account area
+   - no fake profile drawer
+4. Scroll lock:
+   - page behind drawer must not scroll while open
+5. Reduced motion:
+   - OS/browser reduced-motion preference should remove drawer transition animation
 
 Commit:
-Phase 15J - Placements Boost Visual System Alignment
+Phase 15L - Premium Account Navigation Drawer
