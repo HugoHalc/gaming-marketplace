@@ -131,6 +131,10 @@ interface Props {
   currentUserRole: "customer" | "booster" | "admin";
   initialMessages: OrderWorkspaceMessage[];
   boosterAssignment: OrderBoosterAssignment | null;
+  mode?: "customer" | "booster";
+  boosterPayout?: number;
+  backHref?: string;
+  backLabel?: string;
 }
 
 export function CustomerOrderWorkspace({
@@ -142,14 +146,26 @@ export function CustomerOrderWorkspace({
   currentUserRole,
   initialMessages,
   boosterAssignment,
+  mode = "customer",
+  boosterPayout,
+  backHref = "/dashboard/orders",
+  backLabel = "Back to orders",
 }: Props) {
   const item = order.items[0];
-  const canPay = order.status === "pending_payment" && order.paymentStatus !== "paid";
-  const isCustomerOwner = currentUserRole === "customer";
+  const isBoosterMode = mode === "booster";
+  const canPay =
+    !isBoosterMode &&
+    order.status === "pending_payment" &&
+    order.paymentStatus !== "paid";
+  const isCustomerOwner = !isBoosterMode && currentUserRole === "customer";
+  const displayAmount =
+    isBoosterMode && typeof boosterPayout === "number"
+      ? boosterPayout
+      : order.total;
 
   return (
     <div className="mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <Link href="/dashboard/orders" className="text-xs font-medium text-[#A0AAA4] hover:text-[#F4F7F5]">← Back to orders</Link>
+      <Link href={backHref} className="text-xs font-medium text-[#A0AAA4] hover:text-[#F4F7F5]">← {backLabel}</Link>
 
       {checkoutState === "success" ? <div className="mt-4 border-y border-[#39E56F]/15 py-3 text-sm text-[#82F5A4]">Payment submitted successfully. Stripe is confirming the payment.</div> : null}
       {checkoutState === "cancelled" ? <div className="mt-4 border-y border-amber-300/15 py-3 text-sm text-amber-100">Checkout was cancelled. Your order is still saved.</div> : null}
@@ -171,7 +187,7 @@ export function CustomerOrderWorkspace({
               </div>
               <div className="flex shrink-0 items-start gap-5 sm:flex-col sm:items-end sm:gap-2">
                 <OrderStatusBadge status={order.status} />
-                <p className="font-gaming-value text-2xl font-bold text-[#F4F7F5]">{formatMoney(order.total)}</p>
+                <div className="text-right"><p className="text-[9px] text-[#667069]">{isBoosterMode ? "Your payout" : "Total"}</p><p className={`font-gaming-value mt-0.5 text-2xl font-bold ${isBoosterMode ? "text-[#82F5A4]" : "text-[#F4F7F5]"}`}>{formatMoney(displayAmount)}</p></div>
               </div>
             </div>
             <Progression order={order} />
@@ -198,7 +214,7 @@ export function CustomerOrderWorkspace({
             <OrderLiveChat orderId={order.id} currentUserId={currentUserId} initialMessages={initialMessages} />
           </div>
 
-          <section className="grid gap-6 border-t border-white/[0.06] pt-5 lg:grid-cols-2">
+          <section className={`border-t border-white/[0.06] pt-5 ${isBoosterMode ? "" : "grid gap-6 lg:grid-cols-2"}`}>
             <div>
               <h2 className="text-sm font-semibold text-[#F4F7F5]">Configuration</h2>
               <dl className="mt-2 divide-y divide-white/[0.05]">
@@ -211,17 +227,19 @@ export function CustomerOrderWorkspace({
               </dl>
             </div>
 
-            <div>
-              <h2 className="text-sm font-semibold text-[#F4F7F5]">Price breakdown</h2>
-              <div className="mt-2 divide-y divide-white/[0.05]">
-                {item?.priceBreakdown.map((line, index) => (
-                  <div key={`${line.label}-${index}`} className="flex justify-between gap-4 py-3 text-xs">
-                    <span className="text-[#A0AAA4]">{line.label}</span>
-                    <span className={line.amount < 0 ? "text-[#82F5A4]" : "text-[#F4F7F5]"}>{line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}</span>
-                  </div>
-                ))}
+            {!isBoosterMode ? (
+              <div>
+                <h2 className="text-sm font-semibold text-[#F4F7F5]">Price breakdown</h2>
+                <div className="mt-2 divide-y divide-white/[0.05]">
+                  {item?.priceBreakdown.map((line, index) => (
+                    <div key={`${line.label}-${index}`} className="flex justify-between gap-4 py-3 text-xs">
+                      <span className="text-[#A0AAA4]">{line.label}</span>
+                      <span className={line.amount < 0 ? "text-[#82F5A4]" : "text-[#F4F7F5]"}>{line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
           </section>
         </main>
 
@@ -232,7 +250,7 @@ export function CustomerOrderWorkspace({
               <dl className="mt-4 divide-y divide-white/[0.05]">
                 <div className="flex justify-between gap-4 py-2.5"><dt className="text-[11px] text-[#667069]">Order</dt><dd className="font-gaming-value text-xs text-[#F4F7F5]">{order.orderNumber}</dd></div>
                 <div className="flex justify-between gap-4 py-2.5"><dt className="text-[11px] text-[#667069]">Payment</dt><dd className={`text-[11px] font-semibold ${order.paymentStatus === "paid" ? "text-[#82F5A4]" : "text-[#A0AAA4]"}`}>{order.paymentStatus === "paid" ? "Paid" : order.paymentStatus === "pending" ? "Pending" : "Not completed"}</dd></div>
-                <div className="flex items-end justify-between gap-4 pt-3"><dt className="text-[11px] text-[#667069]">Total</dt><dd className="font-gaming-value text-2xl font-bold text-[#F4F7F5]">{formatMoney(order.total)}</dd></div>
+                <div className="flex items-end justify-between gap-4 pt-3"><dt className="text-[11px] text-[#667069]">{isBoosterMode ? "Your payout" : "Total"}</dt><dd className={`font-gaming-value text-2xl font-bold ${isBoosterMode ? "text-[#82F5A4]" : "text-[#F4F7F5]"}`}>{formatMoney(displayAmount)}</dd></div>
               </dl>
               {canPay ? <form action="/api/checkout" method="post" className="mt-4"><input type="hidden" name="orderId" value={order.id} /><button className="h-11 w-full rounded-xl bg-[#39E56F] text-xs font-semibold text-[#050807] hover:bg-[#20C95A]">Complete secure payment</button></form> : null}
             </section>

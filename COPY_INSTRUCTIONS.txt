@@ -1,72 +1,65 @@
-BOOSTINGPEDIA — PHASE 16D
-LIVE ORDER CHAT + SECURE ACCOUNT ACCESS
+BOOSTINGPEDIA — PHASE 16E
+BOOSTER MARKETPLACE + ATOMIC CLAIM + PAYOUT FOUNDATION
 
-IMPORTANT:
-This phase includes a Supabase migration and requires a new server secret.
-
-APPLY AFTER:
-Phase 16A
-Phase 16B
-Phase 16B2
-Phase 16C
+APPLY AFTER PHASE 16D.
 
 1. COPY ZIP INTO PROJECT ROOT.
 
-2. SET ENVIRONMENT SECRET BEFORE TESTING CREDENTIALS:
+2. APPLY SUPABASE MIGRATION:
+supabase/migrations/phase_16e_booster_marketplace.sql
 
-BOOSTINGPEDIA_CREDENTIALS_KEY=<base64 32-byte random key>
+3. ENABLE YOUR ADMIN ACCOUNTS AS BOOSTERS.
 
-Generate:
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+In Supabase SQL Editor run once per admin/partner:
 
-Add to:
-- .env.local
-- Vercel project environment variables
+insert into public.booster_profiles (user_id, is_active, payout_rate_bps)
+values ('PROFILE_UUID_HERE', true, 5000)
+on conflict (user_id)
+do update set is_active = true, payout_rate_bps = 5000;
 
-DO NOT COMMIT THE KEY.
+IMPORTANT:
+Do NOT change your admin role to booster.
+An admin account can now also be a booster through booster_profiles.
 
-3. APPLY SUPABASE MIGRATION:
+4. DEPLOY.
 
-supabase/migrations/phase_16d_live_chat_secure_access.sql
+TEST:
 
-4. DEPLOY APPLICATION.
+A. AVAILABLE MARKETPLACE
+- Sign in with an active booster_profile.
+- Open /booster.
+- A paid, unassigned order should appear.
+- It should show YOUR PAYOUT, not the full order total.
+- For a $90 final order at 50%, it should display $45.
 
-FUNCTIONAL TESTS:
+B. ATOMIC CLAIM
+- Click Accept Order.
+- You should be redirected to /booster/orders/[id].
+- order_booster_assignments should contain:
+  booster_id
+  payout_rate_bps = 5000
+  payout_cents = 50% of final total cents
+- order status should be in_progress.
+- The order should disappear from Available Orders.
 
-CHAT:
-- customer can send/read messages on own order
-- unrelated customer cannot access order chat API
-- assigned booster can access assigned order chat
-- admin can access order chat
-- messages persist after refresh
-- chat refreshes approximately every 3 seconds
-- Discord / WhatsApp / Telegram / PayPal terms create moderation flags
+C. ACTIVE
+- /booster?view=active should contain the claimed order.
+- It must display the payout snapshot.
 
-CREDENTIALS:
-- customer can save account email + password
-- database row contains ciphertext/iv/auth_tag, not plaintext
-- credentials stay hidden by default
-- explicit Reveal returns credentials for authorized participant
-- unrelated customer cannot reveal credentials
-- assigned booster can reveal credentials
-- admin can reveal credentials
+D. CUSTOMER
+- Customer workspace should show the real assigned booster.
+- Chat should work between the customer and assigned booster.
+- Customer still sees normal customer total/payment information.
 
-BOOSTER:
-- profile role supports booster
-- admin assignment endpoint:
-  POST /api/admin/orders/[id]/assign-booster
-  JSON: {"boosterId":"<profile uuid>"}
-- only profiles with role=booster can be assigned
+E. BOOSTER WORKSPACE
+- Booster order workspace shows Your payout, not customer gross total.
+- Gross price breakdown is hidden.
+- Booster can explicitly reveal Account Details.
+- Booster cannot edit the customer's credentials.
 
-PAYMENTS:
-- Stripe checkout still works unchanged
+F. ADMIN
+- Existing /admin continues to show the full order amount.
+- Admin permissions remain intact even if the admin has booster_profiles access.
 
-NOT INCLUDED:
-- booster dashboard
-- admin assignment UI
-- screenshots
-- integrity verification
-- identity verification
-
-Commit:
-Phase 16D - Live Chat Secure Account Access
+COMMIT:
+Phase 16E - Booster Marketplace Atomic Claim Payout

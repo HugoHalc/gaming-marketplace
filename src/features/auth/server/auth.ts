@@ -45,6 +45,23 @@ export async function requireAdmin() {
 
 export async function requireBooster() {
   const identity = await requireUser();
-  if (identity.profile?.role !== "booster") redirect("/dashboard");
-  return identity;
+  const supabase = await createAuthServerClient();
+
+  const { data: boosterProfile, error } = await supabase
+    .from("booster_profiles")
+    .select("user_id, is_active, payout_rate_bps")
+    .eq("user_id", identity.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (error || !boosterProfile) redirect("/dashboard");
+
+  return {
+    ...identity,
+    boosterProfile: {
+      userId: boosterProfile.user_id as string,
+      isActive: Boolean(boosterProfile.is_active),
+      payoutRateBps: boosterProfile.payout_rate_bps as number,
+    },
+  };
 }

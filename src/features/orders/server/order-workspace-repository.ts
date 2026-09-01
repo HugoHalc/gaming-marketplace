@@ -55,20 +55,22 @@ async function getAuthorizedOrder(orderId: string) {
     throw new Error("Order not found.");
   }
 
-  if (order.user_id === identity.id || identity.profile?.role === "admin") {
-    return { identity, order, supabase };
-  }
+  const { data: assignment } = await supabase
+    .from("order_booster_assignments")
+    .select("order_id")
+    .eq("order_id", orderId)
+    .eq("booster_id", identity.id)
+    .eq("is_active", true)
+    .maybeSingle();
 
-  if (identity.profile?.role === "booster") {
-    const { data: assignment } = await supabase
-      .from("order_booster_assignments")
-      .select("order_id")
-      .eq("order_id", orderId)
-      .eq("booster_id", identity.id)
-      .eq("is_active", true)
-      .maybeSingle();
+  const isAssignedBooster = Boolean(assignment);
 
-    if (assignment) return { identity, order, supabase };
+  if (
+    order.user_id === identity.id ||
+    identity.profile?.role === "admin" ||
+    isAssignedBooster
+  ) {
+    return { identity, order, supabase, isAssignedBooster };
   }
 
   throw new Error("Order access denied.");
@@ -154,10 +156,16 @@ export async function sendOrderMessage(orderId: string, body: string) {
     throw new Error("Message must be between 1 and 1500 characters.");
   }
 
-  const { identity, supabase } = await getAuthorizedOrder(orderId);
+  const { identity, supabase, isAssignedBooster } =
+    await getAuthorizedOrder(orderId);
   const role = identity.profile?.role ?? "customer";
-  const senderRole =
-    role === "admin" ? "admin" : role === "booster" ? "booster" : "customer";
+  const senderRole = isAssignedBooster
+    ? "booster"
+    : role === "admin"
+      ? "admin"
+      : role === "booster"
+        ? "booster"
+        : "customer";
   const detectedTerms = detectModerationTerms(trimmed);
 
   const { data: message, error } = await supabase
@@ -307,22 +315,28 @@ export async function assignBoosterToOrder(orderId: string, boosterId: string) {
   const supabase = createSecretServerClient();
 
   const { data: booster, error: boosterError } = await supabase
-    .from("profiles")
-    .select("id, role")
-    .eq("id", boosterId)
+    .from("booster_profiles")
+    .select("user_id, is_active, payout_rate_bps")
+    .eq("user_id", boosterId)
+    .eq("is_active", true)
     .maybeSingle();
 
-  if (boosterError || !booster || booster.role !== "booster") {
-    throw new Error("A valid booster profile is required.");
+  if (boosterError || !booster) {
+    throw new Error("An active booster profile is required.");
   }
 
   const { data: order, error: orderError } = await supabase
     .from("orders")
-    .select("id")
+    .select("id, total_cents")
     .eq("id", orderId)
     .maybeSingle();
 
   if (orderError || !order) throw new Error("Order not found.");
+
+  const payoutRateBps = booster.payout_rate_bps as number;
+  const payoutCents = Math.floor(
+    (order.total_cents as number) * payoutRateBps / 10000,
+  );
 
   const { error } = await supabase.from("order_booster_assignments").upsert(
     {
@@ -331,6 +345,8 @@ export async function assignBoosterToOrder(orderId: string, boosterId: string) {
       assigned_by: admin.id,
       assigned_at: new Date().toISOString(),
       is_active: true,
+      payout_rate_bps: payoutRateBps,
+      payout_cents: payoutCents,
     },
     { onConflict: "order_id" },
   );

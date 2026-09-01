@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { CustomerOrderWorkspace } from "@/components/dashboard/customer-order-workspace";
-import { requireUser } from "@/features/auth/server/auth";
+import { requireBooster } from "@/features/auth/server/auth";
 import {
-  getCurrentUserOrder,
-  getCurrentUserOrderHistory,
-} from "@/features/orders/server/order-repository";
+  getAssignedBoosterOrder,
+  getAssignedBoosterOrderHistory,
+} from "@/features/booster/server/booster-orders";
 import {
   getOrderBoosterAssignment,
   listOrderMessages,
@@ -12,37 +12,35 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function OrderDetailPage({
+export default async function BoosterOrderPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ checkout?: string; paymentError?: string }>;
 }) {
-  const identity = await requireUser();
+  const identity = await requireBooster();
   const { id } = await params;
-  const query = await searchParams;
 
-  const order = await getCurrentUserOrder(id);
-  if (!order) notFound();
+  const assigned = await getAssignedBoosterOrder(id);
+  if (!assigned) notFound();
 
   const [history, initialMessages, boosterAssignment] = await Promise.all([
-    getCurrentUserOrderHistory(order.id),
-    listOrderMessages(order.id),
-    getOrderBoosterAssignment(order.id),
+    getAssignedBoosterOrderHistory(id),
+    listOrderMessages(id),
+    getOrderBoosterAssignment(id),
   ]);
 
   return (
     <CustomerOrderWorkspace
-      order={order}
+      order={assigned.order}
       history={history}
-      checkoutState={query.checkout}
-      paymentError={query.paymentError}
       currentUserId={identity.id}
       currentUserRole={identity.profile?.role ?? "customer"}
       initialMessages={initialMessages}
       boosterAssignment={boosterAssignment}
-      mode="customer"
+      mode="booster"
+      boosterPayout={assigned.payout}
+      backHref="/booster?view=active"
+      backLabel="Back to active orders"
     />
   );
 }
