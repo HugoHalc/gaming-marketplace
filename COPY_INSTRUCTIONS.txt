@@ -1,87 +1,16 @@
-BOOSTINGPEDIA — PHASE 16G
-ORDER LIFECYCLE + 48H DELIVERY CONFIRMATION
+BOOSTINGPEDIA — PHASE 16G.1 BUILD HOTFIX
 
-1. COPY ZIP INTO PROJECT ROOT.
+1. COPY ZIP INTO PROJECT ROOT AND REPLACE FILES.
 
-2. SUPABASE
+2. NO SUPABASE MIGRATION IS NEEDED.
 
-Open:
-supabase/migrations/phase_16g_order_lifecycle_delivery_confirmation.sql
-
-Paste ALL SQL into Supabase SQL Editor and press Run.
-
-Expected:
-Success
-
-IMPORTANT:
-This migration enables pg_cron and schedules:
-boostingpedia-auto-complete-deliveries
-
-It runs every 15 minutes.
-
-3. COMMIT / PUSH / DEPLOY
+3. COMMIT / PUSH.
 
 Suggested commit:
-Phase 16G - Order Lifecycle Delivery Confirmation
+Phase 16G.1 - Fix Legacy Complete Route Build
 
-4. TEST BOOSTER FLOW
+4. Vercel should build successfully.
 
-Accept a test order.
-
-Expected operational status:
-Accepted
-
-Press:
-Start Work
-
-Expected:
-In Progress
-
-You can then test:
-Waiting for Customer
-Resume Work
-Report Issue
-
-5. DELIVERY TEST
-
-Before Deliver Order is enabled, save:
-- User Integrity Validation
-- Start Screenshot URL
-- Deliver Screenshot URL
-
-Then press:
-Deliver Order
-
-Expected:
-Operational status = Delivered
-Customer order status remains in_progress
-A 48-hour auto-complete date is shown.
-
-6. CUSTOMER TEST
-
-Open the order from the customer account.
-
-You should see:
-Confirm Delivery
-Report a Problem
-
-Confirm Delivery:
-- operational state = Completed
-- main order status = completed
-
-Report a Problem:
-- operational state = Issue
-- auto completion is cancelled
-
-7. DO NOT WAIT 48 HOURS TO TEST CRON
-
-For a test order only, you can temporarily set auto_complete_at in the past
-through Supabase, wait for the next 15-minute cron run, and confirm the order
-auto-completes.
-
-Do not do that to real customer orders.
-
-8. OLD COMPLETE BUTTON
-
-Phase 16F direct completion is disabled at the database permission level.
-The booster must now use Delivered → customer confirmation / 48h timeout.
+This does NOT re-enable direct order completion.
+The legacy /complete endpoint now returns HTTP 410.
+Use the Phase 16G lifecycle endpoint instead.
