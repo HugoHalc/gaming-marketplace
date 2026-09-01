@@ -1,49 +1,72 @@
-BOOSTINGPEDIA — PHASE 16C
-CUSTOMER ORDER WORKSPACE REBUILD
-
-WINDOWS DIRECT-REPLACEMENT ZIP
-
-Apply AFTER:
-- Phase 16A
-- Phase 16B
-- Phase 16B2
-
-REPLACES:
-src/components/dashboard/customer-order-workspace.tsx
-
-ADDS:
-docs/phase-16c-customer-order-workspace-rebuild.md
-
-VISUAL / STRUCTURAL ONLY.
-
-NO DATABASE MIGRATION.
-NO API CHANGE.
-NO ROUTE CHANGE.
-NO AUTH CHANGE.
-NO ORDER LOGIC CHANGE.
-NO PAYMENT CHANGE.
-NO REAL CHAT.
-NO CREDENTIAL STORAGE.
-NO SCREENSHOT UPLOAD.
-NO INTEGRITY VALIDATION BACKEND.
+BOOSTINGPEDIA — PHASE 16D
+LIVE ORDER CHAT + SECURE ACCOUNT ACCESS
 
 IMPORTANT:
-The visible Account Details fields are disabled placeholders.
-They do not send, save, or expose any credential.
+This phase includes a Supabase migration and requires a new server secret.
 
-VERIFY AFTER DEPLOY:
-1. /dashboard/orders/[id]
-2. Header is compact.
-3. Main workspace is visibly larger than right sidebar.
-4. Conversation workspace is the dominant left-side module.
-5. Right side is one unified operational surface.
-6. Stripe payment still works for pending-payment order.
-7. Current/Target rank badges only appear for resolvable rank strings.
-8. Account email/password inputs are disabled.
-9. No credential data is loaded or transmitted.
-10. Start/Final screenshot modules are visual placeholders only.
-11. Mobile stacks correctly without horizontal overflow.
-12. Existing dashboard shell/navigation still works.
+APPLY AFTER:
+Phase 16A
+Phase 16B
+Phase 16B2
+Phase 16C
+
+1. COPY ZIP INTO PROJECT ROOT.
+
+2. SET ENVIRONMENT SECRET BEFORE TESTING CREDENTIALS:
+
+BOOSTINGPEDIA_CREDENTIALS_KEY=<base64 32-byte random key>
+
+Generate:
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+Add to:
+- .env.local
+- Vercel project environment variables
+
+DO NOT COMMIT THE KEY.
+
+3. APPLY SUPABASE MIGRATION:
+
+supabase/migrations/phase_16d_live_chat_secure_access.sql
+
+4. DEPLOY APPLICATION.
+
+FUNCTIONAL TESTS:
+
+CHAT:
+- customer can send/read messages on own order
+- unrelated customer cannot access order chat API
+- assigned booster can access assigned order chat
+- admin can access order chat
+- messages persist after refresh
+- chat refreshes approximately every 3 seconds
+- Discord / WhatsApp / Telegram / PayPal terms create moderation flags
+
+CREDENTIALS:
+- customer can save account email + password
+- database row contains ciphertext/iv/auth_tag, not plaintext
+- credentials stay hidden by default
+- explicit Reveal returns credentials for authorized participant
+- unrelated customer cannot reveal credentials
+- assigned booster can reveal credentials
+- admin can reveal credentials
+
+BOOSTER:
+- profile role supports booster
+- admin assignment endpoint:
+  POST /api/admin/orders/[id]/assign-booster
+  JSON: {"boosterId":"<profile uuid>"}
+- only profiles with role=booster can be assigned
+
+PAYMENTS:
+- Stripe checkout still works unchanged
+
+NOT INCLUDED:
+- booster dashboard
+- admin assignment UI
+- screenshots
+- integrity verification
+- identity verification
 
 Commit:
-Phase 16C - Customer Order Workspace Rebuild
+Phase 16D - Live Chat Secure Account Access

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createAuthServerClient } from "@/lib/supabase/auth";
 import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 
-export type AppRole = "customer" | "admin";
+export type AppRole = "customer" | "booster" | "admin";
 
 export async function getCurrentIdentity() {
   if (!hasPublicSupabaseEnv()) return null;
@@ -40,5 +40,11 @@ export async function requireUser() {
 export async function requireAdmin() {
   const identity = await requireUser();
   if (identity.profile?.role !== "admin") redirect("/dashboard");
+  return identity;
+}
+
+export async function requireBooster() {
+  const identity = await requireUser();
+  if (identity.profile?.role !== "booster") redirect("/dashboard");
   return identity;
 }
