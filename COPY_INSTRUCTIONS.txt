@@ -1,41 +1,33 @@
-BOOSTINGPEDIA — PHASE 16E.1 HOTFIX
+BOOSTINGPEDIA — PHASE 16E.2 SERVICE ROLE HOTFIX
 
-THIS HOTFIX IS REQUIRED AFTER PHASE 16E.
+1. COPY THIS ZIP INTO THE PROJECT ROOT.
 
-1. COPY ZIP INTO PROJECT ROOT.
+2. OPEN:
+supabase/migrations/phase_16e2_service_role_grants.sql
 
-REPLACES:
-src/features/booster/server/booster-orders.ts
+3. SUPABASE → SQL EDITOR → NEW QUERY.
 
-ADDS:
-supabase/migrations/phase_16e1_fix_booster_rls.sql
-docs/phase-16e1-rls-booster-runtime-hotfix.md
+4. COPY ALL SQL AND PRESS RUN.
 
-2. SUPABASE SQL EDITOR
+EXPECTED:
+Success
 
-Open:
-supabase/migrations/phase_16e1_fix_booster_rls.sql
+5. NO DATA INSERTS ARE NEEDED.
+Do not recreate your booster profile.
+Do not rerun Phase 16D or Phase 16E.
 
-Copy ALL content into a new SQL query and press Run.
+6. This migration is database-only.
+Once SQL returns Success, refresh production and test:
 
-Expected: Success.
+/dashboard
+/dashboard/orders/[YOUR_ORDER_ID]
+/booster
 
-3. COMMIT/PUSH/DEPLOY.
-
-4. TEST:
-- /dashboard must load again.
-- /booster must load.
-- customer can only read their own orders.
-- an assigned booster can read only that assigned order.
-- admin remains able to read all orders.
-- Available Orders displays eligible paid/unassigned orders.
-- payout remains 50% of final order total.
-
-DO NOT:
-- rerun Phase 16E
-- delete existing orders
-- delete booster_profiles
-- recreate your booster account
+Expected:
+- customer dashboard still loads;
+- order detail loads;
+- booster assignment query no longer errors;
+- /booster loads the Available Orders marketplace.
 
 Suggested commit:
-Phase 16E.1 - Fix Booster RLS Runtime
+Phase 16E.2 - Fix Service Role Grants
