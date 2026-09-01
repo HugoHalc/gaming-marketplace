@@ -1,23 +1,27 @@
-BOOSTINGPEDIA — PHASE 15I PREMIUM ORDER SUMMARY SYSTEM
+BOOSTINGPEDIA — PHASE 15K
+REWARDS BOOST VISUAL SYSTEM ALIGNMENT
 
-Extract this ZIP into the project root and replace the five included configurator files.
+WINDOWS DIRECT-REPLACEMENT ZIP
 
-Files:
-- src/features/configurator/components/rocket-league-rank-configurator.tsx
-- src/features/configurator/components/rocket-league-wins-configurator.tsx
-- src/features/configurator/components/rocket-league-tournament-configurator.tsx
-- src/features/configurator/components/rocket-league-rewards-configurator.tsx
-- src/features/configurator/components/rocket-league-placements-configurator.tsx
+Extract/copy this ZIP into the project root and allow Windows to merge folders / replace the included file.
 
-No script required.
+Replaces:
+src/features/configurator/components/rocket-league-rewards-configurator.tsx
+
+No scripts required.
 No Supabase migration required.
 
-Test all five Rocket League services and verify:
-- quote totals remain identical
-- discounts remain identical
-- create-order behavior remains identical
-- loading/disabled behavior remains identical
-- payment trust text only references Stripe
+Test:
+https://gaming-marketplace-gold.vercel.app/games/rocket-league/rewards-boost
+
+Verify:
+- Reward Wins still range from 1 to 10.
+- Discount thresholds remain unchanged.
+- Play With Booster remains +45%.
+- Customize remains multiselect.
+- Quote/API/order behavior remains unchanged.
+- Season Rewards displays the real selected wins as X / 10.
+- No fake reward target or completion data is introduced.
 
 Commit:
-Phase 15I - Rocket League Premium Order Summary System
+Phase 15K - Rewards Boost Visual System Alignment

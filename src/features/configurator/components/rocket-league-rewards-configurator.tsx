@@ -49,10 +49,10 @@ const playlists = [
 ] as const;
 
 const platforms = [
-  { value: "pc", label: "PC" },
-  { value: "playstation", label: "PlayStation" },
-  { value: "xbox", label: "Xbox" },
-  { value: "switch", label: "Nintendo Switch" },
+  { value: "pc", label: "PC", color: "text-sky-300" },
+  { value: "playstation", label: "PlayStation", color: "text-blue-300" },
+  { value: "xbox", label: "Xbox", color: "text-green-300" },
+  { value: "switch", label: "Nintendo Switch", color: "text-red-300" },
 ] as const;
 
 function formatPrice(value: number) {
@@ -119,18 +119,21 @@ function ChoicePill({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
         active
-          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-          : "border-white/[0.08] bg-black/15 text-white/60 hover:border-white/[0.16] hover:text-white"
+          ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
+          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
       <span className="truncate text-xs font-semibold">{label}</span>
-      {meta ? (
-        <span className={`shrink-0 text-[10px] font-bold ${active ? "text-green-300" : "text-white/35"}`}>
-          {meta}
-        </span>
-      ) : null}
+      <span className="flex shrink-0 items-center gap-2">
+        {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
+        {active ? (
+          <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+            <Check className="size-2.5" strokeWidth={3} />
+          </span>
+        ) : null}
+      </span>
     </button>
   );
 }
@@ -215,6 +218,49 @@ function CompactExtra({
   );
 }
 
+
+function PlatformIcon({ platform }: { platform: string }) {
+  if (platform === "pc") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" opacity="0.95" />
+        <circle cx="9.15" cy="14.2" r="1.85" fill="currentColor" />
+        <path d="M10.7 13.4 14.7 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="15.9" cy="10.2" r="2.15" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+
+  if (platform === "playstation") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <path d="M10 5.2v10.6c0 .9-.34 1.44-1.08 1.62L6.3 18.2v-2.1l1.62-.55c.34-.12.5-.32.5-.68V5.85l1.58-.65Z" fill="currentColor" />
+        <path d="M11.4 7.1c2.2.7 4.22 1.44 5.85 2.15.72.32 1.05.77 1.05 1.35 0 .55-.33.98-1 1.2l-6.52 2.08v-2.13l4.75-1.48c.26-.08.28-.22.05-.32-1.17-.47-2.83-1.02-4.18-1.42V7.1Z" fill="currentColor" opacity=".92" />
+        <path d="m11.18 12.75 5.05-1.6v1.85l-4.02 1.3c-.55.18-.78.4-.78.73 0 .35.25.48.72.38l2.9-.62v1.8l-3.45.78c-1.57.35-2.57-.25-2.57-1.48 0-1.03.65-1.86 2.25-2.34Z" fill="currentColor" opacity=".84" />
+      </svg>
+    );
+  }
+
+  if (platform === "xbox") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8.2 8.05c1.1.48 2.26 1.3 3.78 2.77 1.5-1.46 2.68-2.28 3.82-2.77" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M8.85 16.25c.9-1.55 1.88-2.83 3.13-4.12 1.23 1.28 2.23 2.56 3.17 4.12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+      <rect x="4.3" y="4.2" width="15.4" height="15.6" rx="6.6" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M9.55 6.65v10.7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <circle cx="8.65" cy="11.1" r="1.02" fill="currentColor" />
+      <circle cx="14.9" cy="12.9" r="1.02" fill="currentColor" />
+    </svg>
+  );
+}
+
 function CurrentRankSelector({
   value,
   onChange,
@@ -225,17 +271,34 @@ function CurrentRankSelector({
   const family = familyForRank(value);
 
   return (
-    <div>
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400/75">
-          Current rank
-        </p>
-        <p className="mt-1 text-base font-bold tracking-[-0.03em] text-white">
-          {rankLabel(value)}
-        </p>
+    <div className="min-w-0">
+      <div className="flex items-center gap-3">
+        <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.035]">
+          {family.image ? (
+            <Image
+              src={family.image}
+              alt=""
+              width={44}
+              height={44}
+              className="h-10 w-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
+            />
+          ) : (
+            <span className="grid size-9 place-items-center rounded-full border border-white/[0.10] bg-white/[0.025] text-sm font-bold text-white/45">
+              ?
+            </span>
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-200/65">
+            Current rank
+          </p>
+          <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+            {rankLabel(value)}
+          </p>
+        </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-4 gap-2">
+      <div className="mt-4 grid grid-cols-4 gap-2">
         {rankFamilies.map((item) => {
           const selected = family.key === item.key;
           return (
@@ -244,38 +307,46 @@ function CurrentRankSelector({
               type="button"
               title={item.label}
               onClick={() => onChange(firstRankForFamily(item.key))}
-              className={`group relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,box-shadow,transform] duration-200 ${
+              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
                 selected
-                  ? "border-green-400/45 bg-[linear-gradient(180deg,rgba(74,222,128,.075),rgba(74,222,128,.018))] shadow-[inset_0_1px_0_rgba(255,255,255,.055),0_10px_28px_-22px_rgba(74,222,128,.7)]"
-                  : "border-white/[0.075] bg-[linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.008))] hover:-translate-y-px hover:border-white/[0.17]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
-              {item.image ? (
-                <Image
-                  src={item.image}
-                  alt=""
-                  width={46}
-                  height={46}
-                  className={`h-[2.85rem] w-[2.85rem] object-contain drop-shadow-[0_7px_16px_rgba(0,0,0,.62)] transition-transform duration-200 ${
-                    selected ? "scale-[1.04]" : "group-hover:scale-[1.03]"
-                  }`}
-                />
-              ) : (
-                <span className={`grid h-[2.85rem] w-[2.85rem] place-items-center rounded-full border text-sm font-black ${
-                  selected
-                    ? "border-green-400/35 bg-green-400/[0.10] text-green-200"
-                    : "border-white/[0.10] bg-white/[0.025] text-white/45"
-                }`}>
-                  ?
-                </span>
-              )}
               {selected ? (
-                <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full border border-green-200/40 bg-green-400 text-[#06110a]">
-                  <Check className="size-2.5" strokeWidth={3} />
-                </span>
+                <span className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/55 to-transparent" />
               ) : null}
-              <span className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 ${
-                selected ? "text-white" : "text-white/68"
+
+              <span className="relative grid size-[3.1rem] place-items-center">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt=""
+                    width={46}
+                    height={46}
+                    className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${
+                      selected ? "opacity-100" : ""
+                    }`}
+                  />
+                ) : (
+                  <span className={`grid size-[2.7rem] place-items-center rounded-full border text-sm font-bold ${
+                    selected
+                      ? "border-white/[0.14] bg-white/[0.04] text-white/75"
+                      : "border-white/[0.10] bg-white/[0.025] text-white/40"
+                  }`}>
+                    ?
+                  </span>
+                )}
+
+                {selected ? (
+                  <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
+                    <Check className="size-2.5" strokeWidth={3} />
+                  </span>
+                ) : null}
+              </span>
+
+              <span className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors duration-200 ${
+                selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
               }`}>
                 {item.label}
               </span>
@@ -297,10 +368,10 @@ function CurrentRankSelector({
                 key={tier}
                 type="button"
                 onClick={() => onChange(candidate)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-colors ${
+                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                   active
-                    ? "border-green-400/50 bg-green-400/[0.10] text-green-100"
-                    : "border-white/[0.08] bg-white/[0.02] text-white/60 hover:text-white"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
+                    : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                 }`}
               >
                 {tier === "1" ? "I" : tier === "2" ? "II" : "III"}
@@ -453,10 +524,10 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
-      <section className="overflow-hidden rounded-[1.6rem] border border-green-400/[0.10] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-green-500/[0.08] via-transparent to-emerald-500/[0.04] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
+        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/80">
+            <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/65">
               <Trophy className="size-3.5" />
               Rocket League Rewards Boost
             </div>
@@ -479,15 +550,20 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400/75">
-                    Reward Wins
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
+                    Season rewards
                   </p>
-                  <p className="mt-1 text-base font-bold tracking-[-0.03em] text-white">
-                    {wins} Reward Win{wins === 1 ? "" : "s"}
-                  </p>
+                  <div className="mt-1 flex items-end gap-2">
+                    <span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                      {wins} / 10
+                    </span>
+                    <span className="pb-1 text-[11px] font-medium text-[#A0AAA4]">
+                      Reward wins selected
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
+                <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-[#090D0B] px-3">
                   <input
                     aria-label="Reward Wins"
                     type="number"
@@ -498,8 +574,36 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                       const value = Math.max(1, Math.min(10, Number(event.target.value) || 1));
                       update("wins", value);
                     }}
-                    className="w-12 bg-transparent text-center text-sm font-bold text-white outline-none"
+                    className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
                   />
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <div className="grid grid-cols-10 gap-1.5" aria-label={`${wins} of 10 reward wins selected`}>
+                  {Array.from({ length: 10 }, (_, index) => {
+                    const step = index + 1;
+                    const completed = step <= wins;
+                    const finalStep = step === 10 && wins === 10;
+
+                    return (
+                      <span
+                        key={step}
+                        className={`h-2 rounded-full border transition-[border-color,background-color] duration-200 motion-reduce:transition-none ${
+                          finalStep
+                            ? "border-[#39E56F]/35 bg-[#39E56F]/45"
+                            : completed
+                              ? "border-blue-300/[0.18] bg-blue-400/55"
+                              : "border-white/[0.07] bg-white/[0.08]"
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="mt-2 flex items-center justify-between text-[9px] font-medium text-white/30">
+                  <span>1 win</span>
+                  <span>10 wins</span>
                 </div>
               </div>
 
@@ -511,35 +615,25 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 step={1}
                 value={wins}
                 onChange={(event) => update("wins", Number(event.target.value))}
-                className="mt-5 w-full accent-green-500"
+                className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-blue-400"
+                style={{
+                  background: `linear-gradient(to right, rgba(96,165,250,.55) 0%, rgba(96,165,250,.55) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) 100%)`,
+                }}
               />
 
-              <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
-                <span>6</span>
-                <span>8</span>
-                <span>10</span>
-              </div>
-
-              <div className="mt-3 rounded-xl border border-green-400/15 bg-green-400/[0.045] p-3">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-green-400/70">
-                      Rewards Package Discount
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-white">
-                      {discountRate > 0 ? `${discountRate}% OFF unlocked` : "Standard price"}
-                    </p>
-                  </div>
-                  {discountRate > 0 ? (
-                    <span className="rounded-full border border-green-400/25 bg-green-400/[0.10] px-2.5 py-1 text-[10px] font-black text-green-300">
-                      SAVE {discountRate}%
-                    </span>
-                  ) : null}
-                </div>
+              <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">
+                  Rewards package discount
+                </p>
+                <p className="font-gaming-value mt-1.5 text-[1.65rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
+                  {discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
+                </p>
+                {discountRate > 0 ? (
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-medium text-[#82F5A4]">
+                    <Check className="size-3" strokeWidth={2.7} />
+                    Unlocked
+                  </p>
+                ) : null}
 
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
                   {nextTier
@@ -555,7 +649,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Playlist
                 </p>
                 <p className="mt-1 text-sm font-semibold text-white">
@@ -604,7 +698,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
 
           <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
@@ -615,14 +709,23 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                       key={platform.value}
                       type="button"
                       onClick={() => update("platform", platform.value)}
-                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                         active
-                          ? "border-green-400/35 bg-green-400/[0.08] text-white"
-                          : "border-white/[0.08] bg-black/15 text-white/65 hover:border-white/[0.16] hover:text-white"
+                          ? "border-blue-300/[0.18] bg-[#131B17] text-white"
+                          : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                       }`}
                     >
-                      <span className="text-xs font-semibold">{platform.label}</span>
-                      {active ? <Check className="size-3.5 text-green-300" /> : null}
+                      <span className={`grid size-7 place-items-center rounded-lg border ${
+                        active ? "border-white/[0.12] bg-[#090D0B]" : "border-white/[0.08] bg-white/[0.02]"
+                      } ${platform.color}`}>
+                        <PlatformIcon platform={platform.value} />
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
+                      {active ? (
+                        <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                          <Check className="size-2.5" strokeWidth={3} />
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}
@@ -630,31 +733,31 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             </div>
 
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost Method
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "account")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "account"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300">
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75">
                       <Gauge className="size-4" />
                     </span>
-                    <span className="text-[10px] font-bold text-green-300">
+                    <span className="text-[10px] font-bold text-[#82F5A4]">
                       Base price
                     </span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                     Account Boost
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
                     We play on your account.
                   </p>
                 </button>
@@ -662,24 +765,24 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 <button
                   type="button"
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`rounded-xl border p-3 text-left transition-colors ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
                     boostMethod === "play-with-booster"
-                      ? "border-green-400/35 bg-green-400/[0.07]"
-                      : "border-white/[0.08] bg-black/15 hover:border-white/[0.16]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-green-300">
+                    <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/75">
                       <Users className="size-4" />
                     </span>
-                    <span className="text-[10px] font-bold text-green-300">
+                    <span className="text-[10px] font-bold text-blue-200/65">
                       +45%
                     </span>
                   </div>
-                  <p className="mt-2 text-xs font-semibold text-white">
+                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                     Play With Booster
                   </p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">
+                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
                     You play while we boost with you.
                   </p>
                 </button>
@@ -690,7 +793,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
           <div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-green-400/75">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Customize
                 </p>
                 <p className="mt-1 text-sm font-semibold text-white">
@@ -784,17 +887,42 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                     <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(String(selection.currentRank))}</p>
                   </div>
                 </div>
-                <div className="mt-3 flex items-end justify-between gap-3 border-t border-white/[0.06] pt-3">
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Season rewards</p>
-                    <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{wins} <span className="text-xs font-semibold text-white/45">Wins</span></p>
+                <div className="mt-3 border-t border-white/[0.06] pt-3">
+                  <div className="flex items-end justify-between gap-3">
+                    <div>
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Season rewards</p>
+                      <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">
+                        {wins} / 10 <span className="text-xs font-semibold text-white/45">wins</span>
+                      </p>
+                    </div>
+                    {discountRate > 0 ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#82F5A4]">
+                        <Check className="size-3" strokeWidth={2.7} />
+                        {discountRate}% OFF
+                      </span>
+                    ) : null}
                   </div>
-                  {discountRate > 0 ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#82F5A4]">
-                      <Check className="size-3" strokeWidth={2.7} />
-                      {discountRate}% OFF
-                    </span>
-                  ) : null}
+
+                  <div className="mt-3 grid grid-cols-10 gap-1">
+                    {Array.from({ length: 10 }, (_, index) => {
+                      const step = index + 1;
+                      const active = step <= wins;
+                      const finalStep = step === 10 && wins === 10;
+
+                      return (
+                        <span
+                          key={step}
+                          className={`h-1.5 rounded-full ${
+                            finalStep
+                              ? "bg-[#39E56F]/55"
+                              : active
+                                ? "bg-blue-400/50"
+                                : "bg-white/[0.08]"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -911,14 +1039,22 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
-          <div>
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
+          <div className="min-w-0">
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">
               Your total
             </p>
-            <p className="mt-0.5 text-xl font-black tracking-[-0.045em] text-white">
-              {quote ? formatPrice(quote.total) : "—"}
-            </p>
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                {quote ? formatPrice(quote.total) : "—"}
+              </p>
+              {isLoading ? (
+                <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-2.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating…
+                </span>
+              ) : null}
+            </div>
           </div>
           <a
             href="#rewards-summary"
