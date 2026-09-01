@@ -408,10 +408,13 @@ export function DashboardOrdersHub({
 
     return orders.filter((order) => {
       const item = order.items[0];
+      const normalizedGameName = item?.gameName
+        ?.trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+
       const matchesGame =
-        game === "all" ||
-        item?.gameSlug === game ||
-        item?.gameName?.toLowerCase().replace(/\s+/g, "-") === game;
+        game === "all" || normalizedGameName === game;
 
       const matchesStatus = matchesFilter(order, filter);
 
