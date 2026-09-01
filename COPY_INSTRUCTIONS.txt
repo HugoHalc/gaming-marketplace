@@ -1,98 +1,87 @@
-BOOSTINGPEDIA — PHASE 16F
-ACCEPT ORDER HOTFIX + OPERATIONAL ORDER WORKSPACE
+BOOSTINGPEDIA — PHASE 16G
+ORDER LIFECYCLE + 48H DELIVERY CONFIRMATION
 
-PREREQUISITE:
-Phase 16E.2 must already be applied.
+1. COPY ZIP INTO PROJECT ROOT.
 
-1. COPY THE ZIP INTO PROJECT ROOT.
-
-2. SUPABASE MIGRATION
+2. SUPABASE
 
 Open:
-supabase/migrations/phase_16f_operational_order_workspace.sql
+supabase/migrations/phase_16g_order_lifecycle_delivery_confirmation.sql
 
-Copy ALL SQL into:
-Supabase → SQL Editor → New Query
-
-Press Run.
+Paste ALL SQL into Supabase SQL Editor and press Run.
 
 Expected:
 Success
 
+IMPORTANT:
+This migration enables pg_cron and schedules:
+boostingpedia-auto-complete-deliveries
+
+It runs every 15 minutes.
+
 3. COMMIT / PUSH / DEPLOY
 
 Suggested commit:
-Phase 16F - Operational Order Workspace
+Phase 16G - Order Lifecycle Delivery Confirmation
 
-4. TEST ACCEPT ORDER
+4. TEST BOOSTER FLOW
 
-Open:
-/booster
+Accept a test order.
 
-Click:
-Accept Order
+Expected operational status:
+Accepted
 
-Expected:
-- no 409 ambiguity error
-- assignment snapshot is created
-- order changes to in_progress
-- redirect to /booster/orders/[id]
-- order disappears from Available Orders
-- appears in My Active Orders
-
-5. TEST USER INTEGRITY
-
-Inside the assigned order enter:
-Platform: Epic Games
-Player ID: your test player's Epic ID
-Internal note: optional
-
-Save.
+Press:
+Start Work
 
 Expected:
-Recorded identity appears immediately.
-On future orders from the same customer, prior IDs can appear under
-Previously seen IDs.
+In Progress
 
-6. TEST START SCREENSHOT
+You can then test:
+Waiting for Customer
+Resume Work
+Report Issue
 
-Paste an HTTPS image URL such as an Imgur image link.
+5. DELIVERY TEST
 
-No file upload exists.
+Before Deliver Order is enabled, save:
+- User Integrity Validation
+- Start Screenshot URL
+- Deliver Screenshot URL
 
-Save and open:
-View Screenshot
-
-7. TEST DELIVER SCREENSHOT
-
-Paste the final HTTPS image URL and save.
-
-8. COMPLETE ORDER
-
-Complete Order remains disabled until:
-- User Integrity exists
-- Start Screenshot exists
-- Deliver Screenshot exists
-
-Once all three are ready:
-Click Complete Order.
+Then press:
+Deliver Order
 
 Expected:
-status = completed
+Operational status = Delivered
+Customer order status remains in_progress
+A 48-hour auto-complete date is shown.
 
-9. CUSTOMER TEST
+6. CUSTOMER TEST
 
-Open the same order as the customer.
+Open the order from the customer account.
 
-Expected:
-- chat remains available
-- customer can use Account Details
-- identity snapshot is visible
-- screenshot links are visible
-- internal integrity note is hidden
-- customer cannot edit operational validation/evidence
+You should see:
+Confirm Delivery
+Report a Problem
 
-IMPORTANT:
-Do not manually insert an assignment.
-Do not upload image files to the site.
-Do not rerun Phase 16E.
+Confirm Delivery:
+- operational state = Completed
+- main order status = completed
+
+Report a Problem:
+- operational state = Issue
+- auto completion is cancelled
+
+7. DO NOT WAIT 48 HOURS TO TEST CRON
+
+For a test order only, you can temporarily set auto_complete_at in the past
+through Supabase, wait for the next 15-minute cron run, and confirm the order
+auto-completes.
+
+Do not do that to real customer orders.
+
+8. OLD COMPLETE BUTTON
+
+Phase 16F direct completion is disabled at the database permission level.
+The booster must now use Delivered → customer confirmation / 48h timeout.
