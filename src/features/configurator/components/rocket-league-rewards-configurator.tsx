@@ -25,7 +25,6 @@ import type {
 } from "../types/configurator";
 
 const rankFamilies = [
-  { key: "unrated", label: "Unrated", image: null, tiers: [] },
   { key: "bronze", label: "Bronze", image: "/ranks/rocket-league/bronze.png", tiers: ["1", "2", "3"] },
   { key: "silver", label: "Silver", image: "/ranks/rocket-league/silver.png", tiers: ["1", "2", "3"] },
   { key: "gold", label: "Gold", image: "/ranks/rocket-league/gold.png", tiers: ["1", "2", "3"] },
@@ -70,7 +69,6 @@ function familyForRank(rank: string) {
 }
 
 function rankLabel(rank: string) {
-  if (rank === "unrated") return "Unrated";
   if (rank === "supersonic-legend") return "Supersonic Legend";
   const family = familyForRank(rank);
   const tier = rank.split("-").at(-1);
@@ -78,7 +76,7 @@ function rankLabel(rank: string) {
 }
 
 function firstRankForFamily(familyKey: string) {
-  if (familyKey === "unrated" || familyKey === "supersonic-legend") {
+  if (familyKey === "supersonic-legend") {
     return familyKey;
   }
   return `${familyKey}-1`;
@@ -355,7 +353,7 @@ function CurrentRankSelector({
         })}
       </div>
 
-      {family.key !== "supersonic-legend" && family.key !== "unrated" ? (
+      {family.key !== "supersonic-legend" ? (
         <div className="mt-3 flex items-center gap-2">
           <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
             Tier
@@ -392,7 +390,7 @@ interface Props {
 export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
   const router = useRouter();
   const [selection, setSelection] = useState<ConfiguratorSelection>({
-    currentRank: "unrated",
+    currentRank: "bronze-1",
     wins: 4,
     playlist: "2v2",
     platform: "pc",

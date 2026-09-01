@@ -1,27 +1,20 @@
-BOOSTINGPEDIA — PHASE 15K
-REWARDS BOOST VISUAL SYSTEM ALIGNMENT
+BOOSTINGPEDIA — PHASE 15K2
+REWARDS BOOST REMOVE UNRATED
 
 WINDOWS DIRECT-REPLACEMENT ZIP
 
-Extract/copy this ZIP into the project root and allow Windows to merge folders / replace the included file.
+Extract/copy into the project root and replace the included file.
 
 Replaces:
 src/features/configurator/components/rocket-league-rewards-configurator.tsx
 
-No scripts required.
-No Supabase migration required.
-
-Test:
-https://gaming-marketplace-gold.vercel.app/games/rocket-league/rewards-boost
+No scripts.
+No migration.
 
 Verify:
-- Reward Wins still range from 1 to 10.
-- Discount thresholds remain unchanged.
-- Play With Booster remains +45%.
-- Customize remains multiselect.
-- Quote/API/order behavior remains unchanged.
-- Season Rewards displays the real selected wins as X / 10.
-- No fake reward target or completion data is introduced.
+- Rewards Boost no longer shows Unrated.
+- Default Current Rank is Bronze I.
+- Reward wins / discounts / quote behavior remain unchanged.
 
 Commit:
-Phase 15K - Rewards Boost Visual System Alignment
+Phase 15K2 - Rewards Boost Remove Unrated
