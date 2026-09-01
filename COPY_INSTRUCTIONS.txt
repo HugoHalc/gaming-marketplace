@@ -1,41 +1,51 @@
-BOOSTINGPEDIA — PHASE 15L
-PREMIUM ACCOUNT NAVIGATION DRAWER
+BOOSTINGPEDIA — PHASE 16A
+CUSTOMER DASHBOARD FOUNDATION
 
 WINDOWS DIRECT-REPLACEMENT ZIP
 
-Extract/copy this ZIP into the project root and allow Windows to merge folders / replace files.
+Extract/copy the ZIP into the project root and allow Windows to merge folders and replace included files.
 
-Adds:
-src/components/marketing/account-drawer.tsx
+ADDS:
+src/components/dashboard/dashboard-shell.tsx
+src/app/dashboard/layout.tsx
+src/app/dashboard/loading.tsx
+docs/phase-16a-customer-dashboard-foundation.md
 
-Replaces:
-src/components/marketing/site-header.tsx
+REPLACES:
+src/app/dashboard/page.tsx
+src/app/dashboard/orders/page.tsx
+src/app/dashboard/orders/[id]/page.tsx
+src/app/dashboard/profile/page.tsx
+src/app/dashboard/notifications/page.tsx
+src/features/orders/components/order-status-badge.tsx
 
-No database migration.
-No API changes.
-No auth changes.
-No pricing changes.
+NO:
+- database migration
+- pricing change
+- checkout change
+- API change
+- fake messages
+- fake booster data
+- credentials UI
+- verification UI
+- support route
 
-TEST:
-1. Logged in desktop:
-   - click avatar
-   - close with X
-   - open with Menu
-   - click outside
-   - press Escape
-   - navigate from quick actions and menu rows
-   - test Log out
-2. Logged in mobile:
-   - drawer should fit within viewport
-   - no horizontal overflow
-   - drawer interior scroll only
-3. Guest:
-   - only Sign in remains in the account area
-   - no fake profile drawer
-4. Scroll lock:
-   - page behind drawer must not scroll while open
-5. Reduced motion:
-   - OS/browser reduced-motion preference should remove drawer transition animation
+TEST AFTER DEPLOY:
+1. Authenticated customer with no orders.
+2. Customer with one or more orders.
+3. /dashboard overview.
+4. /dashboard/orders.
+5. /dashboard/orders/[id].
+6. /dashboard/profile.
+7. /dashboard/notifications.
+8. Desktop at >= 1024px.
+9. Tablet and mobile.
+10. Mobile sidebar: open, click outside, Escape, navigate.
+11. Verify no horizontal overflow.
+12. Verify public SiteHeader is not duplicated inside dashboard.
+13. Verify logout.
+14. Verify real notification badge.
+15. Verify reduced motion behavior.
 
 Commit:
-Phase 15L - Premium Account Navigation Drawer
+Phase 16A - Customer Dashboard Foundation

@@ -3,24 +3,33 @@ import type { OrderStatus } from "../types/orders";
 const labels: Record<OrderStatus, string> = {
   pending_payment: "Pending payment",
   paid: "Paid",
-  queued: "Queued",
+  queued: "Ready for assignment",
   in_progress: "In progress",
   completed: "Completed",
   cancelled: "Cancelled",
   refunded: "Refunded",
 };
 
-export function OrderStatusBadge({ status }: { status: OrderStatus }) {
-  const positive = status === "completed" || status === "paid";
-  const active = status === "queued" || status === "in_progress";
-  const negative = status === "cancelled" || status === "refunded";
-  const className = positive
-    ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-200"
-    : active
-      ? "border-cyan-300/20 bg-cyan-400/10 text-cyan-200"
-      : negative
-        ? "border-rose-300/20 bg-rose-400/10 text-rose-200"
-        : "border-amber-300/20 bg-amber-400/10 text-amber-200";
+const styles: Record<OrderStatus, string> = {
+  pending_payment: "border-amber-300/[0.18] bg-amber-300/[0.07] text-amber-200",
+  paid: "border-blue-300/[0.16] bg-blue-400/[0.07] text-blue-200",
+  queued: "border-blue-300/[0.16] bg-blue-400/[0.07] text-blue-200",
+  in_progress: "border-cyan-300/[0.18] bg-cyan-400/[0.07] text-cyan-200",
+  completed: "border-[#39E56F]/20 bg-[#39E56F]/[0.07] text-[#82F5A4]",
+  cancelled: "border-rose-300/[0.16] bg-rose-400/[0.06] text-rose-200",
+  refunded: "border-violet-300/[0.16] bg-violet-400/[0.06] text-violet-200",
+};
 
-  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${className}`}>{labels[status]}</span>;
+export function orderStatusLabel(status: OrderStatus) {
+  return labels[status];
+}
+
+export function OrderStatusBadge({ status }: { status: OrderStatus }) {
+  return (
+    <span
+      className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${styles[status]}`}
+    >
+      {labels[status]}
+    </span>
+  );
 }
