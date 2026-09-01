@@ -1,14 +1,11 @@
 import { notFound } from "next/navigation";
-import { CustomerOrderWorkspace } from "@/components/dashboard/customer-order-workspace";
+import { BoosterOrderWorkspace } from "@/components/booster/booster-order-workspace";
 import { requireBooster } from "@/features/auth/server/auth";
 import {
   getAssignedBoosterOrder,
   getAssignedBoosterOrderHistory,
 } from "@/features/booster/server/booster-orders";
-import {
-  getOrderBoosterAssignment,
-  listOrderMessages,
-} from "@/features/orders/server/order-workspace-repository";
+import { listOrderMessages } from "@/features/orders/server/order-workspace-repository";
 
 export const dynamic = "force-dynamic";
 
@@ -23,24 +20,18 @@ export default async function BoosterOrderPage({
   const assigned = await getAssignedBoosterOrder(id);
   if (!assigned) notFound();
 
-  const [history, initialMessages, boosterAssignment] = await Promise.all([
+  const [history, initialMessages] = await Promise.all([
     getAssignedBoosterOrderHistory(id),
     listOrderMessages(id),
-    getOrderBoosterAssignment(id),
   ]);
 
   return (
-    <CustomerOrderWorkspace
+    <BoosterOrderWorkspace
       order={assigned.order}
       history={history}
       currentUserId={identity.id}
-      currentUserRole={identity.profile?.role ?? "customer"}
       initialMessages={initialMessages}
-      boosterAssignment={boosterAssignment}
-      mode="booster"
       boosterPayout={assigned.payout}
-      backHref="/booster?view=active"
-      backLabel="Back to active orders"
     />
   );
 }

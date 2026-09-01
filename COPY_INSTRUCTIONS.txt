@@ -1,12 +1,32 @@
-BOOSTINGPEDIA — PHASE 16H.1 BUILD HOTFIX
+BOOSTINGPEDIA — PHASE 16I
+BOOSTER ORDER WORKSPACE REDESIGN
 
 1. COPY ZIP INTO PROJECT ROOT.
 2. REPLACE INCLUDED FILES.
-3. NO SUPABASE MIGRATION.
+3. NO SUPABASE MIGRATION IS REQUIRED.
 4. COMMIT / PUSH.
 
 Suggested commit:
-Phase 16H.1 - Fix Dashboard Game Filter Build
+
+Phase 16I - Booster Order Workspace Redesign
+
+TEST:
+
+Open:
+ /booster/orders/[id]
 
 Expected:
-Vercel type check succeeds.
+- chat dominates left side
+- compact right operational rail
+- payout visible
+- secure credentials remain accessible to booster
+- integrity/evidence/lifecycle controls remain functional
+- Rocket League rank badges appear when configuration has ranks
+
+CUSTOMER:
+ /dashboard/orders/[id]
+
+should remain on the existing customer-specific workspace.
+
+NO PRICING CHANGES.
+NO DATABASE CHANGES.
