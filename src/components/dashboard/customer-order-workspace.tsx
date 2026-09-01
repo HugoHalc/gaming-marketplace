@@ -7,11 +7,15 @@ import {
   Bell,
   Check,
   ChevronRight,
+  Clock3,
   CreditCard,
   Gamepad2,
+  ImageIcon,
   KeyRound,
   MessageSquare,
+  Send,
   ShieldCheck,
+  UserRoundCheck,
   UsersRound,
 } from "lucide-react";
 import type { OrderRecord, OrderStatusEvent } from "@/features/orders/types/orders";
@@ -63,6 +67,7 @@ function formatValue(value: string | number | boolean) {
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (value === "play-with-booster") return "Play With Booster";
   if (value === "account") return "Account Boost";
+
   return String(value)
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -109,8 +114,8 @@ function RankEditorial({
         <Image
           src={asset}
           alt=""
-          width={50}
-          height={50}
+          width={52}
+          height={52}
           className="size-12 object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,.42)]"
         />
       ) : (
@@ -139,6 +144,7 @@ function WorkspaceProgression({ order }: { order: OrderRecord }) {
   const currentCandidate =
     typeof config.currentRank !== "undefined" ? config.currentRank : config.previousRank;
   const targetCandidate = config.targetRank;
+
   const currentRank = isResolvableRank(currentCandidate) ? currentCandidate : null;
   const targetRank = isResolvableRank(targetCandidate) ? targetCandidate : null;
 
@@ -158,6 +164,7 @@ function WorkspaceProgression({ order }: { order: OrderRecord }) {
   return (
     <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4">
       {currentRank ? <RankEditorial rank={currentRank} label="Rank context" /> : null}
+
       {wins !== null || matches !== null ? (
         <div>
           <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-[#667069]">
@@ -172,70 +179,63 @@ function WorkspaceProgression({ order }: { order: OrderRecord }) {
   );
 }
 
-function ProgressTimeline({
+function CompactProgress({
   history,
   currentStatus,
 }: {
   history: OrderStatusEvent[];
   currentStatus: OrderRecord["status"];
 }) {
-  if (!history.length) {
-    return (
-      <div className="flex items-center gap-3 py-4">
-        <span className="size-2 rounded-full bg-cyan-300" />
-        <div>
-          <p className="text-xs font-semibold text-[#F4F7F5]">
-            {orderStatusLabel(currentStatus)}
-          </p>
-          <p className="mt-0.5 text-[10px] text-[#667069]">
-            Current status. No additional history has been recorded yet.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const stages = history.length
+    ? history.slice(-4).map((event) => ({
+        id: event.id,
+        label: orderStatusLabel(event.toStatus),
+        date: formatShortDate(event.createdAt),
+      }))
+    : [
+        {
+          id: currentStatus,
+          label: orderStatusLabel(currentStatus),
+          date: "Current",
+        },
+      ];
 
   return (
-    <ol aria-label="Order status history">
-      {history.map((event, index) => {
-        const current = index === history.length - 1;
-        return (
-          <li
-            key={event.id}
-            className="grid grid-cols-[24px_1fr_auto] gap-3 border-b border-white/[0.05] py-3.5 last:border-b-0"
-          >
-            <span
-              className={`mt-0.5 grid size-6 place-items-center rounded-full border ${
-                current
-                  ? "border-cyan-300/[0.20] bg-cyan-400/[0.06] text-cyan-200"
-                  : "border-white/[0.08] text-[#667069]"
-              }`}
-            >
-              {current ? (
-                <span className="size-1.5 rounded-full bg-cyan-300" />
-              ) : (
-                <Check className="size-2.5" strokeWidth={2.4} />
-              )}
-            </span>
+    <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex min-w-max items-center py-1">
+        {stages.map((stage, index) => {
+          const current = index === stages.length - 1;
 
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#F4F7F5]">
-                {orderStatusLabel(event.toStatus)}
-              </p>
-              {event.note ? (
-                <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
-                  {event.note}
-                </p>
+          return (
+            <div key={stage.id} className="flex items-center">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`grid size-5 place-items-center rounded-full border ${
+                    current
+                      ? "border-cyan-300/25 bg-cyan-400/[0.08] text-cyan-200"
+                      : "border-white/[0.10] bg-white/[0.02] text-[#A0AAA4]"
+                  }`}
+                >
+                  {current ? (
+                    <span className="size-1.5 rounded-full bg-cyan-300" />
+                  ) : (
+                    <Check className="size-2.5" strokeWidth={2.5} />
+                  )}
+                </span>
+                <div>
+                  <p className="text-[10px] font-medium text-[#A0AAA4]">{stage.label}</p>
+                  <p className="mt-0.5 text-[8px] text-[#667069]">{stage.date}</p>
+                </div>
+              </div>
+
+              {index < stages.length - 1 ? (
+                <span className="mx-4 h-px w-10 bg-white/[0.08] sm:w-14" />
               ) : null}
             </div>
-
-            <time className="pt-1 text-[9px] text-[#667069]">
-              {formatShortDate(event.createdAt)}
-            </time>
-          </li>
-        );
-      })}
-    </ol>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -250,7 +250,7 @@ function ConfigurationRows({ order }: { order: OrderRecord }) {
       {Object.entries(item.configuration).map(([key, value]) => (
         <div
           key={key}
-          className="grid grid-cols-[minmax(110px,.7fr)_minmax(0,1.3fr)] gap-4 py-3"
+          className="grid grid-cols-[minmax(110px,.72fr)_minmax(0,1.28fr)] gap-4 py-3"
         >
           <dt className="text-xs text-[#667069]">{formatLabel(key)}</dt>
           <dd className="text-right text-xs font-medium text-[#F4F7F5]">
@@ -262,105 +262,76 @@ function ConfigurationRows({ order }: { order: OrderRecord }) {
   );
 }
 
-function SidebarSurface({
-  order,
-  canPay,
-}: {
-  order: OrderRecord;
-  canPay: boolean;
-}) {
+function ConversationWorkspace() {
   return (
-    <aside className="overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-[#0E1411]">
-      <section className="p-5">
-        <div className="flex items-center gap-3">
-          <UsersRound className="size-4 text-[#667069]" strokeWidth={1.8} />
-          <div>
-            <p className="text-xs text-[#667069]">Booster</p>
-            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-              {order.status === "paid" || order.status === "queued"
-                ? "Waiting for assignment"
-                : "Assignment details unavailable"}
-            </p>
+    <section className="overflow-hidden rounded-[1.2rem] border border-white/[0.07] bg-[#070A08]">
+      <div className="flex min-h-[390px] flex-col sm:min-h-[480px] xl:min-h-[560px]">
+        <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-3.5 sm:px-5">
+          <div className="flex items-center gap-3">
+            <span className="grid size-9 place-items-center rounded-full border border-white/[0.07] bg-[#0E1411] text-[#667069]">
+              <UsersRound className="size-4" strokeWidth={1.8} />
+            </span>
+            <div>
+              <p className="text-xs font-semibold text-[#F4F7F5]">Order conversation</p>
+              <p className="mt-0.5 text-[10px] text-[#667069]">Live chat foundation</p>
+            </div>
           </div>
-        </div>
-        <p className="mt-3 text-[11px] leading-5 text-[#A0AAA4]">
-          Booster identity will appear here when assignment data is connected to the customer workspace.
-        </p>
-      </section>
 
-      <div className="h-px bg-white/[0.06]" />
-
-      <section className="p-5">
-        <div className="flex items-center gap-3">
-          <MessageSquare className="size-4 text-[#667069]" strokeWidth={1.8} />
-          <div>
-            <p className="text-xs text-[#667069]">Conversation</p>
-            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-              No messages yet
-            </p>
-          </div>
-        </div>
-        <p className="mt-3 text-[11px] leading-5 text-[#A0AAA4]">
-          Chat will be available when the live order conversation system is implemented.
-        </p>
-      </section>
-
-      <div className="h-px bg-white/[0.06]" />
-
-      <section className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs text-[#667069]">Payment</p>
-            <p className="font-gaming-value mt-1 text-2xl font-bold text-[#F4F7F5]">
-              {formatMoney(order.total)}
-            </p>
-          </div>
-          <span
-            className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold ${
-              order.paymentStatus === "paid"
-                ? "border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]"
-                : "border-white/[0.08] text-[#A0AAA4]"
-            }`}
-          >
-            {order.paymentStatus === "paid" ? "PAID" : "USD"}
+          <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+            Phase 16D
           </span>
         </div>
 
-        {order.paymentStatus === "paid" ? (
-          <p className="mt-3 inline-flex items-center gap-2 text-[11px] text-[#A0AAA4]">
-            <Check className="size-3.5 text-[#82F5A4]" strokeWidth={2.5} />
-            Stripe confirmed
-          </p>
-        ) : null}
-
-        {canPay ? (
-          <form action="/api/checkout" method="post" className="mt-4">
-            <input type="hidden" name="orderId" value={order.id} />
-            <button className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
-              Complete secure payment
-              <ArrowRight className="ml-2 size-3.5" strokeWidth={1.9} />
-            </button>
-          </form>
-        ) : null}
-      </section>
-
-      <div className="h-px bg-white/[0.06]" />
-
-      <section className="p-5">
-        <div className="flex items-center gap-3">
-          <KeyRound className="size-4 text-[#667069]" strokeWidth={1.8} />
-          <div>
-            <p className="text-xs text-[#667069]">Secure Account Access</p>
-            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-              Not active yet
+        <div className="flex flex-1 items-center justify-center px-5 py-10 text-center">
+          <div className="max-w-sm">
+            <MessageSquare className="mx-auto size-6 text-[#667069]" strokeWidth={1.7} />
+            <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">No messages yet</p>
+            <p className="mt-1.5 text-xs leading-5 text-[#A0AAA4]">
+              This workspace is reserved for the live order conversation. No messages are fabricated in this visual phase.
             </p>
           </div>
         </div>
-        <p className="mt-3 text-[11px] leading-5 text-[#A0AAA4]">
-          Credentials, verification and evidence remain outside this phase.
-        </p>
-      </section>
-    </aside>
+
+        <div className="border-t border-white/[0.05] bg-[#090D0B] p-3">
+          <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#050807] px-3">
+            <input
+              disabled
+              placeholder="Live chat will be enabled in a later phase"
+              className="h-11 min-w-0 flex-1 bg-transparent text-xs text-[#667069] outline-none placeholder:text-[#667069]"
+              aria-label="Live chat unavailable"
+            />
+            <button
+              type="button"
+              disabled
+              className="grid size-9 shrink-0 place-items-center text-[#667069]"
+              aria-label="Send message unavailable"
+            >
+              <Send className="size-4" strokeWidth={1.8} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SidebarSection({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="p-5">
+      <div className="flex items-center gap-2.5">
+        <span className="text-[#667069]">{icon}</span>
+        <h2 className="text-sm font-semibold text-[#F4F7F5]">{title}</h2>
+      </div>
+      <div className="mt-4">{children}</div>
+    </section>
   );
 }
 
@@ -382,41 +353,42 @@ export function CustomerOrderWorkspace({
     order.status === "pending_payment" && order.paymentStatus !== "paid";
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
       <Link
         href="/dashboard/orders"
-        className="inline-flex items-center text-xs font-medium text-[#A0AAA4] hover:text-[#F4F7F5]"
+        className="inline-flex items-center text-xs font-medium text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
       >
         ← Back to orders
       </Link>
 
       {checkoutState === "success" ? (
-        <div className="mt-5 border-y border-[#39E56F]/15 py-3 text-sm text-[#82F5A4]">
+        <div className="mt-4 border-y border-[#39E56F]/15 py-3 text-sm text-[#82F5A4]">
           Payment submitted successfully. Stripe is confirming the payment and this page will reflect the verified status.
         </div>
       ) : null}
 
       {checkoutState === "cancelled" ? (
-        <div className="mt-5 border-y border-amber-300/15 py-3 text-sm text-amber-100">
+        <div className="mt-4 border-y border-amber-300/15 py-3 text-sm text-amber-100">
           Checkout was cancelled. Your order is still saved and you can try payment again.
         </div>
       ) : null}
 
       {paymentError ? (
-        <div className="mt-5 border-y border-rose-300/15 py-3 text-sm text-rose-100">
+        <div className="mt-4 border-y border-rose-300/15 py-3 text-sm text-rose-100">
           We could not start secure checkout. Please try again.
         </div>
       ) : null}
 
-      <div className="mt-5 grid gap-7 xl:grid-cols-[minmax(0,1fr)_minmax(300px,31%)]">
+      <div className="mt-4 grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(330px,32%)]">
         <main className="min-w-0">
-          <header className="border-b border-white/[0.06] pb-6">
+          <header className="border-b border-white/[0.06] pb-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <div className="flex items-center gap-3">
                   <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.03] text-blue-200/75">
                     <Gamepad2 className="size-4" strokeWidth={1.8} />
                   </span>
+
                   <div className="min-w-0">
                     <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.14em] text-blue-200/55">
                       {item?.gameName ?? "Gaming service"}
@@ -447,89 +419,224 @@ export function CustomerOrderWorkspace({
             <WorkspaceProgression order={order} />
           </header>
 
-          <section className="border-b border-white/[0.06] py-6">
+          <section className="border-b border-white/[0.06] py-4">
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-blue-200/55">
-                  Order Progress
-                </p>
-                <h2 className="mt-1 text-base font-semibold text-[#F4F7F5]">
-                  Progress
-                </h2>
+              <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-blue-200/55">
+                Order Progress
+              </p>
+              <span className="text-[9px] text-[#667069]">Recorded events only</span>
+            </div>
+            <div className="mt-3">
+              <CompactProgress history={history} currentStatus={order.status} />
+            </div>
+          </section>
+
+          <div className="py-5">
+            <ConversationWorkspace />
+          </div>
+
+          <section className="grid gap-6 border-t border-white/[0.06] pt-5 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-sm font-semibold text-[#F4F7F5]">Configuration</h2>
+                <span className="text-[9px] text-[#667069]">Order selections</span>
               </div>
-              <span className="text-[10px] text-[#667069]">
-                Recorded events only
-              </span>
+              <div className="mt-2">
+                <ConfigurationRows order={order} />
+              </div>
             </div>
 
-            <div className="mt-3">
-              <ProgressTimeline history={history} currentStatus={order.status} />
-            </div>
-          </section>
-
-          <section className="border-b border-white/[0.06] py-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-base font-semibold text-[#F4F7F5]">
-                Configuration
-              </h2>
-              <span className="text-[10px] text-[#667069]">
-                Order selections
-              </span>
-            </div>
-
-            <div className="mt-3">
-              <ConfigurationRows order={order} />
-            </div>
-          </section>
-
-          <section className="border-b border-white/[0.06] py-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-base font-semibold text-[#F4F7F5]">
-                Price breakdown
-              </h2>
-            </div>
-
-            {item ? (
-              <div className="mt-3 divide-y divide-white/[0.05]">
-                {item.priceBreakdown.map((line, index) => (
-                  <div
-                    key={`${line.label}-${index}`}
-                    className="flex items-center justify-between gap-4 py-3 text-xs"
-                  >
-                    <span className="text-[#A0AAA4]">{line.label}</span>
-                    <span
-                      className={
-                        line.amount < 0
-                          ? "font-medium text-[#82F5A4]"
-                          : "font-medium text-[#F4F7F5]"
-                      }
+            <div>
+              <h2 className="text-sm font-semibold text-[#F4F7F5]">Price breakdown</h2>
+              {item ? (
+                <div className="mt-2 divide-y divide-white/[0.05]">
+                  {item.priceBreakdown.map((line, index) => (
+                    <div
+                      key={`${line.label}-${index}`}
+                      className="flex items-center justify-between gap-4 py-3 text-xs"
                     >
-                      {line.amount < 0 ? "−" : ""}
-                      {formatMoney(Math.abs(line.amount))}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </section>
-
-          <section className="py-6">
-            <div className="flex items-start gap-3">
-              <MessageSquare className="mt-0.5 size-4 shrink-0 text-[#667069]" />
-              <div>
-                <h2 className="text-base font-semibold text-[#F4F7F5]">
-                  Order conversation
-                </h2>
-                <p className="mt-1 max-w-xl text-xs leading-5 text-[#A0AAA4]">
-                  This area is intentionally left open so Phase 16C can introduce a full-size live chat workspace without being constrained inside a small card.
-                </p>
-              </div>
+                      <span className="text-[#A0AAA4]">{line.label}</span>
+                      <span
+                        className={
+                          line.amount < 0
+                            ? "font-medium text-[#82F5A4]"
+                            : "font-medium text-[#F4F7F5]"
+                        }
+                      >
+                        {line.amount < 0 ? "−" : ""}
+                        {formatMoney(Math.abs(line.amount))}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </section>
         </main>
 
-        <div className="min-w-0">
-          <SidebarSurface order={order} canPay={canPay} />
+        <aside className="min-w-0">
+          <div className="overflow-hidden rounded-[1.2rem] border border-white/[0.08] bg-[#0E1411]">
+            <SidebarSection
+              icon={<CreditCard className="size-4" strokeWidth={1.8} />}
+              title="Order Details"
+            >
+              <dl className="divide-y divide-white/[0.05]">
+                <div className="flex items-center justify-between gap-4 py-2.5 first:pt-0">
+                  <dt className="text-[11px] text-[#667069]">Order</dt>
+                  <dd className="font-gaming-value text-xs font-bold text-[#F4F7F5]">
+                    {order.orderNumber}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-4 py-2.5">
+                  <dt className="text-[11px] text-[#667069]">Created</dt>
+                  <dd className="text-right text-[11px] text-[#F4F7F5]">
+                    {formatDate(order.createdAt)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-4 py-2.5">
+                  <dt className="text-[11px] text-[#667069]">Status</dt>
+                  <dd>
+                    <OrderStatusBadge status={order.status} />
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-4 py-2.5">
+                  <dt className="text-[11px] text-[#667069]">Payment</dt>
+                  <dd
+                    className={`text-[11px] font-semibold ${
+                      order.paymentStatus === "paid"
+                        ? "text-[#82F5A4]"
+                        : "text-[#A0AAA4]"
+                    }`}
+                  >
+                    {order.paymentStatus === "paid"
+                      ? "Paid"
+                      : order.paymentStatus === "pending"
+                        ? "Pending"
+                        : "Not completed"}
+                  </dd>
+                </div>
+                <div className="flex items-end justify-between gap-4 pt-3">
+                  <dt className="text-[11px] text-[#667069]">Total</dt>
+                  <dd className="font-gaming-value text-2xl font-bold text-[#F4F7F5]">
+                    {formatMoney(order.total)}
+                  </dd>
+                </div>
+              </dl>
+
+              {canPay ? (
+                <form action="/api/checkout" method="post" className="mt-4">
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <button className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
+                    Complete secure payment
+                    <ArrowRight className="ml-2 size-3.5" strokeWidth={1.9} />
+                  </button>
+                </form>
+              ) : order.paymentStatus === "paid" ? (
+                <p className="mt-4 flex items-center gap-2 text-[11px] text-[#A0AAA4]">
+                  <Check className="size-3.5 text-[#82F5A4]" strokeWidth={2.5} />
+                  Stripe confirmed
+                </p>
+              ) : null}
+            </SidebarSection>
+
+            <div className="h-px bg-white/[0.06]" />
+
+            <SidebarSection
+              icon={<UsersRound className="size-4" strokeWidth={1.8} />}
+              title="Booster"
+            >
+              <p className="text-sm font-semibold text-[#F4F7F5]">
+                {order.status === "paid" || order.status === "queued"
+                  ? "Waiting for assignment"
+                  : "Assignment details unavailable"}
+              </p>
+              <p className="mt-1.5 text-[11px] leading-5 text-[#A0AAA4]">
+                Booster identity will appear here when real assignment data is connected.
+              </p>
+            </SidebarSection>
+
+            <div className="h-px bg-white/[0.06]" />
+
+            <SidebarSection
+              icon={<KeyRound className="size-4" strokeWidth={1.8} />}
+              title="Account Details"
+            >
+              <div className="space-y-3">
+                <label className="block">
+                  <span className="text-[10px] text-[#667069]">Game account email</span>
+                  <input
+                    disabled
+                    type="email"
+                    placeholder="Secure access not active yet"
+                    className="mt-1.5 h-10 w-full rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 text-xs text-[#667069] outline-none placeholder:text-[#667069]"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="text-[10px] text-[#667069]">Password</span>
+                  <input
+                    disabled
+                    type="password"
+                    placeholder="••••••••"
+                    className="mt-1.5 h-10 w-full rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 text-xs text-[#667069] outline-none placeholder:text-[#667069]"
+                  />
+                </label>
+
+                <p className="text-[10px] leading-4 text-[#667069]">
+                  These fields are visual placeholders only. No credentials are stored in this phase.
+                </p>
+              </div>
+            </SidebarSection>
+
+            <div className="h-px bg-white/[0.06]" />
+
+            <SidebarSection
+              icon={<UserRoundCheck className="size-4" strokeWidth={1.8} />}
+              title="User Integrity Validation"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-[#F4F7F5]">Not requested</p>
+                  <p className="mt-1 text-[10px] leading-4 text-[#667069]">
+                    Validation workflow will be connected in a later phase.
+                  </p>
+                </div>
+                <ShieldCheck className="size-5 shrink-0 text-[#667069]" strokeWidth={1.7} />
+              </div>
+            </SidebarSection>
+
+            <div className="h-px bg-white/[0.06]" />
+
+            <SidebarSection
+              icon={<ImageIcon className="size-4" strokeWidth={1.8} />}
+              title="Order Start Screenshot"
+            >
+              <div className="flex min-h-20 items-center justify-center rounded-xl border border-dashed border-white/[0.08] bg-[#090D0B] px-4 text-center">
+                <div>
+                  <ImageIcon className="mx-auto size-4 text-[#667069]" strokeWidth={1.7} />
+                  <p className="mt-2 text-[10px] text-[#667069]">
+                    Start evidence will appear here when uploads are enabled.
+                  </p>
+                </div>
+              </div>
+            </SidebarSection>
+
+            <div className="h-px bg-white/[0.06]" />
+
+            <SidebarSection
+              icon={<ImageIcon className="size-4" strokeWidth={1.8} />}
+              title="Order Final Screenshot"
+            >
+              <div className="flex min-h-20 items-center justify-center rounded-xl border border-dashed border-white/[0.08] bg-[#090D0B] px-4 text-center">
+                <div>
+                  <ImageIcon className="mx-auto size-4 text-[#667069]" strokeWidth={1.7} />
+                  <p className="mt-2 text-[10px] text-[#667069]">
+                    Completion evidence will appear here when uploads are enabled.
+                  </p>
+                </div>
+              </div>
+            </SidebarSection>
+          </div>
 
           <Link
             href="/dashboard/notifications"
@@ -548,7 +655,7 @@ export function CustomerOrderWorkspace({
             </span>
             <ChevronRight className="size-4 text-[#667069] group-hover:text-[#A0AAA4]" />
           </Link>
-        </div>
+        </aside>
       </div>
 
       {canPay ? (
@@ -562,6 +669,7 @@ export function CustomerOrderWorkspace({
                 {formatMoney(order.total)}
               </p>
             </div>
+
             <form action="/api/checkout" method="post">
               <input type="hidden" name="orderId" value={order.id} />
               <button className="inline-flex h-11 items-center justify-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] hover:bg-[#20C95A]">

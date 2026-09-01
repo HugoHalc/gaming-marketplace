@@ -1,44 +1,49 @@
-BOOSTINGPEDIA — PHASE 16B2
-CUSTOMER DASHBOARD + ORDER WORKSPACE DENSITY REDUCTION
+BOOSTINGPEDIA — PHASE 16C
+CUSTOMER ORDER WORKSPACE REBUILD
 
 WINDOWS DIRECT-REPLACEMENT ZIP
 
 Apply AFTER:
 - Phase 16A
 - Phase 16B
+- Phase 16B2
 
 REPLACES:
-src/app/dashboard/page.tsx
 src/components/dashboard/customer-order-workspace.tsx
 
 ADDS:
-docs/phase-16b2-dashboard-workspace-density-reduction.md
+docs/phase-16c-customer-order-workspace-rebuild.md
 
-NO DATABASE MIGRATION
-NO API CHANGE
-NO ROUTE CHANGE
-NO AUTH CHANGE
-NO PAYMENT CHANGE
-NO ORDER LOGIC CHANGE
+VISUAL / STRUCTURAL ONLY.
 
-VERIFY:
-1. /dashboard
-   - compact summary row
-   - active order is the dominant surface
-   - no fake rank names for unresolved values
-   - compact horizontal history timeline
-   - lighter recent orders list
-   - compact messages empty state
+NO DATABASE MIGRATION.
+NO API CHANGE.
+NO ROUTE CHANGE.
+NO AUTH CHANGE.
+NO ORDER LOGIC CHANGE.
+NO PAYMENT CHANGE.
+NO REAL CHAT.
+NO CREDENTIAL STORAGE.
+NO SCREENSHOT UPLOAD.
+NO INTEGRITY VALIDATION BACKEND.
 
-2. /dashboard/orders/[id]
-   - approximately 69/31 workspace layout on desktop
-   - compact header
-   - editorial Current → Target when resolvable
-   - progress section has no outer card
-   - configuration is row-based
-   - right sidebar is one unified surface
-   - Stripe CTA still works when payment is required
-   - no horizontal overflow mobile/tablet
+IMPORTANT:
+The visible Account Details fields are disabled placeholders.
+They do not send, save, or expose any credential.
+
+VERIFY AFTER DEPLOY:
+1. /dashboard/orders/[id]
+2. Header is compact.
+3. Main workspace is visibly larger than right sidebar.
+4. Conversation workspace is the dominant left-side module.
+5. Right side is one unified operational surface.
+6. Stripe payment still works for pending-payment order.
+7. Current/Target rank badges only appear for resolvable rank strings.
+8. Account email/password inputs are disabled.
+9. No credential data is loaded or transmitted.
+10. Start/Final screenshot modules are visual placeholders only.
+11. Mobile stacks correctly without horizontal overflow.
+12. Existing dashboard shell/navigation still works.
 
 Commit:
-Phase 16B2 - Dashboard Workspace Density Reduction
+Phase 16C - Customer Order Workspace Rebuild
