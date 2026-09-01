@@ -1,16 +1,55 @@
-BOOSTINGPEDIA — PHASE 16G.1 BUILD HOTFIX
+BOOSTINGPEDIA — PHASE 16H
+DASHBOARD ORDERS REDESIGN + ROLE-AWARE NAVIGATION
 
-1. COPY ZIP INTO PROJECT ROOT AND REPLACE FILES.
+1. COPY THIS ZIP INTO THE PROJECT ROOT.
 
-2. NO SUPABASE MIGRATION IS NEEDED.
+2. REPLACE THE INCLUDED FILES.
 
-3. COMMIT / PUSH.
+3. NO SUPABASE MIGRATION IS REQUIRED.
+
+Phase 16H reads the Phase 16G operational tables that already exist.
+
+4. COMMIT / PUSH
 
 Suggested commit:
-Phase 16G.1 - Fix Legacy Complete Route Build
 
-4. Vercel should build successfully.
+Phase 16H - Dashboard Orders Redesign
 
-This does NOT re-enable direct order completion.
-The legacy /complete endpoint now returns HTTP 410.
-Use the Phase 16G lifecycle endpoint instead.
+5. TEST /dashboard
+
+Expected:
+- Orders is the main dashboard content
+- game filter sidebar
+- All / Placed / In Progress / Delivered / Completed filters
+- search
+- grid/list switch
+- Rocket League rank badges on supported rank orders
+- compact dense cards
+
+6. TEST NAVIGATION WITH ADMIN + BOOSTER ACCOUNT
+
+Expected sidebar:
+- Orders
+- My Orders
+- Notifications
+- Booster Workspace
+- Admin
+- Account Settings
+
+Booster Workspace must open /booster without typing the URL manually.
+
+7. TEST CUSTOMER ACCOUNT
+
+Expected:
+- no Booster Workspace unless booster_profiles contains an active row
+- no Admin link unless profiles.role = admin
+
+8. MOBILE
+
+Expected:
+- navigation remains available in the drawer
+- order cards collapse to one column
+- filters/search remain usable
+
+NO DATABASE CHANGES.
+NO ROCKET LEAGUE PRICING CHANGES.

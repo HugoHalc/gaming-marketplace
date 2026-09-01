@@ -5,13 +5,15 @@ import { usePathname } from "next/navigation";
 import {
   Bell,
   ChevronRight,
+  Gauge,
   LayoutDashboard,
   LogOut,
   Menu,
-  MessageSquare,
   Package,
+  Shield,
   UserRound,
   X,
+  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -22,13 +24,9 @@ interface DashboardShellProps {
   avatarUrl: string | null;
   initials: string;
   unreadNotifications: number;
+  canAccessBooster: boolean;
+  canAccessAdmin: boolean;
 }
-
-const mainNavigation = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "My Orders", href: "/dashboard/orders", icon: Package },
-  { label: "Notifications", href: "/dashboard/notifications", icon: Bell },
-] as const;
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
@@ -64,6 +62,56 @@ function Avatar({
   );
 }
 
+function NavigationItem({
+  pathname,
+  href,
+  label,
+  icon: Icon,
+  badge,
+  onNavigate,
+}: {
+  pathname: string;
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  badge?: string | number;
+  onNavigate?: () => void;
+}) {
+  const active = isActive(pathname, href);
+
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={`group relative flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm transition-colors ${
+        active
+          ? "border-white/[0.08] bg-[#131B17] text-[#F4F7F5]"
+          : "border-transparent text-[#A0AAA4] hover:bg-[#0E1411] hover:text-[#F4F7F5]"
+      }`}
+    >
+      {active ? (
+        <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#39E56F]" />
+      ) : null}
+
+      <Icon
+        className={`size-[17px] ${
+          active ? "text-[#82F5A4]" : "text-[#667069] group-hover:text-[#A0AAA4]"
+        }`}
+        strokeWidth={1.8}
+      />
+
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+
+      {badge ? (
+        <span className="min-w-5 rounded-full bg-[#39E56F]/[0.10] px-1.5 text-center text-[9px] font-bold leading-5 text-[#82F5A4]">
+          {badge}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
 function SidebarContent({
   pathname,
   displayName,
@@ -71,6 +119,8 @@ function SidebarContent({
   avatarUrl,
   initials,
   unreadNotifications,
+  canAccessBooster,
+  canAccessAdmin,
   onNavigate,
 }: Omit<DashboardShellProps, "children"> & {
   pathname: string;
@@ -82,7 +132,7 @@ function SidebarContent({
         <Link
           href="/"
           onClick={onNavigate}
-          className="inline-flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35"
+          className="inline-flex items-center gap-2.5"
         >
           <img
             src="/brand/boostingpedia-mark.png"
@@ -94,89 +144,86 @@ function SidebarContent({
           </span>
         </Link>
 
-        <p className="font-gaming-label mt-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
-          Customer Dashboard
+        <p className="font-gaming-label mt-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
+          Account
         </p>
       </div>
 
       <nav
-        className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,.10)_transparent]"
-        aria-label="Customer dashboard navigation"
+        className="min-h-0 flex-1 overflow-y-auto px-3"
+        aria-label="BoostingPedia account navigation"
       >
-        {mainNavigation.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(pathname, item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              className={`group relative flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm transition-[background-color,border-color,color] duration-200 motion-reduce:transition-none ${
-                active
-                  ? "border-white/[0.08] bg-[#131B17] text-[#F4F7F5]"
-                  : "border-transparent text-[#A0AAA4] hover:bg-[#0E1411] hover:text-[#F4F7F5]"
-              }`}
-            >
-              {active ? (
-                <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#39E56F]" />
-              ) : null}
-              <Icon
-                className={`size-[17px] ${
-                  active
-                    ? "text-[#F4F7F5]"
-                    : "text-[#667069] group-hover:text-[#A0AAA4]"
-                }`}
-                strokeWidth={1.8}
-              />
-              <span className="min-w-0 flex-1 truncate">{item.label}</span>
-              {item.href === "/dashboard/notifications" &&
-              unreadNotifications > 0 ? (
-                <span className="min-w-5 rounded-full bg-[#39E56F]/[0.10] px-1.5 text-center text-[9px] font-bold leading-5 text-[#82F5A4]">
-                  {unreadNotifications > 9 ? "9+" : unreadNotifications}
-                </span>
-              ) : null}
-            </Link>
-          );
-        })}
-
-        <div
-          className="group flex min-h-11 cursor-not-allowed items-center gap-3 rounded-xl border border-transparent px-3 text-sm text-[#667069]"
-          aria-disabled="true"
-          title="Live order chat will be added in Phase 16C."
-        >
-          <MessageSquare className="size-[17px]" strokeWidth={1.8} />
-          <span className="min-w-0 flex-1 truncate">Messages</span>
-          <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
-            Soon
-          </span>
+        <div className="space-y-1">
+          <NavigationItem
+            pathname={pathname}
+            href="/dashboard"
+            label="Orders"
+            icon={LayoutDashboard}
+            onNavigate={onNavigate}
+          />
+          <NavigationItem
+            pathname={pathname}
+            href="/dashboard/orders"
+            label="My Orders"
+            icon={Package}
+            onNavigate={onNavigate}
+          />
+          <NavigationItem
+            pathname={pathname}
+            href="/dashboard/notifications"
+            label="Notifications"
+            icon={Bell}
+            badge={
+              unreadNotifications > 0
+                ? unreadNotifications > 9
+                  ? "9+"
+                  : unreadNotifications
+                : undefined
+            }
+            onNavigate={onNavigate}
+          />
         </div>
 
-        <div className="my-3 h-px bg-white/[0.07]" />
+        {canAccessBooster || canAccessAdmin ? (
+          <>
+            <div className="my-4 h-px bg-white/[0.07]" />
+            <p className="font-gaming-label px-3 pb-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
+              Workspaces
+            </p>
 
-        <Link
+            <div className="space-y-1">
+              {canAccessBooster ? (
+                <NavigationItem
+                  pathname={pathname}
+                  href="/booster"
+                  label="Booster Workspace"
+                  icon={Zap}
+                  onNavigate={onNavigate}
+                />
+              ) : null}
+
+              {canAccessAdmin ? (
+                <NavigationItem
+                  pathname={pathname}
+                  href="/admin"
+                  label="Admin"
+                  icon={Shield}
+                  onNavigate={onNavigate}
+                />
+              ) : null}
+            </div>
+          </>
+        ) : null}
+
+        <div className="my-4 h-px bg-white/[0.07]" />
+
+        <NavigationItem
+          pathname={pathname}
           href="/dashboard/profile"
-          onClick={onNavigate}
-          aria-current={isActive(pathname, "/dashboard/profile") ? "page" : undefined}
-          className={`group relative flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm transition-[background-color,border-color,color] duration-200 motion-reduce:transition-none ${
-            isActive(pathname, "/dashboard/profile")
-              ? "border-white/[0.08] bg-[#131B17] text-[#F4F7F5]"
-              : "border-transparent text-[#A0AAA4] hover:bg-[#0E1411] hover:text-[#F4F7F5]"
-          }`}
-        >
-          {isActive(pathname, "/dashboard/profile") ? (
-            <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-[#39E56F]" />
-          ) : null}
-          <UserRound
-            className={`size-[17px] ${
-              isActive(pathname, "/dashboard/profile")
-                ? "text-[#F4F7F5]"
-                : "text-[#667069] group-hover:text-[#A0AAA4]"
-            }`}
-            strokeWidth={1.8}
-          />
-          Account Settings
-        </Link>
+          label="Account Settings"
+          icon={UserRound}
+          onNavigate={onNavigate}
+        />
       </nav>
 
       <div className="shrink-0 border-t border-white/[0.07] p-3">
@@ -194,10 +241,7 @@ function SidebarContent({
               {email}
             </span>
           </span>
-          <ChevronRight
-            className="size-3.5 shrink-0 text-[#667069] group-hover:text-[#A0AAA4]"
-            strokeWidth={1.8}
-          />
+          <ChevronRight className="size-3.5 shrink-0 text-[#667069]" strokeWidth={1.8} />
         </Link>
 
         <form action="/auth/signout" method="post" className="mt-1">
@@ -205,16 +249,21 @@ function SidebarContent({
             type="submit"
             className="group flex h-10 w-full items-center gap-3 rounded-xl px-3 text-left text-xs text-[#A0AAA4] transition-colors hover:bg-rose-400/[0.04] hover:text-rose-200/90"
           >
-            <LogOut
-              className="size-4 text-[#667069] group-hover:text-rose-300/70"
-              strokeWidth={1.8}
-            />
+            <LogOut className="size-4 text-[#667069]" strokeWidth={1.8} />
             Log out
           </button>
         </form>
       </div>
     </div>
   );
+}
+
+function pageLabel(pathname: string) {
+  if (pathname === "/dashboard") return "Orders";
+  if (pathname.startsWith("/dashboard/orders")) return "My Orders";
+  if (pathname.startsWith("/dashboard/notifications")) return "Notifications";
+  if (pathname.startsWith("/dashboard/profile")) return "Account Settings";
+  return "Dashboard";
 }
 
 export function DashboardShell({
@@ -224,14 +273,16 @@ export function DashboardShell({
   avatarUrl,
   initials,
   unreadNotifications,
+  canAccessBooster,
+  canAccessAdmin,
 }: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!mobileOpen) return;
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -242,6 +293,7 @@ export function DashboardShell({
     }
 
     window.addEventListener("keydown", onKeyDown);
+
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("keydown", onKeyDown);
@@ -251,7 +303,7 @@ export function DashboardShell({
 
   return (
     <div className="min-h-[100dvh] bg-[#050807] text-[#F4F7F5]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[244px] border-r border-white/[0.07] bg-[#070A08] lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[228px] border-r border-white/[0.06] bg-[#070A08] lg:block">
         <SidebarContent
           pathname={pathname}
           displayName={displayName}
@@ -259,49 +311,58 @@ export function DashboardShell({
           avatarUrl={avatarUrl}
           initials={initials}
           unreadNotifications={unreadNotifications}
+          canAccessBooster={canAccessBooster}
+          canAccessAdmin={canAccessAdmin}
         />
       </aside>
 
-      <div className="min-h-[100dvh] lg:pl-[244px]">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.06] bg-[#050807]/95 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+      <div className="min-h-[100dvh] lg:pl-[228px]">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.05] bg-[#050807]/95 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 lg:hidden"
+              className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4] lg:hidden"
               aria-label="Open dashboard navigation"
-              aria-expanded={mobileOpen}
             >
               <Menu className="size-4" strokeWidth={1.8} />
             </button>
 
             <div className="min-w-0">
               <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
-                Customer
+                BoostingPedia
               </p>
               <p className="truncate text-sm font-semibold text-[#F4F7F5]">
-                {pathname === "/dashboard"
-                  ? "Overview"
-                  : pathname.startsWith("/dashboard/orders")
-                    ? "My Orders"
-                    : pathname.startsWith("/dashboard/notifications")
-                      ? "Notifications"
-                      : pathname.startsWith("/dashboard/profile")
-                        ? "Account Settings"
-                        : "Dashboard"}
+                {pageLabel(pathname)}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {canAccessBooster ? (
+              <Link
+                href="/booster"
+                className="hidden h-9 items-center rounded-lg border border-[#39E56F]/15 bg-[#39E56F]/[0.035] px-3 text-[10px] font-semibold text-[#82F5A4] hover:bg-[#39E56F]/[0.07] sm:inline-flex"
+              >
+                <Zap className="mr-2 size-3.5" />
+                Booster
+              </Link>
+            ) : null}
+
+            {canAccessAdmin ? (
+              <Link
+                href="/admin"
+                className="hidden h-9 items-center rounded-lg border border-white/[0.08] px-3 text-[10px] font-semibold text-[#A0AAA4] hover:text-[#F4F7F5] md:inline-flex"
+              >
+                <Gauge className="mr-2 size-3.5" />
+                Admin
+              </Link>
+            ) : null}
+
             <Link
               href="/dashboard/notifications"
-              className="relative grid size-10 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4] transition-colors hover:bg-[#131B17] hover:text-[#F4F7F5]"
-              aria-label={
-                unreadNotifications
-                  ? `${unreadNotifications} unread notifications`
-                  : "Notifications"
-              }
+              className="relative grid size-10 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4]"
+              aria-label="Notifications"
             >
               <Bell className="size-4" strokeWidth={1.8} />
               {unreadNotifications > 0 ? (
@@ -311,11 +372,7 @@ export function DashboardShell({
               ) : null}
             </Link>
 
-            <Link
-              href="/dashboard/profile"
-              className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
-              aria-label="Open account settings"
-            >
+            <Link href="/dashboard/profile" aria-label="Open account settings">
               <Avatar avatarUrl={avatarUrl} initials={initials} />
             </Link>
           </div>
@@ -332,7 +389,7 @@ export function DashboardShell({
       >
         <button
           type="button"
-          className={`absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-200 motion-reduce:transition-none ${
+          className={`absolute inset-0 bg-black/65 backdrop-blur-[2px] transition-opacity ${
             mobileOpen ? "opacity-100" : "opacity-0"
           }`}
           aria-label="Close dashboard navigation"
@@ -340,8 +397,7 @@ export function DashboardShell({
         />
 
         <aside
-          ref={drawerRef}
-          className={`absolute inset-y-0 left-0 w-[min(88vw,320px)] border-r border-white/[0.08] bg-[#070A08] shadow-[30px_0_70px_-40px_rgba(0,0,0,.98)] transition-transform duration-[240ms] ease-out motion-reduce:transition-none ${
+          className={`absolute inset-y-0 left-0 w-[min(88vw,320px)] border-r border-white/[0.08] bg-[#070A08] transition-transform duration-[240ms] ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -349,7 +405,7 @@ export function DashboardShell({
             ref={closeRef}
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full border border-white/[0.08] bg-[#131B17] text-[#667069] hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+            className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full border border-white/[0.08] bg-[#131B17] text-[#667069]"
             aria-label="Close dashboard navigation"
           >
             <X className="size-4" strokeWidth={1.8} />
@@ -362,6 +418,8 @@ export function DashboardShell({
             avatarUrl={avatarUrl}
             initials={initials}
             unreadNotifications={unreadNotifications}
+            canAccessBooster={canAccessBooster}
+            canAccessAdmin={canAccessAdmin}
             onNavigate={() => setMobileOpen(false)}
           />
         </aside>
