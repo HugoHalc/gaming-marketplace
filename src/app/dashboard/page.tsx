@@ -4,9 +4,7 @@ import {
   ArrowRight,
   Bell,
   Check,
-  Clock3,
   MessageSquare,
-  Package,
   PackageOpen,
 } from "lucide-react";
 import { requireUser } from "@/features/auth/server/auth";
@@ -60,130 +58,96 @@ function rankFamily(value: string) {
 function rankLabel(value: string) {
   if (value === "unrated") return "Unrated";
   if (value === "supersonic-legend") return "Supersonic Legend";
+
   const tier = value.match(/-(\d)$/)?.[1];
   const family = rankFamily(value)
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+
   const roman = tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : "";
   return `${family}${roman ? ` ${roman}` : ""}`;
 }
 
-function RankBadge({ rank }: { rank: string }) {
-  const asset = rankAssets[rankFamily(rank)];
-  if (!asset) {
-    return (
-      <span className="grid size-10 place-items-center rounded-full border border-white/[0.08] bg-[#090D0B] text-[10px] font-bold text-[#667069]">
-        ?
-      </span>
-    );
-  }
-  return (
-    <Image
-      src={asset}
-      alt=""
-      width={44}
-      height={44}
-      className="size-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
-    />
-  );
+function isResolvableRank(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  if (value === "unrated" || value === "supersonic-legend") return true;
+  const family = rankFamily(value);
+  return Boolean(rankAssets[family] && /-\d$/.test(value));
 }
 
-function MetricCard({
+function RankPresentation({
+  rank,
   label,
-  value,
-  icon,
 }: {
+  rank: string;
   label: string;
-  value: number;
-  icon: React.ReactNode;
 }) {
+  const asset = rankAssets[rankFamily(rank)];
+
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-[#0E1411] p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-xs font-medium text-[#A0AAA4]">{label}</span>
-        <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-[#090D0B] text-blue-200/65">
-          {icon}
+    <div className="flex items-center gap-3">
+      {asset ? (
+        <Image
+          src={asset}
+          alt=""
+          width={54}
+          height={54}
+          className="size-[50px] object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,.42)]"
+        />
+      ) : (
+        <span className="grid size-[50px] place-items-center rounded-full border border-white/[0.08] text-[10px] font-bold text-[#667069]">
+          ?
         </span>
+      )}
+      <div>
+        <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-[#667069]">
+          {label}
+        </p>
+        <p className="font-gaming-value mt-0.5 text-lg font-bold text-[#F4F7F5]">
+          {rankLabel(rank)}
+        </p>
       </div>
-      <p className="font-gaming-value mt-4 text-[1.8rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
-        {value}
-      </p>
     </div>
   );
 }
 
-function ConfigurationSummary({ order }: { order: OrderRecord }) {
+function ActiveOrderProgression({ order }: { order: OrderRecord }) {
   const item = order.items[0];
   if (!item) return null;
 
-  const configuration = item.configuration;
-  const currentRank =
-    typeof configuration.currentRank === "string"
-      ? configuration.currentRank
-      : typeof configuration.previousRank === "string"
-        ? configuration.previousRank
-        : null;
-  const targetRank =
-    typeof configuration.targetRank === "string" ? configuration.targetRank : null;
+  const config = item.configuration;
+  const currentCandidate =
+    typeof config.currentRank !== "undefined" ? config.currentRank : config.previousRank;
+  const targetCandidate = config.targetRank;
+
+  const currentRank = isResolvableRank(currentCandidate) ? currentCandidate : null;
+  const targetRank = isResolvableRank(targetCandidate) ? targetCandidate : null;
 
   if (currentRank && targetRank) {
     return (
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-2.5">
-          <RankBadge rank={currentRank} />
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-[#667069]">
-              Current
-            </p>
-            <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">
-              {rankLabel(currentRank)}
-            </p>
-          </div>
-        </div>
-        <ArrowRight className="size-4 text-blue-200/45" />
-        <div className="flex items-center gap-2.5 rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.025] px-3 py-2.5">
-          <RankBadge rank={targetRank} />
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-blue-200/55">
-              Target
-            </p>
-            <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">
-              {rankLabel(targetRank)}
-            </p>
-          </div>
-        </div>
+      <div className="mt-6 flex flex-wrap items-center gap-5 sm:gap-7">
+        <RankPresentation rank={currentRank} label="Current" />
+        <ArrowRight className="size-4 shrink-0 text-blue-200/40" />
+        <RankPresentation rank={targetRank} label="Target" />
       </div>
     );
   }
 
-  const placementMatches =
-    typeof configuration.matches === "number" ? configuration.matches : null;
-  const wins = typeof configuration.wins === "number" ? configuration.wins : null;
+  const wins = typeof config.wins === "number" ? config.wins : null;
+  const matches = typeof config.matches === "number" ? config.matches : null;
 
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-3">
-      {currentRank ? (
-        <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-2.5">
-          <RankBadge rank={currentRank} />
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-[#667069]">
-              Rank context
-            </p>
-            <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">
-              {rankLabel(currentRank)}
-            </p>
-          </div>
-        </div>
-      ) : null}
+    <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+      {currentRank ? <RankPresentation rank={currentRank} label="Rank context" /> : null}
 
-      {placementMatches !== null || wins !== null ? (
-        <div className="rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.025] px-4 py-3">
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-blue-200/55">
-            {placementMatches !== null ? "Placement matches" : "Wins selected"}
+      {wins !== null || matches !== null ? (
+        <div>
+          <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-[#667069]">
+            {matches !== null ? "Placement Matches" : "Wins Selected"}
           </p>
-          <p className="font-gaming-value mt-1 text-xl font-bold leading-none text-[#F4F7F5]">
-            {placementMatches ?? wins}
+          <p className="font-gaming-value mt-1 text-3xl font-bold leading-none text-[#F4F7F5]">
+            {matches ?? wins}
           </p>
         </div>
       ) : null}
@@ -191,62 +155,53 @@ function ConfigurationSummary({ order }: { order: OrderRecord }) {
   );
 }
 
-function RealTimeline({
+function HorizontalTimeline({
   history,
   currentStatus,
 }: {
   history: OrderStatusEvent[];
   currentStatus: OrderRecord["status"];
 }) {
-  if (!history.length) {
-    return (
-      <div className="mt-5 flex items-center gap-3 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3">
-        <span className="size-2 rounded-full bg-cyan-300" />
-        <div>
-          <p className="text-xs font-semibold text-[#F4F7F5]">
-            {orderStatusLabel(currentStatus)}
-          </p>
-          <p className="mt-0.5 text-[10px] text-[#667069]">
-            Current order status
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const stages = history.length
+    ? history.slice(-3).map((event) => ({
+        id: event.id,
+        label: orderStatusLabel(event.toStatus),
+      }))
+    : [{ id: currentStatus, label: orderStatusLabel(currentStatus) }];
 
   return (
-    <div className="mt-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-      {history.slice(-4).map((event, index, visible) => {
-        const current = index === visible.length - 1;
-        return (
-          <div
-            key={event.id}
-            className={`rounded-xl border p-3 ${
-              current
-                ? "border-cyan-300/[0.16] bg-cyan-400/[0.035]"
-                : "border-white/[0.07] bg-[#090D0B]"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className={`grid size-5 place-items-center rounded-full border ${
-                  current
-                    ? "border-cyan-300/25 bg-cyan-400/[0.08] text-cyan-200"
-                    : "border-white/[0.08] bg-white/[0.02] text-[#667069]"
-                }`}
-              >
-                <Check className="size-2.5" strokeWidth={2.5} />
-              </span>
-              <span className="text-[10px] font-semibold text-[#A0AAA4]">
-                {orderStatusLabel(event.toStatus)}
-              </span>
+    <div className="mt-6 border-t border-white/[0.06] pt-4">
+      <div className="flex min-w-0 items-center overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {stages.map((stage, index) => {
+          const current = index === stages.length - 1;
+          return (
+            <div key={stage.id} className="flex min-w-0 items-center">
+              <div className="flex shrink-0 items-center gap-2">
+                <span
+                  className={`grid size-5 place-items-center rounded-full border ${
+                    current
+                      ? "border-cyan-300/25 bg-cyan-400/[0.08] text-cyan-200"
+                      : "border-white/[0.10] bg-white/[0.025] text-[#A0AAA4]"
+                  }`}
+                >
+                  {current ? (
+                    <span className="size-1.5 rounded-full bg-cyan-300" />
+                  ) : (
+                    <Check className="size-2.5" strokeWidth={2.5} />
+                  )}
+                </span>
+                <span className="whitespace-nowrap text-[10px] font-medium text-[#A0AAA4]">
+                  {stage.label}
+                </span>
+              </div>
+
+              {index < stages.length - 1 ? (
+                <span className="mx-3 h-px w-10 shrink-0 bg-white/[0.08] sm:w-16" />
+              ) : null}
             </div>
-            <p className="mt-2 text-[9px] text-[#667069]">
-              {formatDate(event.createdAt)}
-            </p>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -261,9 +216,7 @@ export default async function DashboardPage() {
   const activeOrders = orders.filter((order) =>
     ACTIVE_STATUSES.includes(order.status as (typeof ACTIVE_STATUSES)[number]),
   );
-  const completedOrders = orders.filter(
-    (order) => order.status === "completed",
-  ).length;
+  const completedOrders = orders.filter((order) => order.status === "completed").length;
   const activeOrder = activeOrders[0] ?? null;
   const activeHistory = activeOrder
     ? await getCurrentUserOrderHistory(activeOrder.id)
@@ -278,7 +231,7 @@ export default async function DashboardPage() {
     <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <section>
         <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/60">
-          Account overview
+          Account Overview
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-[#F4F7F5] sm:text-3xl">
           Welcome back{firstName ? `, ${firstName}` : ""}
@@ -288,34 +241,35 @@ export default async function DashboardPage() {
         </p>
       </section>
 
-      <section className="mt-6 grid gap-3 sm:grid-cols-3">
-        <MetricCard
-          label="Active Orders"
-          value={activeOrders.length}
-          icon={<Package className="size-4" strokeWidth={1.8} />}
-        />
-        <MetricCard
-          label="Completed Orders"
-          value={completedOrders}
-          icon={<Check className="size-4" strokeWidth={2} />}
-        />
-        <MetricCard
-          label="Unread Messages"
-          value={0}
-          icon={<MessageSquare className="size-4" strokeWidth={1.8} />}
-        />
+      <section
+        className="mt-5 flex min-h-12 flex-wrap items-center gap-y-3 border-y border-white/[0.05] py-3"
+        aria-label="Account summary"
+      >
+        <div className="flex items-baseline gap-2 pr-5 sm:pr-7">
+          <span className="font-gaming-value text-xl font-bold text-[#F4F7F5]">
+            {activeOrders.length}
+          </span>
+          <span className="text-xs text-[#A0AAA4]">
+            Active Order{activeOrders.length === 1 ? "" : "s"}
+          </span>
+        </div>
+        <span className="hidden h-5 w-px bg-white/[0.07] sm:block" />
+        <div className="flex items-baseline gap-2 px-0 pr-5 sm:px-7">
+          <span className="font-gaming-value text-xl font-bold text-[#F4F7F5]">
+            {completedOrders}
+          </span>
+          <span className="text-xs text-[#A0AAA4]">Completed</span>
+        </div>
+        <span className="hidden h-5 w-px bg-white/[0.07] sm:block" />
+        <div className="flex items-baseline gap-2 sm:pl-7">
+          <span className="font-gaming-value text-xl font-bold text-[#F4F7F5]">0</span>
+          <span className="text-xs text-[#A0AAA4]">Unread</span>
+        </div>
       </section>
 
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-[#667069]">
-              Priority
-            </p>
-            <h2 className="mt-1 text-lg font-semibold text-[#F4F7F5]">
-              Active order
-            </h2>
-          </div>
+          <h2 className="text-lg font-semibold text-[#F4F7F5]">Active order</h2>
           {activeOrders.length > 1 ? (
             <Link
               href="/dashboard/orders"
@@ -327,24 +281,17 @@ export default async function DashboardPage() {
         </div>
 
         {activeOrder ? (
-          <div className="mt-3 overflow-hidden rounded-[1.4rem] border border-white/[0.08] bg-[#0E1411]">
-            <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.045] via-transparent to-transparent p-5 sm:p-6">
+          <div className="mt-3 overflow-hidden rounded-[1.3rem] border border-white/[0.08] bg-[#0E1411]">
+            <div className="p-5 sm:p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="grid size-9 place-items-center rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.035] text-blue-200/75">
-                      <Package className="size-4" strokeWidth={1.8} />
-                    </span>
-                    <div>
-                      <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-blue-200/55">
-                        {activeOrder.items[0]?.gameName ?? "Gaming service"}
-                      </p>
-                      <p className="mt-0.5 text-base font-semibold text-[#F4F7F5]">
-                        {activeOrder.items[0]?.serviceName ?? "Active service"}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-3 font-gaming-value text-xs font-semibold text-[#667069]">
+                  <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.14em] text-blue-200/55">
+                    {activeOrder.items[0]?.gameName ?? "Gaming service"}
+                  </p>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[#F4F7F5]">
+                    {activeOrder.items[0]?.serviceName ?? "Active service"}
+                  </h3>
+                  <p className="font-gaming-value mt-1.5 text-[11px] font-semibold text-[#667069]">
                     {activeOrder.orderNumber}
                   </p>
                 </div>
@@ -352,73 +299,40 @@ export default async function DashboardPage() {
                 <OrderStatusBadge status={activeOrder.status} />
               </div>
 
-              <ConfigurationSummary order={activeOrder} />
-              <RealTimeline
+              <ActiveOrderProgression order={activeOrder} />
+              <HorizontalTimeline
                 history={activeHistory}
                 currentStatus={activeOrder.status}
               />
             </div>
 
-            <div className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
-              <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-3">
-                {activeOrder.items[0]?.configuration.playlist ? (
-                  <div>
-                    <dt className="text-[10px] uppercase tracking-[0.11em] text-[#667069]">
-                      Playlist
-                    </dt>
-                    <dd className="mt-1 text-xs font-medium text-[#F4F7F5]">
-                      {String(activeOrder.items[0].configuration.playlist)}
-                    </dd>
-                  </div>
-                ) : null}
-                {activeOrder.items[0]?.configuration.platform ? (
-                  <div>
-                    <dt className="text-[10px] uppercase tracking-[0.11em] text-[#667069]">
-                      Platform
-                    </dt>
-                    <dd className="mt-1 text-xs font-medium capitalize text-[#F4F7F5]">
-                      {String(activeOrder.items[0].configuration.platform)}
-                    </dd>
-                  </div>
-                ) : null}
-                {activeOrder.items[0]?.configuration.boostMethod ? (
-                  <div>
-                    <dt className="text-[10px] uppercase tracking-[0.11em] text-[#667069]">
-                      Boost Method
-                    </dt>
-                    <dd className="mt-1 text-xs font-medium text-[#F4F7F5]">
-                      {String(activeOrder.items[0].configuration.boostMethod) ===
-                      "play-with-booster"
-                        ? "Play With Booster"
-                        : "Account Boost"}
-                    </dd>
-                  </div>
-                ) : null}
-              </dl>
-
+            <div className="flex flex-col gap-3 border-t border-white/[0.05] px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <p className="text-xs text-[#A0AAA4]">
+                {activeOrder.status === "queued"
+                  ? "Waiting for booster assignment"
+                  : orderStatusLabel(activeOrder.status)}
+              </p>
               <Link
                 href={`/dashboard/orders/${activeOrder.id}`}
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-[#39E56F] px-5 text-sm font-semibold text-[#050807] transition-colors hover:bg-[#20C95A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40"
+                className="inline-flex h-10 items-center justify-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]"
               >
                 View Order
-                <ArrowRight className="ml-2 size-4" strokeWidth={1.9} />
+                <ArrowRight className="ml-2 size-3.5" strokeWidth={1.9} />
               </Link>
             </div>
           </div>
         ) : (
-          <div className="mt-3 rounded-[1.4rem] border border-dashed border-white/[0.09] bg-[#0E1411] px-5 py-10 text-center">
-            <span className="mx-auto grid size-11 place-items-center rounded-xl border border-white/[0.07] bg-[#090D0B] text-[#667069]">
-              <PackageOpen className="size-5" strokeWidth={1.7} />
-            </span>
-            <h3 className="mt-4 text-sm font-semibold text-[#F4F7F5]">
+          <div className="mt-3 border-y border-white/[0.05] py-9 text-center">
+            <PackageOpen className="mx-auto size-6 text-[#667069]" />
+            <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">
               No active boosts
             </h3>
-            <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-[#A0AAA4]">
+            <p className="mx-auto mt-1.5 max-w-md text-xs leading-5 text-[#A0AAA4]">
               Your active services will appear here after you place and fund an order.
             </p>
             <Link
               href="/games"
-              className="mt-5 inline-flex h-10 items-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]"
+              className="mt-4 inline-flex h-10 items-center rounded-xl bg-[#39E56F] px-4 text-xs font-semibold text-[#050807] hover:bg-[#20C95A]"
             >
               Browse games
             </Link>
@@ -426,12 +340,10 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,.7fr)]">
+      <div className="mt-9 grid gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.55fr)]">
         <section className="min-w-0">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-[#F4F7F5]">
-              Recent orders
-            </h2>
+            <h2 className="text-lg font-semibold text-[#F4F7F5]">Recent orders</h2>
             <Link
               href="/dashboard/orders"
               className="text-xs font-semibold text-[#A0AAA4] hover:text-[#F4F7F5]"
@@ -442,8 +354,8 @@ export default async function DashboardPage() {
 
           {orders.length ? (
             <>
-              <div className="mt-3 hidden overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0E1411] md:block">
-                <div className="grid grid-cols-[.8fr_1.35fr_.8fr_.65fr_.75fr_auto] gap-4 border-b border-white/[0.06] px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#667069]">
+              <div className="mt-3 hidden md:block">
+                <div className="grid grid-cols-[.8fr_1.35fr_.8fr_.65fr_.75fr_auto] gap-4 border-b border-white/[0.06] px-1 py-2.5 text-[9px] font-semibold uppercase tracking-[0.11em] text-[#667069]">
                   <span>Order</span>
                   <span>Game / Service</span>
                   <span>Status</span>
@@ -457,7 +369,7 @@ export default async function DashboardPage() {
                     <Link
                       key={order.id}
                       href={`/dashboard/orders/${order.id}`}
-                      className="grid min-h-[62px] grid-cols-[.8fr_1.35fr_.8fr_.65fr_.75fr_auto] items-center gap-4 border-b border-white/[0.06] px-4 py-3 transition-colors last:border-b-0 hover:bg-white/[0.02]"
+                      className="grid min-h-[60px] grid-cols-[.8fr_1.35fr_.8fr_.65fr_.75fr_auto] items-center gap-4 border-b border-white/[0.05] px-1 py-3 transition-colors hover:bg-white/[0.015]"
                     >
                       <span className="font-gaming-value truncate text-xs font-bold text-[#F4F7F5]">
                         {order.orderNumber}
@@ -485,14 +397,14 @@ export default async function DashboardPage() {
                 })}
               </div>
 
-              <div className="mt-3 grid gap-2.5 md:hidden">
+              <div className="mt-3 grid gap-0 md:hidden">
                 {orders.slice(0, 5).map((order) => {
                   const item = order.items[0];
                   return (
                     <Link
                       key={order.id}
                       href={`/dashboard/orders/${order.id}`}
-                      className="rounded-2xl border border-white/[0.07] bg-[#0E1411] p-4"
+                      className="border-b border-white/[0.05] py-4 first:border-t"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -508,7 +420,7 @@ export default async function DashboardPage() {
                         </div>
                         <OrderStatusBadge status={order.status} />
                       </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3">
+                      <div className="mt-3 flex items-center justify-between">
                         <span className="text-[10px] text-[#667069]">
                           {formatDate(order.createdAt)}
                         </span>
@@ -522,8 +434,8 @@ export default async function DashboardPage() {
               </div>
             </>
           ) : (
-            <div className="mt-3 rounded-2xl border border-white/[0.07] bg-[#0E1411] p-8 text-center">
-              <PackageOpen className="mx-auto size-6 text-[#667069]" />
+            <div className="mt-3 border-y border-white/[0.05] py-8 text-center">
+              <PackageOpen className="mx-auto size-5 text-[#667069]" />
               <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                 No orders yet
               </p>
@@ -536,44 +448,36 @@ export default async function DashboardPage() {
 
         <section className="min-w-0">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-[#F4F7F5]">
-              Recent messages
-            </h2>
+            <h2 className="text-lg font-semibold text-[#F4F7F5]">Recent messages</h2>
             <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
               Phase 16C
             </span>
           </div>
 
-          <div className="mt-3 flex min-h-[230px] flex-col items-center justify-center rounded-2xl border border-white/[0.07] bg-[#0E1411] p-6 text-center">
-            <span className="grid size-10 place-items-center rounded-xl border border-white/[0.07] bg-[#090D0B] text-[#667069]">
-              <MessageSquare className="size-4" strokeWidth={1.8} />
-            </span>
+          <div className="mt-3 flex min-h-[150px] flex-col items-center justify-center border-y border-white/[0.05] px-4 py-6 text-center">
+            <MessageSquare className="size-5 text-[#667069]" strokeWidth={1.8} />
             <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
               No messages yet
             </p>
-            <p className="mt-1 max-w-[240px] text-xs leading-5 text-[#A0AAA4]">
+            <p className="mt-1 max-w-[240px] text-[11px] leading-5 text-[#A0AAA4]">
               Order conversations will appear here when live chat is available.
             </p>
           </div>
 
-          <div className="mt-3 rounded-2xl border border-white/[0.07] bg-[#090D0B] p-4">
-            <div className="flex items-start gap-3">
-              <Bell className="mt-0.5 size-4 shrink-0 text-blue-200/65" />
-              <div>
-                <p className="text-xs font-semibold text-[#F4F7F5]">
-                  Order updates
-                </p>
-                <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
-                  You currently have {unreadNotifications} unread notification
-                  {unreadNotifications === 1 ? "" : "s"}.
-                </p>
-                <Link
-                  href="/dashboard/notifications"
-                  className="mt-2 inline-flex text-[11px] font-semibold text-blue-200/75 hover:text-blue-100"
-                >
-                  View notifications
-                </Link>
-              </div>
+          <div className="mt-4 flex items-start gap-3">
+            <Bell className="mt-0.5 size-4 shrink-0 text-blue-200/65" />
+            <div>
+              <p className="text-xs font-semibold text-[#F4F7F5]">Order updates</p>
+              <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
+                You currently have {unreadNotifications} unread notification
+                {unreadNotifications === 1 ? "" : "s"}.
+              </p>
+              <Link
+                href="/dashboard/notifications"
+                className="mt-1.5 inline-flex text-[11px] font-semibold text-blue-200/75 hover:text-blue-100"
+              >
+                View notifications
+              </Link>
             </div>
           </div>
         </section>

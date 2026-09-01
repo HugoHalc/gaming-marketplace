@@ -1,44 +1,44 @@
-BOOSTINGPEDIA — PHASE 16B
-CUSTOMER ORDER WORKSPACE
+BOOSTINGPEDIA — PHASE 16B2
+CUSTOMER DASHBOARD + ORDER WORKSPACE DENSITY REDUCTION
 
 WINDOWS DIRECT-REPLACEMENT ZIP
 
-Apply this AFTER Phase 16A.
-
-Extract/copy into the project root and allow Windows to merge folders and replace included files.
-
-ADDS:
-src/components/dashboard/customer-order-workspace.tsx
-docs/phase-16b-customer-order-workspace.md
+Apply AFTER:
+- Phase 16A
+- Phase 16B
 
 REPLACES:
-src/app/dashboard/orders/[id]/page.tsx
+src/app/dashboard/page.tsx
+src/components/dashboard/customer-order-workspace.tsx
 
-NO:
-- database migration
-- pricing changes
-- order API changes
-- checkout changes
-- credentials storage
-- verification flow
-- evidence upload
-- live chat
-- booster assignment backend
-- fake progress
+ADDS:
+docs/phase-16b2-dashboard-workspace-density-reduction.md
 
-TEST AFTER DEPLOY:
-1. Open a pending_payment order.
-2. Verify Stripe payment CTA still works.
-3. Open a paid order.
-4. Open queued / in_progress / completed orders if available.
-5. Confirm order total and configuration are real.
-6. Confirm timeline uses only stored history.
-7. Confirm no booster name is invented.
-8. Confirm no credentials are exposed.
-9. Confirm no fake chat messages.
-10. Test mobile/tablet/desktop.
-11. Verify sticky payment CTA appears only when payment is required.
-12. Verify no horizontal overflow.
+NO DATABASE MIGRATION
+NO API CHANGE
+NO ROUTE CHANGE
+NO AUTH CHANGE
+NO PAYMENT CHANGE
+NO ORDER LOGIC CHANGE
+
+VERIFY:
+1. /dashboard
+   - compact summary row
+   - active order is the dominant surface
+   - no fake rank names for unresolved values
+   - compact horizontal history timeline
+   - lighter recent orders list
+   - compact messages empty state
+
+2. /dashboard/orders/[id]
+   - approximately 69/31 workspace layout on desktop
+   - compact header
+   - editorial Current → Target when resolvable
+   - progress section has no outer card
+   - configuration is row-based
+   - right sidebar is one unified surface
+   - Stripe CTA still works when payment is required
+   - no horizontal overflow mobile/tablet
 
 Commit:
-Phase 16B - Customer Order Workspace
+Phase 16B2 - Dashboard Workspace Density Reduction
