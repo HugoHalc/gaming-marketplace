@@ -9,9 +9,6 @@ import {
   ChevronRight,
   CreditCard,
   Gamepad2,
-  ImageIcon,
-  ShieldCheck,
-  UserRoundCheck,
   UsersRound,
 } from "lucide-react";
 import type { OrderRecord, OrderStatusEvent } from "@/features/orders/types/orders";
@@ -22,6 +19,7 @@ import type {
 import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
+import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 
 const rankAssets: Record<string, string> = {
   bronze: "/ranks/rocket-league/bronze.png",
@@ -158,6 +156,11 @@ export function CustomerOrderWorkspace({
     order.status === "pending_payment" &&
     order.paymentStatus !== "paid";
   const isCustomerOwner = !isBoosterMode && currentUserRole === "customer";
+  const canManageOperations = isBoosterMode || currentUserRole === "admin";
+  const suggestedPlatform =
+    typeof item?.configuration?.platform === "string"
+      ? item.configuration.platform
+      : undefined;
   const displayAmount =
     isBoosterMode && typeof boosterPayout === "number"
       ? boosterPayout
@@ -277,22 +280,12 @@ export function CustomerOrderWorkspace({
 
             <div className="h-px bg-white/[0.06]" />
 
-            <section className="p-5">
-              <div className="flex items-center gap-2.5"><UserRoundCheck className="size-4 text-[#667069]" /><h2 className="text-sm font-semibold text-[#F4F7F5]">User Integrity Validation</h2></div>
-              <div className="mt-4 flex items-center justify-between gap-4"><div><p className="text-sm font-semibold text-[#F4F7F5]">Not requested</p><p className="mt-1 text-[10px] text-[#667069]">Validation workflow is reserved for Phase 16E.</p></div><ShieldCheck className="size-5 text-[#667069]" /></div>
-            </section>
-
-            <div className="h-px bg-white/[0.06]" />
-
-            {["Order Start Screenshot", "Order Final Screenshot"].map((title) => (
-              <div key={title}>
-                <section className="p-5">
-                  <div className="flex items-center gap-2.5"><ImageIcon className="size-4 text-[#667069]" /><h2 className="text-sm font-semibold text-[#F4F7F5]">{title}</h2></div>
-                  <div className="mt-4 flex min-h-20 items-center justify-center rounded-xl border border-dashed border-white/[0.08] bg-[#090D0B] px-4 text-center"><p className="text-[10px] text-[#667069]">Evidence upload is reserved for Phase 16E.</p></div>
-                </section>
-                {title === "Order Start Screenshot" ? <div className="h-px bg-white/[0.06]" /> : null}
-              </div>
-            ))}
+            <OrderOperationsPanel
+              orderId={order.id}
+              canManage={canManageOperations}
+              suggestedPlatform={suggestedPlatform}
+              orderStatus={order.status}
+            />
           </div>
 
           <Link href="/dashboard/notifications" className="group mt-4 flex items-center gap-3 border-t border-white/[0.05] pt-4">

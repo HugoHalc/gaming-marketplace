@@ -1,33 +1,98 @@
-BOOSTINGPEDIA — PHASE 16E.2 SERVICE ROLE HOTFIX
+BOOSTINGPEDIA — PHASE 16F
+ACCEPT ORDER HOTFIX + OPERATIONAL ORDER WORKSPACE
 
-1. COPY THIS ZIP INTO THE PROJECT ROOT.
+PREREQUISITE:
+Phase 16E.2 must already be applied.
 
-2. OPEN:
-supabase/migrations/phase_16e2_service_role_grants.sql
+1. COPY THE ZIP INTO PROJECT ROOT.
 
-3. SUPABASE → SQL EDITOR → NEW QUERY.
+2. SUPABASE MIGRATION
 
-4. COPY ALL SQL AND PRESS RUN.
+Open:
+supabase/migrations/phase_16f_operational_order_workspace.sql
 
-EXPECTED:
-Success
+Copy ALL SQL into:
+Supabase → SQL Editor → New Query
 
-5. NO DATA INSERTS ARE NEEDED.
-Do not recreate your booster profile.
-Do not rerun Phase 16D or Phase 16E.
-
-6. This migration is database-only.
-Once SQL returns Success, refresh production and test:
-
-/dashboard
-/dashboard/orders/[YOUR_ORDER_ID]
-/booster
+Press Run.
 
 Expected:
-- customer dashboard still loads;
-- order detail loads;
-- booster assignment query no longer errors;
-- /booster loads the Available Orders marketplace.
+Success
+
+3. COMMIT / PUSH / DEPLOY
 
 Suggested commit:
-Phase 16E.2 - Fix Service Role Grants
+Phase 16F - Operational Order Workspace
+
+4. TEST ACCEPT ORDER
+
+Open:
+/booster
+
+Click:
+Accept Order
+
+Expected:
+- no 409 ambiguity error
+- assignment snapshot is created
+- order changes to in_progress
+- redirect to /booster/orders/[id]
+- order disappears from Available Orders
+- appears in My Active Orders
+
+5. TEST USER INTEGRITY
+
+Inside the assigned order enter:
+Platform: Epic Games
+Player ID: your test player's Epic ID
+Internal note: optional
+
+Save.
+
+Expected:
+Recorded identity appears immediately.
+On future orders from the same customer, prior IDs can appear under
+Previously seen IDs.
+
+6. TEST START SCREENSHOT
+
+Paste an HTTPS image URL such as an Imgur image link.
+
+No file upload exists.
+
+Save and open:
+View Screenshot
+
+7. TEST DELIVER SCREENSHOT
+
+Paste the final HTTPS image URL and save.
+
+8. COMPLETE ORDER
+
+Complete Order remains disabled until:
+- User Integrity exists
+- Start Screenshot exists
+- Deliver Screenshot exists
+
+Once all three are ready:
+Click Complete Order.
+
+Expected:
+status = completed
+
+9. CUSTOMER TEST
+
+Open the same order as the customer.
+
+Expected:
+- chat remains available
+- customer can use Account Details
+- identity snapshot is visible
+- screenshot links are visible
+- internal integrity note is hidden
+- customer cannot edit operational validation/evidence
+
+IMPORTANT:
+Do not manually insert an assignment.
+Do not upload image files to the site.
+Do not rerun Phase 16E.
