@@ -1,65 +1,41 @@
-BOOSTINGPEDIA — PHASE 16E
-BOOSTER MARKETPLACE + ATOMIC CLAIM + PAYOUT FOUNDATION
+BOOSTINGPEDIA — PHASE 16E.1 HOTFIX
 
-APPLY AFTER PHASE 16D.
+THIS HOTFIX IS REQUIRED AFTER PHASE 16E.
 
 1. COPY ZIP INTO PROJECT ROOT.
 
-2. APPLY SUPABASE MIGRATION:
-supabase/migrations/phase_16e_booster_marketplace.sql
+REPLACES:
+src/features/booster/server/booster-orders.ts
 
-3. ENABLE YOUR ADMIN ACCOUNTS AS BOOSTERS.
+ADDS:
+supabase/migrations/phase_16e1_fix_booster_rls.sql
+docs/phase-16e1-rls-booster-runtime-hotfix.md
 
-In Supabase SQL Editor run once per admin/partner:
+2. SUPABASE SQL EDITOR
 
-insert into public.booster_profiles (user_id, is_active, payout_rate_bps)
-values ('PROFILE_UUID_HERE', true, 5000)
-on conflict (user_id)
-do update set is_active = true, payout_rate_bps = 5000;
+Open:
+supabase/migrations/phase_16e1_fix_booster_rls.sql
 
-IMPORTANT:
-Do NOT change your admin role to booster.
-An admin account can now also be a booster through booster_profiles.
+Copy ALL content into a new SQL query and press Run.
 
-4. DEPLOY.
+Expected: Success.
 
-TEST:
+3. COMMIT/PUSH/DEPLOY.
 
-A. AVAILABLE MARKETPLACE
-- Sign in with an active booster_profile.
-- Open /booster.
-- A paid, unassigned order should appear.
-- It should show YOUR PAYOUT, not the full order total.
-- For a $90 final order at 50%, it should display $45.
+4. TEST:
+- /dashboard must load again.
+- /booster must load.
+- customer can only read their own orders.
+- an assigned booster can read only that assigned order.
+- admin remains able to read all orders.
+- Available Orders displays eligible paid/unassigned orders.
+- payout remains 50% of final order total.
 
-B. ATOMIC CLAIM
-- Click Accept Order.
-- You should be redirected to /booster/orders/[id].
-- order_booster_assignments should contain:
-  booster_id
-  payout_rate_bps = 5000
-  payout_cents = 50% of final total cents
-- order status should be in_progress.
-- The order should disappear from Available Orders.
+DO NOT:
+- rerun Phase 16E
+- delete existing orders
+- delete booster_profiles
+- recreate your booster account
 
-C. ACTIVE
-- /booster?view=active should contain the claimed order.
-- It must display the payout snapshot.
-
-D. CUSTOMER
-- Customer workspace should show the real assigned booster.
-- Chat should work between the customer and assigned booster.
-- Customer still sees normal customer total/payment information.
-
-E. BOOSTER WORKSPACE
-- Booster order workspace shows Your payout, not customer gross total.
-- Gross price breakdown is hidden.
-- Booster can explicitly reveal Account Details.
-- Booster cannot edit the customer's credentials.
-
-F. ADMIN
-- Existing /admin continues to show the full order amount.
-- Admin permissions remain intact even if the admin has booster_profiles access.
-
-COMMIT:
-Phase 16E - Booster Marketplace Atomic Claim Payout
+Suggested commit:
+Phase 16E.1 - Fix Booster RLS Runtime

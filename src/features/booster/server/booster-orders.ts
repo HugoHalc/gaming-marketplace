@@ -12,6 +12,7 @@ function money(cents: number) {
 
 type DbItem = {
   id: string;
+  order_id: string;
   game_name: string;
   service_name: string;
   service_category: OrderRecord["items"][number]["serviceCategory"];
@@ -35,13 +36,12 @@ type DbOrder = {
   customer_note: string | null;
   created_at: string;
   updated_at: string;
-  order_items: DbItem[] | null;
 };
 
 const ORDER_SELECT =
-  "id, order_number, status, payment_status, currency, subtotal_cents, discount_cents, total_cents, customer_note, created_at, updated_at, order_items(id, game_name, service_name, service_category, configuration, price_breakdown, rule_set_version, subtotal_cents, discount_cents, total_cents)";
+  "id, order_number, status, payment_status, currency, subtotal_cents, discount_cents, total_cents, customer_note, created_at, updated_at";
 
-function mapOrder(row: DbOrder): OrderRecord {
+function mapOrder(row: DbOrder, items: DbItem[]): OrderRecord {
   return {
     id: row.id,
     orderNumber: row.order_number,
@@ -54,7 +54,7 @@ function mapOrder(row: DbOrder): OrderRecord {
     customerNote: row.customer_note,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    items: (row.order_items ?? []).map((item) => ({
+    items: items.map((item) => ({
       id: item.id,
       gameName: item.game_name,
       serviceName: item.service_name,
@@ -69,6 +69,31 @@ function mapOrder(row: DbOrder): OrderRecord {
   };
 }
 
+async function loadItemsByOrderIds(orderIds: string[]) {
+  if (!orderIds.length) return new Map<string, DbItem[]>();
+
+  const supabase = createSecretServerClient();
+  const { data, error } = await supabase
+    .from("order_items")
+    .select(
+      "id, order_id, game_name, service_name, service_category, configuration, price_breakdown, rule_set_version, subtotal_cents, discount_cents, total_cents",
+    )
+    .in("order_id", orderIds);
+
+  if (error) {
+    console.error("Booster order item load failed", error);
+    throw new Error("Unable to load booster order items.");
+  }
+
+  const grouped = new Map<string, DbItem[]>();
+  for (const item of (data ?? []) as unknown as DbItem[]) {
+    const current = grouped.get(item.order_id) ?? [];
+    current.push(item);
+    grouped.set(item.order_id, current);
+  }
+  return grouped;
+}
+
 export interface BoosterOrderCard {
   order: OrderRecord;
   payout: number;
@@ -80,30 +105,38 @@ export async function listAvailableBoosterOrders(): Promise<BoosterOrderCard[]> 
   const booster = await requireBooster();
   const supabase = createSecretServerClient();
 
-  const [{ data: rows, error }, { data: assignments, error: assignmentError }] =
-    await Promise.all([
-      supabase
-        .from("orders")
-        .select(ORDER_SELECT)
-        .eq("payment_status", "paid")
-        .in("status", ["paid", "queued"])
-        .order("created_at", { ascending: true })
-        .limit(100),
-      supabase
-        .from("order_booster_assignments")
-        .select("order_id")
-        .eq("is_active", true),
-    ]);
+  const { data: rows, error } = await supabase
+    .from("orders")
+    .select(ORDER_SELECT)
+    .eq("payment_status", "paid")
+    .in("status", ["paid", "queued"])
+    .order("created_at", { ascending: true })
+    .limit(100);
 
-  if (error || assignmentError) throw new Error("Unable to load available orders.");
+  if (error) {
+    console.error("Available booster order load failed", error);
+    throw new Error("Unable to load available orders.");
+  }
 
+  const { data: assignments, error: assignmentError } = await supabase
+    .from("order_booster_assignments")
+    .select("order_id")
+    .eq("is_active", true);
+
+  if (assignmentError) {
+    console.error("Available assignment load failed", assignmentError);
+    throw new Error("Unable to load available orders.");
+  }
+
+  const orderRows = (rows ?? []) as unknown as DbOrder[];
+  const itemsByOrder = await loadItemsByOrderIds(orderRows.map((row) => row.id));
   const claimed = new Set((assignments ?? []).map((row) => row.order_id as string));
   const rate = booster.boosterProfile.payoutRateBps;
 
-  return ((rows ?? []) as unknown as DbOrder[])
+  return orderRows
     .filter((row) => !claimed.has(row.id))
     .map((row) => ({
-      order: mapOrder(row),
+      order: mapOrder(row, itemsByOrder.get(row.id) ?? []),
       payout: Math.floor(row.total_cents * rate / 10000) / 100,
       payoutRateBps: rate,
       assignedAt: null,
@@ -121,7 +154,10 @@ async function listAssignedOrders(): Promise<BoosterOrderCard[]> {
     .eq("is_active", true)
     .order("assigned_at", { ascending: false });
 
-  if (error) throw new Error("Unable to load booster assignments.");
+  if (error) {
+    console.error("Assigned booster order load failed", error);
+    throw new Error("Unable to load booster assignments.");
+  }
   if (!assignments?.length) return [];
 
   const ids = assignments.map((row) => row.order_id as string);
@@ -130,17 +166,20 @@ async function listAssignedOrders(): Promise<BoosterOrderCard[]> {
     .select(ORDER_SELECT)
     .in("id", ids);
 
-  if (orderError) throw new Error("Unable to load assigned orders.");
+  if (orderError) {
+    console.error("Assigned order record load failed", orderError);
+    throw new Error("Unable to load assigned orders.");
+  }
 
-  const byId = new Map(
-    ((rows ?? []) as unknown as DbOrder[]).map((row) => [row.id, row]),
-  );
+  const orderRows = (rows ?? []) as unknown as DbOrder[];
+  const itemsByOrder = await loadItemsByOrderIds(ids);
+  const byId = new Map(orderRows.map((row) => [row.id, row]));
 
   return assignments.flatMap((assignment) => {
     const row = byId.get(assignment.order_id as string);
     if (!row) return [];
     return [{
-      order: mapOrder(row),
+      order: mapOrder(row, itemsByOrder.get(row.id) ?? []),
       payout: money(assignment.payout_cents as number),
       payoutRateBps: assignment.payout_rate_bps as number,
       assignedAt: assignment.assigned_at as string,
@@ -206,8 +245,10 @@ export async function getAssignedBoosterOrder(orderId: string) {
   if (error) throw new Error("Unable to load assigned order.");
   if (!row) return null;
 
+  const itemsByOrder = await loadItemsByOrderIds([orderId]);
+
   return {
-    order: mapOrder(row as unknown as DbOrder),
+    order: mapOrder(row as unknown as DbOrder, itemsByOrder.get(orderId) ?? []),
     payout: money(assignment.payout_cents as number),
     payoutRateBps: assignment.payout_rate_bps as number,
     assignedAt: assignment.assigned_at as string,
