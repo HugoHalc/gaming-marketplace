@@ -1,22 +1,17 @@
-BOOSTINGPEDIA — MOBILE HOME MENU
+BOOSTINGPEDIA — MOBILE MENU SAFARI HOTFIX
 
-1. Copy ZIP contents into project root.
-2. Replace:
-   src/components/marketing/site-header.tsx
-3. Add:
-   src/components/marketing/mobile-site-menu.tsx
-4. No Supabase migration.
-5. Commit / push:
+1. Replace:
+src/components/marketing/mobile-site-menu.tsx
 
-Fix mobile homepage navigation menu
+2. No other file changes.
+3. No Supabase migration.
 
-VERIFY ON MOBILE:
-- hamburger appears in top header
-- menu opens full-height
-- background page cannot scroll while open
-- X closes menu
-- tapping overlay closes menu
-- Home/Games/How it works/Meet our boosters/FAQ work
-- signed-out shows Sign up / Sign in
-- signed-in shows Dashboard / Orders / Account Settings / Log out
-- desktop header remains unchanged
+Suggested commit:
+Fix mobile menu viewport clipping
+
+Verify on iPhone Safari:
+- open hamburger
+- drawer covers full visible viewport
+- menu scrolls internally
+- Home behind it does not scroll
+- X and overlay close correctly
