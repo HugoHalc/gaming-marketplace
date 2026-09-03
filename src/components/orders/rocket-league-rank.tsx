@@ -18,6 +18,13 @@ function rankFamily(value: string) {
   return value.replace(/-\d$/, "");
 }
 
+function rankFamilyLabel(value: string) {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export function resolveRocketLeagueRank(value: unknown) {
   if (typeof value !== "string") return null;
 
@@ -37,12 +44,19 @@ export function resolveRocketLeagueRank(value: unknown) {
   const family = rankFamily(value);
   const asset = RANK_ASSETS[family];
 
-  if (!tier || !asset) return null;
+  if (!asset) return null;
 
-  const familyLabel = family
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  const familyLabel = rankFamilyLabel(family);
+
+  // Some services (for example Tournament Boost) store the rank family
+  // without a division, e.g. "grand-champion". Keep the family badge visible.
+  if (!tier) {
+    return {
+      key: value,
+      label: familyLabel,
+      asset,
+    };
+  }
 
   const roman =
     tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : null;
