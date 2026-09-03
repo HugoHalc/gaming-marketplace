@@ -1,22 +1,30 @@
-PHASE 16Q — Customer Dashboard Premium Workspace Redesign
+PHASE 16Q.1 — Customer Workspace TypeScript Build Fix
+
+APPLY THIS PATCH ON TOP OF PHASE 16Q.
 
 FILES TO REPLACE
-- src/app/dashboard/page.tsx
-- src/components/dashboard/dashboard-orders-hub.tsx
-- src/components/dashboard/customer-order-workspace.tsx
-- src/components/dashboard/dashboard-shell.tsx
+1. src/components/dashboard/customer-order-workspace.tsx
 
-SCOPE
-Visual hierarchy, typography, density and information architecture only.
-No Supabase migration. No API/RLS/database changes.
+WHAT WAS FIXED
+- Removed invalid comparisons between OrderStatus and operational-only states.
+- Progress timeline now uses only real signals available to this workspace:
+  Payment: paymentStatus
+  Assignment: real boosterAssignment
+  In Progress: order status / order status history
+  Completed: order status / order status history
+- Next-action copy now uses only valid OrderStatus values plus real booster assignment state.
+- No visual redesign was reverted.
+- No API, database, RLS, realtime, checkout, chat, payment or lifecycle logic was changed.
 
-KEY CHANGES
-- Dashboard overview: stronger active-service panel, real rank assets, compact real-state timeline, Recent Orders.
-- Orders center: compact game filter, tab filters, desktop list as default, premium operational rows, grid retained.
-- Order workspace: internal Overview / Chat / Evidence / Details tabs using existing components/data.
-- Chat gets near-full-height workspace presentation.
-- Sticky sidebar stays single-surface with booster, payment, secure access and trust microcopy.
-- Global dashboard typography/readability pass.
+VERCEL ERROR FIXED
+TS2367 in customer-order-workspace.tsx for:
+delivered
+waiting_customer
+issue
+accepted
+
+SUPABASE
+No migration required.
 
 RECOMMENDED COMMIT
-feat: redesign customer dashboard into premium order workspace
+fix: correct customer workspace status typing after 16Q redesign
