@@ -1,43 +1,31 @@
-BOOSTINGPEDIA — PHASE 16K
-UNIFIED DASHBOARD & ORDERS NAVIGATION
+BOOSTINGPEDIA — PHASE 16L
+CUSTOMER + BOOSTER ORDERS UX POLISH
 
-1. Copy this ZIP into the project root and replace/add included files.
-
-2. No manual code edits are required.
-Legacy `/booster?view=active|completed` links automatically redirect to the new Orders route.
-
+1. Copy ZIP into project root.
+2. Replace/add included files.
 3. No Supabase migration.
-
 4. Commit / push:
 
-Phase 16K - Unified Dashboard Orders Navigation
+Phase 16L - Customer Booster Orders UX Polish
 
-5. Verify:
+VERIFY:
 
 CUSTOMER
-/dashboard
-- overview only
-- Dashboard selected in navigation
-
 /dashboard/orders
-- full customer order list
-- Orders selected
+- clear All / Placed / In Progress / Delivered / Completed filters
+- Rocket League rank progression uses real rank badges when resolvable
+- unknown/internal rank IDs are not shown as rank names
+- grid and list views remain functional
+- customer sees total, never booster payout
 
 BOOSTER
-/booster
-- booster overview
-- Dashboard selected
-
 /booster/orders
-- marketplace / active / completed filters
-- Orders selected
-
-Operational navigation should no longer expose:
-- My Orders
-- Booster Workspace
-- Available Orders as a menu destination
-- My Active Orders as a menu destination
+- Available / In Progress / Completed filters
+- payout remains visible
+- Accept Order remains only on Available
+- Open Order on assigned/completed
+- Rocket League rank badges reused consistently
 
 No pricing changes.
 No payout changes.
-No database changes.
+No DB changes.

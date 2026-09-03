@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { OrderRecord } from "@/features/orders/types/orders";
+import {
+  resolveRocketLeagueRank,
+  RocketLeagueRankValue,
+} from "@/components/orders/rocket-league-rank";
 
 type DashboardOrder = OrderRecord & {
   operationalState: string | null;
@@ -20,44 +24,6 @@ type DashboardOrder = OrderRecord & {
 
 type FilterKey = "all" | "placed" | "active" | "delivered" | "completed";
 type ViewMode = "grid" | "list";
-
-const rankAssets: Record<string, string> = {
-  bronze: "/ranks/rocket-league/bronze.png",
-  silver: "/ranks/rocket-league/silver.png",
-  gold: "/ranks/rocket-league/gold.png",
-  platinum: "/ranks/rocket-league/platinum.png",
-  diamond: "/ranks/rocket-league/diamond.png",
-  champion: "/ranks/rocket-league/champion.png",
-  "grand-champion": "/ranks/rocket-league/grand-champion.png",
-  "supersonic-legend": "/ranks/rocket-league/supersonic-legend.png",
-};
-
-function rankFamily(value: string) {
-  if (value === "supersonic-legend") return value;
-  return value.replace(/-\d$/, "");
-}
-
-function rankLabel(value: string) {
-  if (value === "unrated") return "Unrated";
-  if (value === "supersonic-legend") return "Supersonic Legend";
-
-  const tier = value.match(/-(\d)$/)?.[1];
-  const family = rankFamily(value)
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-
-  const roman =
-    tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : "";
-
-  return `${family}${roman ? ` ${roman}` : ""}`;
-}
-
-function resolvableRank(value: unknown): value is string {
-  if (typeof value !== "string") return false;
-  if (value === "unrated" || value === "supersonic-legend") return true;
-  return Boolean(rankAssets[rankFamily(value)] && /-\d$/.test(value));
-}
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -85,13 +51,12 @@ function operationalLabel(order: DashboardOrder) {
   if (order.operationalState === "delivered") return "Delivered";
   if (order.operationalState === "waiting_customer") return "Waiting Customer";
   if (order.operationalState === "issue") return "Issue";
-  if (order.operationalState === "accepted") return "Accepted";
+  if (order.operationalState === "accepted") return "Booster Assigned";
   if (order.operationalState === "in_progress") return "In Progress";
   if (order.operationalState === "completed" || order.status === "completed")
     return "Completed";
-
   if (order.status === "pending_payment") return "Placed";
-  if (order.status === "paid" || order.status === "queued") return "Queued";
+  if (order.status === "paid" || order.status === "queued") return "Ready for Assignment";
   return formatLabel(order.status);
 }
 
@@ -99,15 +64,15 @@ function statusClass(order: DashboardOrder) {
   const label = operationalLabel(order);
 
   if (label === "Completed")
-    return "border-[#39E56F]/15 bg-[#39E56F]/[0.055] text-[#82F5A4]";
+    return "border-[#39E56F]/15 bg-[#39E56F]/[0.05] text-[#82F5A4]";
   if (label === "Delivered")
-    return "border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-200";
+    return "border-cyan-300/15 bg-cyan-300/[0.05] text-cyan-200";
   if (label === "Issue")
-    return "border-rose-300/15 bg-rose-300/[0.055] text-rose-200";
+    return "border-rose-300/15 bg-rose-300/[0.05] text-rose-200";
   if (label === "Waiting Customer")
-    return "border-amber-300/15 bg-amber-300/[0.055] text-amber-100";
+    return "border-amber-300/15 bg-amber-300/[0.05] text-amber-100";
 
-  return "border-white/[0.08] bg-white/[0.035] text-[#A0AAA4]";
+  return "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]";
 }
 
 function matchesFilter(order: DashboardOrder, filter: FilterKey) {
@@ -129,49 +94,19 @@ function matchesFilter(order: DashboardOrder, filter: FilterKey) {
     return order.operationalState === "delivered";
   }
 
-  return (
-    order.status === "completed" ||
-    order.operationalState === "completed"
-  );
+  return order.status === "completed" || order.operationalState === "completed";
 }
 
-function RankLine({
-  label,
-  value,
+function Extras({
+  configuration,
 }: {
-  label: string;
-  value: unknown;
+  configuration: Record<string, string | number | boolean>;
 }) {
-  if (!resolvableRank(value)) return null;
-
-  const asset = rankAssets[rankFamily(value)];
-
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-[10px] text-[#667069]">{label}</span>
-      <span className="flex min-w-0 items-center gap-2 text-right">
-        <span className="font-gaming-value truncate text-[11px] font-bold text-[#F4F7F5]">
-          {rankLabel(value)}
-        </span>
-        {asset ? (
-          <Image
-            src={asset}
-            alt=""
-            width={34}
-            height={34}
-            className="size-8 shrink-0 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,.45)]"
-          />
-        ) : null}
-      </span>
-    </div>
-  );
-}
-
-function Extras({ configuration }: { configuration: Record<string, string | number | boolean> }) {
   const extras: string[] = [];
 
   if (configuration.playlist) extras.push(String(configuration.playlist));
-  if (configuration.boostMethod === "play-with-booster") extras.push("Play With Booster");
+  if (configuration.boostMethod === "play-with-booster")
+    extras.push("Play With Booster");
   if (configuration.liveStream === true) extras.push("Live Stream");
   if (configuration.express === true) extras.push("Express");
   if (configuration.appearOffline === true) extras.push("Appear Offline");
@@ -182,7 +117,7 @@ function Extras({ configuration }: { configuration: Record<string, string | numb
       {extras.slice(0, 4).map((extra) => (
         <span
           key={extra}
-          className="rounded-full border border-white/[0.07] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-[#A0AAA4]"
+          className="rounded-full border border-white/[0.06] bg-white/[0.025] px-2 py-1 text-[8px] font-medium text-[#A0AAA4]"
         >
           {formatLabel(extra)}
         </span>
@@ -191,7 +126,7 @@ function Extras({ configuration }: { configuration: Record<string, string | numb
   ) : null;
 }
 
-function OrderCard({
+function CustomerOrderCard({
   order,
   viewMode,
 }: {
@@ -205,91 +140,74 @@ function OrderCard({
       ? config.currentRank
       : config.previousRank;
   const targetRank = config.targetRank;
-
-  const wins = typeof config.wins === "number" ? config.wins : null;
-  const matches = typeof config.matches === "number" ? config.matches : null;
+  const currentResolved = resolveRocketLeagueRank(currentRank);
+  const targetResolved = resolveRocketLeagueRank(targetRank);
   const platform =
     typeof config.platform === "string" ? formatLabel(config.platform) : null;
+  const wins = typeof config.wins === "number" ? config.wins : null;
+  const matches = typeof config.matches === "number" ? config.matches : null;
 
   if (viewMode === "list") {
     return (
       <Link
         href={`/dashboard/orders/${order.id}`}
-        className="grid gap-4 rounded-xl border border-white/[0.07] bg-[#0D120F] p-4 transition-colors hover:border-white/[0.12] hover:bg-[#101713] md:grid-cols-[minmax(0,1.25fr)_minmax(210px,.8fr)_auto]"
+        className="group grid gap-4 border-b border-white/[0.05] py-4 transition-colors hover:bg-white/[0.012] md:grid-cols-[minmax(0,1.2fr)_minmax(240px,.9fr)_auto] md:items-center"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="relative size-11 shrink-0 overflow-hidden rounded-xl border border-white/[0.08]">
+          <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-white/[0.07]">
             <Image
               src="/game-cards/rocket-league.webp"
               alt=""
               fill
-              sizes="44px"
+              sizes="40px"
               className="object-cover"
             />
           </div>
           <div className="min-w-0">
-            <p className="font-gaming-value text-[11px] font-bold text-[#82F5A4]">
+            <p className="font-gaming-value text-[9px] font-bold text-[#82F5A4]">
               {order.orderNumber}
             </p>
             <h3 className="mt-1 truncate text-sm font-semibold text-[#F4F7F5]">
               {item?.serviceName ?? "Gaming Service"}
             </h3>
-            <p className="mt-1 text-[10px] text-[#667069]">
-              {item?.gameName ?? "Rocket League"} · {formatDate(order.createdAt)}
+            <p className="mt-1 text-[9px] text-[#667069]">
+              {formatDate(order.createdAt)}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-5">
-          {resolvableRank(currentRank) ? (
-            <div className="flex items-center gap-2">
-              <Image
-                src={rankAssets[rankFamily(currentRank)]}
-                alt=""
-                width={34}
-                height={34}
-                className="size-8 object-contain"
-              />
-              <div>
-                <p className="text-[9px] text-[#667069]">Current</p>
-                <p className="font-gaming-value text-[10px] font-bold text-[#F4F7F5]">
-                  {rankLabel(currentRank)}
-                </p>
-              </div>
-            </div>
+        <div className="flex min-w-0 items-center gap-4">
+          {currentResolved ? (
+            <RocketLeagueRankValue value={currentRank} label="Current" size="sm" />
           ) : null}
-
-          {resolvableRank(targetRank) ? (
-            <>
-              <ArrowRight className="size-3.5 text-[#667069]" />
-              <div className="flex items-center gap-2">
-                <Image
-                  src={rankAssets[rankFamily(targetRank)]}
-                  alt=""
-                  width={34}
-                  height={34}
-                  className="size-8 object-contain"
-                />
-                <div>
-                  <p className="text-[9px] text-[#667069]">Target</p>
-                  <p className="font-gaming-value text-[10px] font-bold text-[#F4F7F5]">
-                    {rankLabel(targetRank)}
-                  </p>
-                </div>
-              </div>
-            </>
+          {currentResolved && targetResolved ? (
+            <ArrowRight className="size-3 shrink-0 text-blue-200/30" />
+          ) : null}
+          {targetResolved ? (
+            <RocketLeagueRankValue value={targetRank} label="Target" size="sm" />
+          ) : null}
+          {!currentResolved && !targetResolved && platform ? (
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
+                Platform
+              </p>
+              <p className="mt-1 text-[10px] font-semibold text-[#F4F7F5]">
+                {platform}
+              </p>
+            </div>
           ) : null}
         </div>
 
         <div className="flex items-center justify-between gap-4 md:justify-end">
           <span
-            className={`rounded-lg border px-2.5 py-1.5 text-[9px] font-semibold ${statusClass(order)}`}
+            className={`rounded-lg border px-2.5 py-1.5 text-[8px] font-semibold ${statusClass(order)}`}
           >
             {operationalLabel(order)}
           </span>
           <span className="font-gaming-value text-sm font-bold text-[#F4F7F5]">
             {formatMoney(order.total)}
           </span>
+          <ArrowRight className="size-3.5 text-[#667069] transition-transform group-hover:translate-x-1" />
         </div>
       </Link>
     );
@@ -298,20 +216,20 @@ function OrderCard({
   return (
     <Link
       href={`/dashboard/orders/${order.id}`}
-      className="group overflow-hidden rounded-xl border border-white/[0.07] bg-[#0D120F] transition-[border-color,transform,background-color] hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[#101713]"
+      className="group overflow-hidden rounded-xl border border-white/[0.07] bg-[#0B100D] transition-[border-color,transform,background-color] hover:-translate-y-0.5 hover:border-white/[0.12] hover:bg-[#0E1411]"
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/[0.05] px-4 py-3">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="relative size-8 shrink-0 overflow-hidden rounded-lg border border-white/[0.08]">
+          <div className="relative size-7 shrink-0 overflow-hidden rounded-md border border-white/[0.07]">
             <Image
               src="/game-cards/rocket-league.webp"
               alt=""
               fill
-              sizes="32px"
+              sizes="28px"
               className="object-cover"
             />
           </div>
-          <span className="font-gaming-value truncate text-[11px] font-bold text-[#F4F7F5]">
+          <span className="font-gaming-value truncate text-[10px] font-bold text-[#F4F7F5]">
             {order.orderNumber}
           </span>
         </div>
@@ -322,54 +240,57 @@ function OrderCard({
       </div>
 
       <div className="p-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+            <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">
               {item?.gameName ?? "Rocket League"}
             </p>
-            <h3 className="mt-1.5 truncate text-[15px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+            <h3 className="mt-1 truncate text-[14px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
               {item?.serviceName ?? "Gaming Service"}
             </h3>
           </div>
 
           <span
-            className={`shrink-0 rounded-lg border px-2 py-1 text-[9px] font-semibold ${statusClass(order)}`}
+            className={`shrink-0 rounded-lg border px-2 py-1 text-[8px] font-semibold ${statusClass(order)}`}
           >
             {operationalLabel(order)}
           </span>
         </div>
 
-        <div className="mt-4 space-y-2.5 border-y border-white/[0.05] py-3.5">
-          <RankLine label="Current Rank" value={currentRank} />
-          <RankLine label="Desired Rank" value={targetRank} />
-
-          {matches !== null ? (
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-[#667069]">Placement Matches</span>
-              <span className="font-gaming-value text-[11px] font-bold text-[#F4F7F5]">
-                {matches}
-              </span>
-            </div>
-          ) : null}
-
-          {wins !== null ? (
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-[#667069]">Wins</span>
-              <span className="font-gaming-value text-[11px] font-bold text-[#F4F7F5]">
-                {wins}
-              </span>
-            </div>
-          ) : null}
-
-          {platform ? (
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-[#667069]">Platform</span>
-              <span className="text-[11px] font-semibold text-[#F4F7F5]">
-                {platform}
-              </span>
-            </div>
-          ) : null}
-        </div>
+        {(currentResolved || targetResolved) ? (
+          <div className="mt-4 flex min-h-[58px] items-center gap-3 border-y border-white/[0.05] py-3">
+            {currentResolved ? (
+              <RocketLeagueRankValue value={currentRank} label="Current" />
+            ) : null}
+            {currentResolved && targetResolved ? (
+              <ArrowRight className="size-3.5 shrink-0 text-blue-200/30" />
+            ) : null}
+            {targetResolved ? (
+              <RocketLeagueRankValue value={targetRank} label="Target" />
+            ) : null}
+          </div>
+        ) : (
+          <div className="mt-4 grid grid-cols-2 gap-4 border-y border-white/[0.05] py-3">
+            {platform ? (
+              <div>
+                <p className="text-[8px] text-[#667069]">Platform</p>
+                <p className="mt-1 text-[10px] font-semibold text-[#F4F7F5]">
+                  {platform}
+                </p>
+              </div>
+            ) : null}
+            {wins !== null || matches !== null ? (
+              <div>
+                <p className="text-[8px] text-[#667069]">
+                  {matches !== null ? "Matches" : "Wins"}
+                </p>
+                <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                  {matches ?? wins}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        )}
 
         <div className="mt-3">
           <Extras configuration={config} />
@@ -377,13 +298,13 @@ function OrderCard({
 
         <div className="mt-4 flex items-end justify-between gap-4">
           <div>
-            <p className="text-[9px] text-[#667069]">Placed</p>
-            <p className="mt-1 text-[10px] font-medium text-[#A0AAA4]">
+            <p className="text-[8px] text-[#667069]">Placed</p>
+            <p className="mt-1 text-[9px] font-medium text-[#A0AAA4]">
               {formatDate(order.createdAt)}
             </p>
           </div>
 
-          <span className="inline-flex items-center text-[10px] font-semibold text-[#82F5A4]">
+          <span className="inline-flex items-center text-[9px] font-semibold text-[#82F5A4]">
             Open Order
             <ArrowRight className="ml-1.5 size-3" />
           </span>
@@ -413,11 +334,8 @@ export function DashboardOrdersHub({
         .toLowerCase()
         .replace(/\s+/g, "-");
 
-      const matchesGame =
-        game === "all" || normalizedGameName === game;
-
+      const matchesGame = game === "all" || normalizedGameName === game;
       const matchesStatus = matchesFilter(order, filter);
-
       const matchesSearch =
         !needle ||
         order.orderNumber.toLowerCase().includes(needle) ||
@@ -437,65 +355,64 @@ export function DashboardOrdersHub({
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1520px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <div className="mx-auto w-full max-w-[1520px] px-4 py-7 sm:px-6 lg:px-8">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
-            Account Orders
+          <p className="font-gaming-label text-[9px] uppercase tracking-[0.14em] text-[#667069]">
+            Customer Orders
           </p>
           <h1 className="mt-1 text-3xl font-bold tracking-[-0.045em] text-[#F4F7F5]">
             Orders
           </h1>
+          <p className="mt-2 text-[10px] text-[#A0AAA4]">
+            Track every service from purchase through completion.
+          </p>
         </div>
-
-        <p className="hidden text-[10px] text-[#667069] sm:block">
-          {orders.length} total order{orders.length === 1 ? "" : "s"}
-        </p>
       </div>
 
-      <div className="mt-7 grid gap-6 xl:grid-cols-[190px_minmax(0,1fr)]">
+      <div className="mt-7 grid gap-6 xl:grid-cols-[178px_minmax(0,1fr)]">
         <aside className="xl:sticky xl:top-24 xl:self-start">
           <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0B100D]">
-            <div className="relative aspect-[1.7/1] overflow-hidden border-b border-white/[0.06]">
+            <div className="relative aspect-[1.7/1] overflow-hidden border-b border-white/[0.05]">
               <Image
                 src="/game-cards/rocket-league.webp"
                 alt=""
                 fill
-                sizes="190px"
-                className="object-cover opacity-75"
+                sizes="178px"
+                className="object-cover opacity-70"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B100D] via-[#0B100D]/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B100D] via-transparent to-transparent" />
             </div>
 
             <div className="p-2">
               <button
                 type="button"
                 onClick={() => setGame("all")}
-                className={`flex h-10 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[11px] font-semibold transition-colors ${
+                className={`flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[10px] font-semibold transition-colors ${
                   game === "all"
-                    ? "bg-[#39E56F]/[0.08] text-[#82F5A4]"
+                    ? "bg-[#39E56F]/[0.07] text-[#82F5A4]"
                     : "text-[#A0AAA4] hover:bg-white/[0.03]"
                 }`}
               >
-                <Gamepad2 className="size-4" />
+                <Gamepad2 className="size-3.5" />
                 All Games
               </button>
 
               <button
                 type="button"
                 onClick={() => setGame("rocket-league")}
-                className={`mt-1 flex h-10 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[11px] font-semibold transition-colors ${
+                className={`mt-1 flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[10px] font-semibold transition-colors ${
                   game === "rocket-league"
-                    ? "bg-[#39E56F]/[0.08] text-[#82F5A4]"
+                    ? "bg-[#39E56F]/[0.07] text-[#82F5A4]"
                     : "text-[#A0AAA4] hover:bg-white/[0.03]"
                 }`}
               >
-                <span className="relative size-5 overflow-hidden rounded-md">
+                <span className="relative size-4 overflow-hidden rounded">
                   <Image
                     src="/game-cards/rocket-league.webp"
                     alt=""
                     fill
-                    sizes="20px"
+                    sizes="16px"
                     className="object-cover"
                   />
                 </span>
@@ -507,7 +424,7 @@ export function DashboardOrdersHub({
 
         <section className="min-w-0">
           <div className="flex flex-col gap-3 border-b border-white/[0.06] pb-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
               {(
                 [
                   ["all", "All"],
@@ -521,14 +438,14 @@ export function DashboardOrdersHub({
                   key={key}
                   type="button"
                   onClick={() => setFilter(key)}
-                  className={`h-9 rounded-lg border px-3 text-[10px] font-semibold transition-colors ${
+                  className={`h-9 rounded-lg border px-3 text-[9px] font-semibold transition-colors ${
                     filter === key
-                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.075] text-[#82F5A4]"
+                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.07] text-[#82F5A4]"
                       : "border-white/[0.07] bg-[#0B100D] text-[#A0AAA4] hover:text-[#F4F7F5]"
                   }`}
                 >
                   {label}
-                  <span className="ml-1.5 text-[9px] opacity-60">{counts[key]}</span>
+                  <span className="ml-1.5 opacity-55">{counts[key]}</span>
                 </button>
               ))}
             </div>
@@ -578,21 +495,21 @@ export function DashboardOrdersHub({
               className={
                 viewMode === "grid"
                   ? "mt-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-3"
-                  : "mt-5 space-y-3"
+                  : "mt-1"
               }
             >
               {filteredOrders.map((order) => (
-                <OrderCard key={order.id} order={order} viewMode={viewMode} />
+                <CustomerOrderCard key={order.id} order={order} viewMode={viewMode} />
               ))}
             </div>
           ) : (
-            <div className="mt-5 flex min-h-[340px] items-center justify-center rounded-xl border border-dashed border-white/[0.07] bg-[#0B100D]/55 px-6 text-center">
+            <div className="mt-5 flex min-h-[300px] items-center justify-center border-y border-white/[0.05] px-6 text-center">
               <div>
                 <Clock3 className="mx-auto size-5 text-[#667069]" />
                 <h2 className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                   No orders found
                 </h2>
-                <p className="mt-1.5 max-w-sm text-[10px] leading-5 text-[#667069]">
+                <p className="mt-1.5 text-[10px] text-[#667069]">
                   Try another status, game or search term.
                 </p>
               </div>
