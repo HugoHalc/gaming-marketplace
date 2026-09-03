@@ -286,8 +286,9 @@ function normalizeHttpsUrl(raw: string) {
     throw new Error("Enter a valid screenshot URL.");
   }
 
-  // Screenshot hosts such as Imgur often copy links without an explicit scheme.
-  // Keep evidence transport HTTPS-only while accepting that common paste format.
+  // Accept the common Imgur paste format without a scheme while keeping
+  // stored evidence HTTPS-only. Native browser paste is intentionally used
+  // in the input so Ctrl+V and the context-menu Paste action both work.
   const value = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
     ? trimmed
     : `https://${trimmed}`;
