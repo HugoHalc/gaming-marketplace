@@ -1,36 +1,35 @@
-BOOSTINGPEDIA — PHASE 16N
-CUSTOMER ORDER WORKSPACE FINAL UX POLISH
+BOOSTINGPEDIA — PHASE 16O
+PAID ORDERS VISIBILITY RULES
 
 1. Copy ZIP into project root.
 2. Replace:
-src/components/dashboard/customer-order-workspace.tsx
+src/features/booster/server/booster-orders.ts
 
 3. No Supabase migration.
 
 4. Commit / push:
 
-Phase 16N - Customer Order Workspace Final UX Polish
+Phase 16O - Paid Orders Visibility Rules
 
-VERIFY:
-/dashboard/orders/[id]
+VERIFY BOOSTER:
+/booster
+/booster/orders
 
-Customer should see:
-- service + Current → Target with real Rocket League badges
-- Progress
-- Conversation
-- Configuration with small rank badges, never internal rank IDs when resolvable
-- Price Breakdown
-- Booster
-- Payment
-- Secure Account Access
-- Delivery confirmation / report problem controls when lifecycle reaches those states
+Available:
+- only payment_status=paid
+- only paid/queued core status
+- no already assigned orders
 
-Customer must NOT see:
-- booster payout
-- integrity internal note
-- booster Start Work / Deliver controls
-- development/phase language
+In Progress:
+- only assigned orders that remain payment_status=paid
 
-No DB changes.
+Completed:
+- only completed orders that remain payment_status=paid
+
+CUSTOMER:
+/dashboard/orders
+- pending-payment orders remain visible to the customer
+
 No pricing changes.
 No payout changes.
+No DB changes.

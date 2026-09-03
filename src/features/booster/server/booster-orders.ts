@@ -69,6 +69,10 @@ function mapOrder(row: DbOrder, items: DbItem[]): OrderRecord {
   };
 }
 
+function isBoosterVisiblePaidOrder(order: OrderRecord) {
+  return order.paymentStatus === "paid";
+}
+
 async function loadItemsByOrderIds(orderIds: string[]) {
   if (!orderIds.length) return new Map<string, DbItem[]>();
 
@@ -91,6 +95,7 @@ async function loadItemsByOrderIds(orderIds: string[]) {
     current.push(item);
     grouped.set(item.order_id, current);
   }
+
   return grouped;
 }
 
@@ -129,18 +134,23 @@ export async function listAvailableBoosterOrders(): Promise<BoosterOrderCard[]> 
   }
 
   const orderRows = (rows ?? []) as unknown as DbOrder[];
-  const itemsByOrder = await loadItemsByOrderIds(orderRows.map((row) => row.id));
-  const claimed = new Set((assignments ?? []).map((row) => row.order_id as string));
+  const itemsByOrder = await loadItemsByOrderIds(
+    orderRows.map((row) => row.id),
+  );
+  const claimed = new Set(
+    (assignments ?? []).map((row) => row.order_id as string),
+  );
   const rate = booster.boosterProfile.payoutRateBps;
 
   return orderRows
     .filter((row) => !claimed.has(row.id))
     .map((row) => ({
       order: mapOrder(row, itemsByOrder.get(row.id) ?? []),
-      payout: Math.floor(row.total_cents * rate / 10000) / 100,
+      payout: Math.floor((row.total_cents * rate) / 10000) / 100,
       payoutRateBps: rate,
       assignedAt: null,
-    }));
+    }))
+    .filter(({ order }) => isBoosterVisiblePaidOrder(order));
 }
 
 async function listAssignedOrders(): Promise<BoosterOrderCard[]> {
@@ -158,13 +168,16 @@ async function listAssignedOrders(): Promise<BoosterOrderCard[]> {
     console.error("Assigned booster order load failed", error);
     throw new Error("Unable to load booster assignments.");
   }
+
   if (!assignments?.length) return [];
 
   const ids = assignments.map((row) => row.order_id as string);
+
   const { data: rows, error: orderError } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
-    .in("id", ids);
+    .in("id", ids)
+    .eq("payment_status", "paid");
 
   if (orderError) {
     console.error("Assigned order record load failed", orderError);
@@ -172,47 +185,77 @@ async function listAssignedOrders(): Promise<BoosterOrderCard[]> {
   }
 
   const orderRows = (rows ?? []) as unknown as DbOrder[];
-  const itemsByOrder = await loadItemsByOrderIds(ids);
+  const itemsByOrder = await loadItemsByOrderIds(
+    orderRows.map((row) => row.id),
+  );
   const byId = new Map(orderRows.map((row) => [row.id, row]));
 
   return assignments.flatMap((assignment) => {
     const row = byId.get(assignment.order_id as string);
     if (!row) return [];
-    return [{
-      order: mapOrder(row, itemsByOrder.get(row.id) ?? []),
-      payout: money(assignment.payout_cents as number),
-      payoutRateBps: assignment.payout_rate_bps as number,
-      assignedAt: assignment.assigned_at as string,
-    }];
+
+    const mapped = mapOrder(
+      row,
+      itemsByOrder.get(row.id) ?? [],
+    );
+
+    if (!isBoosterVisiblePaidOrder(mapped)) {
+      return [];
+    }
+
+    return [
+      {
+        order: mapped,
+        payout: money(assignment.payout_cents as number),
+        payoutRateBps: assignment.payout_rate_bps as number,
+        assignedAt: assignment.assigned_at as string,
+      },
+    ];
   });
 }
 
 export async function listActiveBoosterOrders() {
   const rows = await listAssignedOrders();
-  return rows.filter(({ order }) =>
-    ["paid", "queued", "in_progress"].includes(order.status),
+
+  return rows.filter(
+    ({ order }) =>
+      isBoosterVisiblePaidOrder(order) &&
+      ["paid", "queued", "in_progress"].includes(order.status),
   );
 }
 
 export async function listCompletedBoosterOrders() {
   const rows = await listAssignedOrders();
-  return rows.filter(({ order }) => order.status === "completed");
+
+  return rows.filter(
+    ({ order }) =>
+      isBoosterVisiblePaidOrder(order) &&
+      order.status === "completed",
+  );
 }
 
 export async function claimBoosterOrder(orderId: string) {
   await requireBooster();
   const supabase = await createAuthServerClient();
 
-  const { data, error } = await supabase.rpc("claim_order_for_booster", {
-    p_order_id: orderId,
-  });
+  const { data, error } = await supabase.rpc(
+    "claim_order_for_booster",
+    {
+      p_order_id: orderId,
+    },
+  );
 
   if (error) {
-    throw new Error(error.message || "Unable to claim this order.");
+    throw new Error(
+      error.message || "Unable to claim this order.",
+    );
   }
 
   const result = Array.isArray(data) ? data[0] : data;
-  if (!result) throw new Error("Unable to claim this order.");
+
+  if (!result) {
+    throw new Error("Unable to claim this order.");
+  }
 
   return {
     orderId: result.order_id as string,
@@ -221,34 +264,55 @@ export async function claimBoosterOrder(orderId: string) {
   };
 }
 
-export async function getAssignedBoosterOrder(orderId: string) {
+export async function getAssignedBoosterOrder(
+  orderId: string,
+) {
   const booster = await requireBooster();
   const supabase = createSecretServerClient();
 
-  const { data: assignment, error: assignmentError } = await supabase
-    .from("order_booster_assignments")
-    .select("order_id, payout_cents, payout_rate_bps, assigned_at")
-    .eq("order_id", orderId)
-    .eq("booster_id", booster.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  const { data: assignment, error: assignmentError } =
+    await supabase
+      .from("order_booster_assignments")
+      .select(
+        "order_id, payout_cents, payout_rate_bps, assigned_at",
+      )
+      .eq("order_id", orderId)
+      .eq("booster_id", booster.id)
+      .eq("is_active", true)
+      .maybeSingle();
 
-  if (assignmentError) throw new Error("Unable to load booster assignment.");
+  if (assignmentError) {
+    throw new Error("Unable to load booster assignment.");
+  }
+
   if (!assignment) return null;
 
   const { data: row, error } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
     .eq("id", orderId)
+    .eq("payment_status", "paid")
     .maybeSingle();
 
-  if (error) throw new Error("Unable to load assigned order.");
+  if (error) {
+    throw new Error("Unable to load assigned order.");
+  }
+
   if (!row) return null;
 
   const itemsByOrder = await loadItemsByOrderIds([orderId]);
 
+  const mapped = mapOrder(
+    row as unknown as DbOrder,
+    itemsByOrder.get(orderId) ?? [],
+  );
+
+  if (!isBoosterVisiblePaidOrder(mapped)) {
+    return null;
+  }
+
   return {
-    order: mapOrder(row as unknown as DbOrder, itemsByOrder.get(orderId) ?? []),
+    order: mapped,
     payout: money(assignment.payout_cents as number),
     payoutRateBps: assignment.payout_rate_bps as number,
     assignedAt: assignment.assigned_at as string,
@@ -262,18 +326,25 @@ export async function getAssignedBoosterOrderHistory(
   if (!assigned) return [];
 
   const supabase = createSecretServerClient();
+
   const { data, error } = await supabase
     .from("order_status_history")
-    .select("id, from_status, to_status, note, created_at")
+    .select(
+      "id, from_status, to_status, note, created_at",
+    )
     .eq("order_id", orderId)
     .order("created_at", { ascending: true });
 
-  if (error) throw new Error("Unable to load order history.");
+  if (error) {
+    throw new Error("Unable to load order history.");
+  }
 
   return (data ?? []).map((event) => ({
     id: event.id,
-    fromStatus: event.from_status as OrderStatusEvent["fromStatus"],
-    toStatus: event.to_status as OrderStatusEvent["toStatus"],
+    fromStatus:
+      event.from_status as OrderStatusEvent["fromStatus"],
+    toStatus:
+      event.to_status as OrderStatusEvent["toStatus"],
     note: event.note,
     createdAt: event.created_at,
   }));
