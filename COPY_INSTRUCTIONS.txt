@@ -1,13 +1,12 @@
-PHASE 16P13 — Tournament Boost Rank Badge Fix
+PHASE 16P14 — Live Chat Glow Removal
 
 FILES TO REPLACE
-1. src/components/orders/rocket-league-rank.tsx
+1. src/components/dashboard/order-live-chat.tsx
 
 WHAT CHANGED
-- Rocket League rank families stored without a division now render their badge.
-- Example: "grand-champion" now renders the Grand Champion badge and label.
-- Existing values such as grand-champion-1 / grand-champion-2 / grand-champion-3 keep their current I / II / III labels.
-- Supersonic Legend and Unrated behavior is unchanged.
+- Removed the green radial glow from the top/center of the chat message area.
+- Removed the blue radial glow from the bottom-right corner of the chat message area.
+- No chat logic, realtime, permissions, composer, messages, borders, or base backgrounds were changed.
 
 HOW TO APPLY
 Copy the src folder from this ZIP over the project root and allow it to replace the matching file.
@@ -16,4 +15,4 @@ SUPABASE
 No migration required.
 
 RECOMMENDED COMMIT
-fix: render tournament boost rank family badges
+style: remove decorative glows from live order chat
