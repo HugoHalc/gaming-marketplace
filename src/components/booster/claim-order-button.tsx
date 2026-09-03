@@ -8,12 +8,16 @@ export function ClaimOrderButton({
   compact?: boolean;
 }) {
   return (
-    <form action={`/api/booster/orders/${orderId}/claim`} method="post">
+    <form
+      action={`/api/booster/orders/${orderId}/claim`}
+      method="post"
+      className="relative z-10"
+    >
       <button
         type="submit"
-        className={`inline-flex items-center justify-center bg-[#39E56F] font-semibold text-[#050807] transition-colors hover:bg-[#20C95A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/50 ${
+        className={`inline-flex items-center justify-center bg-[#39E56F] font-semibold text-[#050807] shadow-[0_0_0_1px_rgba(57,229,111,0.08)] transition-colors hover:bg-[#55ED82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/50 ${
           compact
-            ? "h-8 rounded-lg px-3 text-[9px]"
+            ? "h-8 min-w-[78px] rounded-lg px-3.5 text-[9px]"
             : "h-10 rounded-xl px-4 text-xs"
         }`}
       >
