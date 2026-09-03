@@ -1,30 +1,29 @@
-PHASE 16Q.1 — Customer Workspace TypeScript Build Fix
+REVERT 16Q — Restore Customer Dashboard to Phase 16P14
 
-APPLY THIS PATCH ON TOP OF PHASE 16Q.
+PURPOSE
+This patch completely removes the Phase 16Q Customer Dashboard Premium Workspace Redesign
+and the subsequent 16Q.1 TypeScript hotfix.
 
-FILES TO REPLACE
-1. src/components/dashboard/customer-order-workspace.tsx
+RESTORED BASELINE
+Phase 16P14 — Live Chat Glow Removal
+Last known READY production deployment before 16Q.
 
-WHAT WAS FIXED
-- Removed invalid comparisons between OrderStatus and operational-only states.
-- Progress timeline now uses only real signals available to this workspace:
-  Payment: paymentStatus
-  Assignment: real boosterAssignment
-  In Progress: order status / order status history
-  Completed: order status / order status history
-- Next-action copy now uses only valid OrderStatus values plus real booster assignment state.
-- No visual redesign was reverted.
-- No API, database, RLS, realtime, checkout, chat, payment or lifecycle logic was changed.
+FILES RESTORED
+1. src/app/dashboard/page.tsx
+2. src/components/dashboard/dashboard-orders-hub.tsx
+3. src/components/dashboard/customer-order-workspace.tsx
+4. src/components/dashboard/dashboard-shell.tsx
 
-VERCEL ERROR FIXED
-TS2367 in customer-order-workspace.tsx for:
-delivered
-waiting_customer
-issue
-accepted
+IMPORTANT
+- Phase 16P13 Tournament Boost Rank Badge Fix remains intact.
+- Phase 16P14 Live Chat Glow Removal remains intact.
+- Auth, orders, live chat, realtime, payment, secure account access, lifecycle,
+  notifications, booster assignment and unified /dashboard/orders architecture are not reverted.
+- No database/API/RLS changes.
+- No Supabase migration required.
 
-SUPABASE
-No migration required.
+HOW TO APPLY
+Copy the src folder from this ZIP over the project root and replace the matching files.
 
 RECOMMENDED COMMIT
-fix: correct customer workspace status typing after 16Q redesign
+revert: remove phase 16Q customer dashboard redesign
