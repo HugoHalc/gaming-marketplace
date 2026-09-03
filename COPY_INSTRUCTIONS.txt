@@ -1,13 +1,15 @@
-BOOSTINGPEDIA — PHASE 16P2
-CHAT MESSAGE SHADOW REMOVAL
+BOOSTINGPEDIA — REALTIME CHAT FIX
 
-REPLACE:
+Replace only this file in your current GitHub project:
+
 src/components/dashboard/order-live-chat.tsx
 
-Change:
-- removes per-message bubble shadow only
-- keeps chat box, bubble colors, borders, realtime logic and composer unchanged
+What this fixes:
+- Authenticates Supabase Realtime with the active user session before subscribing.
+- Receives new order chat INSERT events without manually refreshing the page.
+- Refreshes messages immediately after the realtime subscription becomes active.
+- Refreshes when the browser tab becomes visible again.
+- Uses a 5-second fallback only if Realtime is unavailable.
+- Preserves the participant name, timezone, online/last-seen UI from the previous patch.
 
-NO Supabase migration.
-Suggested commit:
-Phase 16P2 - Remove Chat Message Shadows
+No Supabase migration is required for this fix.

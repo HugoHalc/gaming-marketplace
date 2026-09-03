@@ -233,45 +233,83 @@ export function OrderLiveChat({
 
   useEffect(() => {
     const supabase = createAuthBrowserClient();
+    let active = true;
     let fallbackTimer: number | null = null;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const channel = supabase
-      .channel(`order-chat:${orderId}:${currentUserId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "order_messages",
-          filter: `order_id=eq.${orderId}`,
-        },
-        () => {
-          void refreshLatest();
-        },
-      )
-      .subscribe((status) => {
-        if (
-          status === "CHANNEL_ERROR" ||
-          status === "TIMED_OUT" ||
-          status === "CLOSED"
-        ) {
-          if (fallbackTimer === null) {
-            fallbackTimer = window.setInterval(() => void refreshLatest(), 30000);
-          }
-        }
+    const startFallback = () => {
+      if (fallbackTimer !== null) return;
+      fallbackTimer = window.setInterval(() => void refreshLatest(), 5_000);
+    };
 
-        if (status === "SUBSCRIBED" && fallbackTimer !== null) {
-          window.clearInterval(fallbackTimer);
-          fallbackTimer = null;
-        }
-      });
+    const stopFallback = () => {
+      if (fallbackTimer === null) return;
+      window.clearInterval(fallbackTimer);
+      fallbackTimer = null;
+    };
 
-    return () => {
-      if (fallbackTimer !== null) {
-        window.clearInterval(fallbackTimer);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshLatest();
+      }
+    };
+
+    const subscribe = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (!active) return;
+
+      const accessToken = data.session?.access_token;
+      if (error || !accessToken) {
+        startFallback();
+        return;
       }
 
-      void supabase.removeChannel(channel);
+      supabase.realtime.setAuth(accessToken);
+
+      channel = supabase
+        .channel(`order-chat:${orderId}:${currentUserId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "order_messages",
+            filter: `order_id=eq.${orderId}`,
+          },
+          () => {
+            void refreshLatest();
+          },
+        )
+        .subscribe((status) => {
+          if (!active) return;
+
+          if (status === "SUBSCRIBED") {
+            stopFallback();
+            void refreshLatest();
+            return;
+          }
+
+          if (
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT" ||
+            status === "CLOSED"
+          ) {
+            startFallback();
+          }
+        });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    void subscribe();
+
+    return () => {
+      active = false;
+      stopFallback();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+      if (channel) {
+        void supabase.removeChannel(channel);
+      }
     };
   }, [currentUserId, orderId, refreshLatest]);
 
