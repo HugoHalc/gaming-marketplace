@@ -96,7 +96,7 @@ export async function SiteHeader() {
                   ) : null}
                 </Link>
 
-                <div className="hidden sm:block">
+                <div className="hidden items-center gap-2 sm:flex">
                   <AccountDrawer
                     displayName={
                       identity.profile?.gamer_tag ||

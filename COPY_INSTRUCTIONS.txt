@@ -1,17 +1,14 @@
-BOOSTINGPEDIA — MOBILE MENU SAFARI HOTFIX
+BOOSTINGPEDIA — DESKTOP AVATAR / MENU ALIGNMENT HOTFIX
 
 1. Replace:
-src/components/marketing/mobile-site-menu.tsx
+src/components/marketing/site-header.tsx
 
-2. No other file changes.
-3. No Supabase migration.
+2. No Supabase migration.
 
 Suggested commit:
-Fix mobile menu viewport clipping
+Fix desktop account controls alignment
 
-Verify on iPhone Safari:
-- open hamburger
-- drawer covers full visible viewport
-- menu scrolls internally
-- Home behind it does not scroll
-- X and overlay close correctly
+Verify desktop:
+- notification bell, avatar and Menu sit on one horizontal line
+- avatar no longer appears above Menu
+- mobile hamburger/drawer behavior remains unchanged
