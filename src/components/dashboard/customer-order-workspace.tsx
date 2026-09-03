@@ -1,17 +1,20 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowLeft,
   ArrowRight,
-  Bell,
   Check,
-  ChevronRight,
+  Clock3,
   CreditCard,
-  Gamepad2,
-  UsersRound,
+  MessageSquare,
+  ShieldCheck,
+  UserRound,
 } from "lucide-react";
-import type { OrderRecord, OrderStatusEvent } from "@/features/orders/types/orders";
+import type {
+  OrderRecord,
+  OrderStatusEvent,
+} from "@/features/orders/types/orders";
 import type {
   OrderBoosterAssignment,
   OrderWorkspaceMessage,
@@ -20,105 +23,10 @@ import { OrderStatusBadge } from "@/features/orders/components/order-status-badg
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
-
-const rankAssets: Record<string, string> = {
-  bronze: "/ranks/rocket-league/bronze.png",
-  silver: "/ranks/rocket-league/silver.png",
-  gold: "/ranks/rocket-league/gold.png",
-  platinum: "/ranks/rocket-league/platinum.png",
-  diamond: "/ranks/rocket-league/diamond.png",
-  champion: "/ranks/rocket-league/champion.png",
-  "grand-champion": "/ranks/rocket-league/grand-champion.png",
-  "supersonic-legend": "/ranks/rocket-league/supersonic-legend.png",
-};
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
-}
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
-function formatLabel(value: string) {
-  return value.replace(/([A-Z])/g, " $1").replace(/[_-]/g, " ").replace(/^./, (letter) => letter.toUpperCase());
-}
-function formatValue(value: string | number | boolean) {
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  if (value === "play-with-booster") return "Play With Booster";
-  if (value === "account") return "Account Boost";
-  return String(value).split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
-}
-function rankFamily(value: string) {
-  if (value === "supersonic-legend") return value;
-  return value.replace(/-\d$/, "");
-}
-function rankLabel(value: string) {
-  if (value === "unrated") return "Unrated";
-  if (value === "supersonic-legend") return "Supersonic Legend";
-  const tier = value.match(/-(\d)$/)?.[1];
-  const family = rankFamily(value).split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
-  const roman = tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : "";
-  return `${family}${roman ? ` ${roman}` : ""}`;
-}
-function isResolvableRank(value: unknown): value is string {
-  if (typeof value !== "string") return false;
-  if (value === "unrated" || value === "supersonic-legend") return true;
-  return Boolean(rankAssets[rankFamily(value)] && /-\d$/.test(value));
-}
-
-function RankEditorial({ rank, label }: { rank: string; label: string }) {
-  const asset = rankAssets[rankFamily(rank)];
-  return (
-    <div className="flex items-center gap-3">
-      {asset ? (
-        <Image src={asset} alt="" width={52} height={52} className="size-12 object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,.42)]" />
-      ) : (
-        <span className="grid size-12 place-items-center rounded-full border border-white/[0.08] text-[10px] font-bold text-[#667069]">?</span>
-      )}
-      <div>
-        <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-[#667069]">{label}</p>
-        <p className="font-gaming-value mt-0.5 text-lg font-bold text-[#F4F7F5]">{rankLabel(rank)}</p>
-      </div>
-    </div>
-  );
-}
-
-function Progression({ order }: { order: OrderRecord }) {
-  const config = order.items[0]?.configuration ?? {};
-  const currentValue = typeof config.currentRank !== "undefined" ? config.currentRank : config.previousRank;
-  const targetValue = config.targetRank;
-  const current = isResolvableRank(currentValue) ? currentValue : null;
-  const target = isResolvableRank(targetValue) ? targetValue : null;
-  const wins = typeof config.wins === "number" ? config.wins : null;
-  const matches = typeof config.matches === "number" ? config.matches : null;
-
-  if (current && target) {
-    return (
-      <div className="mt-5 flex flex-wrap items-center gap-5 sm:gap-7">
-        <RankEditorial rank={current} label="Current" />
-        <ArrowRight className="size-4 text-blue-200/40" />
-        <RankEditorial rank={target} label="Target" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-5 flex flex-wrap items-center gap-8">
-      {current ? <RankEditorial rank={current} label="Rank context" /> : null}
-      {wins !== null || matches !== null ? (
-        <div>
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-[#667069]">{matches !== null ? "Placement Matches" : "Wins Selected"}</p>
-          <p className="font-gaming-value mt-1 text-3xl font-bold text-[#F4F7F5]">{matches ?? wins}</p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
+import {
+  resolveRocketLeagueRank,
+  RocketLeagueRankValue,
+} from "@/components/orders/rocket-league-rank";
 
 interface Props {
   order: OrderRecord;
@@ -135,6 +43,178 @@ interface Props {
   backLabel?: string;
 }
 
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function formatLabel(value: string) {
+  return value
+    .replace(/([A-Z])/g, " $1")
+    .replace(/[_-]/g, " ")
+    .replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function formatValue(value: string | number | boolean) {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (value === "play-with-booster") return "Play With Booster";
+  if (value === "account") return "Account Boost";
+
+  return String(value)
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function ProgressTimeline({
+  history,
+}: {
+  history: OrderStatusEvent[];
+}) {
+  if (!history.length) {
+    return (
+      <p className="mt-3 text-[10px] text-[#667069]">
+        Order progress will appear here as your service moves forward.
+      </p>
+    );
+  }
+
+  const recent = history.slice(-4);
+
+  return (
+    <div className="mt-4 flex min-w-0 items-center overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {recent.map((event, index) => {
+        const current = index === recent.length - 1;
+
+        return (
+          <div key={event.id} className="flex items-center">
+            <div className="flex items-center gap-2">
+              <span
+                className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                  current
+                    ? "border-cyan-300/25 bg-cyan-400/[0.08]"
+                    : "border-white/[0.10] bg-white/[0.015]"
+                }`}
+              >
+                {current ? (
+                  <span className="size-1.5 rounded-full bg-cyan-300" />
+                ) : (
+                  <Check className="size-2.5 text-[#82F5A4]/65" />
+                )}
+              </span>
+
+              <div>
+                <p
+                  className={`whitespace-nowrap text-[10px] font-medium ${
+                    current ? "text-cyan-100" : "text-[#A0AAA4]"
+                  }`}
+                >
+                  {formatLabel(event.toStatus)}
+                </p>
+                {current ? (
+                  <p className="mt-0.5 whitespace-nowrap text-[8px] text-[#667069]">
+                    Current status
+                  </p>
+                ) : null}
+              </div>
+            </div>
+
+            {index < recent.length - 1 ? (
+              <span className="mx-4 h-px w-10 shrink-0 bg-white/[0.07]" />
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ConfigurationSection({
+  order,
+}: {
+  order: OrderRecord;
+}) {
+  const item = order.items[0];
+  if (!item) return null;
+
+  const config = item.configuration;
+  const currentValue =
+    typeof config.currentRank !== "undefined"
+      ? config.currentRank
+      : config.previousRank;
+  const targetValue = config.targetRank;
+
+  const rows = Object.entries(config).filter(
+    ([key]) =>
+      key !== "currentRank" &&
+      key !== "previousRank" &&
+      key !== "targetRank",
+  );
+
+  const currentRank = resolveRocketLeagueRank(currentValue);
+  const targetRank = resolveRocketLeagueRank(targetValue);
+
+  return (
+    <section className="border-t border-white/[0.05] pt-5">
+      <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+        Configuration
+      </h2>
+
+      <div className="mt-3 divide-y divide-white/[0.05] border-y border-white/[0.05]">
+        {currentRank ? (
+          <div className="flex items-center justify-between gap-4 py-3">
+            <span className="text-[10px] text-[#667069]">
+              Current Rank
+            </span>
+            <RocketLeagueRankValue
+              value={currentValue}
+              size="sm"
+            />
+          </div>
+        ) : null}
+
+        {targetRank ? (
+          <div className="flex items-center justify-between gap-4 py-3">
+            <span className="text-[10px] text-[#667069]">
+              Target Rank
+            </span>
+            <RocketLeagueRankValue
+              value={targetValue}
+              size="sm"
+            />
+          </div>
+        ) : null}
+
+        {rows.map(([key, value]) => (
+          <div
+            key={key}
+            className="grid grid-cols-[minmax(120px,.72fr)_minmax(0,1.28fr)] gap-4 py-3"
+          >
+            <span className="text-[10px] text-[#667069]">
+              {formatLabel(key)}
+            </span>
+            <span className="text-right text-[10px] font-semibold text-[#F4F7F5]">
+              {formatValue(value)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CustomerOrderWorkspace({
   order,
   history,
@@ -144,155 +224,304 @@ export function CustomerOrderWorkspace({
   currentUserRole,
   initialMessages,
   boosterAssignment,
-  mode = "customer",
-  boosterPayout,
   backHref = "/dashboard/orders",
-  backLabel = "Back to orders",
+  backLabel = "Orders",
 }: Props) {
   const item = order.items[0];
-  const isBoosterMode = mode === "booster";
+  const config = item?.configuration ?? {};
+
+  const currentValue =
+    typeof config.currentRank !== "undefined"
+      ? config.currentRank
+      : config.previousRank;
+  const targetValue = config.targetRank;
+
+  const currentRank = resolveRocketLeagueRank(currentValue);
+  const targetRank = resolveRocketLeagueRank(targetValue);
+
+  const suggestedPlatform =
+    typeof config.platform === "string"
+      ? config.platform
+      : undefined;
+
   const canPay =
-    !isBoosterMode &&
     order.status === "pending_payment" &&
     order.paymentStatus !== "paid";
-  const isCustomerOwner = !isBoosterMode && currentUserRole === "customer";
-  const canManageOperations = isBoosterMode || currentUserRole === "admin";
-  const suggestedPlatform =
-    typeof item?.configuration?.platform === "string"
-      ? item.configuration.platform
-      : undefined;
-  const displayAmount =
-    isBoosterMode && typeof boosterPayout === "number"
-      ? boosterPayout
-      : order.total;
+
+  const isCustomerOwner = currentUserRole === "customer";
 
   return (
     <div className="mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <Link href={backHref} className="text-xs font-medium text-[#A0AAA4] hover:text-[#F4F7F5]">← {backLabel}</Link>
+      <div className="flex items-center justify-between gap-4 border-b border-white/[0.05] pb-3">
+        <Link
+          href={backHref}
+          className="inline-flex items-center text-[10px] font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
+        >
+          <ArrowLeft className="mr-1.5 size-3.5" />
+          {backLabel}
+        </Link>
 
-      {checkoutState === "success" ? <div className="mt-4 border-y border-[#39E56F]/15 py-3 text-sm text-[#82F5A4]">Payment submitted successfully. Stripe is confirming the payment.</div> : null}
-      {checkoutState === "cancelled" ? <div className="mt-4 border-y border-amber-300/15 py-3 text-sm text-amber-100">Checkout was cancelled. Your order is still saved.</div> : null}
-      {paymentError ? <div className="mt-4 border-y border-rose-300/15 py-3 text-sm text-rose-100">We could not start secure checkout. Please try again.</div> : null}
+        <span className="font-gaming-value text-[9px] text-[#667069]">
+          {order.orderNumber}
+        </span>
+      </div>
 
-      <div className="mt-4 grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(330px,32%)]">
+      {checkoutState === "success" ? (
+        <div className="mt-4 border-y border-[#39E56F]/15 py-3 text-[11px] text-[#82F5A4]">
+          Payment submitted successfully. Stripe is confirming the payment.
+        </div>
+      ) : null}
+
+      {checkoutState === "cancelled" ? (
+        <div className="mt-4 border-y border-amber-300/15 py-3 text-[11px] text-amber-100">
+          Checkout was cancelled. Your order is still saved.
+        </div>
+      ) : null}
+
+      {paymentError ? (
+        <div className="mt-4 border-y border-rose-300/15 py-3 text-[11px] text-rose-100">
+          We could not start secure checkout. Please try again.
+        </div>
+      ) : null}
+
+      <header className="flex flex-col gap-5 py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <p className="font-gaming-label text-[9px] uppercase tracking-[0.14em] text-blue-200/50">
+            {item?.gameName ?? "Gaming service"}
+          </p>
+
+          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.035em] text-[#F4F7F5]">
+            {item?.serviceName ?? "Customer Order"}
+          </h1>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <OrderStatusBadge status={order.status} />
+            <span className="text-[9px] text-[#667069]">
+              Created {formatDate(order.createdAt)}
+            </span>
+          </div>
+        </div>
+
+        {(currentRank || targetRank) ? (
+          <div className="flex min-w-0 items-center gap-4 lg:justify-end">
+            {currentRank ? (
+              <RocketLeagueRankValue
+                value={currentValue}
+                label="Current"
+                size="lg"
+              />
+            ) : null}
+
+            {currentRank && targetRank ? (
+              <ArrowRight className="size-4 shrink-0 text-blue-200/30" />
+            ) : null}
+
+            {targetRank ? (
+              <RocketLeagueRankValue
+                value={targetValue}
+                label="Target"
+                size="lg"
+              />
+            ) : null}
+          </div>
+        ) : null}
+      </header>
+
+      <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
         <main className="min-w-0">
-          <header className="border-b border-white/[0.06] pb-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.03] text-blue-200/75">
-                  <Gamepad2 className="size-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="font-gaming-label text-[9px] uppercase tracking-[0.14em] text-blue-200/55">{item?.gameName ?? "Gaming service"}</p>
-                  <h1 className="mt-0.5 truncate text-xl font-semibold text-[#F4F7F5] sm:text-2xl">{item?.serviceName ?? "Customer Order"}</h1>
-                  <p className="font-gaming-value mt-2 text-[11px] text-[#667069]">{order.orderNumber}<span className="mx-2 text-white/[0.16]">·</span><span className="font-sans">Created {formatDate(order.createdAt)}</span></p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-start gap-5 sm:flex-col sm:items-end sm:gap-2">
-                <OrderStatusBadge status={order.status} />
-                <div className="text-right"><p className="text-[9px] text-[#667069]">{isBoosterMode ? "Your payout" : "Total"}</p><p className={`font-gaming-value mt-0.5 text-2xl font-bold ${isBoosterMode ? "text-[#82F5A4]" : "text-[#F4F7F5]"}`}>{formatMoney(displayAmount)}</p></div>
-              </div>
+          <section className="border-t border-white/[0.05] pt-5">
+            <div className="flex items-center gap-2">
+              <Clock3 className="size-3.5 text-[#667069]" />
+              <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+                Progress
+              </h2>
             </div>
-            <Progression order={order} />
-          </header>
 
-          <section className="border-b border-white/[0.06] py-4">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-blue-200/55">Order Progress</p>
-            <div className="mt-3 flex min-w-0 items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {(history.length ? history.slice(-4) : []).map((event, index, list) => (
-                <div key={event.id} className="flex items-center">
-                  <div className="flex items-center gap-2">
-                    <span className={`grid size-5 place-items-center rounded-full border ${index === list.length - 1 ? "border-cyan-300/25 bg-cyan-400/[0.08]" : "border-white/[0.10]"}`}>
-                      {index === list.length - 1 ? <span className="size-1.5 rounded-full bg-cyan-300" /> : <Check className="size-2.5 text-[#A0AAA4]" />}
-                    </span>
-                    <span className="whitespace-nowrap text-[10px] text-[#A0AAA4]">{formatLabel(event.toStatus)}</span>
-                  </div>
-                  {index < list.length - 1 ? <span className="mx-4 h-px w-12 bg-white/[0.08]" /> : null}
-                </div>
-              ))}
-            </div>
+            <ProgressTimeline history={history} />
           </section>
 
-          <div className="py-5">
-            <OrderLiveChat orderId={order.id} currentUserId={currentUserId} initialMessages={initialMessages} />
-          </div>
+          <section className="mt-6 border-t border-white/[0.05] pt-5">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="size-3.5 text-[#667069]" />
+                <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+                  Conversation
+                </h2>
+              </div>
 
-          <section className={`border-t border-white/[0.06] pt-5 ${isBoosterMode ? "" : "grid gap-6 lg:grid-cols-2"}`}>
-            <div>
-              <h2 className="text-sm font-semibold text-[#F4F7F5]">Configuration</h2>
-              <dl className="mt-2 divide-y divide-white/[0.05]">
-                {item ? Object.entries(item.configuration).map(([key, value]) => (
-                  <div key={key} className="grid grid-cols-[minmax(110px,.72fr)_minmax(0,1.28fr)] gap-4 py-3">
-                    <dt className="text-xs text-[#667069]">{formatLabel(key)}</dt>
-                    <dd className="text-right text-xs font-medium text-[#F4F7F5]">{formatValue(value)}</dd>
-                  </div>
-                )) : null}
-              </dl>
+              {boosterAssignment ? (
+                <span className="hidden text-[9px] text-[#667069] sm:block">
+                  Your assigned booster is connected to this order
+                </span>
+              ) : null}
             </div>
 
-            {!isBoosterMode ? (
-              <div>
-                <h2 className="text-sm font-semibold text-[#F4F7F5]">Price breakdown</h2>
-                <div className="mt-2 divide-y divide-white/[0.05]">
-                  {item?.priceBreakdown.map((line, index) => (
-                    <div key={`${line.label}-${index}`} className="flex justify-between gap-4 py-3 text-xs">
-                      <span className="text-[#A0AAA4]">{line.label}</span>
-                      <span className={line.amount < 0 ? "text-[#82F5A4]" : "text-[#F4F7F5]"}>{line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}</span>
-                    </div>
-                  ))}
+            <OrderLiveChat
+              orderId={order.id}
+              currentUserId={currentUserId}
+              initialMessages={initialMessages}
+            />
+          </section>
+
+          <div className="mt-6">
+            <ConfigurationSection order={order} />
+          </div>
+
+          <section className="mt-6 border-t border-white/[0.05] pt-5">
+            <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+              Price Breakdown
+            </h2>
+
+            <div className="mt-3 divide-y divide-white/[0.05] border-y border-white/[0.05]">
+              {item?.priceBreakdown.map((line, index) => (
+                <div
+                  key={`${line.label}-${index}`}
+                  className="flex items-center justify-between gap-4 py-3"
+                >
+                  <span className="text-[10px] text-[#A0AAA4]">
+                    {line.label}
+                  </span>
+                  <span
+                    className={`font-gaming-value text-[11px] font-bold ${
+                      line.amount < 0
+                        ? "text-[#82F5A4]"
+                        : "text-[#F4F7F5]"
+                    }`}
+                  >
+                    {line.amount < 0 ? "−" : ""}
+                    {formatMoney(Math.abs(line.amount))}
+                  </span>
                 </div>
+              ))}
+
+              <div className="flex items-end justify-between gap-4 py-4">
+                <span className="text-[10px] font-semibold text-[#F4F7F5]">
+                  Total
+                </span>
+                <span className="font-gaming-value text-xl font-bold text-[#F4F7F5]">
+                  {formatMoney(order.total)}
+                </span>
               </div>
-            ) : null}
+            </div>
           </section>
         </main>
 
-        <aside className="min-w-0">
-          <div className="overflow-hidden rounded-[1.2rem] border border-white/[0.08] bg-[#0E1411]">
-            <section className="p-5">
-              <div className="flex items-center gap-2.5"><CreditCard className="size-4 text-[#667069]" /><h2 className="text-sm font-semibold text-[#F4F7F5]">Order Details</h2></div>
-              <dl className="mt-4 divide-y divide-white/[0.05]">
-                <div className="flex justify-between gap-4 py-2.5"><dt className="text-[11px] text-[#667069]">Order</dt><dd className="font-gaming-value text-xs text-[#F4F7F5]">{order.orderNumber}</dd></div>
-                <div className="flex justify-between gap-4 py-2.5"><dt className="text-[11px] text-[#667069]">Payment</dt><dd className={`text-[11px] font-semibold ${order.paymentStatus === "paid" ? "text-[#82F5A4]" : "text-[#A0AAA4]"}`}>{order.paymentStatus === "paid" ? "Paid" : order.paymentStatus === "pending" ? "Pending" : "Not completed"}</dd></div>
-                <div className="flex items-end justify-between gap-4 pt-3"><dt className="text-[11px] text-[#667069]">{isBoosterMode ? "Your payout" : "Total"}</dt><dd className={`font-gaming-value text-2xl font-bold ${isBoosterMode ? "text-[#82F5A4]" : "text-[#F4F7F5]"}`}>{formatMoney(displayAmount)}</dd></div>
-              </dl>
-              {canPay ? <form action="/api/checkout" method="post" className="mt-4"><input type="hidden" name="orderId" value={order.id} /><button className="h-11 w-full rounded-xl bg-[#39E56F] text-xs font-semibold text-[#050807] hover:bg-[#20C95A]">Complete secure payment</button></form> : null}
-            </section>
+        <aside className="min-w-0 xl:sticky xl:top-[76px] xl:self-start">
+          <div className="border-y border-white/[0.06]">
+            <section className="py-4">
+              <div className="flex items-center gap-2">
+                <UserRound className="size-3.5 text-[#667069]" />
+                <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                  Booster
+                </h2>
+              </div>
 
-            <div className="h-px bg-white/[0.06]" />
-
-            <section className="p-5">
-              <div className="flex items-center gap-2.5"><UsersRound className="size-4 text-[#667069]" /><h2 className="text-sm font-semibold text-[#F4F7F5]">Booster</h2></div>
               {boosterAssignment ? (
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="grid size-10 place-items-center overflow-hidden rounded-full border border-white/[0.08] bg-[#090D0B] text-xs font-bold text-[#F4F7F5]">
-                    {boosterAssignment.avatarUrl ? <img src={boosterAssignment.avatarUrl} alt="" className="h-full w-full object-cover" /> : boosterAssignment.displayName.slice(0, 2).toUpperCase()}
+                <div className="mt-3 flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.08] bg-[#0E1411] text-[10px] font-bold text-[#F4F7F5]">
+                    {boosterAssignment.avatarUrl ? (
+                      <img
+                        src={boosterAssignment.avatarUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      boosterAssignment.displayName.slice(0, 1).toUpperCase()
+                    )}
                   </span>
-                  <div><p className="text-sm font-semibold text-[#F4F7F5]">{boosterAssignment.displayName}</p><p className="mt-0.5 text-[10px] text-[#667069]">Assigned booster</p></div>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-[#F4F7F5]">
+                      {boosterAssignment.displayName}
+                    </p>
+                    <p className="mt-1 text-[9px] text-[#667069]">
+                      Assigned booster
+                    </p>
+                  </div>
                 </div>
-              ) : <p className="mt-4 text-sm font-semibold text-[#F4F7F5]">Waiting for assignment</p>}
+              ) : (
+                <p className="mt-3 text-[10px] leading-5 text-[#A0AAA4]">
+                  Your assigned booster will appear here once the order is accepted.
+                </p>
+              )}
             </section>
 
-            <div className="h-px bg-white/[0.06]" />
+            <section className="border-t border-white/[0.05] py-4">
+              <div className="flex items-center gap-2">
+                <CreditCard className="size-3.5 text-[#667069]" />
+                <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                  Payment
+                </h2>
+              </div>
 
-            <section className="p-5">
-              <OrderAccountDetails orderId={order.id} canEdit={isCustomerOwner} />
+              <div className="mt-3 flex items-end justify-between gap-4">
+                <div>
+                  <p className="font-gaming-value text-2xl font-bold text-[#F4F7F5]">
+                    {formatMoney(order.total)}
+                  </p>
+                  <p className="mt-1 text-[9px] text-[#667069]">
+                    {order.paymentStatus === "paid"
+                      ? "Stripe confirmed"
+                      : order.paymentStatus === "pending"
+                        ? "Payment pending"
+                        : "Payment not completed"}
+                  </p>
+                </div>
+
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase ${
+                    order.paymentStatus === "paid"
+                      ? "border-[#39E56F]/15 bg-[#39E56F]/[0.05] text-[#82F5A4]"
+                      : "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]"
+                  }`}
+                >
+                  {order.paymentStatus}
+                </span>
+              </div>
+
+              {canPay ? (
+                <form action="/api/checkout" method="post" className="mt-4">
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <button className="h-10 w-full rounded-lg bg-[#39E56F] text-[10px] font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
+                    Complete secure payment
+                  </button>
+                </form>
+              ) : null}
             </section>
 
-            <div className="h-px bg-white/[0.06]" />
+            <section className="border-t border-white/[0.05] py-4">
+              <div className="mb-2 flex items-center gap-2">
+                <ShieldCheck className="size-3.5 text-[#667069]" />
+                <div>
+                  <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                    Secure Account Access
+                  </h2>
+                  <p className="mt-0.5 text-[9px] text-[#667069]">
+                    {boosterAssignment
+                      ? "Share your game login securely with your assigned booster"
+                      : "Available after booster assignment"}
+                  </p>
+                </div>
+              </div>
 
-            <OrderOperationsPanel
-              orderId={order.id}
-              canManage={canManageOperations}
-              suggestedPlatform={suggestedPlatform}
-              orderStatus={order.status}
-            />
+              {boosterAssignment ? (
+                <OrderAccountDetails
+                  orderId={order.id}
+                  canEdit={isCustomerOwner}
+                />
+              ) : null}
+            </section>
+
+            <section className="border-t border-white/[0.05]">
+              <OrderOperationsPanel
+                orderId={order.id}
+                canManage={false}
+                suggestedPlatform={suggestedPlatform}
+                orderStatus={order.status}
+              />
+            </section>
           </div>
-
-          <Link href="/dashboard/notifications" className="group mt-4 flex items-center gap-3 border-t border-white/[0.05] pt-4">
-            <span className="grid size-8 place-items-center text-blue-200/65"><Bell className="size-4" /></span>
-            <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-[#F4F7F5]">Order notifications</span><span className="mt-0.5 block text-[10px] text-[#667069]">Review payment and fulfillment updates</span></span>
-            <ChevronRight className="size-4 text-[#667069] group-hover:text-[#A0AAA4]" />
-          </Link>
         </aside>
       </div>
     </div>
