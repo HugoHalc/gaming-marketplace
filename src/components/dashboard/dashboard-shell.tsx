@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   Bell,
   ChevronRight,
-  Gauge,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -13,7 +12,6 @@ import {
   Shield,
   UserRound,
   X,
-  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -30,6 +28,9 @@ interface DashboardShellProps {
 
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
+  if (href === "/dashboard/orders") {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -67,14 +68,12 @@ function NavigationItem({
   href,
   label,
   icon: Icon,
-  badge,
   onNavigate,
 }: {
   pathname: string;
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  badge?: string | number;
   onNavigate?: () => void;
 }) {
   const active = isActive(pathname, href);
@@ -84,10 +83,10 @@ function NavigationItem({
       href={href}
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
-      className={`group relative flex min-h-11 items-center gap-3 rounded-xl border px-3 text-sm transition-colors ${
+      className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-colors ${
         active
-          ? "border-white/[0.08] bg-[#131B17] text-[#F4F7F5]"
-          : "border-transparent text-[#A0AAA4] hover:bg-[#0E1411] hover:text-[#F4F7F5]"
+          ? "bg-[#131B17] text-[#F4F7F5]"
+          : "text-[#A0AAA4] hover:bg-[#0E1411] hover:text-[#F4F7F5]"
       }`}
     >
       {active ? (
@@ -96,18 +95,13 @@ function NavigationItem({
 
       <Icon
         className={`size-[17px] ${
-          active ? "text-[#82F5A4]" : "text-[#667069] group-hover:text-[#A0AAA4]"
+          active
+            ? "text-[#82F5A4]"
+            : "text-[#667069] group-hover:text-[#A0AAA4]"
         }`}
         strokeWidth={1.8}
       />
-
       <span className="min-w-0 flex-1 truncate">{label}</span>
-
-      {badge ? (
-        <span className="min-w-5 rounded-full bg-[#39E56F]/[0.10] px-1.5 text-center text-[9px] font-bold leading-5 text-[#82F5A4]">
-          {badge}
-        </span>
-      ) : null}
     </Link>
   );
 }
@@ -118,22 +112,17 @@ function SidebarContent({
   email,
   avatarUrl,
   initials,
-  unreadNotifications,
   canAccessBooster,
   canAccessAdmin,
   onNavigate,
-}: Omit<DashboardShellProps, "children"> & {
+}: Omit<DashboardShellProps, "children" | "unreadNotifications"> & {
   pathname: string;
   onNavigate?: () => void;
 }) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="shrink-0 px-5 pb-5 pt-6">
-        <Link
-          href="/"
-          onClick={onNavigate}
-          className="inline-flex items-center gap-2.5"
-        >
+        <Link href="/" onClick={onNavigate} className="inline-flex items-center gap-2.5">
           <img
             src="/brand/boostingpedia-mark.png"
             alt=""
@@ -145,50 +134,46 @@ function SidebarContent({
         </Link>
 
         <p className="font-gaming-label mt-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
-          Account
+          Customer Account
         </p>
       </div>
 
       <nav
         className="min-h-0 flex-1 overflow-y-auto px-3"
-        aria-label="BoostingPedia account navigation"
+        aria-label="Customer navigation"
       >
         <div className="space-y-1">
           <NavigationItem
             pathname={pathname}
             href="/dashboard"
-            label="Orders"
+            label="Dashboard"
             icon={LayoutDashboard}
             onNavigate={onNavigate}
           />
           <NavigationItem
             pathname={pathname}
             href="/dashboard/orders"
-            label="My Orders"
+            label="Orders"
             icon={Package}
             onNavigate={onNavigate}
           />
-          <NavigationItem
-            pathname={pathname}
-            href="/dashboard/notifications"
-            label="Notifications"
-            icon={Bell}
-            badge={
-              unreadNotifications > 0
-                ? unreadNotifications > 9
-                  ? "9+"
-                  : unreadNotifications
-                : undefined
-            }
-            onNavigate={onNavigate}
-          />
         </div>
+
+        <div className="my-4 h-px bg-white/[0.07]" />
+
+        <NavigationItem
+          pathname={pathname}
+          href="/dashboard/profile"
+          label="Account Settings"
+          icon={UserRound}
+          onNavigate={onNavigate}
+        />
 
         {canAccessBooster || canAccessAdmin ? (
           <>
             <div className="my-4 h-px bg-white/[0.07]" />
             <p className="font-gaming-label px-3 pb-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
-              Workspaces
+              Access
             </p>
 
             <div className="space-y-1">
@@ -196,8 +181,8 @@ function SidebarContent({
                 <NavigationItem
                   pathname={pathname}
                   href="/booster"
-                  label="Booster Workspace"
-                  icon={Zap}
+                  label="Booster Account"
+                  icon={LayoutDashboard}
                   onNavigate={onNavigate}
                 />
               ) : null}
@@ -214,16 +199,6 @@ function SidebarContent({
             </div>
           </>
         ) : null}
-
-        <div className="my-4 h-px bg-white/[0.07]" />
-
-        <NavigationItem
-          pathname={pathname}
-          href="/dashboard/profile"
-          label="Account Settings"
-          icon={UserRound}
-          onNavigate={onNavigate}
-        />
       </nav>
 
       <div className="shrink-0 border-t border-white/[0.07] p-3">
@@ -259,10 +234,10 @@ function SidebarContent({
 }
 
 function pageLabel(pathname: string) {
-  if (pathname === "/dashboard") return "Orders";
-  if (pathname.startsWith("/dashboard/orders")) return "My Orders";
-  if (pathname.startsWith("/dashboard/notifications")) return "Notifications";
+  if (pathname === "/dashboard") return "Dashboard";
+  if (pathname.startsWith("/dashboard/orders")) return "Orders";
   if (pathname.startsWith("/dashboard/profile")) return "Account Settings";
+  if (pathname.startsWith("/dashboard/notifications")) return "Notifications";
   return "Dashboard";
 }
 
@@ -310,7 +285,6 @@ export function DashboardShell({
           email={email}
           avatarUrl={avatarUrl}
           initials={initials}
-          unreadNotifications={unreadNotifications}
           canAccessBooster={canAccessBooster}
           canAccessAdmin={canAccessAdmin}
         />
@@ -330,7 +304,7 @@ export function DashboardShell({
 
             <div className="min-w-0">
               <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
-                BoostingPedia
+                Customer Account
               </p>
               <p className="truncate text-sm font-semibold text-[#F4F7F5]">
                 {pageLabel(pathname)}
@@ -339,26 +313,6 @@ export function DashboardShell({
           </div>
 
           <div className="flex items-center gap-2">
-            {canAccessBooster ? (
-              <Link
-                href="/booster"
-                className="hidden h-9 items-center rounded-lg border border-[#39E56F]/15 bg-[#39E56F]/[0.035] px-3 text-[10px] font-semibold text-[#82F5A4] hover:bg-[#39E56F]/[0.07] sm:inline-flex"
-              >
-                <Zap className="mr-2 size-3.5" />
-                Booster
-              </Link>
-            ) : null}
-
-            {canAccessAdmin ? (
-              <Link
-                href="/admin"
-                className="hidden h-9 items-center rounded-lg border border-white/[0.08] px-3 text-[10px] font-semibold text-[#A0AAA4] hover:text-[#F4F7F5] md:inline-flex"
-              >
-                <Gauge className="mr-2 size-3.5" />
-                Admin
-              </Link>
-            ) : null}
-
             <Link
               href="/dashboard/notifications"
               className="relative grid size-10 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4]"
@@ -417,7 +371,6 @@ export function DashboardShell({
             email={email}
             avatarUrl={avatarUrl}
             initials={initials}
-            unreadNotifications={unreadNotifications}
             canAccessBooster={canAccessBooster}
             canAccessAdmin={canAccessAdmin}
             onNavigate={() => setMobileOpen(false)}

@@ -1,37 +1,43 @@
-BOOSTINGPEDIA — PHASE 16J
-LIVE ORDER CHAT PRODUCTION UPGRADE
+BOOSTINGPEDIA — PHASE 16K
+UNIFIED DASHBOARD & ORDERS NAVIGATION
 
-IMPORTANT:
-The Supabase migration was already applied successfully to production.
-DO NOT run it again unless you are setting up another environment.
+1. Copy this ZIP into the project root and replace/add included files.
 
-1. Copy this ZIP into the project root.
-2. Replace/add the included files.
-3. Commit and push:
+2. No manual code edits are required.
+Legacy `/booster?view=active|completed` links automatically redirect to the new Orders route.
 
-Phase 16J - Live Order Chat Production Upgrade
+3. No Supabase migration.
 
-4. Let Vercel deploy.
+4. Commit / push:
 
-TEST WITH TWO SESSIONS:
-- customer session
-- assigned booster session
+Phase 16K - Unified Dashboard Orders Navigation
 
-Verify:
-- no chat composer before booster assignment
-- booster name/avatar appears after assignment
-- customer -> booster message appears without reload
-- booster -> customer message appears without reload
-- Enter sends on desktop
-- Shift+Enter creates newline
-- message failure preserves draft and shows Retry
-- scrolling upward is not interrupted by new messages
-- New messages button appears while reading older history
-- Load earlier messages works
-- unauthorized order chat URL/API cannot be read
-- Discord/WhatsApp/etc. message still sends but is logged for review
-- passwords are never placed into chat by Secure Account Access
+5. Verify:
+
+CUSTOMER
+/dashboard
+- overview only
+- Dashboard selected in navigation
+
+/dashboard/orders
+- full customer order list
+- Orders selected
+
+BOOSTER
+/booster
+- booster overview
+- Dashboard selected
+
+/booster/orders
+- marketplace / active / completed filters
+- Orders selected
+
+Operational navigation should no longer expose:
+- My Orders
+- Booster Workspace
+- Available Orders as a menu destination
+- My Active Orders as a menu destination
 
 No pricing changes.
 No payout changes.
-No order lifecycle changes.
+No database changes.
