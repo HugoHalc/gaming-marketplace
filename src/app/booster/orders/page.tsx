@@ -142,9 +142,14 @@ export default async function BoosterOrdersPage({
                     </span>
                   </div>
 
-                  <span className="font-gaming-value text-sm font-bold text-[#82F5A4]">
-                    {formatMoney(payout)}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2.5">
+                    <span className="font-gaming-value text-sm font-bold text-[#82F5A4]">
+                      {formatMoney(payout)}
+                    </span>
+                    {view === "available" ? (
+                      <ClaimOrderButton orderId={order.id} compact />
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="p-4">
@@ -232,7 +237,9 @@ export default async function BoosterOrdersPage({
                     </div>
 
                     {view === "available" ? (
-                      <ClaimOrderButton orderId={order.id} />
+                      <span className="text-[9px] font-medium text-[#82F5A4]">
+                        Available to accept
+                      </span>
                     ) : (
                       <Link
                         href={`/booster/orders/${order.id}`}

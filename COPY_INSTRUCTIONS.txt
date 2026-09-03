@@ -1,18 +1,16 @@
-BoostingPedia — Phase 16P8
-Booster Evidence Input Visibility Fix
+PHASE 16P9 — Booster Available Order Accept CTA
 
-Commit recomendado:
-fix: use server-authorized booster permissions for evidence controls
+Copy the included src/ folder over the repository root, preserving paths and replacing the existing files.
 
-Archivos a reemplazar:
-1. src/components/dashboard/order-operations-panel.tsx
+Modified files:
+- src/app/booster/orders/page.tsx
+- src/components/booster/claim-order-button.tsx
 
-Qué corrige:
-- Start Order Screenshot vuelve a mostrar el input al booster asignado.
-- Deliver Order Screenshot vuelve a mostrar el input al booster asignado.
-- El permiso visual ahora usa state.canManage devuelto por el backend de la orden.
-- El cliente continúa en modo solo lectura.
-- Admin conserva capacidad de gestión cuando el backend lo autoriza.
-- No cambia la seguridad del endpoint: guardar evidencia sigue requiriendo booster asignado o admin.
+Behavior:
+- Available orders show a prominent Accept button in the card header next to the payout.
+- The existing secure claim endpoint/RPC is reused.
+- Active/completed order behavior is unchanged.
+- No Supabase migration is required.
 
-No requiere migración de Supabase.
+Recommended commit:
+feat: surface accept action on available booster orders
