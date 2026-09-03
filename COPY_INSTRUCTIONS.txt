@@ -1,34 +1,54 @@
-BOOSTINGPEDIA — PHASE 16M
-BOOSTER ORDER WORKSPACE FINAL UX POLISH
+BOOSTINGPEDIA — PHASE 16M.1
+SECURE ACCOUNT ACCESS HOTFIX
 
-1. Copy ZIP into project root.
-2. Replace:
-src/components/booster/booster-order-workspace.tsx
+PART A — REPLACE THE VERCEL SECRET
 
-3. No Supabase migration.
+In Windows PowerShell generate a fresh 32-byte key LOCALLY:
 
-4. Commit / push:
+$bytes = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
 
-Phase 16M - Booster Order Workspace Final UX Polish
+Copy ONLY the resulting Base64 string.
 
-VERIFY:
-/booster/orders/[id]
+In Vercel:
+Project -> Settings -> Environment Variables
 
-Desktop:
-- service header feels open, not boxed
-- Current → Target uses real Rocket League badges
-- chat dominates the left workspace
-- payout/order/security/operations stay in right rail
-- back button returns to /booster/orders?view=active
-- no customer total is exposed as booster payout
-- configuration excludes duplicate Current/Target rows
-- recent activity stays compact
+Replace:
+BOOSTINGPEDIA_CREDENTIALS_KEY
 
-Mobile:
-- service and progression stack cleanly
-- chat remains usable
-- operations appear below the main workspace
+Use the generated value WITHOUT quotes and WITHOUT spaces.
 
-No DB changes.
-No pricing changes.
-No payout changes.
+Apply it to Production (and Preview/Development too if those environments use Secure Account Access).
+
+Do not paste the secret into ChatGPT, GitHub, source code, screenshots, commits, or documentation.
+
+PART B — APPLY CODE HOTFIX
+
+Replace/add the ZIP files.
+
+No Supabase migration.
+
+Commit:
+Phase 16M.1 - Fix Secure Account Access Encryption
+
+Push and redeploy AFTER updating the Vercel variable.
+
+TEST
+
+As customer:
+1. Open an assigned order.
+2. Secure Account Access / Account Details.
+3. Save account email + password.
+4. Refresh.
+5. Confirm state shows credentials saved.
+
+As assigned booster:
+6. Open the same order.
+7. Reveal/access credentials.
+8. Confirm the exact values decrypt correctly.
+
+Expected:
+- customer can save
+- booster can reveal
+- client never sees BOOSTINGPEDIA_CREDENTIALS_KEY or crypto implementation errors

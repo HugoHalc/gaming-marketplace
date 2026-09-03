@@ -8,16 +8,53 @@ export interface OrderCredentialPayload {
   password: string;
 }
 
-function getEncryptionKey() {
-  const encoded = process.env.BOOSTINGPEDIA_CREDENTIALS_KEY;
-  if (!encoded) {
-    throw new Error("BOOSTINGPEDIA_CREDENTIALS_KEY is not configured.");
+function normalizeConfiguredKey(value: string) {
+  let normalized = value.trim();
+
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
   }
 
-  const key = Buffer.from(encoded, "base64");
-  if (key.length !== 32) {
-    throw new Error("BOOSTINGPEDIA_CREDENTIALS_KEY must decode to exactly 32 bytes.");
+  return normalized;
+}
+
+function decodeConfiguredKey(value: string) {
+  const normalized = normalizeConfiguredKey(value);
+
+  // Accept a 64-character hex key as a safe operational fallback.
+  if (/^[0-9a-f]{64}$/i.test(normalized)) {
+    return Buffer.from(normalized, "hex");
   }
+
+  // Accept standard Base64 and Base64URL forms, ignoring accidental whitespace.
+  const base64 = normalized
+    .replace(/\s+/g, "")
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const padding = base64.length % 4;
+  const padded =
+    padding === 0 ? base64 : `${base64}${"=".repeat(4 - padding)}`;
+
+  return Buffer.from(padded, "base64");
+}
+
+function getEncryptionKey() {
+  const configured = process.env.BOOSTINGPEDIA_CREDENTIALS_KEY;
+
+  if (!configured) {
+    throw new Error("Credentials encryption key is not configured.");
+  }
+
+  const key = decodeConfiguredKey(configured);
+
+  if (key.length !== 32) {
+    throw new Error("Credentials encryption key is invalid.");
+  }
+
   return key;
 }
 
@@ -52,6 +89,7 @@ export function decryptOrderCredentials(input: {
     getEncryptionKey(),
     Buffer.from(input.iv, "base64"),
   );
+
   decipher.setAuthTag(Buffer.from(input.authTag, "base64"));
 
   const plaintext = Buffer.concat([
@@ -59,8 +97,14 @@ export function decryptOrderCredentials(input: {
     decipher.final(),
   ]);
 
-  const parsed = JSON.parse(plaintext.toString("utf8")) as Partial<OrderCredentialPayload>;
-  if (typeof parsed.accountEmail !== "string" || typeof parsed.password !== "string") {
+  const parsed = JSON.parse(
+    plaintext.toString("utf8"),
+  ) as Partial<OrderCredentialPayload>;
+
+  if (
+    typeof parsed.accountEmail !== "string" ||
+    typeof parsed.password !== "string"
+  ) {
     throw new Error("Invalid credential payload.");
   }
 

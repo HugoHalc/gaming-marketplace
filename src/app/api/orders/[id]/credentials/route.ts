@@ -7,6 +7,33 @@ import {
 
 export const dynamic = "force-dynamic";
 
+function safeCredentialError(error: unknown, action: "load" | "save") {
+  const message = error instanceof Error ? error.message : "";
+
+  const safeMessages = new Set([
+    "Enter a valid account email.",
+    "Enter a valid password.",
+    "Only the customer who owns this order can update credentials.",
+    "Order not found.",
+    "Order access denied.",
+  ]);
+
+  if (safeMessages.has(message)) {
+    return { message, status: 400 };
+  }
+
+  console.error(
+    `[secure-account-access] Unable to ${action} credentials`,
+    error,
+  );
+
+  return {
+    message:
+      "Secure Account Access is temporarily unavailable. Please try again shortly.",
+    status: 500,
+  };
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -20,14 +47,17 @@ export async function GET(
     }
 
     const credentials = await revealOrderCredentials(id);
+
     return NextResponse.json({
       hasCredentials: Boolean(credentials),
       credentials,
     });
   } catch (error) {
+    const safe = safeCredentialError(error, "load");
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to load credentials." },
-      { status: 403 },
+      { error: safe.message },
+      { status: safe.status },
     );
   }
 }
@@ -60,9 +90,11 @@ export async function POST(
 
     return NextResponse.json({ saved: true });
   } catch (error) {
+    const safe = safeCredentialError(error, "save");
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to save credentials." },
-      { status: 400 },
+      { error: safe.message },
+      { status: safe.status },
     );
   }
 }
