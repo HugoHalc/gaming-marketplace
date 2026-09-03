@@ -1,18 +1,22 @@
-PHASE 16P14 — Live Chat Glow Removal
+PHASE 16Q — Customer Dashboard Premium Workspace Redesign
 
 FILES TO REPLACE
-1. src/components/dashboard/order-live-chat.tsx
+- src/app/dashboard/page.tsx
+- src/components/dashboard/dashboard-orders-hub.tsx
+- src/components/dashboard/customer-order-workspace.tsx
+- src/components/dashboard/dashboard-shell.tsx
 
-WHAT CHANGED
-- Removed the green radial glow from the top/center of the chat message area.
-- Removed the blue radial glow from the bottom-right corner of the chat message area.
-- No chat logic, realtime, permissions, composer, messages, borders, or base backgrounds were changed.
+SCOPE
+Visual hierarchy, typography, density and information architecture only.
+No Supabase migration. No API/RLS/database changes.
 
-HOW TO APPLY
-Copy the src folder from this ZIP over the project root and allow it to replace the matching file.
-
-SUPABASE
-No migration required.
+KEY CHANGES
+- Dashboard overview: stronger active-service panel, real rank assets, compact real-state timeline, Recent Orders.
+- Orders center: compact game filter, tab filters, desktop list as default, premium operational rows, grid retained.
+- Order workspace: internal Overview / Chat / Evidence / Details tabs using existing components/data.
+- Chat gets near-full-height workspace presentation.
+- Sticky sidebar stays single-surface with booster, payment, secure access and trust microcopy.
+- Global dashboard typography/readability pass.
 
 RECOMMENDED COMMIT
-style: remove decorative glows from live order chat
+feat: redesign customer dashboard into premium order workspace

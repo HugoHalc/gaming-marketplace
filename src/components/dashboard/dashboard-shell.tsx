@@ -133,7 +133,7 @@ function SidebarContent({
           </span>
         </Link>
 
-        <p className="font-gaming-label mt-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
+        <p className="font-gaming-label mt-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
           Customer Account
         </p>
       </div>
@@ -212,7 +212,7 @@ function SidebarContent({
             <span className="block truncate text-xs font-semibold text-[#F4F7F5]">
               {displayName}
             </span>
-            <span className="mt-0.5 block truncate text-[10px] text-[#667069]">
+            <span className="mt-0.5 block truncate text-[11px] text-[#737E78]">
               {email}
             </span>
           </span>
@@ -222,7 +222,7 @@ function SidebarContent({
         <form action="/auth/signout" method="post" className="mt-1">
           <button
             type="submit"
-            className="group flex h-10 w-full items-center gap-3 rounded-xl px-3 text-left text-xs text-[#A0AAA4] transition-colors hover:bg-rose-400/[0.04] hover:text-rose-200/90"
+            className="group flex h-10 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] text-[#A0AAA4] transition-colors hover:bg-rose-400/[0.04] hover:text-rose-200/90"
           >
             <LogOut className="size-4 text-[#667069]" strokeWidth={1.8} />
             Log out
@@ -303,10 +303,10 @@ export function DashboardShell({
             </button>
 
             <div className="min-w-0">
-              <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
                 Customer Account
               </p>
-              <p className="truncate text-sm font-semibold text-[#F4F7F5]">
+              <p className="truncate text-[14px] font-semibold text-[#F4F7F5]">
                 {pageLabel(pathname)}
               </p>
             </div>
