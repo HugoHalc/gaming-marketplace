@@ -266,6 +266,7 @@ export function OrderOperationsPanel({
   }
 
   const operational = state?.operationalState;
+  const effectiveCanManage = state?.canManage ?? canManage;
 
   return (
     <>
@@ -298,7 +299,7 @@ export function OrderOperationsPanel({
         </div>
         <p className="mt-2 text-[10px] leading-4 text-[#667069]">Record the customer's platform identity for operational history.</p>
 
-        {canManage ? (
+        {effectiveCanManage ? (
           <div className="mt-4 space-y-2">
             <input value={platform} onChange={(e) => setPlatform(e.target.value)} placeholder="Platform (Epic Games, Steam, PSN...)" maxLength={80} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
             <input value={playerId} onChange={(e) => setPlayerId(e.target.value)} placeholder="Player ID / Account ID" maxLength={160} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
@@ -324,13 +325,13 @@ export function OrderOperationsPanel({
 
       <div className="h-px bg-white/[0.06]" />
 
-      <EvidenceSection title="Start Order Screenshot" description="Paste an HTTPS image link. No image file is uploaded to BoostingPedia." type="start" evidence={state?.startEvidence ?? null} canManage={canManage} onSaved={saveEvidence} />
+      <EvidenceSection title="Start Order Screenshot" description="Paste an HTTPS image link. No image file is uploaded to BoostingPedia." type="start" evidence={state?.startEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
 
       <div className="h-px bg-white/[0.06]" />
 
-      <EvidenceSection title="Deliver Order Screenshot" description="Paste the final proof link before marking the order Delivered." type="delivery" evidence={state?.deliveryEvidence ?? null} canManage={canManage} onSaved={saveEvidence} />
+      <EvidenceSection title="Deliver Order Screenshot" description="Paste the final proof link before marking the order Delivered." type="delivery" evidence={state?.deliveryEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
 
-      {canManage && operational && operational !== "completed" ? (
+      {effectiveCanManage && operational && operational !== "completed" ? (
         <>
           <div className="h-px bg-white/[0.06]" />
           <section className="p-5">
