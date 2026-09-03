@@ -116,10 +116,21 @@ function EvidenceSection({
       {canManage ? (
         <div className="mt-4">
           <input
-            type="url"
+            type="text"
+            inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             value={url}
             onChange={(event) => setUrl(event.target.value)}
-            placeholder="https://i.imgur.com/..."
+            onPaste={(event) => {
+              const pasted = event.clipboardData.getData("text/plain").trim();
+              if (!pasted) return;
+
+              event.preventDefault();
+              setUrl(pasted);
+            }}
+            placeholder="https://imgur.com/... or i.imgur.com/..."
             className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none placeholder:text-[#667069] focus:border-[#39E56F]/35"
           />
           <button

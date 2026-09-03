@@ -281,8 +281,16 @@ export async function saveOrderIntegrity(
 }
 
 function normalizeHttpsUrl(raw: string) {
-  const value = raw.trim();
-  if (!value || value.length > 2048) throw new Error("Enter a valid screenshot URL.");
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed.length > 2048) {
+    throw new Error("Enter a valid screenshot URL.");
+  }
+
+  // Screenshot hosts such as Imgur often copy links without an explicit scheme.
+  // Keep evidence transport HTTPS-only while accepting that common paste format.
+  const value = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
 
   let parsed: URL;
   try {
@@ -291,7 +299,14 @@ function normalizeHttpsUrl(raw: string) {
     throw new Error("Enter a valid screenshot URL.");
   }
 
-  if (parsed.protocol !== "https:") throw new Error("Screenshot links must use HTTPS.");
+  if (parsed.protocol !== "https:") {
+    throw new Error("Screenshot links must use HTTPS.");
+  }
+
+  if (!parsed.hostname || parsed.username || parsed.password) {
+    throw new Error("Enter a valid screenshot URL.");
+  }
+
   return parsed.toString();
 }
 
