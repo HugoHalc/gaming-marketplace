@@ -13,6 +13,7 @@ import { launchGames } from "@/features/catalog/data/launch-games";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 import { AccountDrawer } from "./account-drawer";
+import { MobileSiteMenu } from "./mobile-site-menu";
 
 function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCurrentIdentity>>>) {
   const source =
@@ -38,7 +39,7 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/94 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/88">
       <Container>
-        <div className="relative flex h-[3.9rem] items-center justify-between gap-4 sm:h-16">
+        <div className="relative flex h-[3.9rem] items-center justify-between gap-3 sm:h-16 sm:gap-4">
           <div className="flex min-w-0 items-center gap-7">
             <Logo />
 
@@ -79,12 +80,12 @@ export async function SiteHeader() {
               ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {identity && initials ? (
               <>
                 <Link
                   href="/dashboard/notifications"
-                  className="relative grid size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5]"
+                  className="relative hidden size-10 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:grid"
                   aria-label={unread ? `${unread} unread notifications` : "Notifications"}
                 >
                   <Bell className="size-4" />
@@ -95,23 +96,27 @@ export async function SiteHeader() {
                   ) : null}
                 </Link>
 
-                <AccountDrawer
-                  displayName={
-                    identity.profile?.gamer_tag ||
-                    identity.profile?.full_name ||
-                    "BoostingPedia account"
-                  }
-                  email={identity.email}
-                  avatarUrl={identity.profile?.avatar_url ?? null}
-                  initials={initials}
-                  unread={unread}
-                />
+                <div className="hidden sm:block">
+                  <AccountDrawer
+                    displayName={
+                      identity.profile?.gamer_tag ||
+                      identity.profile?.full_name ||
+                      "BoostingPedia account"
+                    }
+                    email={identity.email}
+                    avatarUrl={identity.profile?.avatar_url ?? null}
+                    initials={initials}
+                    unread={unread}
+                  />
+                </div>
               </>
             ) : (
               <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
                 <Link href="/login">Sign in</Link>
               </Button>
             )}
+
+            <MobileSiteMenu signedIn={Boolean(identity)} />
           </div>
         </div>
 

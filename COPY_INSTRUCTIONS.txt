@@ -1,31 +1,22 @@
-BOOSTINGPEDIA — PHASE 16L
-CUSTOMER + BOOSTER ORDERS UX POLISH
+BOOSTINGPEDIA — MOBILE HOME MENU
 
-1. Copy ZIP into project root.
-2. Replace/add included files.
-3. No Supabase migration.
-4. Commit / push:
+1. Copy ZIP contents into project root.
+2. Replace:
+   src/components/marketing/site-header.tsx
+3. Add:
+   src/components/marketing/mobile-site-menu.tsx
+4. No Supabase migration.
+5. Commit / push:
 
-Phase 16L - Customer Booster Orders UX Polish
+Fix mobile homepage navigation menu
 
-VERIFY:
-
-CUSTOMER
-/dashboard/orders
-- clear All / Placed / In Progress / Delivered / Completed filters
-- Rocket League rank progression uses real rank badges when resolvable
-- unknown/internal rank IDs are not shown as rank names
-- grid and list views remain functional
-- customer sees total, never booster payout
-
-BOOSTER
-/booster/orders
-- Available / In Progress / Completed filters
-- payout remains visible
-- Accept Order remains only on Available
-- Open Order on assigned/completed
-- Rocket League rank badges reused consistently
-
-No pricing changes.
-No payout changes.
-No DB changes.
+VERIFY ON MOBILE:
+- hamburger appears in top header
+- menu opens full-height
+- background page cannot scroll while open
+- X closes menu
+- tapping overlay closes menu
+- Home/Games/How it works/Meet our boosters/FAQ work
+- signed-out shows Sign up / Sign in
+- signed-in shows Dashboard / Orders / Account Settings / Log out
+- desktop header remains unchanged
