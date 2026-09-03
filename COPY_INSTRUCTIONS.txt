@@ -1,25 +1,37 @@
-BOOSTINGPEDIA — PHASE 16G.2 CLAIM HOTFIX
+BOOSTINGPEDIA — PHASE 16J
+LIVE ORDER CHAT PRODUCTION UPGRADE
 
-1. COPY ZIP INTO PROJECT ROOT.
+IMPORTANT:
+The Supabase migration was already applied successfully to production.
+DO NOT run it again unless you are setting up another environment.
 
-2. SUPABASE SQL EDITOR
-Open:
-supabase/migrations/phase_16g2_claim_operational_conflict_hotfix.sql
+1. Copy this ZIP into the project root.
+2. Replace/add the included files.
+3. Commit and push:
 
-Paste ALL SQL and press Run.
+Phase 16J - Live Order Chat Production Upgrade
 
-3. COMMIT / PUSH
+4. Let Vercel deploy.
 
-Suggested commit:
-Phase 16G.2 - Fix Operational Claim Conflict
+TEST WITH TWO SESSIONS:
+- customer session
+- assigned booster session
 
-4. TEST THE SAME AVAILABLE ORDER
+Verify:
+- no chat composer before booster assignment
+- booster name/avatar appears after assignment
+- customer -> booster message appears without reload
+- booster -> customer message appears without reload
+- Enter sends on desktop
+- Shift+Enter creates newline
+- message failure preserves draft and shows Retry
+- scrolling upward is not interrupted by new messages
+- New messages button appears while reading older history
+- Load earlier messages works
+- unauthorized order chat URL/API cannot be read
+- Discord/WhatsApp/etc. message still sends but is logged for review
+- passwords are never placed into chat by Secure Account Access
 
-Expected:
-- Accept Order succeeds
-- order disappears from Available
-- appears in My Active
-- operational state = Accepted
-- payout snapshot is created
-
-No pricing or payout percentage changes.
+No pricing changes.
+No payout changes.
+No order lifecycle changes.
