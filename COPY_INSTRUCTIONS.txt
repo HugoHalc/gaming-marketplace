@@ -1,23 +1,18 @@
-BoostingPedia — Phase 16P11
-Booster Orders Marketplace Redesign
+PHASE 16P12 — UNIFIED DASHBOARD ORDERS ROLE MODE
 
-Replace these files in the repository root, preserving the same paths:
+Replace/add only the files included in this ZIP, preserving the same folder structure.
 
-1. src/app/booster/orders/page.tsx
-2. src/components/booster/claim-order-button.tsx
+What this restores:
+- /dashboard/orders remains the single orders route.
+- Customer mode shows only the customer's own orders and never shows Accept.
+- Booster mode uses /dashboard/orders?mode=booster and shows available/active/completed booster orders.
+- Available booster cards render a real Accept button.
+- After claiming, the order opens at /dashboard/orders/[id]?mode=booster.
+- /dashboard/orders/[id] now renders the correct customer or booster workspace according to authorized mode.
+- Pure booster-role accounts automatically use booster mode on /dashboard/orders.
+- Dual-access accounts can switch between Customer Orders and Booster Orders without reviving /booster/orders.
 
-What changes:
-- Rebuilds Booster > Orders as a marketplace-style order board inspired by the supplied reference.
-- Adds All / Placed / In Progress / Completed tabs with real counts.
-- Adds game sidebar for All Games / Rocket League.
-- Adds functional server-side order search.
-- Adds functional Grid / List view selector through query params.
-- Makes Accept a clear primary action in the header of every unclaimed order card.
-- Keeps existing claim endpoint and server-side authorization/atomic claim logic.
-- Keeps BoostingPedia green/dark visual identity.
-- Does not change pricing, payout logic, database schema, order assignment rules, or Supabase migrations.
+No Supabase migration is required.
 
 Recommended commit:
-feat: redesign booster orders marketplace and surface claim action
-
-No Supabase migration required.
+fix: restore unified dashboard orders role mode and booster claims

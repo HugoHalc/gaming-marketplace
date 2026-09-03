@@ -16,7 +16,7 @@ export async function POST(
 
     if (expectsHtml(request)) {
       return NextResponse.redirect(
-        new URL(`/booster/orders/${id}`, request.url),
+        new URL(`/dashboard/orders/${id}?mode=booster`, request.url),
         { status: 303 },
       );
     }
@@ -27,7 +27,8 @@ export async function POST(
       error instanceof Error ? error.message : "Unable to accept order.";
 
     if (expectsHtml(request)) {
-      const target = new URL("/booster/orders", request.url);
+      const target = new URL("/dashboard/orders", request.url);
+      target.searchParams.set("mode", "booster");
       target.searchParams.set("claimError", message);
       return NextResponse.redirect(target, { status: 303 });
     }
