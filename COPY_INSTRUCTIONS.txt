@@ -1,17 +1,24 @@
-BOOSTINGPEDIA — PHASE 16P5
-Imgur Evidence Link Paste Fix
+PHASE 16P6 — ORDER ITEM VIRTUAL ID FIX
 
-Copy/replace these files in the repository root:
+Commit:
+fix: handle virtual catalog ids when creating orders
 
-1. src/components/dashboard/order-operations-panel.tsx
-2. src/features/orders/server/order-operations-repository.ts
+Copy the included files into the ROOT of the current gaming-marketplace repository, preserving the folder structure and replacing the existing file when prompted.
 
-What changed:
-- Start Order Screenshot and Deliver Order Screenshot fields now accept normal pasted Imgur links reliably.
-- Accepts full HTTPS links such as https://imgur.com/... and https://i.imgur.com/...
-- Also accepts links copied without the scheme, such as imgur.com/... or i.imgur.com/..., and safely normalizes them to HTTPS server-side.
-- HTTP remains rejected; screenshot evidence still requires HTTPS.
-- No Supabase migration is required.
+Modified file:
+- src/features/orders/server/order-repository.ts
 
-Recommended commit:
-fix: allow imgur links in order evidence fields
+What this fixes:
+- Prevents virtual catalog/navigation IDs such as service_rl_tournament_placeholder from being inserted into UUID foreign-key columns.
+- Real UUID game/service IDs are still stored normally.
+- Virtual IDs are stored as NULL only in the optional foreign-key columns, while the order snapshot keeps game name, service name, category, configuration, pricing breakdown and rule-set version.
+- Prevents the customer-facing error: Unable to create order item.
+
+Supabase migration:
+- NOT required.
+
+After copying:
+1. Commit the replacement file.
+2. Push to main.
+3. Let Vercel deploy.
+4. Test creating a customer order again.

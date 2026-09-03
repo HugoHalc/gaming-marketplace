@@ -12,6 +12,12 @@ function cents(amount: number) {
   return Math.round(amount * 100);
 }
 
+function nullableUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    ? value
+    : null;
+}
+
 type DbOrderItem = {
   id: string;
   game_name: string;
@@ -137,8 +143,8 @@ export async function createServerValidatedOrder(input: {
 
   const { error: itemError } = await supabase.from("order_items").insert({
     order_id: order.id,
-    game_id: input.game.id,
-    service_id: input.service.id,
+    game_id: nullableUuid(input.game.id),
+    service_id: nullableUuid(input.service.id),
     game_name: input.game.name,
     service_name: input.service.name,
     service_category: input.service.category,
