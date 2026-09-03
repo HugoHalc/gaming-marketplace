@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, KeyRound, Save } from "lucide-react";
+import { Eye, EyeOff, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface OrderAccountDetailsProps {
@@ -94,25 +94,15 @@ export function OrderAccountDetails({
 
   return (
     <div>
-      <div className="flex items-center gap-2.5">
-        <KeyRound className="size-4 text-[#667069]" strokeWidth={1.8} />
-        <h2 className="text-sm font-semibold text-[#F4F7F5]">Account Details</h2>
-      </div>
-
       {loading ? (
-        <p className="mt-4 text-[11px] text-[#667069]">Loading secure details…</p>
+        <p className="py-2 text-[10px] text-[#667069]">Loading secure details…</p>
       ) : (
         <>
           {hasCredentials && !revealed ? (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold text-[#F4F7F5]">
-                  Credentials saved
-                </p>
-                <p className="mt-1 text-[10px] leading-4 text-[#667069]">
-                  Values stay hidden until you explicitly reveal them.
-                </p>
-              </div>
+            <div className="flex items-center justify-between gap-3 py-1.5">
+              <p className="text-[11px] font-semibold text-[#F4F7F5]">
+                Credentials saved
+              </p>
               <button
                 type="button"
                 onClick={reveal}
@@ -125,7 +115,7 @@ export function OrderAccountDetails({
           ) : null}
 
           {canEdit && (!hasCredentials || revealed) ? (
-            <form onSubmit={save} className="mt-4 space-y-3">
+            <form onSubmit={save} className="mt-2 space-y-3">
               <label className="block">
                 <span className="text-[10px] text-[#667069]">Game account email</span>
                 <input
@@ -169,7 +159,7 @@ export function OrderAccountDetails({
           ) : null}
 
           {!canEdit && hasCredentials && revealed ? (
-            <div className="mt-4 space-y-3">
+            <div className="mt-2 space-y-3">
               <div>
                 <p className="text-[10px] text-[#667069]">Game account email</p>
                 <p className="mt-1 break-all text-xs text-[#F4F7F5]">{accountEmail}</p>
@@ -187,8 +177,8 @@ export function OrderAccountDetails({
         <p className="mt-3 text-[10px] leading-4 text-[#A0AAA4]">{message}</p>
       ) : null}
 
-      <p className="mt-3 text-[9px] leading-4 text-[#667069]">
-        Stored encrypted server-side. Credentials are not included in the general dashboard or order configuration.
+      <p className="mt-2 text-[9px] leading-4 text-[#667069]">
+        Encrypted and only accessible to you and your assigned booster.
       </p>
     </div>
   );

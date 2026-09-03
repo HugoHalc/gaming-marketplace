@@ -1,15 +1,22 @@
-BOOSTINGPEDIA — REALTIME CHAT FIX
+BOOSTINGPEDIA — PHASE 16P4
+Secure Account Access Density Polish
 
-Replace only this file in your current GitHub project:
+Replace these files in your current repository with the files from this ZIP:
 
-src/components/dashboard/order-live-chat.tsx
+1. src/components/dashboard/order-account-details.tsx
+2. src/components/dashboard/customer-order-workspace.tsx
+3. src/components/booster/booster-order-workspace.tsx
 
-What this fixes:
-- Authenticates Supabase Realtime with the active user session before subscribing.
-- Receives new order chat INSERT events without manually refreshing the page.
-- Refreshes messages immediately after the realtime subscription becomes active.
-- Refreshes when the browser tab becomes visible again.
-- Uses a 5-second fallback only if Realtime is unavailable.
-- Preserves the participant name, timezone, online/last-seen UI from the previous patch.
+What changed:
+- Removed the redundant "Account Details" heading.
+- Removed duplicated explanatory subtitles around Secure Account Access.
+- Compact saved state to: "Credentials saved" + "Reveal".
+- Reduced vertical spacing.
+- Consolidated security copy into one discreet line.
+- Kept Save / Update / Reveal behavior unchanged.
+- Applied the same density cleanup to customer and booster order workspaces.
 
-No Supabase migration is required for this fix.
+Database / Supabase migration: NOT REQUIRED.
+
+Recommended commit:
+style: simplify secure account access panel

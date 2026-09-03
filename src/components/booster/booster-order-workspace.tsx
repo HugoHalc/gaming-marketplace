@@ -306,14 +306,9 @@ export function BoosterOrderWorkspace({
               <section className="border-t border-white/[0.05] py-4">
                 <div className="mb-2 flex items-center gap-2">
                   <KeyRound className="size-3.5 text-[#667069]" />
-                  <div>
-                    <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
-                      Secure Account Access
-                    </p>
-                    <p className="mt-0.5 text-[9px] text-[#A0AAA4]">
-                      Customer credentials for this order
-                    </p>
-                  </div>
+                  <p className="text-[13px] font-semibold text-[#F4F7F5]">
+                    Secure Account Access
+                  </p>
                 </div>
 
                 <OrderAccountDetails

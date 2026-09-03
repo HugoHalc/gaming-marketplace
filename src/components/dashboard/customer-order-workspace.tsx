@@ -414,16 +414,9 @@ export function CustomerOrderWorkspace({
             <section className="border-t border-white/[0.05] py-4">
               <div className="mb-2 flex items-center gap-2">
                 <ShieldCheck className="size-3.5 text-[#667069]" />
-                <div>
-                  <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
-                    Secure Account Access
-                  </h2>
-                  <p className="mt-0.5 text-[9px] text-[#667069]">
-                    {boosterAssignment
-                      ? "Share your game login securely with your assigned booster"
-                      : "Available after booster assignment"}
-                  </p>
-                </div>
+                <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                  Secure Account Access
+                </h2>
               </div>
 
               {boosterAssignment ? (
