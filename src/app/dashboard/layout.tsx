@@ -2,6 +2,7 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { requireUser } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 import { createAuthServerClient } from "@/lib/supabase/auth";
+import { UserPresenceReporter } from "@/components/presence/user-presence-reporter";
 
 function getAvatarInitials(identity: Awaited<ReturnType<typeof requireUser>>) {
   const source =
@@ -38,20 +39,23 @@ export default async function DashboardLayout({
   ]);
 
   return (
-    <DashboardShell
-      displayName={
+    <>
+      <UserPresenceReporter />
+      <DashboardShell
+        displayName={
         identity.profile?.gamer_tag ||
         identity.profile?.full_name ||
         "BoostingPedia account"
       }
-      email={identity.email}
-      avatarUrl={identity.profile?.avatar_url ?? null}
-      initials={getAvatarInitials(identity)}
-      unreadNotifications={unreadNotifications}
-      canAccessBooster={Boolean(boosterProfile)}
-      canAccessAdmin={identity.profile?.role === "admin"}
-    >
-      {children}
-    </DashboardShell>
+        email={identity.email}
+        avatarUrl={identity.profile?.avatar_url ?? null}
+        initials={getAvatarInitials(identity)}
+        unreadNotifications={unreadNotifications}
+        canAccessBooster={Boolean(boosterProfile)}
+        canAccessAdmin={identity.profile?.role === "admin"}
+      >
+        {children}
+      </DashboardShell>
+    </>
   );
 }

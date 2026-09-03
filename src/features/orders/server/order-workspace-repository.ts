@@ -41,6 +41,23 @@ export interface OrderBoosterAssignment {
   assignedAt: string;
 }
 
+export interface OrderConversationParticipant {
+  userId: string;
+  role: "customer" | "booster";
+  displayName: string;
+  avatarUrl: string | null;
+  timezone: string | null;
+  lastSeenAt: string | null;
+  online: boolean;
+}
+
+export interface OrderConversationState {
+  enabled: boolean;
+  viewerRole: "customer" | "booster" | "admin";
+  participant: OrderConversationParticipant | null;
+  booster: OrderBoosterAssignment | null;
+}
+
 async function getAuthorizedOrder(orderId: string) {
   const identity = await requireUser();
   const supabase = createSecretServerClient();
@@ -105,6 +122,155 @@ export async function getOrderBoosterAssignment(
     avatarUrl: profile?.avatar_url ?? null,
     assignedAt: data.assigned_at as string,
   };
+}
+
+
+export async function getOrderConversationState(
+  orderId: string,
+): Promise<OrderConversationState> {
+  const { identity, order, supabase, isAssignedBooster } =
+    await getAuthorizedOrder(orderId);
+
+  const { data: assignment, error: assignmentError } = await supabase
+    .from("order_booster_assignments")
+    .select(
+      "booster_id, assigned_at, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, avatar_url)",
+    )
+    .eq("order_id", orderId)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (assignmentError) {
+    throw new Error("Unable to load conversation state.");
+  }
+
+  const rawBoosterProfile = assignment?.profiles as
+    | {
+        full_name: string | null;
+        gamer_tag: string | null;
+        avatar_url: string | null;
+      }
+    | Array<{
+        full_name: string | null;
+        gamer_tag: string | null;
+        avatar_url: string | null;
+      }>
+    | null
+    | undefined;
+  const boosterProfile = Array.isArray(rawBoosterProfile)
+    ? rawBoosterProfile[0] ?? null
+    : rawBoosterProfile ?? null;
+
+  const booster: OrderBoosterAssignment | null = assignment
+    ? {
+        boosterId: assignment.booster_id as string,
+        displayName:
+          boosterProfile?.gamer_tag ||
+          boosterProfile?.full_name ||
+          "Assigned booster",
+        avatarUrl: boosterProfile?.avatar_url ?? null,
+        assignedAt: assignment.assigned_at as string,
+      }
+    : null;
+
+  const viewerRole = isAssignedBooster
+    ? "booster"
+    : identity.profile?.role === "admin"
+      ? "admin"
+      : "customer";
+
+  if (!assignment) {
+    return { enabled: false, viewerRole, participant: null, booster: null };
+  }
+
+  if (isAssignedBooster) {
+    const { data: customerProfile, error: customerError } = await supabase
+      .from("profiles")
+      .select("id, full_name, gamer_tag, avatar_url")
+      .eq("id", order.user_id)
+      .maybeSingle();
+
+    if (customerError || !customerProfile) {
+      throw new Error("Unable to load customer profile.");
+    }
+
+    const presence = await getUserPresenceMetadata(supabase, order.user_id as string);
+
+    return {
+      enabled: true,
+      viewerRole,
+      booster,
+      participant: buildConversationParticipant({
+        userId: customerProfile.id as string,
+        role: "customer",
+        displayName:
+          (customerProfile.full_name as string | null) ||
+          (customerProfile.gamer_tag as string | null) ||
+          "Customer",
+        avatarUrl: customerProfile.avatar_url as string | null,
+        ...presence,
+      }),
+    };
+  }
+
+  const boosterId = assignment.booster_id as string;
+  const presence = await getUserPresenceMetadata(supabase, boosterId);
+
+  return {
+    enabled: true,
+    viewerRole,
+    booster,
+    participant: buildConversationParticipant({
+      userId: boosterId,
+      role: "booster",
+      displayName:
+        boosterProfile?.gamer_tag ||
+        boosterProfile?.full_name ||
+        "Assigned booster",
+      avatarUrl: boosterProfile?.avatar_url ?? null,
+      ...presence,
+    }),
+  };
+}
+
+async function getUserPresenceMetadata(
+  supabase: ReturnType<typeof createSecretServerClient>,
+  userId: string,
+) {
+  const { data, error } = await supabase.auth.admin.getUserById(userId);
+
+  if (error || !data.user) {
+    return { timezone: null, lastSeenAt: null };
+  }
+
+  const metadata = data.user.user_metadata ?? {};
+  return {
+    timezone:
+      typeof metadata.boostingpedia_timezone === "string"
+        ? metadata.boostingpedia_timezone
+        : null,
+    lastSeenAt:
+      typeof metadata.boostingpedia_last_seen_at === "string"
+        ? metadata.boostingpedia_last_seen_at
+        : null,
+  };
+}
+
+function buildConversationParticipant(input: {
+  userId: string;
+  role: "customer" | "booster";
+  displayName: string;
+  avatarUrl: string | null;
+  timezone: string | null;
+  lastSeenAt: string | null;
+}): OrderConversationParticipant {
+  const lastSeenMs = input.lastSeenAt
+    ? new Date(input.lastSeenAt).getTime()
+    : Number.NaN;
+  const online =
+    Number.isFinite(lastSeenMs) && Date.now() - lastSeenMs <= 75_000;
+
+  return { ...input, online };
 }
 
 function detectModerationTerms(body: string) {

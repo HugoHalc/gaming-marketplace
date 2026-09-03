@@ -16,6 +16,7 @@ import {
 } from "react";
 import type {
   OrderBoosterAssignment,
+  OrderConversationParticipant,
   OrderWorkspaceMessage,
 } from "@/features/orders/server/order-workspace-repository";
 import { createAuthBrowserClient } from "@/lib/supabase/browser";
@@ -88,6 +89,41 @@ function withinFiveMinutes(a: string, b: string) {
   );
 }
 
+function formatTimezone(timezone: string) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      timeZoneName: "shortOffset",
+    }).formatToParts(new Date());
+    const offset = parts.find((part) => part.type === "timeZoneName")?.value;
+    return offset ? `${offset} · ${timezone.replaceAll("_", " ")}` : timezone;
+  } catch {
+    return timezone;
+  }
+}
+
+function formatParticipantPresence(participant: OrderConversationParticipant | null) {
+  if (!participant) return "Unavailable";
+  if (participant.online) return "Online";
+  if (!participant.lastSeenAt) return "Offline";
+
+  const lastSeen = new Date(participant.lastSeenAt);
+  const elapsedMs = Date.now() - lastSeen.getTime();
+  const elapsedMinutes = Math.max(1, Math.floor(elapsedMs / 60_000));
+
+  if (elapsedMinutes < 60) return `Last seen ${elapsedMinutes}m ago`;
+
+  const elapsedHours = Math.floor(elapsedMinutes / 60);
+  if (elapsedHours < 24) return `Last seen ${elapsedHours}h ago`;
+
+  return `Last seen ${new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(lastSeen)}`;
+}
+
 export function OrderLiveChat({
   orderId,
   currentUserId,
@@ -106,10 +142,12 @@ export function OrderLiveChat({
     loaded: boolean;
     enabled: boolean;
     booster: OrderBoosterAssignment | null;
+    participant: OrderConversationParticipant | null;
   }>({
     loaded: false,
     enabled: false,
     booster: null,
+    participant: null,
   });
 
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -148,40 +186,48 @@ export function OrderLiveChat({
   useEffect(() => {
     let active = true;
 
-    fetch(`/api/orders/${orderId}/chat-state`, {
-      cache: "no-store",
-    })
-      .then(async (response) => {
+    const loadChatState = async () => {
+      try {
+        const response = await fetch(`/api/orders/${orderId}/chat-state`, {
+          cache: "no-store",
+        });
+
         if (!response.ok) {
           throw new Error("Unable to load conversation state.");
         }
 
-        return response.json() as Promise<{
+        const payload = (await response.json()) as {
           enabled?: boolean;
           booster?: OrderBoosterAssignment | null;
-        }>;
-      })
-      .then((payload) => {
+          participant?: OrderConversationParticipant | null;
+        };
+
         if (!active) return;
 
         setChatState({
           loaded: true,
           enabled: Boolean(payload.enabled),
           booster: payload.booster ?? null,
+          participant: payload.participant ?? null,
         });
-      })
-      .catch(() => {
+      } catch {
         if (active) {
           setChatState({
             loaded: true,
             enabled: false,
             booster: null,
+            participant: null,
           });
         }
-      });
+      }
+    };
+
+    void loadChatState();
+    const timer = window.setInterval(() => void loadChatState(), 30_000);
 
     return () => {
       active = false;
+      window.clearInterval(timer);
     };
   }, [orderId]);
 
@@ -388,6 +434,10 @@ export function OrderLiveChat({
   }
 
   const booster = chatState.booster;
+  const participant = chatState.participant;
+  const participantRoleLabel =
+    participant?.role === "booster" ? "Booster" : "Customer";
+  const participantPresence = formatParticipantPresence(participant);
 
   return (
     <section className="overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] shadow-[0_24px_80px_rgba(0,0,0,0.34)]">
@@ -397,9 +447,9 @@ export function OrderLiveChat({
         <header className="shrink-0 border-b border-white/[0.06] bg-[linear-gradient(180deg,rgba(19,27,23,0.95),rgba(11,16,13,0.95))] px-4 py-3.5 sm:px-5">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              {booster?.avatarUrl ? (
+              {participant?.avatarUrl ? (
                 <img
-                  src={booster.avatarUrl}
+                  src={participant.avatarUrl}
                   alt=""
                   className="size-10 shrink-0 rounded-full border border-white/[0.08] object-cover"
                   referrerPolicy="no-referrer"
@@ -415,11 +465,31 @@ export function OrderLiveChat({
                   Order communication
                 </p>
                 <p className="truncate text-sm font-semibold text-[#F4F7F5]">
-                  {booster?.displayName ?? "Conversation"}
+                  {participant?.displayName ?? booster?.displayName ?? "Conversation"}
                 </p>
-                <p className="mt-0.5 text-[9px] text-[#A0AAA4]">
-                  {booster ? "Assigned booster" : "Customer ↔ Booster"}
-                </p>
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9px] text-[#A0AAA4]">
+                  {participant ? (
+                    <>
+                      <span>{participantRoleLabel}</span>
+                      {participant.timezone ? (
+                        <>
+                          <span className="text-[#4B544F]">•</span>
+                          <span>{formatTimezone(participant.timezone)}</span>
+                        </>
+                      ) : null}
+                      <span className="text-[#4B544F]">•</span>
+                      <span
+                        className={
+                          participant.online ? "text-[#82F5A4]" : "text-[#8B9590]"
+                        }
+                      >
+                        {participantPresence}
+                      </span>
+                    </>
+                  ) : (
+                    <span>{booster ? "Assigned booster" : "Customer ↔ Booster"}</span>
+                  )}
+                </div>
               </div>
             </div>
 
