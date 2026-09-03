@@ -1,27 +1,22 @@
-BOOSTINGPEDIA — PHASE 16P
-CONFIGURATION PAID EXTRAS CLEANUP
-
-Copy into project root.
-
-ADD:
-src/components/orders/order-configuration-summary.tsx
+BOOSTINGPEDIA — PHASE 16P1
+CHAT WORKSPACE SURFACE POLISH
 
 REPLACE:
-src/components/dashboard/customer-order-workspace.tsx
-src/components/booster/booster-order-workspace.tsx
+src/components/dashboard/order-live-chat.tsx
+
+Goal:
+- put Customer ↔ Booster chat inside a proper workspace surface
+- keep the current live chat logic
+- preserve realtime, composer, unread jump, grouping, and safety copy
+- avoid the dead feeling of messages appearing directly on the page canvas
+
+Visual result:
+- rounded outer chat shell
+- framed inner conversation panel
+- dedicated header strip
+- contained message area
+- contained composer area
 
 NO Supabase migration.
-
 Suggested commit:
-Phase 16P - Simplify Order Configuration
-
-VERIFY CUSTOMER + BOOSTER:
-- Configuration shows Current Rank → Desired Rank
-- real rank badges appear
-- Live Stream appears only if charged
-- Play With Booster appears only if charged
-- Express appears only if charged
-- Rank Insurance appears only if charged
-- false extras never appear
-- Appear Offline free option does not appear
-- no Platform / Playlist / raw Boost Method inside Configuration
+Phase 16P1 - Polish Live Chat Workspace Surface

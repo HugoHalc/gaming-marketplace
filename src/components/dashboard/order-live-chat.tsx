@@ -125,10 +125,9 @@ export function OrderLiveChat({
 
   const refreshLatest = useCallback(async () => {
     try {
-      const response = await fetch(
-        `/api/orders/${orderId}/messages?limit=60`,
-        { cache: "no-store" },
-      );
+      const response = await fetch(`/api/orders/${orderId}/messages?limit=60`, {
+        cache: "no-store",
+      });
 
       if (!response.ok) return;
 
@@ -211,10 +210,7 @@ export function OrderLiveChat({
           status === "CLOSED"
         ) {
           if (fallbackTimer === null) {
-            fallbackTimer = window.setInterval(
-              () => void refreshLatest(),
-              30000,
-            );
+            fallbackTimer = window.setInterval(() => void refreshLatest(), 30000);
           }
         }
 
@@ -270,11 +266,7 @@ export function OrderLiveChat({
     const element = scrollerRef.current;
     if (!element) return;
 
-    const distanceFromBottom =
-      element.scrollHeight -
-      element.scrollTop -
-      element.clientHeight;
-
+    const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
     const nearBottom = distanceFromBottom < 120;
     shouldStickRef.current = nearBottom;
 
@@ -324,26 +316,19 @@ export function OrderLiveChat({
         return;
       }
 
-      setMessages((current) => [
-        ...(payload.messages ?? []),
-        ...current,
-      ]);
-
+      setMessages((current) => [...(payload.messages ?? []), ...current]);
       setHasMore(Boolean(payload.hasMore));
 
       window.requestAnimationFrame(() => {
         if (!element) return;
-        element.scrollTop =
-          element.scrollHeight - previousHeight;
+        element.scrollTop = element.scrollHeight - previousHeight;
       });
     } finally {
       setLoadingEarlier(false);
     }
   }
 
-  async function submitMessage(
-    event: React.FormEvent<HTMLFormElement>,
-  ) {
+  async function submitMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const message = body.trim();
@@ -356,27 +341,22 @@ export function OrderLiveChat({
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/orders/${orderId}/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            body: message,
-          }),
+      const response = await fetch(`/api/orders/${orderId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          body: message,
+        }),
+      });
 
       const payload = (await response.json()) as {
         error?: string;
       };
 
       if (!response.ok) {
-        throw new Error(
-          payload.error || "Unable to send message.",
-        );
+        throw new Error(payload.error || "Unable to send message.");
       }
 
       setBody("");
@@ -384,18 +364,14 @@ export function OrderLiveChat({
       await refreshLatest();
     } catch (caught) {
       setError(
-        caught instanceof Error
-          ? caught.message
-          : "Unable to send message.",
+        caught instanceof Error ? caught.message : "Unable to send message.",
       );
     } finally {
       setSending(false);
     }
   }
 
-  function handleComposerKeyDown(
-    event: React.KeyboardEvent<HTMLTextAreaElement>,
-  ) {
+  function handleComposerKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (
       event.key !== "Enter" ||
       event.shiftKey ||
@@ -404,10 +380,7 @@ export function OrderLiveChat({
       return;
     }
 
-    const coarsePointer = window.matchMedia(
-      "(pointer: coarse)",
-    ).matches;
-
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
     if (coarsePointer) return;
 
     event.preventDefault();
@@ -417,350 +390,293 @@ export function OrderLiveChat({
   const booster = chatState.booster;
 
   return (
-    <section className="relative bg-[#050807]">
-      <div className="flex h-[min(760px,calc(100dvh-150px))] min-h-[560px] flex-col max-sm:h-[calc(100dvh-118px)] max-sm:min-h-[500px]">
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-white/[0.05] px-1 pb-3">
-          <div className="flex min-w-0 items-center gap-3">
-            {booster?.avatarUrl ? (
-              <img
-                src={booster.avatarUrl}
-                alt=""
-                className="size-9 shrink-0 rounded-full border border-white/[0.08] object-cover"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <span className="grid size-9 shrink-0 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#667069]">
-                <MessageSquare className="size-3.5" />
-              </span>
-            )}
+    <section className="overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] shadow-[0_24px_80px_rgba(0,0,0,0.34)]">
+      <div className="pointer-events-none h-px w-full bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent" />
 
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[#F4F7F5]">
-                {booster?.displayName ?? "Conversation"}
-              </p>
+      <div className="flex h-[min(760px,calc(100dvh-150px))] min-h-[560px] flex-col max-sm:h-[calc(100dvh-158px)] max-sm:min-h-[520px]">
+        <header className="shrink-0 border-b border-white/[0.06] bg-[linear-gradient(180deg,rgba(19,27,23,0.95),rgba(11,16,13,0.95))] px-4 py-3.5 sm:px-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              {booster?.avatarUrl ? (
+                <img
+                  src={booster.avatarUrl}
+                  alt=""
+                  className="size-10 shrink-0 rounded-full border border-white/[0.08] object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <span className="grid size-10 shrink-0 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#667069]">
+                  <MessageSquare className="size-4" />
+                </span>
+              )}
 
-              <p className="mt-0.5 text-[9px] text-[#667069]">
-                {booster
-                  ? "Assigned booster"
-                  : "Order communication"}
-              </p>
+              <div className="min-w-0">
+                <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                  Order communication
+                </p>
+                <p className="truncate text-sm font-semibold text-[#F4F7F5]">
+                  {booster?.displayName ?? "Conversation"}
+                </p>
+                <p className="mt-0.5 text-[9px] text-[#A0AAA4]">
+                  {booster ? "Assigned booster" : "Customer ↔ Booster"}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {chatState.loaded ? (
-            <span className="rounded-full border border-white/[0.07] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#667069]">
-              {chatState.enabled
-                ? "Chat active"
-                : "Awaiting booster"}
-            </span>
-          ) : null}
+            {chatState.loaded ? (
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#667069]">
+                {chatState.enabled ? "Chat active" : "Awaiting booster"}
+              </span>
+            ) : null}
+          </div>
         </header>
 
         {!chatState.loaded ? (
-          <div className="flex flex-1 items-center justify-center text-[10px] text-[#667069]">
+          <div className="flex flex-1 items-center justify-center bg-[#080B09] text-[10px] text-[#667069]">
             Loading conversation…
           </div>
         ) : !chatState.enabled ? (
-          <div className="flex flex-1 items-center justify-center px-6 text-center">
+          <div className="flex flex-1 items-center justify-center bg-[#080B09] px-6 text-center">
             <div>
               <MessageSquare className="mx-auto size-5 text-[#667069]" />
-
-              <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">
-                Conversation
-              </h3>
-
+              <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">Conversation</h3>
               <p className="mt-1.5 max-w-sm text-[11px] leading-5 text-[#A0AAA4]">
-                Chat becomes available once a booster is
-                assigned to your order.
+                Chat becomes available once a booster is assigned to your order.
               </p>
             </div>
           </div>
         ) : (
           <>
-            <div
-              ref={scrollerRef}
-              onScroll={handleScroll}
-              className="relative min-h-0 flex-1 overflow-y-auto px-1 py-4 [scrollbar-color:rgba(255,255,255,.10)_transparent] [scrollbar-width:thin]"
-            >
-              {hasMore ? (
-                <div className="mb-4 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={loadEarlier}
-                    disabled={loadingEarlier}
-                    className="rounded-lg border border-white/[0.07] px-3 py-1.5 text-[9px] font-semibold text-[#A0AAA4] hover:text-[#F4F7F5] disabled:opacity-50"
-                  >
-                    {loadingEarlier
-                      ? "Loading…"
-                      : "Load earlier messages"}
-                  </button>
-                </div>
-              ) : null}
+            <div className="min-h-0 flex-1 bg-[#080B09] p-3 sm:p-4">
+              <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(6,8,7,0.98),rgba(10,12,11,1))]">
+                <div
+                  ref={scrollerRef}
+                  onScroll={handleScroll}
+                  className="relative min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-4 [scrollbar-color:rgba(255,255,255,.10)_transparent] [scrollbar-width:thin]"
+                >
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(130,245,164,0.02),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.025),transparent_32%)]" />
 
-              {messages.length ? (
-                <div className="space-y-1.5">
-                  {messages.map((message, index) => {
-                    const previous = messages[index - 1];
-                    const next = messages[index + 1];
+                  <div className="relative z-[1]">
+                    {hasMore ? (
+                      <div className="mb-4 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={loadEarlier}
+                          disabled={loadingEarlier}
+                          className="rounded-lg border border-white/[0.07] bg-[#0E1411] px-3 py-1.5 text-[9px] font-semibold text-[#A0AAA4] transition-colors hover:border-white/[0.12] hover:text-[#F4F7F5] disabled:opacity-50"
+                        >
+                          {loadingEarlier ? "Loading…" : "Load earlier messages"}
+                        </button>
+                      </div>
+                    ) : null}
 
-                    const newDate =
-                      !previous ||
-                      dateKey(previous.createdAt) !==
-                        dateKey(message.createdAt);
+                    {messages.length ? (
+                      <div className="space-y-1.5">
+                        {messages.map((message, index) => {
+                          const previous = messages[index - 1];
+                          const next = messages[index + 1];
 
-                    const mine =
-                      message.senderId === currentUserId;
+                          const newDate =
+                            !previous ||
+                            dateKey(previous.createdAt) !== dateKey(message.createdAt);
 
-                    const system =
-                      message.messageType === "system" ||
-                      message.senderRole === "system";
+                          const mine = message.senderId === currentUserId;
 
-                    const groupedWithPrevious =
-                      Boolean(previous) &&
-                      previous.senderId === message.senderId &&
-                      previous.senderRole ===
-                        message.senderRole &&
-                      !system &&
-                      withinFiveMinutes(
-                        previous.createdAt,
-                        message.createdAt,
-                      ) &&
-                      dateKey(previous.createdAt) ===
-                        dateKey(message.createdAt);
+                          const system =
+                            message.messageType === "system" ||
+                            message.senderRole === "system";
 
-                    const groupedWithNext =
-                      Boolean(next) &&
-                      next.senderId === message.senderId &&
-                      next.senderRole === message.senderRole &&
-                      !system &&
-                      withinFiveMinutes(
-                        message.createdAt,
-                        next.createdAt,
-                      ) &&
-                      dateKey(next.createdAt) ===
-                        dateKey(message.createdAt);
+                          const groupedWithPrevious =
+                            Boolean(previous) &&
+                            previous.senderId === message.senderId &&
+                            previous.senderRole === message.senderRole &&
+                            !system &&
+                            withinFiveMinutes(previous.createdAt, message.createdAt) &&
+                            dateKey(previous.createdAt) === dateKey(message.createdAt);
 
-                    return (
-                      <Fragment key={message.id}>
-                        {newDate ? (
-                          <div className="flex items-center gap-3 py-4">
-                            <span className="h-px flex-1 bg-white/[0.04]" />
-                            <span className="text-[8px] font-medium text-[#667069]">
-                              {dateLabel(message.createdAt)}
-                            </span>
-                            <span className="h-px flex-1 bg-white/[0.04]" />
-                          </div>
-                        ) : null}
+                          const groupedWithNext =
+                            Boolean(next) &&
+                            next.senderId === message.senderId &&
+                            next.senderRole === message.senderRole &&
+                            !system &&
+                            withinFiveMinutes(message.createdAt, next.createdAt) &&
+                            dateKey(next.createdAt) === dateKey(message.createdAt);
 
-                        {system ? (
-                          <div className="flex justify-center py-2">
-                            <p className="flex items-center gap-1.5 text-[9px] text-[#667069]">
-                              <span className="text-[#82F5A4]">
-                                ✓
-                              </span>
-                              {message.body}
-                              <span>·</span>
-                              {formatTime(message.createdAt)}
-                            </p>
-                          </div>
-                        ) : (
-                          <div
-                            className={`flex ${
-                              mine
-                                ? "justify-end"
-                                : "justify-start"
-                            } ${
-                              groupedWithPrevious
-                                ? "pt-0"
-                                : "pt-2"
-                            }`}
-                          >
-                            <div
-                              className={`flex max-w-[86%] items-end gap-2 sm:max-w-[68%] ${
-                                mine
-                                  ? "flex-row-reverse"
-                                  : ""
-                              }`}
-                            >
-                              {!mine ? (
-                                groupedWithPrevious ? (
-                                  <span className="size-7 shrink-0" />
-                                ) : message.senderAvatarUrl ? (
-                                  <img
-                                    src={message.senderAvatarUrl}
-                                    alt=""
-                                    className="size-7 shrink-0 rounded-full border border-white/[0.07] object-cover"
-                                    referrerPolicy="no-referrer"
-                                  />
-                                ) : (
-                                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white/[0.07] bg-[#0E1411] text-[8px] font-bold text-[#A0AAA4]">
-                                    {message.senderName
-                                      .slice(0, 1)
-                                      .toUpperCase()}
+                          return (
+                            <Fragment key={message.id}>
+                              {newDate ? (
+                                <div className="flex items-center gap-3 py-4">
+                                  <span className="h-px flex-1 bg-white/[0.04]" />
+                                  <span className="text-[8px] font-medium text-[#667069]">
+                                    {dateLabel(message.createdAt)}
                                   </span>
-                                )
+                                  <span className="h-px flex-1 bg-white/[0.04]" />
+                                </div>
                               ) : null}
 
-                              <div
-                                className={`min-w-0 ${
-                                  mine ? "text-right" : ""
-                                }`}
-                              >
-                                {!mine &&
-                                !groupedWithPrevious ? (
-                                  <p className="mb-1 pl-1 text-[8px] font-medium text-[#667069]">
-                                    {message.senderName}
+                              {system ? (
+                                <div className="flex justify-center py-2">
+                                  <p className="flex items-center gap-1.5 rounded-full border border-white/[0.05] bg-white/[0.015] px-3 py-1.5 text-[9px] text-[#667069]">
+                                    <span className="text-[#82F5A4]">✓</span>
+                                    {message.body}
+                                    <span>·</span>
+                                    {formatTime(message.createdAt)}
                                   </p>
-                                ) : null}
-
-                                <div
-                                  className={`rounded-[14px] border px-3 py-2.5 text-left text-xs leading-5 ${
-                                    mine
-                                      ? "border-blue-300/[0.10] bg-[#131B17] text-[#F4F7F5]"
-                                      : "border-white/[0.06] bg-[#0E1411] text-[#F4F7F5]"
-                                  } ${
-                                    groupedWithPrevious
-                                      ? mine
-                                        ? "rounded-tr-md"
-                                        : "rounded-tl-md"
-                                      : ""
-                                  } ${
-                                    groupedWithNext
-                                      ? mine
-                                        ? "rounded-br-md"
-                                        : "rounded-bl-md"
-                                      : ""
-                                  }`}
-                                >
-                                  {message.body}
                                 </div>
-
-                                {!groupedWithNext ? (
+                              ) : (
+                                <div
+                                  className={`flex ${mine ? "justify-end" : "justify-start"} ${groupedWithPrevious ? "pt-0" : "pt-2"}`}
+                                >
                                   <div
-                                    className={`mt-1 flex items-center gap-1.5 text-[8px] text-[#667069] ${
-                                      mine
-                                        ? "justify-end"
-                                        : "justify-start"
-                                    }`}
+                                    className={`flex max-w-[88%] items-end gap-2 sm:max-w-[70%] ${mine ? "flex-row-reverse" : ""}`}
                                   >
-                                    <span>
-                                      {formatTime(
-                                        message.createdAt,
-                                      )}
-                                    </span>
-
-                                    {message.flagged ? (
-                                      <ShieldAlert
-                                        className="size-2.5 text-amber-300/60"
-                                        aria-label="Message queued for moderation review"
-                                      />
+                                    {!mine ? (
+                                      groupedWithPrevious ? (
+                                        <span className="size-8 shrink-0" />
+                                      ) : message.senderAvatarUrl ? (
+                                        <img
+                                          src={message.senderAvatarUrl}
+                                          alt=""
+                                          className="size-8 shrink-0 rounded-full border border-white/[0.07] object-cover"
+                                          referrerPolicy="no-referrer"
+                                        />
+                                      ) : (
+                                        <span className="grid size-8 shrink-0 place-items-center rounded-full border border-white/[0.07] bg-[#0E1411] text-[8px] font-bold text-[#A0AAA4]">
+                                          {message.senderName.slice(0, 1).toUpperCase()}
+                                        </span>
+                                      )
                                     ) : null}
+
+                                    <div className={`min-w-0 ${mine ? "text-right" : ""}`}>
+                                      {!mine && !groupedWithPrevious ? (
+                                        <p className="mb-1 pl-1 text-[8px] font-medium text-[#667069]">
+                                          {message.senderName}
+                                        </p>
+                                      ) : null}
+
+                                      <div
+                                        className={`rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 shadow-[0_10px_26px_rgba(0,0,0,0.18)] ${
+                                          mine
+                                            ? "border-blue-300/[0.12] bg-[#131B17] text-[#F4F7F5]"
+                                            : "border-white/[0.06] bg-[#0E1411] text-[#F4F7F5]"
+                                        } ${
+                                          groupedWithPrevious
+                                            ? mine
+                                              ? "rounded-tr-md"
+                                              : "rounded-tl-md"
+                                            : ""
+                                        } ${
+                                          groupedWithNext
+                                            ? mine
+                                              ? "rounded-br-md"
+                                              : "rounded-bl-md"
+                                            : ""
+                                        }`}
+                                      >
+                                        {message.body}
+                                      </div>
+
+                                      {!groupedWithNext ? (
+                                        <div
+                                          className={`mt-1 flex items-center gap-1.5 text-[8px] text-[#667069] ${mine ? "justify-end" : "justify-start"}`}
+                                        >
+                                          <span>{formatTime(message.createdAt)}</span>
+
+                                          {message.flagged ? (
+                                            <ShieldAlert
+                                              className="size-2.5 text-amber-300/60"
+                                              aria-label="Message queued for moderation review"
+                                            />
+                                          ) : null}
+                                        </div>
+                                      ) : null}
+                                    </div>
                                   </div>
-                                ) : null}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                                </div>
+                              )}
+                            </Fragment>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex h-full min-h-[300px] items-center justify-center px-6 text-center">
+                        <div>
+                          <MessageSquare className="mx-auto size-5 text-[#667069]" />
+                          <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">Start the conversation</h3>
+                          <p className="mt-1.5 max-w-sm text-[11px] leading-5 text-[#A0AAA4]">
+                            Your booster can now message you about this order.
+                          </p>
+                          <p className="mt-1 text-[9px] text-[#667069]">
+                            Keep all order communication here.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {newMessageCount > 0 ? (
+                    <button
+                      type="button"
+                      onClick={jumpToLatest}
+                      className="sticky bottom-2 left-1/2 z-10 mx-auto flex -translate-x-1/2 items-center rounded-full border border-white/[0.08] bg-[#131B17] px-3 py-1.5 text-[9px] font-semibold text-[#F4F7F5] shadow-lg"
+                    >
+                      {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
+                      <ArrowDown className="ml-1.5 size-3" />
+                    </button>
+                  ) : null}
                 </div>
-              ) : (
-                <div className="flex h-full min-h-[280px] items-center justify-center px-6 text-center">
-                  <div>
-                    <MessageSquare className="mx-auto size-5 text-[#667069]" />
 
-                    <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">
-                      Start the conversation
-                    </h3>
+                <div className="shrink-0 border-t border-white/[0.05] bg-[#0B100D] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]">
+                  <form ref={formRef} onSubmit={submitMessage}>
+                    {error ? (
+                      <div className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-rose-300/12 bg-rose-300/[0.045] px-3 py-2 text-[9px] text-rose-200">
+                        <span>Message failed to send. {error}</span>
 
-                    <p className="mt-1.5 max-w-sm text-[11px] leading-5 text-[#A0AAA4]">
-                      Your booster can now message you about
-                      this order.
-                    </p>
+                        <button
+                          type="button"
+                          onClick={() => formRef.current?.requestSubmit()}
+                          className="font-semibold text-[#F4F7F5] underline underline-offset-2"
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    ) : null}
 
-                    <p className="mt-1 text-[9px] text-[#667069]">
-                      Keep all order communication here.
-                    </p>
+                    <div className="flex items-end gap-2 rounded-[16px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 transition-colors focus-within:border-white/[0.16]">
+                      <textarea
+                        value={body}
+                        onChange={(event) => setBody(event.target.value)}
+                        onKeyDown={handleComposerKeyDown}
+                        maxLength={1500}
+                        rows={1}
+                        placeholder="Write a message..."
+                        className="max-h-32 min-h-[42px] min-w-0 flex-1 resize-none bg-transparent py-2.5 text-xs text-[#F4F7F5] outline-none placeholder:text-[#667069]"
+                      />
+
+                      <button
+                        type="submit"
+                        disabled={!body.trim() || sending}
+                        className="mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"
+                        aria-label="Send message"
+                      >
+                        <Send className="size-4" strokeWidth={1.9} />
+                      </button>
+                    </div>
+                  </form>
+
+                  <div className="mt-2 flex flex-col gap-1 px-1 text-[8px] leading-4 text-[#667069] sm:flex-row sm:items-center sm:justify-between">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Shield className="size-2.5" />
+                      Keep communication and payments inside BoostingPedia for your protection.
+                    </span>
+
+                    <span>
+                      Never send account passwords in chat. Use Secure Account Access instead.
+                    </span>
                   </div>
                 </div>
-              )}
-
-              {newMessageCount > 0 ? (
-                <button
-                  type="button"
-                  onClick={jumpToLatest}
-                  className="sticky bottom-2 left-1/2 z-10 mx-auto flex -translate-x-1/2 items-center rounded-full border border-white/[0.08] bg-[#131B17] px-3 py-1.5 text-[9px] font-semibold text-[#F4F7F5] shadow-lg"
-                >
-                  {newMessageCount} new message
-                  {newMessageCount === 1 ? "" : "s"}
-                  <ArrowDown className="ml-1.5 size-3" />
-                </button>
-              ) : null}
+              </div>
             </div>
-
-            <form
-              ref={formRef}
-              onSubmit={submitMessage}
-              className="shrink-0 border-t border-white/[0.05] bg-[#050807] pt-3 pb-[max(.75rem,env(safe-area-inset-bottom))]"
-            >
-              {error ? (
-                <div className="mb-2 flex items-center justify-between gap-3 text-[9px] text-rose-200">
-                  <span>
-                    Message failed to send. {error}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      formRef.current?.requestSubmit()
-                    }
-                    className="font-semibold text-[#F4F7F5] underline underline-offset-2"
-                  >
-                    Retry
-                  </button>
-                </div>
-              ) : null}
-
-              <div className="flex items-end gap-2 rounded-[14px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 focus-within:border-white/[0.16]">
-                <textarea
-                  value={body}
-                  onChange={(event) =>
-                    setBody(event.target.value)
-                  }
-                  onKeyDown={handleComposerKeyDown}
-                  maxLength={1500}
-                  rows={1}
-                  placeholder="Write a message..."
-                  className="max-h-32 min-h-[40px] min-w-0 flex-1 resize-none bg-transparent py-2.5 text-xs text-[#F4F7F5] outline-none placeholder:text-[#667069]"
-                />
-
-                <button
-                  type="submit"
-                  disabled={!body.trim() || sending}
-                  className="mb-1 grid size-9 shrink-0 place-items-center rounded-lg bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"
-                  aria-label="Send message"
-                >
-                  <Send
-                    className="size-4"
-                    strokeWidth={1.9}
-                  />
-                </button>
-              </div>
-
-              <div className="mt-2 flex flex-col gap-1 px-1 text-[8px] leading-4 text-[#667069] sm:flex-row sm:items-center sm:justify-between">
-                <span className="inline-flex items-center gap-1.5">
-                  <Shield className="size-2.5" />
-                  Keep communication and payments inside
-                  BoostingPedia for your protection.
-                </span>
-
-                <span>
-                  Never send account passwords in chat. Use
-                  Secure Account Access instead.
-                </span>
-              </div>
-            </form>
           </>
         )}
       </div>
