@@ -1,21 +1,13 @@
-BOOSTINGPEDIA — PHASE 16P.2
-LIVE CHAT REALTIME RELIABILITY
+BOOSTINGPEDIA — PHASE 16P2
+CHAT MESSAGE SHADOW REMOVAL
 
 REPLACE:
 src/components/dashboard/order-live-chat.tsx
 
-No Supabase migration.
+Change:
+- removes per-message bubble shadow only
+- keeps chat box, bubble colors, borders, realtime logic and composer unchanged
 
+NO Supabase migration.
 Suggested commit:
-Phase 16P.2 - Fix Live Order Chat Realtime
-
-TEST WITH TWO SESSIONS:
-1. Open the same paid/assigned order as Customer.
-2. Open the same order as Booster in another browser/incognito/device.
-3. Send a message from Customer.
-4. Booster should see it automatically without refresh.
-5. Reply from Booster.
-6. Customer should see it automatically without refresh.
-7. Leave one tab in background, return to it, and confirm it catches up automatically.
-
-The 5-second fallback only runs if the Realtime websocket is unavailable.
+Phase 16P2 - Remove Chat Message Shadows

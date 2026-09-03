@@ -187,90 +187,45 @@ export function OrderLiveChat({
 
   useEffect(() => {
     const supabase = createAuthBrowserClient();
-    let channel: ReturnType<typeof supabase.channel> | null = null;
     let fallbackTimer: number | null = null;
-    let disposed = false;
 
-    function stopFallback() {
-      if (fallbackTimer !== null) {
-        window.clearInterval(fallbackTimer);
-        fallbackTimer = null;
-      }
-    }
-
-    function startFallback() {
-      if (fallbackTimer !== null || disposed) return;
-
-      // Realtime remains primary. This short fallback only runs while the
-      // websocket is unavailable so neither participant has to refresh.
-      fallbackTimer = window.setInterval(() => {
-        if (document.visibilityState === "visible") {
+    const channel = supabase
+      .channel(`order-chat:${orderId}:${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "order_messages",
+          filter: `order_id=eq.${orderId}`,
+        },
+        () => {
           void refreshLatest();
+        },
+      )
+      .subscribe((status) => {
+        if (
+          status === "CHANNEL_ERROR" ||
+          status === "TIMED_OUT" ||
+          status === "CLOSED"
+        ) {
+          if (fallbackTimer === null) {
+            fallbackTimer = window.setInterval(() => void refreshLatest(), 30000);
+          }
         }
-      }, 5000);
-    }
 
-    async function connectRealtime() {
-      const { data } = await supabase.auth.getSession();
-      const accessToken = data.session?.access_token;
-
-      if (accessToken) {
-        await supabase.realtime.setAuth(accessToken);
-      }
-
-      if (disposed) return;
-
-      channel = supabase
-        .channel(`order-chat:${orderId}:${currentUserId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "order_messages",
-            filter: `order_id=eq.${orderId}`,
-          },
-          () => {
-            void refreshLatest();
-          },
-        )
-        .subscribe((status) => {
-          if (status === "SUBSCRIBED") {
-            stopFallback();
-            void refreshLatest();
-            return;
-          }
-
-          if (
-            status === "CHANNEL_ERROR" ||
-            status === "TIMED_OUT" ||
-            status === "CLOSED"
-          ) {
-            startFallback();
-          }
-        });
-    }
-
-    void connectRealtime().catch(() => {
-      startFallback();
-    });
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        void refreshLatest();
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+        if (status === "SUBSCRIBED" && fallbackTimer !== null) {
+          window.clearInterval(fallbackTimer);
+          fallbackTimer = null;
+        }
+      });
 
     return () => {
-      disposed = true;
-      stopFallback();
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-
-      if (channel) {
-        void supabase.removeChannel(channel);
+      if (fallbackTimer !== null) {
+        window.clearInterval(fallbackTimer);
       }
+
+      void supabase.removeChannel(channel);
     };
   }, [currentUserId, orderId, refreshLatest]);
 
@@ -600,7 +555,7 @@ export function OrderLiveChat({
                                       ) : null}
 
                                       <div
-                                        className={`rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 shadow-[0_10px_26px_rgba(0,0,0,0.18)] ${
+                                        className={`rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 ${
                                           mine
                                             ? "border-blue-300/[0.12] bg-[#131B17] text-[#F4F7F5]"
                                             : "border-white/[0.06] bg-[#0E1411] text-[#F4F7F5]"
