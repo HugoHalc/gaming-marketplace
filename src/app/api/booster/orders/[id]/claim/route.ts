@@ -1,18 +1,37 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { claimBoosterOrder } from "@/features/booster/server/booster-orders";
 
+function expectsHtml(request: NextRequest) {
+  return request.headers.get("accept")?.includes("text/html") ?? false;
+}
+
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+
   try {
-    const { id } = await context.params;
     const result = await claimBoosterOrder(id);
+
+    if (expectsHtml(request)) {
+      return NextResponse.redirect(
+        new URL(`/booster/orders/${id}`, request.url),
+        { status: 303 },
+      );
+    }
+
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to accept order." },
-      { status: 409 },
-    );
+    const message =
+      error instanceof Error ? error.message : "Unable to accept order.";
+
+    if (expectsHtml(request)) {
+      const target = new URL("/booster/orders", request.url);
+      target.searchParams.set("claimError", message);
+      return NextResponse.redirect(target, { status: 303 });
+    }
+
+    return NextResponse.json({ error: message }, { status: 409 });
   }
 }
