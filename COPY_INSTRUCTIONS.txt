@@ -1,32 +1,25 @@
-BOOSTINGPEDIA — PHASE 16I
-BOOSTER ORDER WORKSPACE REDESIGN
+BOOSTINGPEDIA — PHASE 16G.2 CLAIM HOTFIX
 
 1. COPY ZIP INTO PROJECT ROOT.
-2. REPLACE INCLUDED FILES.
-3. NO SUPABASE MIGRATION IS REQUIRED.
-4. COMMIT / PUSH.
+
+2. SUPABASE SQL EDITOR
+Open:
+supabase/migrations/phase_16g2_claim_operational_conflict_hotfix.sql
+
+Paste ALL SQL and press Run.
+
+3. COMMIT / PUSH
 
 Suggested commit:
+Phase 16G.2 - Fix Operational Claim Conflict
 
-Phase 16I - Booster Order Workspace Redesign
-
-TEST:
-
-Open:
- /booster/orders/[id]
+4. TEST THE SAME AVAILABLE ORDER
 
 Expected:
-- chat dominates left side
-- compact right operational rail
-- payout visible
-- secure credentials remain accessible to booster
-- integrity/evidence/lifecycle controls remain functional
-- Rocket League rank badges appear when configuration has ranks
+- Accept Order succeeds
+- order disappears from Available
+- appears in My Active
+- operational state = Accepted
+- payout snapshot is created
 
-CUSTOMER:
- /dashboard/orders/[id]
-
-should remain on the existing customer-specific workspace.
-
-NO PRICING CHANGES.
-NO DATABASE CHANGES.
+No pricing or payout percentage changes.
