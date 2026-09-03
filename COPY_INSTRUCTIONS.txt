@@ -1,22 +1,21 @@
-BOOSTINGPEDIA — PHASE 16P1
-CHAT WORKSPACE SURFACE POLISH
+BOOSTINGPEDIA — PHASE 16P.2
+LIVE CHAT REALTIME RELIABILITY
 
 REPLACE:
 src/components/dashboard/order-live-chat.tsx
 
-Goal:
-- put Customer ↔ Booster chat inside a proper workspace surface
-- keep the current live chat logic
-- preserve realtime, composer, unread jump, grouping, and safety copy
-- avoid the dead feeling of messages appearing directly on the page canvas
+No Supabase migration.
 
-Visual result:
-- rounded outer chat shell
-- framed inner conversation panel
-- dedicated header strip
-- contained message area
-- contained composer area
-
-NO Supabase migration.
 Suggested commit:
-Phase 16P1 - Polish Live Chat Workspace Surface
+Phase 16P.2 - Fix Live Order Chat Realtime
+
+TEST WITH TWO SESSIONS:
+1. Open the same paid/assigned order as Customer.
+2. Open the same order as Booster in another browser/incognito/device.
+3. Send a message from Customer.
+4. Booster should see it automatically without refresh.
+5. Reply from Booster.
+6. Customer should see it automatically without refresh.
+7. Leave one tab in background, return to it, and confirm it catches up automatically.
+
+The 5-second fallback only runs if the Realtime websocket is unavailable.
