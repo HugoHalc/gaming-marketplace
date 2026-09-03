@@ -8,8 +8,6 @@ import {
   CheckCircle2,
   Clock3,
   KeyRound,
-  Package,
-  ReceiptText,
 } from "lucide-react";
 import type {
   OrderRecord,
@@ -23,6 +21,7 @@ import {
   resolveRocketLeagueRank,
   RocketLeagueRankValue,
 } from "@/components/orders/rocket-league-rank";
+import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -48,13 +47,6 @@ function formatLabel(value: string) {
     .replace(/^./, (letter) => letter.toUpperCase());
 }
 
-function formatValue(value: string | number | boolean) {
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  if (value === "play-with-booster") return "Play With Booster";
-  if (value === "account") return "Account Boost";
-  return formatLabel(String(value));
-}
-
 function statusPresentation(status: string) {
   switch (status) {
     case "in_progress":
@@ -76,13 +68,6 @@ function statusPresentation(status: string) {
         className:
           "border-blue-300/15 bg-blue-300/[0.05] text-blue-200",
       };
-    case "cancelled":
-    case "refunded":
-      return {
-        label: formatLabel(status),
-        className:
-          "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]",
-      };
     default:
       return {
         label: formatLabel(status),
@@ -90,48 +75,6 @@ function statusPresentation(status: string) {
           "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]",
       };
   }
-}
-
-function ConfigurationRows({
-  configuration,
-}: {
-  configuration: Record<string, string | number | boolean>;
-}) {
-  const rows = Object.entries(configuration).filter(
-    ([key]) =>
-      key !== "currentRank" &&
-      key !== "previousRank" &&
-      key !== "targetRank",
-  );
-
-  if (!rows.length) return null;
-
-  return (
-    <section className="border-t border-white/[0.05] pt-5">
-      <div className="flex items-center gap-2">
-        <ReceiptText className="size-3.5 text-[#667069]" />
-        <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
-          Configuration
-        </h2>
-      </div>
-
-      <div className="mt-3 grid gap-x-8 sm:grid-cols-2">
-        {rows.map(([key, value]) => (
-          <div
-            key={key}
-            className="flex items-center justify-between gap-4 border-b border-white/[0.045] py-2.5"
-          >
-            <span className="text-[9px] text-[#667069]">
-              {formatLabel(key)}
-            </span>
-            <span className="max-w-[62%] text-right text-[10px] font-semibold text-[#F4F7F5]">
-              {formatValue(value)}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
 }
 
 export function BoosterOrderWorkspace({
@@ -233,7 +176,7 @@ export function BoosterOrderWorkspace({
               {targetRank ? (
                 <RocketLeagueRankValue
                   value={targetValue}
-                  label="Target"
+                  label="Desired"
                   size="lg"
                 />
               ) : null}
@@ -267,40 +210,13 @@ export function BoosterOrderWorkspace({
             </section>
 
             <div className="mt-6 space-y-6">
-              {(currentRank || targetRank) ? (
-                <section className="border-t border-white/[0.05] pt-5">
-                  <div className="flex items-center gap-2">
-                    <Package className="size-3.5 text-[#667069]" />
-                    <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
-                      Service Progression
-                    </h2>
-                  </div>
-
-                  <div className="mt-4 flex items-center gap-5">
-                    {currentRank ? (
-                      <RocketLeagueRankValue
-                        value={currentValue}
-                        label="Current Rank"
-                        size="md"
-                      />
-                    ) : null}
-
-                    {currentRank && targetRank ? (
-                      <ArrowRight className="size-3.5 shrink-0 text-blue-200/30" />
-                    ) : null}
-
-                    {targetRank ? (
-                      <RocketLeagueRankValue
-                        value={targetValue}
-                        label="Target Rank"
-                        size="md"
-                      />
-                    ) : null}
-                  </div>
-                </section>
+              {item ? (
+                <OrderConfigurationSummary
+                  configuration={item.configuration}
+                  priceBreakdown={item.priceBreakdown}
+                  compact
+                />
               ) : null}
-
-              <ConfigurationRows configuration={config} />
 
               {history.length ? (
                 <section className="border-t border-white/[0.05] pt-5">
@@ -359,34 +275,26 @@ export function BoosterOrderWorkspace({
 
                 <dl className="mt-4 divide-y divide-white/[0.045]">
                   <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">
-                      Order
-                    </dt>
+                    <dt className="text-[9px] text-[#667069]">Order</dt>
                     <dd className="font-gaming-value text-[10px] font-bold text-[#F4F7F5]">
                       {order.orderNumber}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">
-                      Payment
-                    </dt>
+                    <dt className="text-[9px] text-[#667069]">Payment</dt>
                     <dd className="text-[10px] font-semibold text-[#82F5A4]">
                       {formatLabel(order.paymentStatus)}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">
-                      Service
-                    </dt>
+                    <dt className="text-[9px] text-[#667069]">Service</dt>
                     <dd className="max-w-[220px] truncate text-right text-[10px] font-semibold text-[#F4F7F5]">
                       {item?.serviceName ?? "Gaming Service"}
                     </dd>
                   </div>
                   {suggestedPlatform ? (
                     <div className="flex items-center justify-between gap-4 py-2.5">
-                      <dt className="text-[9px] text-[#667069]">
-                        Platform
-                      </dt>
+                      <dt className="text-[9px] text-[#667069]">Platform</dt>
                       <dd className="text-[10px] font-semibold text-[#F4F7F5]">
                         {formatLabel(suggestedPlatform)}
                       </dd>

@@ -1,35 +1,27 @@
-BOOSTINGPEDIA — PHASE 16O
-PAID ORDERS VISIBILITY RULES
+BOOSTINGPEDIA — PHASE 16P
+CONFIGURATION PAID EXTRAS CLEANUP
 
-1. Copy ZIP into project root.
-2. Replace:
-src/features/booster/server/booster-orders.ts
+Copy into project root.
 
-3. No Supabase migration.
+ADD:
+src/components/orders/order-configuration-summary.tsx
 
-4. Commit / push:
+REPLACE:
+src/components/dashboard/customer-order-workspace.tsx
+src/components/booster/booster-order-workspace.tsx
 
-Phase 16O - Paid Orders Visibility Rules
+NO Supabase migration.
 
-VERIFY BOOSTER:
-/booster
-/booster/orders
+Suggested commit:
+Phase 16P - Simplify Order Configuration
 
-Available:
-- only payment_status=paid
-- only paid/queued core status
-- no already assigned orders
-
-In Progress:
-- only assigned orders that remain payment_status=paid
-
-Completed:
-- only completed orders that remain payment_status=paid
-
-CUSTOMER:
-/dashboard/orders
-- pending-payment orders remain visible to the customer
-
-No pricing changes.
-No payout changes.
-No DB changes.
+VERIFY CUSTOMER + BOOSTER:
+- Configuration shows Current Rank → Desired Rank
+- real rank badges appear
+- Live Stream appears only if charged
+- Play With Booster appears only if charged
+- Express appears only if charged
+- Rank Insurance appears only if charged
+- false extras never appear
+- Appear Offline free option does not appear
+- no Platform / Playlist / raw Boost Method inside Configuration

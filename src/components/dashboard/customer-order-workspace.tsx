@@ -27,6 +27,7 @@ import {
   resolveRocketLeagueRank,
   RocketLeagueRankValue,
 } from "@/components/orders/rocket-league-rank";
+import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
 interface Props {
   order: OrderRecord;
@@ -65,17 +66,6 @@ function formatLabel(value: string) {
     .replace(/([A-Z])/g, " $1")
     .replace(/[_-]/g, " ")
     .replace(/^./, (letter) => letter.toUpperCase());
-}
-
-function formatValue(value: string | number | boolean) {
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  if (value === "play-with-booster") return "Play With Booster";
-  if (value === "account") return "Account Boost";
-
-  return String(value)
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function ProgressTimeline({
@@ -138,80 +128,6 @@ function ProgressTimeline({
         );
       })}
     </div>
-  );
-}
-
-function ConfigurationSection({
-  order,
-}: {
-  order: OrderRecord;
-}) {
-  const item = order.items[0];
-  if (!item) return null;
-
-  const config = item.configuration;
-  const currentValue =
-    typeof config.currentRank !== "undefined"
-      ? config.currentRank
-      : config.previousRank;
-  const targetValue = config.targetRank;
-
-  const rows = Object.entries(config).filter(
-    ([key]) =>
-      key !== "currentRank" &&
-      key !== "previousRank" &&
-      key !== "targetRank",
-  );
-
-  const currentRank = resolveRocketLeagueRank(currentValue);
-  const targetRank = resolveRocketLeagueRank(targetValue);
-
-  return (
-    <section className="border-t border-white/[0.05] pt-5">
-      <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
-        Configuration
-      </h2>
-
-      <div className="mt-3 divide-y divide-white/[0.05] border-y border-white/[0.05]">
-        {currentRank ? (
-          <div className="flex items-center justify-between gap-4 py-3">
-            <span className="text-[10px] text-[#667069]">
-              Current Rank
-            </span>
-            <RocketLeagueRankValue
-              value={currentValue}
-              size="sm"
-            />
-          </div>
-        ) : null}
-
-        {targetRank ? (
-          <div className="flex items-center justify-between gap-4 py-3">
-            <span className="text-[10px] text-[#667069]">
-              Target Rank
-            </span>
-            <RocketLeagueRankValue
-              value={targetValue}
-              size="sm"
-            />
-          </div>
-        ) : null}
-
-        {rows.map(([key, value]) => (
-          <div
-            key={key}
-            className="grid grid-cols-[minmax(120px,.72fr)_minmax(0,1.28fr)] gap-4 py-3"
-          >
-            <span className="text-[10px] text-[#667069]">
-              {formatLabel(key)}
-            </span>
-            <span className="text-right text-[10px] font-semibold text-[#F4F7F5]">
-              {formatValue(value)}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -319,7 +235,7 @@ export function CustomerOrderWorkspace({
             {targetRank ? (
               <RocketLeagueRankValue
                 value={targetValue}
-                label="Target"
+                label="Desired"
                 size="lg"
               />
             ) : null}
@@ -363,9 +279,14 @@ export function CustomerOrderWorkspace({
             />
           </section>
 
-          <div className="mt-6">
-            <ConfigurationSection order={order} />
-          </div>
+          {item ? (
+            <div className="mt-6">
+              <OrderConfigurationSummary
+                configuration={item.configuration}
+                priceBreakdown={item.priceBreakdown}
+              />
+            </div>
+          ) : null}
 
           <section className="mt-6 border-t border-white/[0.05] pt-5">
             <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
