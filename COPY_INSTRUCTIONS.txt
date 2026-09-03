@@ -1,14 +1,34 @@
-BOOSTINGPEDIA — DESKTOP AVATAR / MENU ALIGNMENT HOTFIX
+BOOSTINGPEDIA — PHASE 16M
+BOOSTER ORDER WORKSPACE FINAL UX POLISH
 
-1. Replace:
-src/components/marketing/site-header.tsx
+1. Copy ZIP into project root.
+2. Replace:
+src/components/booster/booster-order-workspace.tsx
 
-2. No Supabase migration.
+3. No Supabase migration.
 
-Suggested commit:
-Fix desktop account controls alignment
+4. Commit / push:
 
-Verify desktop:
-- notification bell, avatar and Menu sit on one horizontal line
-- avatar no longer appears above Menu
-- mobile hamburger/drawer behavior remains unchanged
+Phase 16M - Booster Order Workspace Final UX Polish
+
+VERIFY:
+/booster/orders/[id]
+
+Desktop:
+- service header feels open, not boxed
+- Current → Target uses real Rocket League badges
+- chat dominates the left workspace
+- payout/order/security/operations stay in right rail
+- back button returns to /booster/orders?view=active
+- no customer total is exposed as booster payout
+- configuration excludes duplicate Current/Target rows
+- recent activity stays compact
+
+Mobile:
+- service and progression stack cleanly
+- chat remains usable
+- operations appear below the main workspace
+
+No DB changes.
+No pricing changes.
+No payout changes.

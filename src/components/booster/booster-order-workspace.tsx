@@ -6,26 +6,23 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  CircleDollarSign,
-  Gamepad2,
+  Clock3,
   KeyRound,
+  Package,
+  ReceiptText,
 } from "lucide-react";
-import type { OrderRecord, OrderStatusEvent } from "@/features/orders/types/orders";
+import type {
+  OrderRecord,
+  OrderStatusEvent,
+} from "@/features/orders/types/orders";
 import type { OrderWorkspaceMessage } from "@/features/orders/server/order-workspace-repository";
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
-
-const rankAssets: Record<string, string> = {
-  bronze: "/ranks/rocket-league/bronze.png",
-  silver: "/ranks/rocket-league/silver.png",
-  gold: "/ranks/rocket-league/gold.png",
-  platinum: "/ranks/rocket-league/platinum.png",
-  diamond: "/ranks/rocket-league/diamond.png",
-  champion: "/ranks/rocket-league/champion.png",
-  "grand-champion": "/ranks/rocket-league/grand-champion.png",
-  "supersonic-legend": "/ranks/rocket-league/supersonic-legend.png",
-};
+import {
+  resolveRocketLeagueRank,
+  RocketLeagueRankValue,
+} from "@/components/orders/rocket-league-rank";
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -58,51 +55,82 @@ function formatValue(value: string | number | boolean) {
   return formatLabel(String(value));
 }
 
-function rankFamily(value: string) {
-  if (value === "supersonic-legend") return value;
-  return value.replace(/-\d$/, "");
+function statusPresentation(status: string) {
+  switch (status) {
+    case "in_progress":
+      return {
+        label: "In Progress",
+        className:
+          "border-cyan-300/15 bg-cyan-300/[0.055] text-cyan-200",
+      };
+    case "completed":
+      return {
+        label: "Completed",
+        className:
+          "border-[#39E56F]/15 bg-[#39E56F]/[0.055] text-[#82F5A4]",
+      };
+    case "queued":
+    case "paid":
+      return {
+        label: "Ready",
+        className:
+          "border-blue-300/15 bg-blue-300/[0.05] text-blue-200",
+      };
+    case "cancelled":
+    case "refunded":
+      return {
+        label: formatLabel(status),
+        className:
+          "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]",
+      };
+    default:
+      return {
+        label: formatLabel(status),
+        className:
+          "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]",
+      };
+  }
 }
 
-function rankLabel(value: string) {
-  if (value === "unrated") return "Unrated";
-  if (value === "supersonic-legend") return "Supersonic Legend";
-  const tier = value.match(/-(\d)$/)?.[1];
-  const family = rankFamily(value)
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-  const roman = tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : "";
-  return `${family}${roman ? ` ${roman}` : ""}`;
-}
+function ConfigurationRows({
+  configuration,
+}: {
+  configuration: Record<string, string | number | boolean>;
+}) {
+  const rows = Object.entries(configuration).filter(
+    ([key]) =>
+      key !== "currentRank" &&
+      key !== "previousRank" &&
+      key !== "targetRank",
+  );
 
-function isRank(value: unknown): value is string {
-  if (typeof value !== "string") return false;
-  if (value === "unrated" || value === "supersonic-legend") return true;
-  return Boolean(rankAssets[rankFamily(value)] && /-\d$/.test(value));
-}
+  if (!rows.length) return null;
 
-function RankCompact({ label, rank }: { label: string; rank: string }) {
-  const asset = rankAssets[rankFamily(rank)];
   return (
-    <div className="flex min-w-0 items-center gap-2.5">
-      {asset ? (
-        <Image
-          src={asset}
-          alt=""
-          width={38}
-          height={38}
-          className="size-9 shrink-0 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.45)]"
-        />
-      ) : null}
-      <div className="min-w-0">
-        <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">
-          {label}
-        </p>
-        <p className="font-gaming-value mt-0.5 truncate text-[11px] font-bold text-[#F4F7F5]">
-          {rankLabel(rank)}
-        </p>
+    <section className="border-t border-white/[0.05] pt-5">
+      <div className="flex items-center gap-2">
+        <ReceiptText className="size-3.5 text-[#667069]" />
+        <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+          Configuration
+        </h2>
       </div>
-    </div>
+
+      <div className="mt-3 grid gap-x-8 sm:grid-cols-2">
+        {rows.map(([key, value]) => (
+          <div
+            key={key}
+            className="flex items-center justify-between gap-4 border-b border-white/[0.045] py-2.5"
+          >
+            <span className="text-[9px] text-[#667069]">
+              {formatLabel(key)}
+            </span>
+            <span className="max-w-[62%] text-right text-[10px] font-semibold text-[#F4F7F5]">
+              {formatValue(value)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -121,174 +149,280 @@ export function BoosterOrderWorkspace({
 }) {
   const item = order.items[0];
   const config = item?.configuration ?? {};
+
   const currentValue =
-    typeof config.currentRank !== "undefined" ? config.currentRank : config.previousRank;
+    typeof config.currentRank !== "undefined"
+      ? config.currentRank
+      : config.previousRank;
+
   const targetValue = config.targetRank;
+  const currentRank = resolveRocketLeagueRank(currentValue);
+  const targetRank = resolveRocketLeagueRank(targetValue);
   const suggestedPlatform =
     typeof config.platform === "string" ? config.platform : undefined;
-  const currentRank = isRank(currentValue) ? currentValue : null;
-  const targetRank = isRank(targetValue) ? targetValue : null;
+
+  const status = statusPresentation(order.status);
 
   return (
-    <div className="min-h-[calc(100dvh-64px)] bg-[#050807]">
+    <div className="min-h-[calc(100dvh-56px)] bg-[#050807]">
       <div className="mx-auto w-full max-w-[1520px] px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.05] pb-3">
           <Link
-            href="/booster?view=active"
+            href="/booster/orders?view=active"
             className="inline-flex items-center text-[10px] font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
           >
             <ArrowLeft className="mr-1.5 size-3.5" />
-            Active Orders
+            Orders
           </Link>
 
           <div className="flex items-center gap-2 text-[9px] text-[#667069]">
-            <span>{order.orderNumber}</span>
+            <span className="font-gaming-value">
+              {order.orderNumber}
+            </span>
             <span className="text-white/[0.12]">•</span>
             <span>{formatDate(order.createdAt)}</span>
           </div>
         </div>
 
-        <div className="grid min-h-[720px] gap-4 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
-          <main className="min-w-0">
-            <section className="mb-4 flex flex-col gap-4 rounded-xl border border-white/[0.06] bg-[#0A0F0C] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#39E56F]/10 bg-[#39E56F]/[0.035] text-[#82F5A4]">
-                  <Gamepad2 className="size-4" />
+        <header className="flex flex-col gap-5 py-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-center gap-3.5">
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0E1411]">
+              <Image
+                src="/game-cards/rocket-league.webp"
+                alt=""
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
+            </div>
+
+            <div className="min-w-0">
+              <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
+                {item?.gameName ?? "Rocket League"}
+              </p>
+              <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.03em] text-[#F4F7F5]">
+                {item?.serviceName ?? "Boost Order"}
+              </h1>
+              <div className="mt-2 flex items-center gap-2">
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold ${status.className}`}
+                >
+                  {status.label}
                 </span>
+                <span className="text-[9px] text-[#667069]">
+                  Paid order
+                </span>
+              </div>
+            </div>
+          </div>
 
-                <div className="min-w-0">
-                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
-                    {item?.gameName ?? "Rocket League"}
+          {(currentRank || targetRank) ? (
+            <div className="flex min-w-0 items-center gap-4 lg:justify-end">
+              {currentRank ? (
+                <RocketLeagueRankValue
+                  value={currentValue}
+                  label="Current"
+                  size="lg"
+                />
+              ) : null}
+
+              {currentRank && targetRank ? (
+                <ArrowRight className="size-4 shrink-0 text-blue-200/30" />
+              ) : null}
+
+              {targetRank ? (
+                <RocketLeagueRankValue
+                  value={targetValue}
+                  label="Target"
+                  size="lg"
+                />
+              ) : null}
+            </div>
+          ) : null}
+        </header>
+
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_410px]">
+          <main className="min-w-0">
+            <section>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                    Order Communication
                   </p>
-                  <h1 className="mt-0.5 truncate text-[16px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
-                    {item?.serviceName ?? "Boost Order"}
-                  </h1>
+                  <h2 className="mt-1 text-[15px] font-semibold text-[#F4F7F5]">
+                    Conversation
+                  </h2>
                 </div>
+
+                <span className="hidden text-[9px] text-[#667069] sm:block">
+                  Customer ↔ Booster
+                </span>
               </div>
 
-              <div className="flex items-center gap-5">
-                {currentRank ? <RankCompact label="Current" rank={currentRank} /> : null}
-                {currentRank && targetRank ? (
-                  <ArrowRight className="size-3.5 shrink-0 text-[#667069]" />
-                ) : null}
-                {targetRank ? <RankCompact label="Target" rank={targetRank} /> : null}
-              </div>
+              <OrderLiveChat
+                orderId={order.id}
+                currentUserId={currentUserId}
+                initialMessages={initialMessages}
+              />
             </section>
 
-            <OrderLiveChat
-              orderId={order.id}
-              currentUserId={currentUserId}
-              initialMessages={initialMessages}
-            />
-
-            <section className="mt-4 rounded-xl border border-white/[0.06] bg-[#0A0F0C] p-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-3.5 text-[#667069]" />
-                <h2 className="text-[11px] font-semibold text-[#F4F7F5]">Order Configuration</h2>
-              </div>
-
-              <div className="mt-3 grid gap-x-8 gap-y-0 sm:grid-cols-2">
-                {Object.entries(config).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between gap-4 border-b border-white/[0.045] py-2.5"
-                  >
-                    <span className="text-[9px] text-[#667069]">{formatLabel(key)}</span>
-                    <span className="text-right text-[10px] font-semibold text-[#F4F7F5]">
-                      {formatValue(value)}
-                    </span>
+            <div className="mt-6 space-y-6">
+              {(currentRank || targetRank) ? (
+                <section className="border-t border-white/[0.05] pt-5">
+                  <div className="flex items-center gap-2">
+                    <Package className="size-3.5 text-[#667069]" />
+                    <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                      Service Progression
+                    </h2>
                   </div>
-                ))}
-              </div>
-            </section>
+
+                  <div className="mt-4 flex items-center gap-5">
+                    {currentRank ? (
+                      <RocketLeagueRankValue
+                        value={currentValue}
+                        label="Current Rank"
+                        size="md"
+                      />
+                    ) : null}
+
+                    {currentRank && targetRank ? (
+                      <ArrowRight className="size-3.5 shrink-0 text-blue-200/30" />
+                    ) : null}
+
+                    {targetRank ? (
+                      <RocketLeagueRankValue
+                        value={targetValue}
+                        label="Target Rank"
+                        size="md"
+                      />
+                    ) : null}
+                  </div>
+                </section>
+              ) : null}
+
+              <ConfigurationRows configuration={config} />
+
+              {history.length ? (
+                <section className="border-t border-white/[0.05] pt-5">
+                  <div className="flex items-center gap-2">
+                    <Clock3 className="size-3.5 text-[#667069]" />
+                    <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                      Recent Activity
+                    </h2>
+                  </div>
+
+                  <div className="mt-3 divide-y divide-white/[0.045] border-y border-white/[0.045]">
+                    {history
+                      .slice(-4)
+                      .reverse()
+                      .map((event) => (
+                        <div
+                          key={event.id}
+                          className="flex items-center justify-between gap-4 py-3"
+                        >
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <CheckCircle2 className="size-3.5 shrink-0 text-[#82F5A4]/70" />
+                            <span className="truncate text-[10px] font-medium text-[#F4F7F5]">
+                              {formatLabel(event.toStatus)}
+                            </span>
+                          </div>
+                          <span className="shrink-0 text-[8px] text-[#667069]">
+                            {formatDate(event.createdAt)}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </section>
+              ) : null}
+            </div>
           </main>
 
-          <aside className="min-w-0 space-y-4 xl:sticky xl:top-20 xl:self-start">
-            <section className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0D120F]">
-              <div className="border-b border-white/[0.05] px-4 py-3">
-                <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
-                  Order Details
-                </p>
-              </div>
-
-              <div className="p-4">
+          <aside className="min-w-0 xl:sticky xl:top-[72px] xl:self-start">
+            <div className="border-y border-white/[0.06]">
+              <section className="py-4">
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[9px] text-[#667069]">Booster payout</p>
-                    <p className="font-gaming-value mt-1 text-2xl font-bold text-[#82F5A4]">
+                    <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                      Booster Payout
+                    </p>
+                    <p className="font-gaming-value mt-1 text-2xl font-bold tracking-[-0.02em] text-[#82F5A4]">
                       {formatMoney(boosterPayout)}
                     </p>
                   </div>
 
-                  <span className="rounded-lg border border-[#39E56F]/12 bg-[#39E56F]/[0.045] px-2.5 py-1.5 text-[9px] font-semibold text-[#82F5A4]">
-                    {formatLabel(order.status)}
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold ${status.className}`}
+                  >
+                    {status.label}
                   </span>
                 </div>
 
                 <dl className="mt-4 divide-y divide-white/[0.045]">
-                  <div className="flex items-center justify-between py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Order</dt>
+                  <div className="flex items-center justify-between gap-4 py-2.5">
+                    <dt className="text-[9px] text-[#667069]">
+                      Order
+                    </dt>
                     <dd className="font-gaming-value text-[10px] font-bold text-[#F4F7F5]">
                       {order.orderNumber}
                     </dd>
                   </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Payment</dt>
+                  <div className="flex items-center justify-between gap-4 py-2.5">
+                    <dt className="text-[9px] text-[#667069]">
+                      Payment
+                    </dt>
                     <dd className="text-[10px] font-semibold text-[#82F5A4]">
                       {formatLabel(order.paymentStatus)}
                     </dd>
                   </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Service</dt>
-                    <dd className="max-w-[190px] truncate text-right text-[10px] font-semibold text-[#F4F7F5]">
+                  <div className="flex items-center justify-between gap-4 py-2.5">
+                    <dt className="text-[9px] text-[#667069]">
+                      Service
+                    </dt>
+                    <dd className="max-w-[220px] truncate text-right text-[10px] font-semibold text-[#F4F7F5]">
                       {item?.serviceName ?? "Gaming Service"}
                     </dd>
                   </div>
-                </dl>
-              </div>
-            </section>
-
-            <section className="rounded-xl border border-white/[0.07] bg-[#0D120F] p-4">
-              <div className="mb-1 flex items-center gap-2">
-                <KeyRound className="size-3.5 text-[#667069]" />
-                <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
-                  Secure Access
-                </p>
-              </div>
-              <OrderAccountDetails orderId={order.id} canEdit={false} />
-            </section>
-
-            <section className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0D120F]">
-              <OrderOperationsPanel
-                orderId={order.id}
-                canManage
-                suggestedPlatform={suggestedPlatform}
-                orderStatus={order.status}
-              />
-            </section>
-
-            {history.length ? (
-              <section className="rounded-xl border border-white/[0.07] bg-[#0D120F] p-4">
-                <div className="flex items-center gap-2">
-                  <CircleDollarSign className="size-3.5 text-[#667069]" />
-                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
-                    Order History
-                  </p>
-                </div>
-                <div className="mt-3 space-y-2.5">
-                  {history.slice(-4).reverse().map((event) => (
-                    <div key={event.id} className="border-l border-white/[0.07] pl-3">
-                      <p className="text-[9px] font-semibold text-[#F4F7F5]">
-                        {formatLabel(event.toStatus)}
-                      </p>
-                      <p className="mt-0.5 text-[8px] text-[#667069]">
-                        {formatDate(event.createdAt)}
-                      </p>
+                  {suggestedPlatform ? (
+                    <div className="flex items-center justify-between gap-4 py-2.5">
+                      <dt className="text-[9px] text-[#667069]">
+                        Platform
+                      </dt>
+                      <dd className="text-[10px] font-semibold text-[#F4F7F5]">
+                        {formatLabel(suggestedPlatform)}
+                      </dd>
                     </div>
-                  ))}
-                </div>
+                  ) : null}
+                </dl>
               </section>
-            ) : null}
+
+              <section className="border-t border-white/[0.05] py-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <KeyRound className="size-3.5 text-[#667069]" />
+                  <div>
+                    <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                      Secure Account Access
+                    </p>
+                    <p className="mt-0.5 text-[9px] text-[#A0AAA4]">
+                      Customer credentials for this order
+                    </p>
+                  </div>
+                </div>
+
+                <OrderAccountDetails
+                  orderId={order.id}
+                  canEdit={false}
+                />
+              </section>
+
+              <section className="border-t border-white/[0.05]">
+                <OrderOperationsPanel
+                  orderId={order.id}
+                  canManage
+                  suggestedPlatform={suggestedPlatform}
+                  orderStatus={order.status}
+                />
+              </section>
+            </div>
           </aside>
         </div>
       </div>
