@@ -64,15 +64,13 @@ export function calculateRocketLeagueTournamentQuote(
     throw new Error("Appear Offline is not available with Play With Booster.");
   }
 
-  const playlistPrice = roundMoney(basePrice * (playlistMultiplier - 1));
-  const afterPlaylist = roundMoney(basePrice + playlistPrice);
-
-  const methodMultiplier = boostMethod === "play-with-booster" ? 1.45 : 1;
-  const methodPrice = roundMoney(afterPlaylist * (methodMultiplier - 1));
-  const servicePrice = roundMoney(afterPlaylist + methodPrice);
-
+  const baseServicePrice = basePrice;
+  const playlistPrice = roundMoney(baseServicePrice * (playlistMultiplier - 1));
+  const methodPrice =
+    boostMethod === "play-with-booster" ? roundMoney(baseServicePrice * 0.45) : 0;
   const expressPrice =
-    selection.expressDelivery === true ? roundMoney(servicePrice * 0.2) : 0;
+    selection.expressDelivery === true ? roundMoney(baseServicePrice * 0.2) : 0;
+  const servicePrice = roundMoney(baseServicePrice + playlistPrice + methodPrice);
   const liveStreamPrice = selection.liveStream === true ? 10 : 0;
 
   const breakdown: QuoteBreakdownItem[] = [
@@ -110,6 +108,6 @@ export function calculateRocketLeagueTournamentQuote(
     discount: 0,
     total,
     breakdown,
-    ruleSetVersion: "rocket-league-tournament-v1.0",
+    ruleSetVersion: "rocket-league-tournament-v1.1",
   };
 }

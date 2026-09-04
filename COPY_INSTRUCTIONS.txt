@@ -1,80 +1,60 @@
-PHASE 17A — Admin Live Support Foundation
+PHASE 17B — Flat Percentage Modifier Pricing Fix
 
 PURPOSE
-Add a global pre-sale Live Support Chat for:
-Website Visitor / Customer <-> Admin
+Fix percentage-based extras/modifiers so they are always calculated from the
+same base service price instead of compounding on top of previously selected extras.
 
-There is NO support-staff role in this phase.
-Only users with profiles.role = 'admin' can read and answer support conversations.
+BEFORE
+Base $100
++20% playlist => $120
++45% Play With Booster calculated from $120
++20% Express calculated from the already modified amount
 
-IMPORTANT ORDER OF INSTALLATION
-1. Copy the src/ and supabase/ folders from this ZIP into the project root.
-2. Apply the included Supabase migration:
-   supabase/migrations/20260903130100_admin_live_support_foundation.sql
-3. Commit/push to GitHub.
-4. Allow Vercel to deploy normally.
+This caused compounded/exponential price growth.
 
-WHAT IS INCLUDED
+AFTER
+Base $100
++20% playlist = +$20
++45% Play With Booster = +$45
++20% Express = +$20
 
-PUBLIC / CUSTOMER
-- Global floating Live Support button in the bottom-right corner.
-- Available across the website except /admin pages.
-- Visitors can start a conversation without logging in or purchasing an order.
-- Signed-in customers are linked to their existing identity automatically.
-- Anonymous session stored with a secure HttpOnly cookie.
-- Messages persist across page navigation and browser refreshes.
-- Unread admin replies display on the floating button.
-- Conversation can be reopened by sending a new message after it was closed.
-- Mobile-safe positioning and responsive support window.
+Every percentage is calculated from the SAME base service price.
 
-ADMIN
-- New protected page: /admin/support
-- Protected by existing requireAdmin().
-- Open / Closed conversation filters.
-- Conversation queue with unread counts.
-- Active conversation panel.
-- Admin replies as "BoostingPedia Support".
-- Close and reopen conversations.
-- Live synchronization via short secure polling.
-- Link to Live Support added to current /admin page.
+ROCKET LEAGUE SERVICES FIXED
+- Rank Boost
+- Competitive Wins
+- Placements Boost
+- Rewards Boost
+- Tournament Boost
 
-SECURITY
-- support_conversations and support_messages have RLS enabled.
-- No browser-access RLS policies are created.
-- Visitor access is validated server-side with a random session token stored only as a SHA-256 hash in the database.
-- Admin access is validated server-side by requireAdmin().
-- Browser clients never receive the Supabase secret key.
-- Visitor messages are limited to 1500 characters.
-- Basic per-conversation anti-spam limit: max 12 visitor messages per minute.
+GENERIC PRICING ENGINE
+- Mock percentage modifiers are now additive percentages.
+- Database option_multiplier / boolean_multiplier rules are now combined additively
+  against the same calculated service base instead of multiplied together.
 
-DATABASE
-Creates:
-- public.support_conversations
-- public.support_messages
+IMPORTANT PRICING BEHAVIOR
+- Rank progression/package price remains unchanged.
+- Existing volume/package discounts remain unchanged.
+- For Wins / Placements / Rewards, the discounted core service price is the percentage base.
+- Fixed-price extras such as Live Stream +$10 remain fixed-price.
+- Appear Offline remains $0.
+- Existing orders and stored price snapshots are not recalculated.
+- New quotes/orders use the corrected behavior.
 
-This migration IS REQUIRED.
+RULE SET VERSION
+Rocket League service-specific pricing versions were bumped from v1.0 to v1.1
+so new order snapshots reflect the pricing-engine correction.
 
-REALTIME NOTE
-Phase 17A intentionally uses short polling rather than exposing anonymous Supabase Realtime access.
-Visitor open chat: refresh approx. every 3.5 seconds.
-Admin active chat: refresh approx. every 3 seconds.
-This keeps anonymous conversations private and gives near-live behavior without weakening RLS.
-Realtime can be upgraded later if desired.
+FILES TO REPLACE
+1. src/features/pricing/server/calculate-quote.ts
+2. src/features/pricing/server/rocket-league-rank-pricing.ts
+3. src/features/pricing/server/rocket-league-wins-pricing.ts
+4. src/features/pricing/server/rocket-league-placements-pricing.ts
+5. src/features/pricing/server/rocket-league-rewards-pricing.ts
+6. src/features/pricing/server/rocket-league-tournament-pricing.ts
 
-NOT CHANGED
-- order_messages / order live chat
-- auth roles
-- booster assignment
-- checkout/payment
-- customer dashboard order logic
-- Secure Account Access
-- order lifecycle
-- notifications
-- existing RLS
-
-VALIDATION
-- New/modified TypeScript and TSX files passed a TypeScript transpile syntax check.
-- Full npm typecheck could not be completed in the isolated artifact environment because project node_modules were unavailable.
+SUPABASE
+No migration required.
 
 RECOMMENDED COMMIT
-feat: add admin pre-sale live support chat
+fix: calculate percentage modifiers from base service price

@@ -67,11 +67,11 @@ function validateSelection(
 }
 
 function mockModifierMultiplier(selection: ConfiguratorSelection, category: string) {
-  let multiplier = 1;
-  if (selection.queue === "duo") multiplier *= category === "rank" ? 1.22 : 1.18;
-  if (selection.focus === "live") multiplier *= 1.12;
-  if (selection.priority === true) multiplier *= 1.15;
-  return multiplier;
+  let modifierPercentage = 0;
+  if (selection.queue === "duo") modifierPercentage += category === "rank" ? 0.22 : 0.18;
+  if (selection.focus === "live") modifierPercentage += 0.12;
+  if (selection.priority === true) modifierPercentage += 0.15;
+  return 1 + modifierPercentage;
 }
 
 function calculateWithMockRules(input: {
@@ -132,7 +132,7 @@ function calculateWithDatabaseRules(input: {
   rules: PricingRule[];
 }): Omit<QuotePreview, "ruleSetVersion"> {
   let base = input.startingPrice;
-  let multiplier = 1;
+  let modifierPercentage = 0;
   let discountPercentage = 0;
   let discountThreshold = Number.POSITIVE_INFINITY;
   const breakdown: QuoteBreakdownItem[] = [{ label: "Base service", amount: base }];
@@ -162,7 +162,7 @@ function calculateWithDatabaseRules(input: {
 
     if ((rule.ruleType === "option_multiplier" || rule.ruleType === "boolean_multiplier") && matchesCondition(rule, input.selection)) {
       const value = asNumber(rule.effect.multiplier, 1);
-      multiplier *= value;
+      modifierPercentage += value - 1;
     }
 
     if (rule.ruleType === "threshold_discount") {
@@ -171,7 +171,7 @@ function calculateWithDatabaseRules(input: {
     }
   }
 
-  const subtotal = roundMoney(base * multiplier);
+  const subtotal = roundMoney(base * (1 + modifierPercentage));
   const modifierAmount = roundMoney(subtotal - base);
   if (modifierAmount > 0) breakdown.push({ label: "Selected modifiers", amount: modifierAmount });
 

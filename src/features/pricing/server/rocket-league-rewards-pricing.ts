@@ -103,15 +103,13 @@ export function calculateRocketLeagueRewardsQuote(
   const packageDiscount = roundMoney(rawWinsPrice * discountRate);
   const discountedWinsPrice = roundMoney(rawWinsPrice - packageDiscount);
 
-  const playlistPrice = roundMoney(discountedWinsPrice * (playlistMultiplier - 1));
-  const afterPlaylist = roundMoney(discountedWinsPrice + playlistPrice);
-
-  const methodMultiplier = boostMethod === "play-with-booster" ? 1.45 : 1;
-  const methodPrice = roundMoney(afterPlaylist * (methodMultiplier - 1));
-  const servicePrice = roundMoney(afterPlaylist + methodPrice);
-
+  const baseServicePrice = discountedWinsPrice;
+  const playlistPrice = roundMoney(baseServicePrice * (playlistMultiplier - 1));
+  const methodPrice =
+    boostMethod === "play-with-booster" ? roundMoney(baseServicePrice * 0.45) : 0;
   const expressPrice =
-    selection.expressDelivery === true ? roundMoney(servicePrice * 0.2) : 0;
+    selection.expressDelivery === true ? roundMoney(baseServicePrice * 0.2) : 0;
+  const servicePrice = roundMoney(baseServicePrice + playlistPrice + methodPrice);
   const liveStreamPrice = selection.liveStream === true ? 10 : 0;
 
   const breakdown: QuoteBreakdownItem[] = [
@@ -159,6 +157,6 @@ export function calculateRocketLeagueRewardsQuote(
     discount: packageDiscount,
     total,
     breakdown,
-    ruleSetVersion: "rocket-league-rewards-v1.0",
+    ruleSetVersion: "rocket-league-rewards-v1.1",
   };
 }

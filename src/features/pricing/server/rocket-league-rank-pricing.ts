@@ -4,7 +4,7 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 
-const VERSION = "rocket-league-rank-v1.0";
+const VERSION = "rocket-league-rank-v1.1";
 
 const rankOrder = [
   "bronze-1", "bronze-2", "bronze-3",
@@ -145,44 +145,43 @@ export function calculateRocketLeagueRankQuote(selection: ConfiguratorSelection)
     { label: `Rank boost · ${progression.steps} tier step${progression.steps === 1 ? "" : "s"}`, amount: progression.packagePrice },
   ];
 
-  let configuredService = progression.packagePrice;
+  const baseServicePrice = progression.packagePrice;
+  let percentageExtras = 0;
 
   if (playlist.multiplier > 1) {
-    const playlistAmount = roundMoney(configuredService * (playlist.multiplier - 1));
-    configuredService = roundMoney(configuredService + playlistAmount);
+    const playlistAmount = roundMoney(baseServicePrice * (playlist.multiplier - 1));
+    percentageExtras += playlistAmount;
     breakdown.push({ label: playlist.label, amount: playlistAmount });
   }
 
   if (selection.boostMethod === "play-with-booster") {
-    const methodAmount = roundMoney(configuredService * 0.45);
-    configuredService = roundMoney(configuredService + methodAmount);
+    const methodAmount = roundMoney(baseServicePrice * 0.45);
+    percentageExtras += methodAmount;
     breakdown.push({ label: "Play With Booster", amount: methodAmount });
   }
 
-  let extras = 0;
-
   if (selection.expressDelivery === true) {
-    const amount = roundMoney(configuredService * 0.2);
-    extras += amount;
+    const amount = roundMoney(baseServicePrice * 0.2);
+    percentageExtras += amount;
     breakdown.push({ label: "Express Delivery", amount });
   }
 
   if (selection.rankInsurance === true) {
-    const amount = roundMoney(configuredService * 0.5);
-    extras += amount;
+    const amount = roundMoney(baseServicePrice * 0.5);
+    percentageExtras += amount;
     breakdown.push({ label: "Rank Insurance", amount });
   }
 
-  if (selection.liveStream === true) {
-    extras += 10;
-    breakdown.push({ label: "Live Stream", amount: 10 });
+  const liveStreamPrice = selection.liveStream === true ? 10 : 0;
+  if (liveStreamPrice > 0) {
+    breakdown.push({ label: "Live Stream", amount: liveStreamPrice });
   }
 
   if (selection.appearOffline === true) {
     breakdown.push({ label: "Appear Offline", amount: 0 });
   }
 
-  const total = roundMoney(configuredService + extras);
+  const total = roundMoney(baseServicePrice + percentageExtras + liveStreamPrice);
 
   return {
     currency: "USD",
