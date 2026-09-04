@@ -11,6 +11,7 @@ import type {
   QuotePreview,
   ServiceConfiguratorSchema,
 } from "../types/configurator";
+import { ValorantServiceConfigurator } from "./valorant-service-configurator";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -26,7 +27,15 @@ interface ServiceConfiguratorProps {
   schema: ServiceConfiguratorSchema;
 }
 
-export function ServiceConfigurator({ gameSlug, service, schema }: ServiceConfiguratorProps) {
+export function ServiceConfigurator(props: ServiceConfiguratorProps) {
+  if (props.gameSlug === "valorant") {
+    return <ValorantServiceConfigurator {...props} />;
+  }
+
+  return <GenericServiceConfigurator {...props} />;
+}
+
+function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfiguratorProps) {
   const router = useRouter();
   const defaults = useMemo(() => getDefaultSelection(schema), [schema]);
   const [selection, setSelection] = useState<ConfiguratorSelection>(defaults);
