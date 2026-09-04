@@ -1,48 +1,33 @@
-PHASE 18B — Orders Marketplace Polish
+PHASE 17A.3 — Admin Orders Relationship Fix
 
-SCOPE
-Visual polish only for:
-/dashboard/orders
+ROOT CAUSE
+/admin failed with:
+Could not embed because more than one relationship was found for 'orders' and 'profiles'
 
-FILE TO REPLACE
-1. src/components/dashboard/dashboard-orders-hub.tsx
+FIX
+The admin orders query now explicitly uses the existing foreign key:
+orders_user_id_fkey
 
-WHAT CHANGED
-- List View is now the default on desktop.
-- Mobile always uses compact cards.
-- Removed the large game sidebar.
-- Game selection moved into a compact inline filter.
-- Status filters are cleaner tab-style controls.
-- Added compact Active / Delivered / Completed counters.
-- Desktop list now has clear Service / Goal / Options / Status-Total columns.
-- Order hierarchy emphasizes:
-  game -> service -> competitive goal -> status -> total.
-- Rocket League rank badges remain real and reuse the existing resolver.
-- Rank Boost shows Current -> Target.
-- Services with only current rank show only Current.
-- Wins / Placements show their actual quantity when no rank target exists.
-- Existing extras remain visible as subtle tags.
-- Search and Grid/List toggle remain available.
-- No new glows, fake activity, fake progress or invented data.
+Changed:
+profiles(full_name, gamer_tag, phone)
 
-NOT CHANGED
-- /dashboard
-- /dashboard/orders/[id]
-- order queries
-- order lifecycle
-- booster permissions
-- chat
-- presence
-- pricing
-- checkout
-- Supabase / RLS
+To:
+profiles!orders_user_id_fkey(full_name, gamer_tag, phone)
 
-ONLINE / LAST SEEN
-Not included in this phase because it belongs to the order workspace.
-It will be restored in Phase 18C using the existing real user_presence system.
+FILES TO REPLACE
+1. src/features/admin/server/admin-orders.ts
 
 SUPABASE
 No migration required.
 
+NOT CHANGED
+- Live Support
+- Dashboard
+- Order lifecycle
+- Checkout
+- Pricing
+- RLS
+- Auth roles
+
 RECOMMENDED COMMIT
-style: polish customer orders marketplace
+fix: disambiguate admin orders customer profile relation
