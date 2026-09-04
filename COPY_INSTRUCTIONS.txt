@@ -1,17 +1,33 @@
-PHASE 17A.2 — Admin Support Sidebar Access
+PHASE 17A.3 — Admin Orders Relationship Fix
+
+ROOT CAUSE
+/admin failed with:
+Could not embed because more than one relationship was found for 'orders' and 'profiles'
+
+FIX
+The admin orders query now explicitly uses the existing foreign key:
+orders_user_id_fkey
+
+Changed:
+profiles(full_name, gamer_tag, phone)
+
+To:
+profiles!orders_user_id_fkey(full_name, gamer_tag, phone)
 
 FILES TO REPLACE
-1. src/components/dashboard/dashboard-shell.tsx
-
-WHAT CHANGED
-- Added a Support navigation item under ACCESS.
-- Support appears only when canAccessAdmin === true.
-- Link target: /admin/support
-- Existing Booster Account and Admin links remain unchanged.
-- No permissions were weakened; /admin/support remains protected by requireAdmin().
+1. src/features/admin/server/admin-orders.ts
 
 SUPABASE
 No migration required.
 
+NOT CHANGED
+- Live Support
+- Dashboard
+- Order lifecycle
+- Checkout
+- Pricing
+- RLS
+- Auth roles
+
 RECOMMENDED COMMIT
-feat: add live support access to admin sidebar
+fix: disambiguate admin orders customer profile relation

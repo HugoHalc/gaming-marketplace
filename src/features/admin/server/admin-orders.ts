@@ -76,7 +76,7 @@ export interface AdminOrderRecord extends OrderRecord {
 const ORDER_SELECT = `
   id, user_id, order_number, status, payment_status, currency,
   subtotal_cents, discount_cents, total_cents, customer_note, created_at, updated_at,
-  profiles(full_name, gamer_tag, phone),
+  profiles!orders_user_id_fkey(full_name, gamer_tag, phone),
   order_items(id, game_name, service_name, service_category, configuration, price_breakdown, rule_set_version, subtotal_cents, discount_cents, total_cents),
   payments(id, provider, status, amount_cents, currency, stripe_checkout_session_id, stripe_payment_intent_id, paid_at, created_at)
 `;
