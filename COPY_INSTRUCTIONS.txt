@@ -1,33 +1,49 @@
-PHASE 17A.3 — Admin Orders Relationship Fix
+PHASE 18 FINAL — Order Chat Counterpart + Presence Recovery
 
-ROOT CAUSE
-/admin failed with:
-Could not embed because more than one relationship was found for 'orders' and 'profiles'
+PURPOSE
+Restore the previously completed order-chat header behavior without redesigning
+the dashboard or order workspace.
 
-FIX
-The admin orders query now explicitly uses the existing foreign key:
-orders_user_id_fkey
+RESTORED BEHAVIOR
+CUSTOMER VIEW
+- Header shows the assigned Booster name/avatar.
+- Shows Booster timezone when available.
+- Shows real Online state.
+- When offline, shows Last seen.
 
-Changed:
-profiles(full_name, gamer_tag, phone)
+BOOSTER VIEW
+- Header shows the Customer name/avatar.
+- Shows Customer timezone when available.
+- Shows real Online state.
+- When offline, shows Last seen.
 
-To:
-profiles!orders_user_id_fkey(full_name, gamer_tag, phone)
+PRESENCE REFRESH
+- /api/orders/[id]/chat-state is refreshed every 30 seconds while the chat is mounted.
+- This allows Online / Last seen to update without reloading the page.
 
-FILES TO REPLACE
-1. src/features/admin/server/admin-orders.ts
+IMPORTANT
+- Uses the existing OrderConversationParticipant returned by the current backend.
+- No fake presence or names.
+- Existing UserPresenceReporter and /api/presence remain unchanged.
+- Existing order realtime messages remain unchanged.
+- Existing unread behavior remains unchanged.
+- Existing chat permissions remain unchanged.
+- Existing Secure Account Access remains unchanged.
+- Existing moderation / Trust & Safety remains unchanged.
+- Phase 16P14 glow removal remains intact. Decorative radial glows are NOT restored.
+
+FILE TO REPLACE
+1. src/components/dashboard/order-live-chat.tsx
+
+VALIDATION
+- Built from the current GitHub main version of order-live-chat.tsx
+  (current blob matched the Phase 16P14 baseline).
+- Current order-workspace-repository.ts already contains the correct
+  Customer/Booster participant resolution and presence data.
+- TypeScript/TSX syntax transpile check passed.
 
 SUPABASE
 No migration required.
 
-NOT CHANGED
-- Live Support
-- Dashboard
-- Order lifecycle
-- Checkout
-- Pricing
-- RLS
-- Auth roles
-
 RECOMMENDED COMMIT
-fix: disambiguate admin orders customer profile relation
+fix: restore counterpart identity and presence in order chat
