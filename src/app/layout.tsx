@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Rajdhani } from "next/font/google";
 import { siteConfig } from "@/config/site";
+import { SupportChatWidget } from "@/components/support/support-chat-widget";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} ${rajdhani.variable} min-h-screen antialiased`}>
         {children}
+        <SupportChatWidget />
       </body>
     </html>
   );

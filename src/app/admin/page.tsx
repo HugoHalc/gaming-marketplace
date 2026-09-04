@@ -45,7 +45,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return <><SiteHeader/><main className="py-10 sm:py-14"><Container>
     <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
       <div><p className="text-sm font-semibold text-violet-300">ADMINISTRATION</p><h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Order operations</h1><p className="mt-3 max-w-2xl text-[var(--muted-foreground)]">Review payments, move verified orders through fulfillment, and keep a complete status history.</p></div>
-      <Link href="/dashboard" className="inline-flex w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/5">Customer dashboard</Link>
+      <div className="flex flex-wrap gap-2"><Link href="/admin/support" className="inline-flex w-fit rounded-xl border border-[#39E56F]/20 bg-[#39E56F]/[0.06] px-4 py-2 text-sm font-semibold text-[#82F5A4] hover:bg-[#39E56F]/[0.10]">Live Support</Link><Link href="/dashboard" className="inline-flex w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/5">Customer dashboard</Link></div>
     </div>
 
     {query.error ? <div className="mt-6 rounded-2xl border border-rose-300/20 bg-rose-400/[0.07] p-4 text-sm text-rose-100">{query.error}</div> : null}
