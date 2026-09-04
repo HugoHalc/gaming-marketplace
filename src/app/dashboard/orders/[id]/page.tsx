@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { CustomerOrderWorkspace } from "@/components/dashboard/customer-order-workspace";
 import { BoosterOrderWorkspace } from "@/components/booster/booster-order-workspace";
+import { OrderCheckoutRedirect } from "@/components/checkout/order-checkout-redirect";
 import { requireUser } from "@/features/auth/server/auth";
 import {
   getCurrentUserOrder,
@@ -67,6 +68,16 @@ export default async function OrderDetailPage({
 
   const order = await getCurrentUserOrder(id);
   if (!order) notFound();
+
+  const shouldStartCheckout =
+    order.status === "pending_payment" &&
+    (order.paymentStatus === "unpaid" || order.paymentStatus === "failed") &&
+    !query.checkout &&
+    !query.paymentError;
+
+  if (shouldStartCheckout) {
+    return <OrderCheckoutRedirect orderId={order.id} />;
+  }
 
   const [history, initialMessages, boosterAssignment] = await Promise.all([
     getCurrentUserOrderHistory(order.id),
