@@ -4,7 +4,7 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 
-const VERSION = "valorant-placements-v1.0";
+const VERSION = "valorant-placements-v1.1";
 
 const PRICE_PER_PLACEMENT: Record<string, number> = {
   unrated: 1.8,
@@ -71,6 +71,7 @@ export function calculateValorantPlacementsQuote(
   const matches = asInteger(selection.matches);
   const queue = String(selection.queue ?? "");
   const server = String(selection.server ?? "");
+  const platform = String(selection.platform ?? "");
 
   const perPlacement = PRICE_PER_PLACEMENT[currentRank];
   if (!perPlacement) throw new Error("Select a valid Valorant rank.");
@@ -79,6 +80,7 @@ export function calculateValorantPlacementsQuote(
   }
   if (!["solo", "duo"].includes(queue)) throw new Error("Select Solo or Duo.");
   if (!SERVERS.has(server)) throw new Error("Select a valid server.");
+  if (platform !== "pc") throw new Error("Valorant boosting is available for PC only.");
 
   assertBoolean(selection, "playOffline");
   assertBoolean(selection, "agentPreferences");

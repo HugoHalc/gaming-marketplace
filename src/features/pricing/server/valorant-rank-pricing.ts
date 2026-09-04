@@ -4,7 +4,7 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 
-const VERSION = "valorant-rank-v1.0";
+const VERSION = "valorant-rank-v1.1";
 
 const RANK_ORDER = [
   "iron-1",
@@ -122,6 +122,7 @@ export function calculateValorantRankQuote(
   const rrGain = String(selection.rrGain ?? "");
   const rrAmount = String(selection.rrAmount ?? "");
   const server = String(selection.server ?? "");
+  const platform = String(selection.platform ?? "");
 
   const progression = calculateProgression(currentRank, targetRank);
 
@@ -129,6 +130,7 @@ export function calculateValorantRankQuote(
   if (!(rrGain in RR_GAIN_MODIFIER)) throw new Error("Select a valid RR Gain.");
   if (!(rrAmount in RR_AMOUNT_MODIFIER)) throw new Error("Select a valid RR Amount.");
   if (!SERVERS.has(server)) throw new Error("Select a valid server.");
+  if (platform !== "pc") throw new Error("Valorant boosting is available for PC only.");
 
   assertBoolean(selection, "playOffline");
   assertBoolean(selection, "agentPreferences");

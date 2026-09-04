@@ -4,7 +4,7 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 
-const VERSION = "valorant-wins-v1.0";
+const VERSION = "valorant-wins-v1.1";
 
 const PRICE_PER_WIN: Record<string, number> = {
   "iron-1": 1.7,
@@ -72,6 +72,7 @@ export function calculateValorantWinsQuote(
   const queue = String(selection.queue ?? "");
   const rrGain = String(selection.rrGain ?? "");
   const server = String(selection.server ?? "");
+  const platform = String(selection.platform ?? "");
 
   const perWin = PRICE_PER_WIN[currentRank];
   if (!perWin) throw new Error("Select a valid Valorant rank.");
@@ -81,6 +82,7 @@ export function calculateValorantWinsQuote(
   if (!["solo", "duo"].includes(queue)) throw new Error("Select Solo or Duo.");
   if (!(rrGain in RR_GAIN_MODIFIER)) throw new Error("Select a valid RR Gain.");
   if (!SERVERS.has(server)) throw new Error("Select a valid server.");
+  if (platform !== "pc") throw new Error("Valorant boosting is available for PC only.");
 
   assertBoolean(selection, "playOffline");
   assertBoolean(selection, "agentPreferences");

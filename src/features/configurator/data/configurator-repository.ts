@@ -3,6 +3,7 @@ import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 import type { ServiceCategory } from "@/features/catalog/types/catalog";
 import type { ConfiguratorField, ConfiguratorOption, ServiceConfiguratorSchema } from "../types/configurator";
 import { getConfiguratorSchema } from "./mock-configurators";
+import { getValorantConfiguratorSchema } from "./valorant-configurators";
 
 type DbOption = { value: string; label: string; price_multiplier: number | null; sort_order: number };
 type DbField = {
@@ -50,6 +51,9 @@ export async function getServiceConfiguratorSchema(input: {
   serviceId: string;
   category: ServiceCategory;
 }): Promise<ServiceConfiguratorSchema> {
+  const valorantSchema = getValorantConfiguratorSchema(input.serviceId);
+  if (valorantSchema) return valorantSchema;
+
   if (!hasPublicSupabaseEnv()) return getConfiguratorSchema(input.category);
 
   const supabase = createPublicServerClient();

@@ -32,7 +32,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Valorant",
     accent: "rose",
     category: "Tactical FPS",
-    ready: false,
+    ready: true,
   },
   {
     slug: "marvel-rivals",
