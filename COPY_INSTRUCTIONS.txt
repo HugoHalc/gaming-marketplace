@@ -1,60 +1,33 @@
-PHASE 17B — Flat Percentage Modifier Pricing Fix
+PHASE 17A.1 — Live Support Conversation Creation Fix
 
-PURPOSE
-Fix percentage-based extras/modifiers so they are always calculated from the
-same base service price instead of compounding on top of previously selected extras.
+ROOT CAUSE
+The Phase 17A migration created support_conversations and support_messages,
+but service_role did not receive table privileges.
 
-BEFORE
-Base $100
-+20% playlist => $120
-+45% Play With Booster calculated from $120
-+20% Express calculated from the already modified amount
+The server-side support API uses createSecretServerClient(), so the database
+rejected conversation/message inserts even though the tables and RLS existed.
 
-This caused compounded/exponential price growth.
+FIX
+Grant SELECT, INSERT, UPDATE and DELETE on:
+- public.support_conversations
+- public.support_messages
 
-AFTER
-Base $100
-+20% playlist = +$20
-+45% Play With Booster = +$45
-+20% Express = +$20
+ONLY to:
+- service_role
 
-Every percentage is calculated from the SAME base service price.
+SECURITY
+- anon is NOT granted access.
+- authenticated is NOT granted access.
+- RLS remains enabled.
+- Visitor/customer access still goes exclusively through the server-side API.
 
-ROCKET LEAGUE SERVICES FIXED
-- Rank Boost
-- Competitive Wins
-- Placements Boost
-- Rewards Boost
-- Tournament Boost
+HOW TO APPLY
+1. Copy the supabase/ folder into the project root.
+2. Apply:
+   supabase/migrations/20260904001500_live_support_service_role_grants.sql
+3. Commit/push normally.
 
-GENERIC PRICING ENGINE
-- Mock percentage modifiers are now additive percentages.
-- Database option_multiplier / boolean_multiplier rules are now combined additively
-  against the same calculated service base instead of multiplied together.
-
-IMPORTANT PRICING BEHAVIOR
-- Rank progression/package price remains unchanged.
-- Existing volume/package discounts remain unchanged.
-- For Wins / Placements / Rewards, the discounted core service price is the percentage base.
-- Fixed-price extras such as Live Stream +$10 remain fixed-price.
-- Appear Offline remains $0.
-- Existing orders and stored price snapshots are not recalculated.
-- New quotes/orders use the corrected behavior.
-
-RULE SET VERSION
-Rocket League service-specific pricing versions were bumped from v1.0 to v1.1
-so new order snapshots reflect the pricing-engine correction.
-
-FILES TO REPLACE
-1. src/features/pricing/server/calculate-quote.ts
-2. src/features/pricing/server/rocket-league-rank-pricing.ts
-3. src/features/pricing/server/rocket-league-wins-pricing.ts
-4. src/features/pricing/server/rocket-league-placements-pricing.ts
-5. src/features/pricing/server/rocket-league-rewards-pricing.ts
-6. src/features/pricing/server/rocket-league-tournament-pricing.ts
-
-SUPABASE
-No migration required.
+No frontend files need replacement.
 
 RECOMMENDED COMMIT
-fix: calculate percentage modifiers from base service price
+fix: grant service role access to live support tables
