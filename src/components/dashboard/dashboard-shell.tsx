@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Bell,
   ChevronRight,
+  Headphones,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -188,13 +189,22 @@ function SidebarContent({
               ) : null}
 
               {canAccessAdmin ? (
-                <NavigationItem
-                  pathname={pathname}
-                  href="/admin"
-                  label="Admin"
-                  icon={Shield}
-                  onNavigate={onNavigate}
-                />
+                <>
+                  <NavigationItem
+                    pathname={pathname}
+                    href="/admin"
+                    label="Admin"
+                    icon={Shield}
+                    onNavigate={onNavigate}
+                  />
+                  <NavigationItem
+                    pathname={pathname}
+                    href="/admin/support"
+                    label="Support"
+                    icon={Headphones}
+                    onNavigate={onNavigate}
+                  />
+                </>
               ) : null}
             </div>
           </>

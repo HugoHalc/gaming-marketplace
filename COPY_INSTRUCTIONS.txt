@@ -1,33 +1,17 @@
-PHASE 17A.1 — Live Support Conversation Creation Fix
+PHASE 17A.2 — Admin Support Sidebar Access
 
-ROOT CAUSE
-The Phase 17A migration created support_conversations and support_messages,
-but service_role did not receive table privileges.
+FILES TO REPLACE
+1. src/components/dashboard/dashboard-shell.tsx
 
-The server-side support API uses createSecretServerClient(), so the database
-rejected conversation/message inserts even though the tables and RLS existed.
+WHAT CHANGED
+- Added a Support navigation item under ACCESS.
+- Support appears only when canAccessAdmin === true.
+- Link target: /admin/support
+- Existing Booster Account and Admin links remain unchanged.
+- No permissions were weakened; /admin/support remains protected by requireAdmin().
 
-FIX
-Grant SELECT, INSERT, UPDATE and DELETE on:
-- public.support_conversations
-- public.support_messages
-
-ONLY to:
-- service_role
-
-SECURITY
-- anon is NOT granted access.
-- authenticated is NOT granted access.
-- RLS remains enabled.
-- Visitor/customer access still goes exclusively through the server-side API.
-
-HOW TO APPLY
-1. Copy the supabase/ folder into the project root.
-2. Apply:
-   supabase/migrations/20260904001500_live_support_service_role_grants.sql
-3. Commit/push normally.
-
-No frontend files need replacement.
+SUPABASE
+No migration required.
 
 RECOMMENDED COMMIT
-fix: grant service role access to live support tables
+feat: add live support access to admin sidebar
