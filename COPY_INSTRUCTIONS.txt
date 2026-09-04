@@ -1,0 +1,70 @@
+BOOSTINGPEDIA — VAL 1 — VALORANT CATALOG + PRICING FOUNDATION
+
+BASELINE
+Prepared against GitHub main commit:
+9f97d786f73eff295ed77ba649806e781c7c79dc
+
+GOAL
+Add the game-specific Valorant catalog and server-side pricing foundation while
+preserving all existing Rocket League and global functionality.
+
+VALORANT SERVICES
+- Rank Boost
+- Competitive Wins
+- Placements Boost
+
+RANK BOOST
+- Current Rank -> Target Rank
+- Maximum target: Immortal
+- Duo: +100% of base service price
+- RR Gain: 10 +20%, 20 0%, 30 0%, 45 -10%
+- RR Amount: 0-20 0%, 21-40 -4%, 41-60 -5%, 61-80 -6%, 81-100 -8%
+- Servers: Europe, North America, Brazil, Korea, SEA/OCE, Latin America
+- Play Offline: free
+- Agents Preferences: free
+- Streaming: +$10
+- Express Delivery: +30% of base
+- +1 Extra Win: +$6
+- Rank Insurance: +50% of base
+- Percentage modifiers are additive and always based on the unmodified service base.
+
+COMPETITIVE WINS
+- Price per win by Current Rank
+- 1 to 5 wins
+- Solo / Duo
+- RR Gain
+- Server
+- Same extras
+- No RR Amount
+
+PLACEMENTS BOOST
+- Price per placement by Current Rank
+- Includes Unrated
+- 1 to 5 placements
+- Solo / Duo
+- Server
+- Same extras
+- No RR Gain or RR Amount
+
+IMPORTANT
+This phase establishes catalog + server pricing only.
+It does NOT yet add the Valorant-specific configurator UI/rank badge assets.
+Valorant should remain marked not-ready in the launch game list until the
+configurator is completed in the next phase.
+
+FILES
+Add:
+- src/features/catalog/data/valorant-services.ts
+- src/features/pricing/server/valorant-rank-pricing.ts
+- src/features/pricing/server/valorant-wins-pricing.ts
+- src/features/pricing/server/valorant-placements-pricing.ts
+
+Replace:
+- src/features/catalog/data/catalog-repository.ts
+- src/features/pricing/server/calculate-quote.ts
+
+SUPABASE
+No migration required.
+
+RECOMMENDED COMMIT
+feat: add valorant catalog and pricing foundation

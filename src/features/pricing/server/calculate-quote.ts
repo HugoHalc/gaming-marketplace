@@ -26,6 +26,18 @@ import {
   calculateRocketLeagueRewardsQuote,
   isRocketLeagueRewardsQuote,
 } from "./rocket-league-rewards-pricing";
+import {
+  calculateValorantRankQuote,
+  isValorantRankQuote,
+} from "./valorant-rank-pricing";
+import {
+  calculateValorantWinsQuote,
+  isValorantWinsQuote,
+} from "./valorant-wins-pricing";
+import {
+  calculateValorantPlacementsQuote,
+  isValorantPlacementsQuote,
+} from "./valorant-placements-pricing";
 
 const MOCK_RULE_SET_VERSION = "mock-v1.0";
 
@@ -210,6 +222,18 @@ export async function calculateQuotePreview(input: {
 
   if (isRocketLeagueRewardsQuote(input)) {
     return calculateRocketLeagueRewardsQuote(input.selection);
+  }
+
+  if (isValorantRankQuote(input)) {
+    return calculateValorantRankQuote(input.selection);
+  }
+
+  if (isValorantWinsQuote(input)) {
+    return calculateValorantWinsQuote(input.selection);
+  }
+
+  if (isValorantPlacementsQuote(input)) {
+    return calculateValorantPlacementsQuote(input.selection);
   }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
