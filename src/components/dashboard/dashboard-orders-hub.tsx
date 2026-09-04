@@ -186,6 +186,16 @@ function CustomerOrderCard({
           {targetResolved ? (
             <RocketLeagueRankValue value={targetRank} label="Target" size="sm" />
           ) : null}
+          {wins !== null || matches !== null ? (
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
+                {matches !== null ? "Matches" : "Wins"}
+              </p>
+              <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                {matches ?? wins}
+              </p>
+            </div>
+          ) : null}
           {!currentResolved && !targetResolved && platform ? (
             <div>
               <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
@@ -267,6 +277,16 @@ function CustomerOrderCard({
             ) : null}
             {targetResolved ? (
               <RocketLeagueRankValue value={targetRank} label="Target" />
+            ) : null}
+            {wins !== null || matches !== null ? (
+              <div className="ml-auto min-w-[54px] border-l border-white/[0.05] pl-3">
+                <p className="text-[8px] text-[#667069]">
+                  {matches !== null ? "Matches" : "Wins"}
+                </p>
+                <p className="font-gaming-value mt-1 text-[12px] font-bold text-[#F4F7F5]">
+                  {matches ?? wins}
+                </p>
+              </div>
             ) : null}
           </div>
         ) : (
