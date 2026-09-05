@@ -331,14 +331,15 @@ export default async function GamePage({ params }: GamePageProps) {
               fill
               priority
               sizes="(min-width: 1024px) 62vw, (min-width: 640px) 72vw, 100vw"
+              quality={100}
               className={
                 isValorant
-                  ? "object-cover object-[76%_50%] opacity-40 sm:object-[74%_50%] sm:opacity-68 lg:object-[72%_50%] lg:opacity-100"
+                  ? "object-cover object-[76%_50%] opacity-55 sm:object-[74%_50%] sm:opacity-75 lg:object-[72%_50%] lg:opacity-100"
                   : "object-cover object-[72%_50%] opacity-45 sm:object-[70%_50%] sm:opacity-70 lg:object-[68%_50%] lg:opacity-100"
               }
             />
 
-            <div className={isValorant ? "absolute inset-0 bg-rose-950/[0.035]" : "absolute inset-0 bg-black/[0.06]"} />
+            <div className={isValorant ? "absolute inset-0 bg-rose-950/[0.02]" : "absolute inset-0 bg-black/[0.06]"} />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_18%,rgba(5,8,7,.86)_35%,rgba(5,8,7,.48)_52%,rgba(5,8,7,.08)_72%,transparent_100%)]" />
           </div>
         ) : (
