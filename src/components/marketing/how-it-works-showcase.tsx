@@ -41,7 +41,7 @@ function GameSelectionVisual() {
       <div className="absolute inset-x-[7%] top-[16%] h-[64%] rounded-[44px] border border-[#39E56F]/15 bg-[#39E56F]/[0.035]" />
       <div className="absolute inset-x-[12%] top-[22%] h-[52%] rounded-[36px] border border-white/[0.06] bg-[#0B100D]" />
 
-      <div className="absolute left-[10%] top-[14%] w-[58%] -rotate-[6deg] overflow-hidden rounded-[22px] border border-white/[0.10] bg-[#0B100D] shadow-[0_28px_70px_rgba(0,0,0,.42)] motion-safe:transition-transform motion-safe:duration-300 lg:group-hover:translate-y-[-4px] lg:group-hover:rotate-[-4deg]">
+      <div className="absolute left-[10%] top-[14%] w-[58%] -rotate-[6deg] overflow-hidden rounded-[22px] border border-white/[0.10] bg-[#0B100D] shadow-[0_10px_26px_rgba(0,0,0,.24)] motion-safe:transition-transform motion-safe:duration-300 lg:group-hover:translate-y-[-4px] lg:group-hover:rotate-[-4deg]">
         <div className="relative aspect-[16/8.7] overflow-hidden">
           <Image
             src="/game-cards/rocket-league.webp"
@@ -60,7 +60,7 @@ function GameSelectionVisual() {
         </div>
       </div>
 
-      <div className="absolute bottom-[6%] right-[6%] w-[54%] rotate-[6deg] overflow-hidden rounded-[22px] border border-rose-300/15 bg-[#0B100D] shadow-[0_28px_70px_rgba(0,0,0,.46)] motion-safe:transition-transform motion-safe:duration-300 lg:group-hover:translate-y-[-5px] lg:group-hover:rotate-[4deg]">
+      <div className="absolute bottom-[6%] right-[6%] w-[54%] rotate-[6deg] overflow-hidden rounded-[22px] border border-rose-300/15 bg-[#0B100D] shadow-[0_10px_26px_rgba(0,0,0,.26)] motion-safe:transition-transform motion-safe:duration-300 lg:group-hover:translate-y-[-5px] lg:group-hover:rotate-[4deg]">
         <div className="relative aspect-[16/8.7] overflow-hidden">
           <Image
             src="/game-cards/valorant.webp"
@@ -84,7 +84,7 @@ function GameSelectionVisual() {
 
 function ConfiguratorVisual() {
   return (
-    <div className="relative mx-auto w-full max-w-[560px] rounded-[26px] border border-white/[0.08] bg-[#080C0A] p-4 shadow-[0_26px_70px_rgba(0,0,0,.36)] sm:p-5">
+    <div className="relative mx-auto w-full max-w-[560px] rounded-[26px] border border-white/[0.09] bg-[#080C0A] p-4 shadow-[0_10px_28px_rgba(0,0,0,.20)] sm:p-5">
       <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
         <div>
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">
@@ -146,7 +146,7 @@ function ConfiguratorVisual() {
 
 function DashboardVisual() {
   return (
-    <div className="relative mx-auto w-full max-w-[560px] rounded-[26px] border border-white/[0.08] bg-[#080C0A] p-4 shadow-[0_26px_70px_rgba(0,0,0,.36)] sm:p-5">
+    <div className="relative mx-auto w-full max-w-[560px] rounded-[26px] border border-white/[0.09] bg-[#080C0A] p-4 shadow-[0_10px_28px_rgba(0,0,0,.20)] sm:p-5">
       <div className="flex items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
         <div>
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">Order workspace</p>
@@ -261,7 +261,6 @@ export function HowItWorksShowcase() {
                 </div>
 
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-[-12%] rounded-[48px] bg-[radial-gradient(circle_at_50%_50%,rgba(57,229,111,.035),transparent_66%)] opacity-80" />
                   <div className="relative">
                     <Visual />
                   </div>
