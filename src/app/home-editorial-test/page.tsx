@@ -11,7 +11,7 @@ import {
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
-import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
+import { EditorialHeroVideo } from "@/components/marketing/editorial-hero-video";
 import { HowItWorksShowcase } from "@/components/marketing/how-it-works-showcase";
 import { Button } from "@/components/ui/button";
 import { launchGames } from "@/features/catalog/data/launch-games";
@@ -320,10 +320,7 @@ export default function EditorialHomepageTest() {
               <span className="pointer-events-none absolute -right-2 bottom-10 z-20 h-px w-16 bg-gradient-to-l from-[#3DD9EB]/35 to-transparent" />
 
               <div className="relative aspect-[16/11] overflow-hidden border border-white/[0.10] bg-[#090D0B] [clip-path:polygon(5%_0,100%_0,100%_91%,95%_100%,0_100%,0_9%)] shadow-[0_40px_120px_-70px_rgba(0,0,0,.95)]">
-                <HeroHoldLoopVideo
-                  src="/brand/boostingpedia-hooded-rogue-loop.webm"
-                  poster="/brand/boostingpedia-hooded-rogue.png"
-                  holdSeconds={2}
+                <EditorialHeroVideo
                   className="h-full w-full object-cover object-[58%_50%]"
                   sizes="(min-width: 1280px) 52vw, (min-width: 1024px) 56vw, 100vw"
                 />
