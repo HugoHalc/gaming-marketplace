@@ -41,6 +41,7 @@ interface OrderLiveChatProps {
   orderId: string;
   currentUserId: string;
   initialMessages: OrderWorkspaceMessage[];
+  visualVariant?: "default" | "customer-premium";
 }
 
 function normalizeInitialMessage(message: OrderWorkspaceMessage): ChatMessage {
@@ -128,6 +129,7 @@ export function OrderLiveChat({
   orderId,
   currentUserId,
   initialMessages,
+  visualVariant = "default",
 }: OrderLiveChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(
     initialMessages.map(normalizeInitialMessage),
@@ -481,13 +483,20 @@ export function OrderLiveChat({
   const participantRoleLabel =
     participant?.role === "booster" ? "Booster" : "Customer";
   const participantPresence = formatParticipantPresence(participant);
+  const premium = visualVariant === "customer-premium";
 
   return (
-    <section className="overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] shadow-[0_24px_80px_rgba(0,0,0,0.34)]">
-      <div className="pointer-events-none h-px w-full bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent" />
+    <section
+      className={
+        premium
+          ? "overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#0B110E]"
+          : "overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] shadow-[0_24px_80px_rgba(0,0,0,0.34)]"
+      }
+    >
+      <div className={premium ? "pointer-events-none h-px w-full bg-[#39D5E6]/20" : "pointer-events-none h-px w-full bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent"} />
 
       <div className="flex h-[min(760px,calc(100dvh-150px))] min-h-[560px] flex-col max-sm:h-[calc(100dvh-158px)] max-sm:min-h-[520px]">
-        <header className="shrink-0 border-b border-white/[0.06] bg-[linear-gradient(180deg,rgba(19,27,23,0.95),rgba(11,16,13,0.95))] px-4 py-3.5 sm:px-5">
+        <header className={premium ? "shrink-0 border-b border-white/[0.07] bg-[#0F1713] px-4 py-4 sm:px-5" : "shrink-0 border-b border-white/[0.06] bg-[linear-gradient(180deg,rgba(19,27,23,0.95),rgba(11,16,13,0.95))] px-4 py-3.5 sm:px-5"}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               {participant?.avatarUrl ? (
@@ -504,13 +513,13 @@ export function OrderLiveChat({
               )}
 
               <div className="min-w-0">
-                <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                <p className={premium ? "font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#6F7B74]" : "font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]"}>
                   Order communication
                 </p>
-                <p className="truncate text-sm font-semibold text-[#F4F7F5]">
+                <p className={premium ? "truncate text-[15px] font-bold text-[#F4F7F5]" : "truncate text-sm font-semibold text-[#F4F7F5]"}>
                   {participant?.displayName ?? booster?.displayName ?? "Conversation"}
                 </p>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9px] text-[#A0AAA4]">
+                <div className={premium ? "mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-[#A4AEA8]" : "mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9px] text-[#A0AAA4]"}>
                   {participant ? (
                     <>
                       <span>{participantRoleLabel}</span>
@@ -537,7 +546,19 @@ export function OrderLiveChat({
             </div>
 
             {chatState.loaded ? (
-              <span className="rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#667069]">
+              <span
+                className={
+                  premium
+                    ? `rounded-full border px-2.5 py-1 text-[10px] font-semibold ${
+                        chatState.enabled && booster
+                          ? "border-[#39E56F]/18 bg-[#39E56F]/[0.07] text-[#82F5A4]"
+                          : chatState.enabled
+                            ? "border-[#39D5E6]/18 bg-[#39D5E6]/[0.06] text-[#7DE7F2]"
+                            : "border-white/[0.08] bg-white/[0.02] text-[#6F7B74]"
+                      }`
+                    : "rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#667069]"
+                }
+              >
                 {chatState.enabled
                   ? booster
                     ? "Chat active"
@@ -564,8 +585,8 @@ export function OrderLiveChat({
           </div>
         ) : (
           <>
-            <div className="min-h-0 flex-1 bg-[#080B09] p-3 sm:p-4">
-              <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(6,8,7,0.98),rgba(10,12,11,1))]">
+            <div className={premium ? "min-h-0 flex-1 bg-[#080D0A] p-3 sm:p-4" : "min-h-0 flex-1 bg-[#080B09] p-3 sm:p-4"}>
+              <div className={premium ? "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-white/[0.07] bg-[#080D0A]" : "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(6,8,7,0.98),rgba(10,12,11,1))]"}>
                 <div
                   ref={scrollerRef}
                   onScroll={handleScroll}
@@ -671,9 +692,13 @@ export function OrderLiveChat({
 
                                       <div
                                         className={`rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 ${
-                                          mine
-                                            ? "border-blue-300/[0.12] bg-[#131B17] text-[#F4F7F5]"
-                                            : "border-white/[0.06] bg-[#0E1411] text-[#F4F7F5]"
+                                          premium
+                                            ? mine
+                                              ? "border-white/[0.07] bg-[#141B17] text-[#F4F7F5]"
+                                              : "border-[#39D5E6]/14 bg-[#39D5E6]/[0.06] text-[#F4F7F5]"
+                                            : mine
+                                              ? "border-blue-300/[0.12] bg-[#131B17] text-[#F4F7F5]"
+                                              : "border-white/[0.06] bg-[#0E1411] text-[#F4F7F5]"
                                         } ${
                                           groupedWithPrevious
                                             ? mine
@@ -743,7 +768,7 @@ export function OrderLiveChat({
                   ) : null}
                 </div>
 
-                <div className="shrink-0 border-t border-white/[0.05] bg-[#0B100D] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]">
+                <div className={premium ? "shrink-0 border-t border-white/[0.07] bg-[#0F1713] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]" : "shrink-0 border-t border-white/[0.05] bg-[#0B100D] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]"}>
                   <form ref={formRef} onSubmit={submitMessage}>
                     {error ? (
                       <div className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-rose-300/12 bg-rose-300/[0.045] px-3 py-2 text-[9px] text-rose-200">
@@ -759,7 +784,7 @@ export function OrderLiveChat({
                       </div>
                     ) : null}
 
-                    <div className="flex items-end gap-2 rounded-[16px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 transition-colors focus-within:border-white/[0.16]">
+                    <div className={premium ? "flex items-end gap-2 rounded-[14px] border border-white/[0.08] bg-[#0F1713] px-3 py-1.5 transition-colors focus-within:border-[#39E56F]/35 focus-within:ring-1 focus-within:ring-[#39E56F]/15" : "flex items-end gap-2 rounded-[16px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 transition-colors focus-within:border-white/[0.16]"}>
                       <textarea
                         value={body}
                         onChange={(event) => setBody(event.target.value)}
@@ -773,7 +798,7 @@ export function OrderLiveChat({
                       <button
                         type="submit"
                         disabled={!body.trim() || sending}
-                        className="mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"
+                        className={premium ? "mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#1B5E35] text-white transition-colors hover:bg-[#20C95A] active:bg-[#39E56F] active:text-[#041008] disabled:cursor-not-allowed disabled:opacity-35" : "mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"}
                         aria-label="Send message"
                       >
                         <Send className="size-4" strokeWidth={1.9} />
@@ -781,7 +806,7 @@ export function OrderLiveChat({
                     </div>
                   </form>
 
-                  <div className="mt-2 flex flex-col gap-1 px-1 text-[8px] leading-4 text-[#667069] sm:flex-row sm:items-center sm:justify-between">
+                  <div className={premium ? "mt-2 flex flex-col gap-1.5 px-1 text-[11px] leading-4 text-[#6F7B74] sm:flex-row sm:items-center sm:justify-between" : "mt-2 flex flex-col gap-1 px-1 text-[8px] leading-4 text-[#667069] sm:flex-row sm:items-center sm:justify-between"}>
                     <span className="inline-flex items-center gap-1.5">
                       <Shield className="size-2.5" />
                       Keep communication and payments inside BoostingPedia for your protection.

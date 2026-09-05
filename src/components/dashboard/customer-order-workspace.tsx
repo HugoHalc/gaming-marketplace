@@ -84,7 +84,7 @@ function ProgressTimeline({
   const recent = history.slice(-4);
 
   return (
-    <div className="mt-4 flex min-w-0 items-center overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="mt-5 flex min-w-0 items-center overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {recent.map((event, index) => {
         const current = index === recent.length - 1;
 
@@ -94,27 +94,27 @@ function ProgressTimeline({
               <span
                 className={`grid size-5 shrink-0 place-items-center rounded-full border ${
                   current
-                    ? "border-cyan-300/25 bg-cyan-400/[0.08]"
-                    : "border-white/[0.10] bg-white/[0.015]"
+                    ? "border-[#39D5E6]/25 bg-[#39D5E6]/[0.08]"
+                    : "border-[#39E56F]/22 bg-[#39E56F]/[0.07]"
                 }`}
               >
                 {current ? (
                   <span className="size-1.5 rounded-full bg-cyan-300" />
                 ) : (
-                  <Check className="size-2.5 text-[#82F5A4]/65" />
+                  <Check className="size-2.5 text-[#82F5A4]" />
                 )}
               </span>
 
               <div>
                 <p
-                  className={`whitespace-nowrap text-[10px] font-medium ${
-                    current ? "text-cyan-100" : "text-[#A0AAA4]"
+                  className={`whitespace-nowrap text-[12px] font-semibold ${
+                    current ? "text-[#BDF5FA]" : "text-[#A4AEA8]"
                   }`}
                 >
                   {formatLabel(event.toStatus)}
                 </p>
                 {current ? (
-                  <p className="mt-0.5 whitespace-nowrap text-[8px] text-[#667069]">
+                  <p className="mt-0.5 whitespace-nowrap text-[11px] text-[#6F7B74]">
                     Current status
                   </p>
                 ) : null}
@@ -122,7 +122,7 @@ function ProgressTimeline({
             </div>
 
             {index < recent.length - 1 ? (
-              <span className="mx-4 h-px w-10 shrink-0 bg-white/[0.07]" />
+              <span className="mx-4 h-px w-10 shrink-0 bg-[#39E56F]/20" />
             ) : null}
           </div>
         );
@@ -169,17 +169,17 @@ export function CustomerOrderWorkspace({
     isCustomerOwner && order.paymentStatus === "paid";
 
   return (
-    <div className="mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <div className="flex items-center justify-between gap-4 border-b border-white/[0.05] pb-3">
+    <div className="mx-auto w-full max-w-[1480px] bg-[#050807] px-4 py-5 text-[#F4F7F5] sm:px-6 sm:py-7 lg:px-8">
+      <div className="flex items-center justify-between gap-4 border-b border-white/[0.07] pb-3">
         <Link
           href={backHref}
-          className="inline-flex items-center text-[10px] font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
+          className="inline-flex items-center text-[11px] font-semibold text-[#A4AEA8] transition-colors hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/30"
         >
           <ArrowLeft className="mr-1.5 size-3.5" />
           {backLabel}
         </Link>
 
-        <span className="font-gaming-value text-[9px] text-[#667069]">
+        <span className="font-gaming-value text-[11px] font-semibold tracking-[0.04em] text-[#6F7B74]">
           {order.orderNumber}
         </span>
       </div>
@@ -204,24 +204,24 @@ export function CustomerOrderWorkspace({
 
       <header className="flex flex-col gap-5 py-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.14em] text-blue-200/50">
+          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-[#4DA3FF]/70">
             {item?.gameName ?? "Gaming service"}
           </p>
 
-          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.035em] text-[#F4F7F5]">
+          <h1 className="mt-1 text-[24px] font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-[26px]">
             {item?.serviceName ?? "Customer Order"}
           </h1>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <OrderStatusBadge status={order.status} />
-            <span className="text-[9px] text-[#667069]">
+            <span className="text-[11px] text-[#6F7B74]">
               Created {formatDate(order.createdAt)}
             </span>
           </div>
         </div>
 
         {(currentRank || targetRank) ? (
-          <div className="flex min-w-0 items-center gap-4 lg:justify-end">
+          <div className="flex min-w-0 items-center gap-4 border-l border-[#4DA3FF]/20 pl-4 lg:justify-end">
             {currentRank ? (
               <GameRankValue
                 gameName={item?.gameName}
@@ -249,10 +249,10 @@ export function CustomerOrderWorkspace({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
         <main className="min-w-0">
-          <section className="border-t border-white/[0.05] pt-5">
-            <div className="flex items-center gap-2">
-              <Clock3 className="size-3.5 text-[#667069]" />
-              <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+          <section className="rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+            <div className="flex items-center gap-2.5">
+              <Clock3 className="size-4 text-[#39D5E6]/75" />
+              <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
                 Progress
               </h2>
             </div>
@@ -260,17 +260,17 @@ export function CustomerOrderWorkspace({
             <ProgressTimeline history={history} />
           </section>
 
-          <section className="mt-6 border-t border-white/[0.05] pt-5">
+          <section className="mt-6">
             <div className="mb-3 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="size-3.5 text-[#667069]" />
-                <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="size-4 text-[#39D5E6]/75" />
+                <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
                   Conversation
                 </h2>
               </div>
 
               {boosterAssignment ? (
-                <span className="hidden text-[9px] text-[#667069] sm:block">
+                <span className="hidden text-[11px] text-[#6F7B74] sm:block">
                   Your assigned booster is connected to this order
                 </span>
               ) : null}
@@ -280,6 +280,7 @@ export function CustomerOrderWorkspace({
               orderId={order.id}
               currentUserId={currentUserId}
               initialMessages={initialMessages}
+              visualVariant="customer-premium"
             />
           </section>
 
@@ -293,22 +294,22 @@ export function CustomerOrderWorkspace({
             </div>
           ) : null}
 
-          <section className="mt-6 border-t border-white/[0.05] pt-5">
-            <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
+          <section className="mt-6 rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+            <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
               Price Breakdown
             </h2>
 
-            <div className="mt-3 divide-y divide-white/[0.05] border-y border-white/[0.05]">
+            <div className="mt-4 divide-y divide-white/[0.06]">
               {item?.priceBreakdown.map((line, index) => (
                 <div
                   key={`${line.label}-${index}`}
-                  className="flex items-center justify-between gap-4 py-3"
+                  className="flex min-h-11 items-center justify-between gap-4 py-3"
                 >
-                  <span className="text-[10px] text-[#A0AAA4]">
+                  <span className="text-[13px] text-[#A4AEA8]">
                     {line.label}
                   </span>
                   <span
-                    className={`font-gaming-value text-[11px] font-bold ${
+                    className={`font-gaming-value text-[13px] font-semibold ${
                       line.amount < 0
                         ? "text-[#82F5A4]"
                         : "text-[#F4F7F5]"
@@ -320,11 +321,11 @@ export function CustomerOrderWorkspace({
                 </div>
               ))}
 
-              <div className="flex items-end justify-between gap-4 py-4">
-                <span className="text-[10px] font-semibold text-[#F4F7F5]">
+              <div className="flex items-end justify-between gap-4 border-t border-white/[0.10] pt-5">
+                <span className="text-[14px] font-bold text-[#F4F7F5]">
                   Total
                 </span>
-                <span className="font-gaming-value text-xl font-bold text-[#F4F7F5]">
+                <span className="font-gaming-value text-[26px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
                   {formatMoney(order.total)}
                 </span>
               </div>
@@ -333,18 +334,18 @@ export function CustomerOrderWorkspace({
         </main>
 
         <aside className="min-w-0 xl:sticky xl:top-[76px] xl:self-start">
-          <div className="border-y border-white/[0.06]">
-            <section className="py-4">
-              <div className="flex items-center gap-2">
-                <UserRound className="size-3.5 text-[#667069]" />
-                <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+          <div className="space-y-3">
+            <section className="rounded-[16px] border border-white/[0.07] bg-[#0B110E] p-4">
+              <div className="flex items-center gap-2.5">
+                <UserRound className="size-4 text-[#39D5E6]/70" />
+                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
                   Booster
                 </h2>
               </div>
 
               {boosterAssignment ? (
                 <div className="mt-3 flex items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.08] bg-[#0E1411] text-[10px] font-bold text-[#F4F7F5]">
+                  <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-[#0F1713] text-[11px] font-bold text-[#F4F7F5]">
                     {boosterAssignment.avatarUrl ? (
                       <img
                         src={boosterAssignment.avatarUrl}
@@ -358,35 +359,35 @@ export function CustomerOrderWorkspace({
                   </span>
 
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-[#F4F7F5]">
+                    <p className="truncate text-[14px] font-bold text-[#F4F7F5]">
                       {boosterAssignment.displayName}
                     </p>
-                    <p className="mt-1 text-[9px] text-[#667069]">
+                    <p className="mt-1 text-[11px] text-[#6F7B74]">
                       Assigned booster
                     </p>
                   </div>
                 </div>
               ) : (
-                <p className="mt-3 text-[10px] leading-5 text-[#A0AAA4]">
+                <p className="mt-3 text-[12px] leading-5 text-[#A4AEA8]">
                   Your assigned booster will appear here once the order is accepted.
                 </p>
               )}
             </section>
 
-            <section className="border-t border-white/[0.05] py-4">
-              <div className="flex items-center gap-2">
-                <CreditCard className="size-3.5 text-[#667069]" />
-                <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+            <section className="rounded-[16px] border border-white/[0.08] bg-[#0F1713] p-4">
+              <div className="flex items-center gap-2.5">
+                <CreditCard className="size-4 text-[#82F5A4]/75" />
+                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
                   Payment
                 </h2>
               </div>
 
               <div className="mt-3 flex items-end justify-between gap-4">
                 <div>
-                  <p className="font-gaming-value text-2xl font-bold text-[#F4F7F5]">
+                  <p className="font-gaming-value text-[28px] font-bold tracking-[-0.03em] text-[#F4F7F5]">
                     {formatMoney(order.total)}
                   </p>
-                  <p className="mt-1 text-[9px] text-[#667069]">
+                  <p className="mt-1 text-[12px] text-[#6F7B74]">
                     {order.paymentStatus === "paid"
                       ? "Stripe confirmed"
                       : order.paymentStatus === "pending"
@@ -398,7 +399,7 @@ export function CustomerOrderWorkspace({
                 <span
                   className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase ${
                     order.paymentStatus === "paid"
-                      ? "border-[#39E56F]/15 bg-[#39E56F]/[0.05] text-[#82F5A4]"
+                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.08] text-[#82F5A4]"
                       : "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]"
                   }`}
                 >
@@ -416,14 +417,16 @@ export function CustomerOrderWorkspace({
               ) : null}
             </section>
 
-            <section className="border-t border-white/[0.05] py-4">
-              <div className="mb-2 flex items-center gap-2">
-                <ShieldCheck className="size-3.5 text-[#667069]" />
+            <section className="rounded-[16px] border border-[#39E56F]/12 bg-[#0F1713] p-4">
+              <div className="mb-3 flex items-start gap-2.5">
+                <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-[10px] border border-[#39E56F]/14 bg-[#39E56F]/[0.045]">
+                  <ShieldCheck className="size-4 text-[#82F5A4]" />
+                </span>
                 <div>
-                  <h2 className="text-[13px] font-semibold text-[#F4F7F5]">
+                  <h2 className="text-[15px] font-bold text-[#F4F7F5]">
                     Secure Account Access
                   </h2>
-                  <p className="mt-0.5 text-[9px] text-[#667069]">
+                  <p className="mt-1 text-[11px] leading-4 text-[#6F7B74]">
                     {boosterAssignment
                       ? "Share your game login securely with your assigned booster"
                       : secureAccessAvailable
@@ -434,20 +437,24 @@ export function CustomerOrderWorkspace({
               </div>
 
               {boosterAssignment || secureAccessAvailable ? (
-                <OrderAccountDetails
-                  orderId={order.id}
-                  canEdit={isCustomerOwner}
-                />
+                <div className="[&_input]:h-11 [&_input]:border-white/[0.08] [&_input]:bg-[#0A100D] [&_input]:text-[13px] [&_input]:focus:border-[#39E56F]/35 [&_input]:focus:ring-1 [&_input]:focus:ring-[#39E56F]/20 [&_label>span]:text-[11px] [&_label>span]:text-[#6F7B74] [&_button]:min-h-10 [&_p]:text-[11px]">
+                  <OrderAccountDetails
+                    orderId={order.id}
+                    canEdit={isCustomerOwner}
+                  />
+                </div>
               ) : null}
             </section>
 
-            <section className="border-t border-white/[0.05]">
-              <OrderOperationsPanel
-                orderId={order.id}
-                canManage={false}
-                suggestedPlatform={suggestedPlatform}
-                orderStatus={order.status}
-              />
+            <section>
+              <div className="space-y-3 [&>div]:border-0 [&>div]:bg-transparent [&>section]:rounded-[16px] [&>section]:border [&>section]:border-white/[0.07] [&>section]:bg-[#0B110E] [&>section]:shadow-[0_8px_24px_rgba(0,0,0,0.10)] [&>section:first-child]:border-[#39E56F]/10 [&>section:first-child]:bg-[#39E56F]/[0.025] [&_h2]:text-[15px] [&_h2]:font-bold [&_p]:text-[11px] [&_input]:h-11 [&_input]:bg-[#080D0A] [&_textarea]:bg-[#080D0A] [&_[class*='border-dashed']]:min-h-20 [&_[class*='border-dashed']]:border-white/[0.12] [&_[class*='border-dashed']]:bg-[#080D0A]">
+                <OrderOperationsPanel
+                  orderId={order.id}
+                  canManage={false}
+                  suggestedPlatform={suggestedPlatform}
+                  orderStatus={order.status}
+                />
+              </div>
             </section>
           </div>
         </aside>
