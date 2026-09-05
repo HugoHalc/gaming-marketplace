@@ -215,6 +215,7 @@ export function BoosterOrderWorkspace({
             <div className="mt-6 space-y-6">
               {item ? (
                 <OrderConfigurationSummary
+                  gameName={item.gameName}
                   configuration={item.configuration}
                   priceBreakdown={item.priceBreakdown}
                   compact

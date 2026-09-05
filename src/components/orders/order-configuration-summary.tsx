@@ -2,9 +2,9 @@
 
 import { ArrowRight, Sparkles } from "lucide-react";
 import {
-  resolveRocketLeagueRank,
-  RocketLeagueRankValue,
-} from "@/components/orders/rocket-league-rank";
+  GameRankValue,
+  resolveGameRank,
+} from "@/components/orders/game-order-presentation";
 
 type ConfigurationValue = string | number | boolean;
 type PriceLine = {
@@ -13,7 +13,7 @@ type PriceLine = {
 };
 
 const PAID_EXTRA_LABEL =
-  /(play with booster|live stream|express|rank insurance)/i;
+  /(play with booster|live stream|express|rank insurance|streaming|extra win)/i;
 
 function paidExtras(lines: PriceLine[]) {
   return lines.filter(
@@ -24,10 +24,12 @@ function paidExtras(lines: PriceLine[]) {
 }
 
 export function OrderConfigurationSummary({
+  gameName,
   configuration,
   priceBreakdown,
   compact = false,
 }: {
+  gameName: string;
   configuration: Record<string, ConfigurationValue>;
   priceBreakdown: PriceLine[];
   compact?: boolean;
@@ -39,8 +41,8 @@ export function OrderConfigurationSummary({
 
   const desiredValue = configuration.targetRank;
 
-  const currentRank = resolveRocketLeagueRank(currentValue);
-  const desiredRank = resolveRocketLeagueRank(desiredValue);
+  const currentRank = resolveGameRank(gameName, currentValue);
+  const desiredRank = resolveGameRank(gameName, desiredValue);
   const extras = paidExtras(priceBreakdown);
 
   if (!currentRank && !desiredRank && !extras.length) {
@@ -62,7 +64,8 @@ export function OrderConfigurationSummary({
       {(currentRank || desiredRank) ? (
         <div className="mt-4 flex min-w-0 items-center gap-4 sm:gap-5">
           {currentRank ? (
-            <RocketLeagueRankValue
+            <GameRankValue
+              gameName={gameName}
               value={currentValue}
               label="Current Rank"
               size={compact ? "md" : "lg"}
@@ -74,7 +77,8 @@ export function OrderConfigurationSummary({
           ) : null}
 
           {desiredRank ? (
-            <RocketLeagueRankValue
+            <GameRankValue
+              gameName={gameName}
               value={desiredValue}
               label="Desired Rank"
               size={compact ? "md" : "lg"}

@@ -284,6 +284,7 @@ export function CustomerOrderWorkspace({
           {item ? (
             <div className="mt-6">
               <OrderConfigurationSummary
+                gameName={item.gameName}
                 configuration={item.configuration}
                 priceBreakdown={item.priceBreakdown}
               />
