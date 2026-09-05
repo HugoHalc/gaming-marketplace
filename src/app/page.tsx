@@ -4,14 +4,13 @@ import {
   ArrowRight,
   Check,
   ChevronRight,
-  ShieldCheck,
   Sparkles,
   Star,
-  UserRound,
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
+import { HowItWorksShowcase } from "@/components/marketing/how-it-works-showcase";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,11 +18,7 @@ import { Card } from "@/components/ui/card";
 import { launchGames } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
-import {
-  faqs,
-  howItWorks,
-  trustFeatures,
-} from "@/features/marketing/content";
+import { faqs, trustFeatures } from "@/features/marketing/content";
 
 const gameVisual = {
   emerald: "from-emerald-500/[0.18] via-emerald-500/[0.045] to-transparent border-emerald-300/15",
@@ -79,7 +74,6 @@ const trustpilotReviews = [
   },
 ] as const;
 
-const howItWorksIcons = [Sparkles, Check, ShieldCheck] as const;
 
 function SectionHeading({
   eyebrow,
@@ -465,63 +459,7 @@ export default function Home() {
         </Container>
       </section>
 
-      <section
-        id="how-it-works"
-        className="scroll-mt-24 border-y border-white/[0.06] bg-[linear-gradient(180deg,rgba(9,13,11,.88),rgba(5,8,7,.96))] py-20 sm:py-24"
-      >
-        <Container>
-          <div className="grid gap-12 lg:grid-cols-[.78fr_1.22fr] lg:items-start">
-            <SectionHeading
-              eyebrow="How it works"
-              title="A simple path from game to order."
-              description="The visual hierarchy starts with the game, then moves into the service and its configuration."
-              align="left"
-            />
-
-            <div className="relative">
-              <div className="absolute bottom-8 left-[2rem] top-8 w-px bg-gradient-to-b from-transparent via-white/[0.09] to-transparent lg:hidden" />
-              <div className="absolute left-[8%] right-[8%] top-12 hidden h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent lg:block" />
-
-              <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
-                {howItWorks.map((item, index) => {
-                  const Icon = howItWorksIcons[index] ?? Sparkles;
-
-                  return (
-                    <article
-                      key={item.step}
-                      className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[#0E1411]/88 p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-1 hover:border-white/[0.16] hover:bg-[#131B17]"
-                    >
-                      <div className="absolute left-[1.72rem] top-8 h-3 w-3 rounded-full border border-[#FFFFFF14] bg-[#A0AAA4]/[0.10] lg:left-1/2 lg:-translate-x-1/2" />
-
-                      <div className="flex items-start justify-between gap-4 lg:pt-6">
-                        <span className="font-gaming-value text-5xl leading-none tracking-[-0.06em] text-[#82F5A4]/85">
-                          {item.step}
-                        </span>
-
-                        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:border-white/[0.16] group-hover:text-[#F4F7F5]">
-                          <Icon className="size-4" />
-                        </span>
-                      </div>
-
-                      <div className="mt-5">
-                        <h3 className="text-lg font-semibold text-[#F4F7F5]">{item.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[#A0AAA4]">{item.description}</p>
-                      </div>
-
-                      <div className="mt-6 flex items-center gap-2">
-                        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
-                        <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
-                          Progress
-                        </span>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <HowItWorksShowcase />
 
       <section className="py-20 sm:py-24">
         <Container>
