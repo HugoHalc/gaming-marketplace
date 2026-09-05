@@ -44,13 +44,16 @@ const boosters: BoosterEntry[] = rocketLeagueBoosters.map((booster) => ({
   profileHref: "/boosters/rocket-league",
 }));
 
+const boosterPortraitPosition: Record<string, string> = {
+  brunspart: "center 18%",
+  fastbooster: "58% 18%",
+};
+
 const gameOptions = Array.from(
   new Map(boosters.map((booster) => [booster.gameSlug, booster.gameName])).entries(),
 ).map(([slug, name]) => ({ slug, name }));
 
-const regionOptions = Array.from(
-  new Set(boosters.map((booster) => booster.region)),
-).sort();
+const regionOptions = Array.from(new Set(boosters.map((booster) => booster.region))).sort();
 
 const languageOptions = Array.from(
   new Set(boosters.flatMap((booster) => [...booster.languages])),
@@ -114,7 +117,8 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
             alt={`${booster.nickname} booster`}
             fill
             sizes="82px"
-            className="object-cover object-center"
+            className="object-cover"
+            style={{ objectPosition: boosterPortraitPosition[booster.slug] ?? "center 18%" }}
           />
         </div>
       </div>
@@ -207,10 +211,7 @@ export function BoostersDirectory() {
     return boosters.filter((booster) => {
       if (game !== "all" && booster.gameSlug !== game) return false;
       if (region !== "all" && booster.region !== region) return false;
-      if (
-        language !== "all" &&
-        !booster.languages.some((item) => item === language)
-      ) {
+      if (language !== "all" && !booster.languages.some((item) => item === language)) {
         return false;
       }
 
@@ -314,11 +315,7 @@ export function BoostersDirectory() {
                   ))}
                 </SelectShell>
 
-                <SelectShell
-                  label="Language"
-                  value={language}
-                  onChange={setLanguage}
-                >
+                <SelectShell label="Language" value={language} onChange={setLanguage}>
                   <option value="all">All languages</option>
                   {languageOptions.map((option) => (
                     <option key={option} value={option}>
