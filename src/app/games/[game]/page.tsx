@@ -53,6 +53,21 @@ const rocketLeagueStorefrontHighlights = [
   },
 ] as const;
 
+const valorantStorefrontHighlights = [
+  {
+    title: "Flexible configuration",
+    description: "Configure your service around your competitive goal.",
+  },
+  {
+    title: "Secure order flow",
+    description: "Sensitive fulfillment details stay inside your order workspace.",
+  },
+  {
+    title: "Track every update",
+    description: "Follow your order status and service progress directly from your dashboard.",
+  },
+] as const;
+
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -297,7 +312,13 @@ function ServiceShowcaseCard({
   return (
     <Link
       href={`/games/${gameSlug}/${service.slug}`}
-      className="group relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-400/20 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:w-[20rem] sm:p-6"
+      className={`group relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:w-[20rem] sm:p-6 ${
+        isRocketLeague
+          ? "hover:border-blue-300/[0.18]"
+          : isValorant
+            ? "hover:border-rose-300/[0.18]"
+            : "hover:border-green-400/20"
+      }`}
     >
       <div
         className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-b ${
@@ -442,7 +463,7 @@ export default async function GamePage({ params }: GamePageProps) {
           <div className="mt-12 max-w-3xl">
             <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
               <Sparkles className="mr-2 size-3.5" />
-              {content.eyebrow}
+              {isValorant ? "VALORANT boosting services" : content.eyebrow}
             </Badge>
             <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-7xl">
               {displayName}
@@ -450,7 +471,9 @@ export default async function GamePage({ params }: GamePageProps) {
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
               {isRocketLeague
                 ? "Choose the service that matches your competitive goal and configure your boost around your rank, playlist, and preferred progression."
-                : content.heroDescription}
+                : isValorant
+                  ? "Choose your service, configure your rank or match goal, and track every step from checkout to completion."
+                  : content.heroDescription}
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2">
@@ -458,7 +481,7 @@ export default async function GamePage({ params }: GamePageProps) {
                 {isRocketLeague ? "Competitive boosting" : content.categoryLabel}
               </span>
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                {content.fulfillmentLabel}
+                {isValorant ? "PC competitive services" : content.fulfillmentLabel}
               </span>
               <span className="rounded-full border border-green-400/15 bg-green-400/[0.055] px-3 py-1.5 text-xs font-medium text-green-300">
                 {shell ? "Structure ready" : `${game.services.length} services`}
@@ -493,7 +516,7 @@ export default async function GamePage({ params }: GamePageProps) {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              {isRocketLeague
+              {isRocketLeague || isValorant
                 ? "Browse the available services and choose the option that best matches your competitive goal."
                 : "Browse horizontally on smaller screens. Each service opens its own dedicated configurator."}
             </p>
@@ -523,22 +546,31 @@ export default async function GamePage({ params }: GamePageProps) {
           <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
             <div className="max-w-xl">
               <p className={`text-sm font-semibold ${theme.text}`}>
-                {isRocketLeague ? "Built for Rocket League" : "Game storefront"}
+                {isRocketLeague ? "Built for Rocket League" : isValorant ? "Built for VALORANT" : "Game storefront"}
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
                 {isRocketLeague
                   ? "Everything you need to configure your boost with confidence."
-                  : "More visual up front. Same service flow underneath."}
+                  : isValorant
+                    ? "Configure your VALORANT service with the same clear BoostingPedia order flow."
+                    : "More visual up front. Same service flow underneath."}
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
                 {isRocketLeague
                   ? "Choose your service, configure the details that matter, and see exactly what you are ordering before checkout."
-                  : "The overview page now works as a stronger visual entry point while preserving the underlying service configuration routes."}
+                  : isValorant
+                    ? "Choose Rank Boost, Competitive Wins, or Placements Boost, configure the real options for that service, and track the resulting order from your dashboard."
+                    : "The overview page now works as a stronger visual entry point while preserving the underlying service configuration routes."}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {(isRocketLeague ? rocketLeagueStorefrontHighlights : content.highlights).map((item, index) => {
+              {(isRocketLeague
+                ? rocketLeagueStorefrontHighlights
+                : isValorant
+                  ? valorantStorefrontHighlights
+                  : content.highlights
+              ).map((item, index) => {
                 const defaultIcons = [Layers3, ShieldCheck, Gamepad2] as const;
                 const rocketLeagueIcons = [Layers3, ReceiptText, Activity] as const;
                 const Icon = isRocketLeague
@@ -551,14 +583,18 @@ export default async function GamePage({ params }: GamePageProps) {
                     className={`rounded-2xl border border-white/[0.08] bg-black/15 p-5 transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none sm:p-6 ${
                       isRocketLeague
                         ? "hover:border-blue-300/[0.16] hover:bg-[#0E1411]"
-                        : ""
+                        : isValorant
+                          ? "hover:border-rose-300/[0.16] hover:bg-[#0E1411]"
+                          : ""
                     }`}
                   >
                     <span
                       className={
                         isRocketLeague
                           ? "grid size-10 place-items-center rounded-xl border border-blue-300/[0.16] bg-blue-400/[0.04] text-blue-200/80"
-                          : `grid size-10 place-items-center rounded-xl border ${theme.icon}`
+                          : isValorant
+                            ? "grid size-10 place-items-center rounded-xl border border-rose-300/[0.16] bg-rose-400/[0.04] text-rose-200/80"
+                            : `grid size-10 place-items-center rounded-xl border ${theme.icon}`
                       }
                     >
                       <Icon className="size-4" strokeWidth={1.8} />

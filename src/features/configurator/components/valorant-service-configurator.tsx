@@ -120,25 +120,21 @@ function formatPrice(value: number) {
 function RankIcon({
   rank,
   selected,
-  compact = false,
 }: {
   rank: string;
   selected?: boolean;
-  compact?: boolean;
 }) {
   const family = familyForRank(rank);
-  const iconSize = compact ? 34 : 43;
-  const stageClass = compact ? "size-9" : "size-[3.1rem]";
 
   return (
-    <span className={`relative grid ${stageClass} shrink-0 place-items-center`}>
+    <span className="relative grid size-[3.1rem] place-items-center">
       <Image
         src={family.image}
         alt=""
-        width={iconSize}
-        height={iconSize}
-        sizes={compact ? "34px" : "43px"}
-        className={`block object-contain object-center opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
+        width={46}
+        height={46}
+        sizes="46px"
+        className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
       />
       {selected ? (
         <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
@@ -190,7 +186,14 @@ function CompactRankSelector({
           {unrated ? (
             <span className="text-[10px] font-black uppercase tracking-[0.08em] text-white/45">NR</span>
           ) : (
-            <RankIcon rank={value} compact />
+            <Image
+              src={selectedFamily?.image ?? rankFamilies[0].image}
+              alt=""
+              width={44}
+              height={44}
+              sizes="44px"
+              className="h-10 w-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
+            />
           )}
         </div>
         <div className="min-w-0">
@@ -237,7 +240,12 @@ function CompactRankSelector({
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
-              <span className="pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-40" />
+              <span className={`pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity ${
+                selected ? "opacity-80" : "opacity-35"
+              }`} />
+              {selected ? (
+                <span className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/55 to-transparent" />
+              ) : null}
               <RankIcon rank={firstRankForFamily(family.key)} selected={selected} />
               <span
                 className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
@@ -571,14 +579,11 @@ export function ValorantServiceConfigurator({
       ]);
     }
 
-    if (isWins) rows.unshift(["Wins", String(selection.wins)]);
-    if (isPlacements) rows.unshift(["Placements", String(selection.matches)]);
-
     return rows;
   }, [selection, isRankBoost, isWins, isPlacements]);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+    <div className="grid gap-4 pb-24 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
       <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
         <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
@@ -757,7 +762,7 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.playOffline === true}
                 onChange={(checked) => update("playOffline", checked)}
-                icon={<EyeOff className="size-4" />}
+                icon={<EyeOff className="size-3.5" />}
                 title="Play Offline"
                 price="FREE"
                 description="Keep your order activity discreet."
@@ -765,7 +770,7 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.agentPreferences === true}
                 onChange={(checked) => update("agentPreferences", checked)}
-                icon={<Users className="size-4" />}
+                icon={<Users className="size-3.5" />}
                 title="Agents Preferences"
                 price="FREE"
                 description="Save your preferred agents for the booster."
@@ -773,7 +778,7 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.liveStream === true}
                 onChange={(checked) => update("liveStream", checked)}
-                icon={<MonitorPlay className="size-4" />}
+                icon={<MonitorPlay className="size-3.5" />}
                 title="Streaming"
                 price="+$10"
                 description="Watch the boosting session live."
@@ -781,7 +786,7 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.expressDelivery === true}
                 onChange={(checked) => update("expressDelivery", checked)}
-                icon={<Zap className="size-4" />}
+                icon={<Zap className="size-3.5" />}
                 title="Express Delivery"
                 price="+30%"
                 description="Prioritize faster fulfillment."
@@ -789,7 +794,7 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.extraWin === true}
                 onChange={(checked) => update("extraWin", checked)}
-                icon={<Trophy className="size-4" />}
+                icon={<Trophy className="size-3.5" />}
                 title="+1 Extra Win"
                 price="+$6"
                 description="Add one extra competitive win."
@@ -797,149 +802,236 @@ export function ValorantServiceConfigurator({
               <CompactExtra
                 checked={selection.rankInsurance === true}
                 onChange={(checked) => update("rankInsurance", checked)}
-                icon={<ShieldCheck className="size-4" />}
+                icon={<ShieldCheck className="size-3.5" />}
                 title="Rank Insurance"
                 price="+50%"
                 description="Add rank insurance to the order."
               />
             </div>
           </div>
+
+          <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
+            {[
+              "Server-calculated final pricing.",
+              "No hidden upgrade selections.",
+              "Live order tracking included.",
+            ].map((note) => (
+              <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
+                <Check className="size-3 shrink-0 text-emerald-300" />
+                <span>{note}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <aside className="xl:sticky xl:top-24">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09] shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.055] via-transparent to-transparent p-5">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-rose-200/65">
-                  Order summary
-                </p>
-                <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">{service.name}</p>
+      <aside id="boost-summary" className="scroll-mt-24 xl:sticky xl:top-24">
+        <div className="space-y-3">
+          <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
+            <div className="border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.05] via-transparent to-transparent px-4 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                    Order Summary
+                  </p>
+                  <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
+                </div>
+                {isLoading ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]">
+                    <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                    Updating
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/18 bg-[#39E56F]/[0.035] px-2.5 py-1 text-[9px] font-medium text-[#82F5A4]">
+                    <Check className="size-3" strokeWidth={2.5} />
+                    Ready
+                  </span>
+                )}
               </div>
-              {isLoading ? <LoaderCircle className="size-4 animate-spin text-rose-200" /> : null}
             </div>
 
-            <div className="mt-4 space-y-3">
-              {currentRank === "unrated" ? (
-                <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#090D0B] p-3">
-                  <span className="grid size-10 place-items-center rounded-lg border border-white/[0.08] text-[9px] font-black text-white/40">
-                    NR
-                  </span>
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
-                    <p className="mt-0.5 text-xs font-semibold text-white">Unrated</p>
+            <div className="p-4">
+              {isRankBoost ? (
+                <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <Image src={familyForRank(currentRank).image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
+                        <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(currentRank)}</p>
+                      </div>
+                    </div>
+                    <ArrowRight className="size-3.5 text-rose-200/35" />
+                    <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
+                        <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{rankLabel(targetRank)}</p>
+                      </div>
+                      <Image src={familyForRank(targetRank).image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#090D0B] p-3">
-                  <RankIcon rank={currentRank} />
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
-                    <p className="mt-0.5 text-xs font-semibold text-white">{rankLabel(currentRank)}</p>
+                <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      {currentRank === "unrated" ? (
+                        <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-white/[0.08] text-[8px] font-black text-white/40">NR</span>
+                      ) : (
+                        <Image src={familyForRank(currentRank).image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current rank</p>
+                        <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{currentRank === "unrated" ? "Unrated" : rankLabel(currentRank)}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">{isWins ? "Wins" : "Placements"}</p>
+                      <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{String(isWins ? selection.wins : selection.matches)}</p>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {isRankBoost ? (
-                <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#090D0B] p-3">
-                  <RankIcon rank={targetRank} />
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
-                    <p className="mt-0.5 text-xs font-semibold text-white">{rankLabel(targetRank)}</p>
+              <div className="mt-2 divide-y divide-white/[0.06]">
+                {summaryRows.map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between gap-4 py-2 text-[11px]">
+                    <span className="text-white/40">{label}</span>
+                    <span className="font-medium text-white/78">{value}</span>
                   </div>
+                ))}
+              </div>
+
+              {error ? (
+                <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
+                  {error}
                 </div>
               ) : null}
+
+              {quote ? (
+                <>
+                  <div className="my-4 h-px bg-white/[0.08]" />
+                  <div className="space-y-2">
+                    {quote.breakdown.map((item, index) => (
+                      <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
+                        <span className="text-[#A0AAA4]">{item.label}</span>
+                        <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
+                          {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="my-4 h-px bg-white/[0.08]" />
+                  <div className="flex items-end justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                      <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">
+                        {formatPrice(quote.total)}
+                      </p>
+                      {!isLoading ? (
+                        <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
+                          <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
+                          Server-validated price
+                        </p>
+                      ) : (
+                        <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                          <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                          Updating price…
+                        </p>
+                      )}
+                    </div>
+                    <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="my-4 h-px bg-white/[0.08]" />
+                  <div>
+                    <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
+                    {isLoading ? (
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                        <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                        Updating price…
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {orderError ? (
+                <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
+              ) : null}
+
+              <Button
+                className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
+                size="lg"
+                disabled={!quote || isLoading || isCreatingOrder}
+                onClick={createOrder}
+              >
+                {isCreatingOrder ? (
+                  <>
+                    Creating order
+                    <LoaderCircle className="ml-2 size-4 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Create secure order
+                    <ArrowRight className="ml-2 size-4" />
+                  </>
+                )}
+              </Button>
+
+              <p className="mt-3 text-center text-[10px] leading-4 text-white/35">
+                Final price is server-validated before Stripe payment.
+              </p>
             </div>
           </div>
 
-          <div className="p-5">
-            <div className="space-y-2.5">
-              {summaryRows.map(([label, value]) => (
-                <div key={label} className="flex items-center justify-between gap-4 text-xs">
-                  <span className="text-white/35">{label}</span>
-                  <span className="font-semibold text-white/75">{value}</span>
-                </div>
-              ))}
+          <div className="rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5">
+            <div className="flex items-start gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-rose-300/[0.14] bg-rose-400/[0.045] text-rose-200/75">
+                <ShieldCheck className="size-4" />
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p>
+                <p className="mt-1 text-[10px] leading-4 text-white/40">
+                  Payment is processed by Stripe after your order is created.
+                </p>
+              </div>
             </div>
-
-            <div className="my-4 h-px bg-white/[0.07]" />
-
-            {error ? (
-              <div className="rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
-                {error}
-              </div>
-            ) : null}
-
-            {quote ? (
-              <>
-                <div className="space-y-2.5">
-                  {quote.breakdown.map((item) => (
-                    <div key={item.label} className="flex items-start justify-between gap-4 text-xs">
-                      <span className="leading-5 text-white/38">{item.label}</span>
-                      <span className={`shrink-0 font-semibold ${item.amount < 0 ? "text-emerald-300" : "text-white/80"}`}>
-                        {item.amount < 0 ? "−" : ""}
-                        {formatPrice(Math.abs(item.amount))}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="my-4 h-px bg-white/[0.07]" />
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.12em] text-white/30">Total</p>
-                    <p className="mt-1 font-gaming-value text-3xl font-bold tracking-[-0.05em] text-[#F4F7F5]">
-                      {formatPrice(quote.total)}
-                    </p>
-                  </div>
-                  <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 py-1 text-[9px] font-medium text-white/35">
-                    USD
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="py-4 text-xs leading-5 text-white/35">
-                Adjust the configuration to generate a valid quote.
-              </div>
-            )}
-
-            {orderError ? (
-              <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
-                {orderError}
-              </div>
-            ) : null}
-
-            <Button
-              className="mt-5 w-full"
-              size="lg"
-              disabled={!quote || isLoading || isCreatingOrder}
-              onClick={createOrder}
-            >
-              {isCreatingOrder ? (
-                <>
-                  Creating order
-                  <LoaderCircle className="ml-2 size-4 animate-spin" />
-                </>
-              ) : (
-                <>
-                  Continue to Checkout
-                  <ArrowRight className="ml-2 size-4" />
-                </>
-              )}
-            </Button>
-
-            <div className="mt-4 flex gap-2 text-[10px] leading-4 text-white/28">
-              <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-300/60" />
-              <span>Final price is recalculated server-side before the order is stored.</span>
-            </div>
-
-            {quote ? (
-              <p className="mt-3 text-[9px] text-white/18">Pricing rules: {quote.ruleSetVersion}</p>
-            ) : null}
           </div>
         </div>
       </aside>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
+            <div className="mt-0.5 flex items-baseline gap-2">
+              <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                {quote ? formatPrice(quote.total) : "—"}
+              </p>
+              {isLoading ? (
+                <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
+                  <LoaderCircle className="size-2.5 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
+                  Updating…
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <a
+            href="#boost-summary"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-[#39E56F]/35 bg-[#39E56F] px-5 text-sm font-bold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] motion-reduce:transition-none"
+          >
+            View order
+            <ArrowRight className="ml-2 size-4" />
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
