@@ -127,15 +127,16 @@ function RankIcon({
   const family = familyForRank(rank);
 
   return (
-    <span className="relative grid size-[3.1rem] shrink-0 place-items-center">
-      <Image
-        src={family.image}
-        alt=""
-        width={48}
-        height={48}
-        sizes="48px"
-        className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
-      />
+    <span className="relative flex size-[3.15rem] shrink-0 items-center justify-center overflow-visible">
+      <span className="relative flex size-[2.8rem] items-center justify-center">
+        <Image
+          src={family.image}
+          alt=""
+          fill
+          sizes="44px"
+          className={`object-contain object-center opacity-92 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:scale-[1.025] group-hover/rank:opacity-100 motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
+        />
+      </span>
       {selected ? (
         <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
           <Check className="size-2.5" strokeWidth={3} />
@@ -182,7 +183,7 @@ function CompactRankSelector({
   return (
     <div className="min-w-0">
       <div className="flex items-center gap-3">
-        <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-rose-300/[0.12] bg-rose-400/[0.035]">
+        <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-rose-300/[0.12] bg-rose-400/[0.035] p-1">
           {unrated ? (
             <span className="text-[10px] font-black uppercase tracking-[0.08em] text-white/45">NR</span>
           ) : (
@@ -227,7 +228,7 @@ function CompactRankSelector({
               type="button"
               title={family.label}
               onClick={() => chooseFamily(family.key)}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
+              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2.5 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
                 selected
                   ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
