@@ -58,12 +58,12 @@ export default async function LoginPage({
         <section className="overflow-hidden rounded-[20px] border border-white/[0.08] bg-[#0B110E] shadow-[0_12px_36px_rgba(0,0,0,0.22)]">
           <div className="relative h-[138px] overflow-hidden border-b border-white/[0.06] bg-[#080D0A] sm:h-[158px]">
             <Image
-              src="/brand/boostingpedia-hero-art.webp"
+              src="/brand/boostingpedia-signin-hero.webp"
               alt=""
               fill
               priority
               sizes="(max-width: 640px) calc(100vw - 32px), 470px"
-              className="object-cover object-[58%_34%]"
+              className="object-cover object-center"
             />
             <div
               aria-hidden="true"
