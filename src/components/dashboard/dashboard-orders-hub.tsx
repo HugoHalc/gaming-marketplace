@@ -13,9 +13,10 @@ import {
 import { useMemo, useState } from "react";
 import type { OrderRecord } from "@/features/orders/types/orders";
 import {
-  resolveRocketLeagueRank,
-  RocketLeagueRankValue,
-} from "@/components/orders/rocket-league-rank";
+  GameRankValue,
+  gameCardAsset,
+  resolveGameRank,
+} from "@/components/orders/game-order-presentation";
 
 type DashboardOrder = OrderRecord & {
   operationalState: string | null;
@@ -140,8 +141,8 @@ function CustomerOrderCard({
       ? config.currentRank
       : config.previousRank;
   const targetRank = config.targetRank;
-  const currentResolved = resolveRocketLeagueRank(currentRank);
-  const targetResolved = resolveRocketLeagueRank(targetRank);
+  const currentResolved = resolveGameRank(item?.gameName, currentRank);
+  const targetResolved = resolveGameRank(item?.gameName, targetRank);
   const platform =
     typeof config.platform === "string" ? formatLabel(config.platform) : null;
   const wins = typeof config.wins === "number" ? config.wins : null;
@@ -156,7 +157,7 @@ function CustomerOrderCard({
         <div className="flex min-w-0 items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-white/[0.07]">
             <Image
-              src="/game-cards/rocket-league.webp"
+              src={gameCardAsset(item?.gameName)}
               alt=""
               fill
               sizes="40px"
@@ -178,13 +179,13 @@ function CustomerOrderCard({
 
         <div className="flex min-w-0 items-center gap-4">
           {currentResolved ? (
-            <RocketLeagueRankValue value={currentRank} label="Current" size="sm" />
+            <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" size="sm" />
           ) : null}
           {currentResolved && targetResolved ? (
             <ArrowRight className="size-3 shrink-0 text-blue-200/30" />
           ) : null}
           {targetResolved ? (
-            <RocketLeagueRankValue value={targetRank} label="Target" size="sm" />
+            <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" size="sm" />
           ) : null}
           {wins !== null || matches !== null ? (
             <div>
@@ -232,7 +233,7 @@ function CustomerOrderCard({
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="relative size-7 shrink-0 overflow-hidden rounded-md border border-white/[0.07]">
             <Image
-              src="/game-cards/rocket-league.webp"
+              src={gameCardAsset(item?.gameName)}
               alt=""
               fill
               sizes="28px"
@@ -270,13 +271,13 @@ function CustomerOrderCard({
         {(currentResolved || targetResolved) ? (
           <div className="mt-4 flex min-h-[58px] items-center gap-3 border-y border-white/[0.05] py-3">
             {currentResolved ? (
-              <RocketLeagueRankValue value={currentRank} label="Current" />
+              <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" />
             ) : null}
             {currentResolved && targetResolved ? (
               <ArrowRight className="size-3.5 shrink-0 text-blue-200/30" />
             ) : null}
             {targetResolved ? (
-              <RocketLeagueRankValue value={targetRank} label="Target" />
+              <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" />
             ) : null}
             {wins !== null || matches !== null ? (
               <div className="ml-auto min-w-[54px] border-l border-white/[0.05] pl-3">

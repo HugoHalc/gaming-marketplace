@@ -7,9 +7,10 @@ import { useMemo, useState } from "react";
 import { ClaimOrderButton } from "@/components/booster/claim-order-button";
 import type { OrderRecord } from "@/features/orders/types/orders";
 import {
-  resolveRocketLeagueRank,
-  RocketLeagueRankValue,
-} from "@/components/orders/rocket-league-rank";
+  GameRankValue,
+  gameCardAsset,
+  resolveGameRank,
+} from "@/components/orders/game-order-presentation";
 
 type BoosterOrderEntry = {
   order: OrderRecord;
@@ -276,8 +277,8 @@ export function BoosterOrdersHub({
                   ? config.currentRank
                   : config.previousRank;
               const targetRank = config.targetRank;
-              const currentResolved = resolveRocketLeagueRank(currentRank);
-              const targetResolved = resolveRocketLeagueRank(targetRank);
+              const currentResolved = resolveGameRank(item?.gameName, currentRank);
+              const targetResolved = resolveGameRank(item?.gameName, targetRank);
               const platform =
                 typeof config.platform === "string"
                   ? formatLabel(config.platform)
@@ -292,7 +293,7 @@ export function BoosterOrdersHub({
                     <div className="flex min-w-0 items-center gap-2.5">
                       <div className="relative size-7 shrink-0 overflow-hidden rounded-md border border-white/[0.07]">
                         <Image
-                          src="/game-cards/rocket-league.webp"
+                          src={gameCardAsset(item?.gameName)}
                           alt=""
                           fill
                           sizes="28px"
@@ -344,7 +345,7 @@ export function BoosterOrdersHub({
                       <div className="mt-4 flex min-h-[64px] items-center gap-3 border-y border-white/[0.05] py-3">
                         {currentResolved ? (
                           <div className="min-w-0 flex-1">
-                            <RocketLeagueRankValue value={currentRank} label="Current" />
+                            <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" />
                           </div>
                         ) : null}
                         {currentResolved && targetResolved ? (
@@ -352,7 +353,7 @@ export function BoosterOrdersHub({
                         ) : null}
                         {targetResolved ? (
                           <div className="min-w-0 flex-1">
-                            <RocketLeagueRankValue value={targetRank} label="Target" />
+                            <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" />
                           </div>
                         ) : null}
                       </div>
