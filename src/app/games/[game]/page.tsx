@@ -311,6 +311,7 @@ export default async function GamePage({ params }: GamePageProps) {
   const displayName = getLaunchGameDisplayName(game.slug, game.name);
   const shell = !catalogGame;
   const isRocketLeague = game.slug === "rocket-league";
+  const isValorant = game.slug === "valorant";
 
   return (
     <main className="min-h-screen overflow-hidden">
@@ -319,21 +320,25 @@ export default async function GamePage({ params }: GamePageProps) {
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
         <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-15" />
 
-        {isRocketLeague ? (
+        {isRocketLeague || isValorant ? (
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full overflow-hidden sm:w-[72%] lg:w-[62%]"
           >
             <Image
-              src="/game-heroes/rocket-league-storefront.jpeg"
+              src={isValorant ? "/game-heroes/valorant-storefront.jpeg" : "/game-heroes/rocket-league-storefront.jpeg"}
               alt=""
               fill
               priority
               sizes="(min-width: 1024px) 62vw, (min-width: 640px) 72vw, 100vw"
-              className="object-cover object-[72%_50%] opacity-45 sm:object-[70%_50%] sm:opacity-70 lg:object-[68%_50%] lg:opacity-100"
+              className={
+                isValorant
+                  ? "object-cover object-[76%_50%] opacity-40 sm:object-[74%_50%] sm:opacity-68 lg:object-[72%_50%] lg:opacity-100"
+                  : "object-cover object-[72%_50%] opacity-45 sm:object-[70%_50%] sm:opacity-70 lg:object-[68%_50%] lg:opacity-100"
+              }
             />
 
-            <div className="absolute inset-0 bg-black/[0.06]" />
+            <div className={isValorant ? "absolute inset-0 bg-rose-950/[0.035]" : "absolute inset-0 bg-black/[0.06]"} />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_18%,rgba(5,8,7,.86)_35%,rgba(5,8,7,.48)_52%,rgba(5,8,7,.08)_72%,transparent_100%)]" />
           </div>
         ) : (
