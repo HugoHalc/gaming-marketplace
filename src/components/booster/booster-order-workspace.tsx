@@ -18,9 +18,10 @@ import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 import {
-  resolveRocketLeagueRank,
-  RocketLeagueRankValue,
-} from "@/components/orders/rocket-league-rank";
+  GameRankValue,
+  gameCardAsset,
+  resolveGameRank,
+} from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
 function formatMoney(value: number) {
@@ -99,8 +100,8 @@ export function BoosterOrderWorkspace({
       : config.previousRank;
 
   const targetValue = config.targetRank;
-  const currentRank = resolveRocketLeagueRank(currentValue);
-  const targetRank = resolveRocketLeagueRank(targetValue);
+  const currentRank = resolveGameRank(item?.gameName, currentValue);
+  const targetRank = resolveGameRank(item?.gameName, targetValue);
   const suggestedPlatform =
     typeof config.platform === "string" ? config.platform : undefined;
 
@@ -131,7 +132,7 @@ export function BoosterOrderWorkspace({
           <div className="flex min-w-0 items-center gap-3.5">
             <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0E1411]">
               <Image
-                src="/game-cards/rocket-league.webp"
+                src={gameCardAsset(item?.gameName)}
                 alt=""
                 fill
                 sizes="48px"
@@ -141,7 +142,7 @@ export function BoosterOrderWorkspace({
 
             <div className="min-w-0">
               <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
-                {item?.gameName ?? "Rocket League"}
+                {item?.gameName ?? "Gaming service"}
               </p>
               <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.03em] text-[#F4F7F5]">
                 {item?.serviceName ?? "Boost Order"}
@@ -162,7 +163,8 @@ export function BoosterOrderWorkspace({
           {(currentRank || targetRank) ? (
             <div className="flex min-w-0 items-center gap-4 lg:justify-end">
               {currentRank ? (
-                <RocketLeagueRankValue
+                <GameRankValue
+                  gameName={item?.gameName}
                   value={currentValue}
                   label="Current"
                   size="lg"
@@ -174,7 +176,8 @@ export function BoosterOrderWorkspace({
               ) : null}
 
               {targetRank ? (
-                <RocketLeagueRankValue
+                <GameRankValue
+                  gameName={item?.gameName}
                   value={targetValue}
                   label="Desired"
                   size="lg"

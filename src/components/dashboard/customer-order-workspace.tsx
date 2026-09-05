@@ -24,9 +24,9 @@ import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 import {
-  resolveRocketLeagueRank,
-  RocketLeagueRankValue,
-} from "@/components/orders/rocket-league-rank";
+  GameRankValue,
+  resolveGameRank,
+} from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
 interface Props {
@@ -152,8 +152,8 @@ export function CustomerOrderWorkspace({
       : config.previousRank;
   const targetValue = config.targetRank;
 
-  const currentRank = resolveRocketLeagueRank(currentValue);
-  const targetRank = resolveRocketLeagueRank(targetValue);
+  const currentRank = resolveGameRank(item?.gameName, currentValue);
+  const targetRank = resolveGameRank(item?.gameName, targetValue);
 
   const suggestedPlatform =
     typeof config.platform === "string"
@@ -221,7 +221,8 @@ export function CustomerOrderWorkspace({
         {(currentRank || targetRank) ? (
           <div className="flex min-w-0 items-center gap-4 lg:justify-end">
             {currentRank ? (
-              <RocketLeagueRankValue
+              <GameRankValue
+                gameName={item?.gameName}
                 value={currentValue}
                 label="Current"
                 size="lg"
@@ -233,7 +234,8 @@ export function CustomerOrderWorkspace({
             ) : null}
 
             {targetRank ? (
-              <RocketLeagueRankValue
+              <GameRankValue
+                gameName={item?.gameName}
                 value={targetValue}
                 label="Desired"
                 size="lg"
