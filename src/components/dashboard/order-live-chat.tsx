@@ -538,7 +538,11 @@ export function OrderLiveChat({
 
             {chatState.loaded ? (
               <span className="rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#667069]">
-                {chatState.enabled ? "Chat active" : "Awaiting booster"}
+                {chatState.enabled
+                  ? booster
+                    ? "Chat active"
+                    : "Waiting for booster"
+                  : "Chat locked"}
               </span>
             ) : null}
           </div>
@@ -715,7 +719,9 @@ export function OrderLiveChat({
                           <MessageSquare className="mx-auto size-5 text-[#667069]" />
                           <h3 className="mt-3 text-sm font-semibold text-[#F4F7F5]">Start the conversation</h3>
                           <p className="mt-1.5 max-w-sm text-[11px] leading-5 text-[#A0AAA4]">
-                            Your booster can now message you about this order.
+                            {booster
+                              ? "Your booster can now message you about this order."
+                              : "Send a message now. The booster who accepts this order will see the conversation immediately."}
                           </p>
                           <p className="mt-1 text-[9px] text-[#667069]">
                             Keep all order communication here.

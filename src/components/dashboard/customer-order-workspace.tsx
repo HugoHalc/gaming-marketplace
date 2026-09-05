@@ -165,6 +165,8 @@ export function CustomerOrderWorkspace({
     order.paymentStatus !== "paid";
 
   const isCustomerOwner = currentUserRole === "customer";
+  const secureAccessAvailable =
+    isCustomerOwner && order.paymentStatus === "paid";
 
   return (
     <div className="mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
@@ -424,12 +426,14 @@ export function CustomerOrderWorkspace({
                   <p className="mt-0.5 text-[9px] text-[#667069]">
                     {boosterAssignment
                       ? "Share your game login securely with your assigned booster"
-                      : "Available after booster assignment"}
+                      : secureAccessAvailable
+                        ? "Add your game login now. It stays encrypted until a booster is assigned."
+                        : "Available immediately after payment is confirmed"}
                   </p>
                 </div>
               </div>
 
-              {boosterAssignment ? (
+              {boosterAssignment || secureAccessAvailable ? (
                 <OrderAccountDetails
                   orderId={order.id}
                   canEdit={isCustomerOwner}
