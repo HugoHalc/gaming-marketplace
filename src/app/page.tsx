@@ -244,7 +244,7 @@ export default function Home() {
                 </Link>
               </Button>
               <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-                <Link href="/boosters/rocket-league">Meet our boosters</Link>
+                <Link href="/boosters">Meet our boosters</Link>
               </Button>
             </div>
 
