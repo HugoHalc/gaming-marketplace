@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -26,70 +27,14 @@ import type {
 } from "../types/configurator";
 
 const rankFamilies = [
-  {
-    key: "iron",
-    label: "Iron",
-    short: "I",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Iron_1_Rank.png",
-    fallback: "from-zinc-500/45 to-zinc-300/10",
-  },
-  {
-    key: "bronze",
-    label: "Bronze",
-    short: "B",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Bronze_1_Rank.png",
-    fallback: "from-amber-800/55 to-amber-500/10",
-  },
-  {
-    key: "silver",
-    label: "Silver",
-    short: "S",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Silver_1_Rank.png",
-    fallback: "from-slate-400/50 to-white/10",
-  },
-  {
-    key: "gold",
-    label: "Gold",
-    short: "G",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Gold_1_Rank.png",
-    fallback: "from-yellow-500/50 to-amber-300/10",
-  },
-  {
-    key: "platinum",
-    label: "Platinum",
-    short: "P",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Platinum_1_Rank.png",
-    fallback: "from-cyan-500/45 to-teal-300/10",
-  },
-  {
-    key: "diamond",
-    label: "Diamond",
-    short: "D",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Diamond_1_Rank.png",
-    fallback: "from-fuchsia-500/50 to-violet-300/10",
-  },
-  {
-    key: "ascendant",
-    label: "Ascendant",
-    short: "A",
-    tiers: ["1", "2", "3"],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Ascendant_1_Rank.png",
-    fallback: "from-emerald-500/50 to-green-300/10",
-  },
-  {
-    key: "immortal",
-    label: "Immortal",
-    short: "IMM",
-    tiers: [],
-    image: "https://valorant.fandom.com/wiki/Special:Redirect/file/Immortal_1_Rank.png",
-    fallback: "from-rose-600/55 to-fuchsia-400/10",
-  },
+  { key: "iron", label: "Iron", image: "/ranks/valorant/iron.png", tiers: ["1", "2", "3"] },
+  { key: "bronze", label: "Bronze", image: "/ranks/valorant/bronze.png", tiers: ["1", "2", "3"] },
+  { key: "silver", label: "Silver", image: "/ranks/valorant/silver.png", tiers: ["1", "2", "3"] },
+  { key: "gold", label: "Gold", image: "/ranks/valorant/gold.png", tiers: ["1", "2", "3"] },
+  { key: "platinum", label: "Platinum", image: "/ranks/valorant/platinum.png", tiers: ["1", "2", "3"] },
+  { key: "diamond", label: "Diamond", image: "/ranks/valorant/diamond.png", tiers: ["1", "2", "3"] },
+  { key: "ascendant", label: "Ascendant", image: "/ranks/valorant/ascendant.png", tiers: ["1", "2", "3"] },
+  { key: "immortal", label: "Immortal", image: "/ranks/valorant/immortal.png", tiers: [] },
 ] as const;
 
 const rankOrder = [
@@ -145,15 +90,6 @@ function rankLabel(rank: string) {
   return `${family.label} ${tier === "1" ? "I" : tier === "2" ? "II" : "III"}`;
 }
 
-function imageForRank(rank: string) {
-  if (rank === "immortal") {
-    return "https://valorant.fandom.com/wiki/Special:Redirect/file/Immortal_1_Rank.png";
-  }
-  const family = familyForRank(rank);
-  const tier = rank.split("-").at(-1);
-  const fileFamily = family.label.replaceAll(" ", "_");
-  return `https://valorant.fandom.com/wiki/Special:Redirect/file/${fileFamily}_${tier}_Rank.png`;
-}
 
 function firstRankForFamily(familyKey: string) {
   if (familyKey === "immortal") return "immortal";
@@ -184,36 +120,22 @@ function formatPrice(value: number) {
 function RankIcon({
   rank,
   selected,
-  familyOnly = false,
 }: {
   rank: string;
   selected?: boolean;
-  familyOnly?: boolean;
 }) {
   const family = familyForRank(rank);
-  const src = familyOnly ? family.image : imageForRank(rank);
 
   return (
     <span className="relative grid size-[3.1rem] shrink-0 place-items-center">
-      <span
-        className={`absolute inset-1 rounded-xl bg-gradient-to-br ${family.fallback} opacity-80`}
-        aria-hidden="true"
+      <Image
+        src={family.image}
+        alt=""
+        width={48}
+        height={48}
+        sizes="48px"
+        className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
       />
-      <span className="relative z-[1] grid size-[2.7rem] place-items-center overflow-hidden rounded-lg">
-        {/* External image is visual-only; the colored fallback remains visible if the host blocks it. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt=""
-          className="h-[2.65rem] w-[2.65rem] object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,.45)]"
-          onError={(event) => {
-            event.currentTarget.style.display = "none";
-          }}
-        />
-        <span className="absolute text-[9px] font-black tracking-[-0.04em] text-white/75">
-          {family.short}
-        </span>
-      </span>
       {selected ? (
         <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
           <Check className="size-2.5" strokeWidth={3} />
@@ -312,7 +234,7 @@ function CompactRankSelector({
               }`}
             >
               <span className="pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-40" />
-              <RankIcon rank={firstRankForFamily(family.key)} selected={selected} familyOnly />
+              <RankIcon rank={firstRankForFamily(family.key)} selected={selected} />
               <span
                 className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
                   selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"

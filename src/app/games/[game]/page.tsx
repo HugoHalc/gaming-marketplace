@@ -214,16 +214,85 @@ function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }
   return null;
 }
 
+function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
+  const base =
+    "relative mt-6 flex h-[3.9rem] items-center overflow-hidden text-white/70 transition-[opacity,color,border-color,background-color] duration-200 ease-out group-hover:text-white/85 motion-reduce:transition-none";
+
+  if (serviceName === "Rank Boost") {
+    const ranks = [
+      { src: "/ranks/valorant/gold.png", alt: "Gold" },
+      { src: "/ranks/valorant/diamond.png", alt: "Diamond" },
+      { src: "/ranks/valorant/ascendant.png", alt: "Ascendant" },
+    ];
+
+    return (
+      <div className={`${base} gap-2.5`} aria-label="Valorant rank progression preview">
+        {ranks.map((rank, index) => (
+          <div key={rank.src} className="contents">
+            <div className="relative size-8 shrink-0 sm:size-9">
+              <Image
+                src={rank.src}
+                alt={rank.alt}
+                fill
+                sizes="36px"
+                className="object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none"
+              />
+            </div>
+            {index < ranks.length - 1 ? (
+              <ArrowRight className="size-3.5 shrink-0 text-white/25" strokeWidth={1.6} />
+            ) : null}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (serviceName === "Competitive Wins") {
+    return (
+      <div className={`${base} gap-4`} aria-label="Valorant competitive wins preview">
+        <span className="font-gaming-value text-[1.75rem] leading-none tracking-[-0.04em] text-rose-200/85">+1</span>
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Win</p>
+          <div className="mt-2 flex items-center gap-1.5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span key={index} className={`h-1.5 flex-1 rounded-full ${index === 0 ? "bg-rose-300/50" : "bg-white/[0.07]"}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (serviceName === "Placements Boost") {
+    return (
+      <div className={`${base} w-full`} aria-label="Valorant placements preview">
+        <div className="w-full">
+          <p className="font-gaming-value text-[13px] uppercase tracking-[0.12em] text-rose-200/75">Placements</p>
+          <div className="mt-3 flex items-center gap-1.5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span key={index} className="size-2 rounded-full border border-white/15 bg-white/[0.025]" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function ServiceShowcaseCard({
   service,
   gameSlug,
   index,
   isRocketLeague,
+  isValorant,
 }: {
   service: ServiceSummary;
   gameSlug: string;
   index: number;
   isRocketLeague: boolean;
+  isValorant: boolean;
 }) {
   return (
     <Link
@@ -232,14 +301,18 @@ function ServiceShowcaseCard({
     >
       <div
         className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-b ${
-          isRocketLeague ? "from-blue-400/[0.05]" : "from-green-400/[0.06]"
+          isRocketLeague
+            ? "from-blue-400/[0.05]"
+            : isValorant
+              ? "from-rose-400/[0.05]"
+              : "from-green-400/[0.06]"
         } to-transparent`}
       />
       <div className="relative flex items-start justify-between gap-4">
         <Badge className="border-white/[0.08] bg-black/20 text-white/55">
           {categoryLabel(service.category)}
         </Badge>
-        {!isRocketLeague ? (
+        {!isRocketLeague && !isValorant ? (
           <span className="font-gaming-value rounded-lg border border-white/[0.08] bg-black/20 px-2 py-1 text-[10px] text-white/35">
             {String(index + 1).padStart(2, "0")}
           </span>
@@ -248,9 +321,11 @@ function ServiceShowcaseCard({
 
       {isRocketLeague ? (
         <RocketLeagueServiceMicrovisual serviceName={service.name} />
+      ) : isValorant ? (
+        <ValorantServiceMicrovisual serviceName={service.name} />
       ) : null}
 
-      <div className={`relative ${isRocketLeague ? "mt-3" : "mt-8"}`}>
+      <div className={`relative ${isRocketLeague || isValorant ? "mt-3" : "mt-8"}`}>
         <h3 className="font-gaming-value max-w-[13rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
           {service.name}
         </h3>
@@ -259,7 +334,7 @@ function ServiceShowcaseCard({
         </p>
       </div>
 
-      <div className={`relative mt-auto ${isRocketLeague ? "pt-5" : "pt-8"}`}>
+      <div className={`relative mt-auto ${isRocketLeague || isValorant ? "pt-5" : "pt-8"}`}>
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -433,6 +508,7 @@ export default async function GamePage({ params }: GamePageProps) {
                     gameSlug={game.slug}
                     index={index}
                     isRocketLeague={isRocketLeague}
+                    isValorant={isValorant}
                   />
                 ))
               : Array.from({ length: 4 }).map((_, index) => (
