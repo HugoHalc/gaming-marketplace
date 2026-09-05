@@ -133,7 +133,6 @@ function RankIcon({
         alt=""
         width={46}
         height={46}
-        sizes="46px"
         className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
       />
       {selected ? (
@@ -191,7 +190,6 @@ function CompactRankSelector({
               alt=""
               width={44}
               height={44}
-              sizes="44px"
               className="h-10 w-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
             />
           )}

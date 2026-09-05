@@ -244,13 +244,13 @@ function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
       <div className={`${base} gap-2.5`} aria-label="Valorant rank progression preview">
         {ranks.map((rank, index) => (
           <div key={rank.src} className="contents">
-            <div className="relative size-8 shrink-0 sm:size-9">
+            <div className="relative grid size-8 shrink-0 place-items-center sm:size-9">
               <Image
                 src={rank.src}
                 alt={rank.alt}
-                fill
-                sizes="36px"
-                className="object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none"
+                width={36}
+                height={36}
+                className="size-8 object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none sm:size-9"
               />
             </div>
             {index < ranks.length - 1 ? (
@@ -483,7 +483,13 @@ export default async function GamePage({ params }: GamePageProps) {
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                 {isValorant ? "PC competitive services" : content.fulfillmentLabel}
               </span>
-              <span className="rounded-full border border-green-400/15 bg-green-400/[0.055] px-3 py-1.5 text-xs font-medium text-green-300">
+              <span
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                  isValorant
+                    ? "border-rose-300/[0.14] bg-rose-400/[0.035] text-rose-200/70"
+                    : "border-green-400/15 bg-green-400/[0.055] text-green-300"
+                }`}
+              >
                 {shell ? "Structure ready" : `${game.services.length} services`}
               </span>
             </div>
