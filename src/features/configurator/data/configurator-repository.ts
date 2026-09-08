@@ -54,6 +54,10 @@ export async function getServiceConfiguratorSchema(input: {
   const valorantSchema = getValorantConfiguratorSchema(input.serviceId);
   if (valorantSchema) return valorantSchema;
 
+  if (input.serviceId.startsWith("service_lol_")) {
+    return getConfiguratorSchema(input.category);
+  }
+
   if (!hasPublicSupabaseEnv()) return getConfiguratorSchema(input.category);
 
   const supabase = createPublicServerClient();

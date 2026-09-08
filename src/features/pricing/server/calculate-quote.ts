@@ -7,6 +7,10 @@ import type {
 } from "@/features/configurator/types/configurator";
 import { getActivePricingRuleSet, type PricingRule } from "./pricing-repository";
 import {
+  calculateLeagueOfLegendsPhaseOneQuote,
+  isLeagueOfLegendsPhaseOneQuote,
+} from "./league-of-legends-pricing";
+import {
   calculateRocketLeagueRankQuote,
   isRocketLeagueRankQuote,
 } from "./rocket-league-rank-pricing";
@@ -203,6 +207,10 @@ export async function calculateQuotePreview(input: {
 
   const service = game.services.find((item) => item.slug === input.serviceSlug);
   if (!service) throw new Error("Service not found.");
+
+  if (isLeagueOfLegendsPhaseOneQuote(input)) {
+    return calculateLeagueOfLegendsPhaseOneQuote(input.serviceSlug, input.selection);
+  }
 
   if (isRocketLeagueRankQuote(input)) {
     return calculateRocketLeagueRankQuote(input.selection);

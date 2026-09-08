@@ -11,6 +11,7 @@ import type {
   QuotePreview,
   ServiceConfiguratorSchema,
 } from "../types/configurator";
+import { LeagueOfLegendsServiceConfigurator } from "./league-of-legends-service-configurator";
 import { ValorantServiceConfigurator } from "./valorant-service-configurator";
 
 function formatPrice(value: number) {
@@ -28,6 +29,10 @@ interface ServiceConfiguratorProps {
 }
 
 export function ServiceConfigurator(props: ServiceConfiguratorProps) {
+  if (props.gameSlug === "league-of-legends") {
+    return <LeagueOfLegendsServiceConfigurator gameSlug={props.gameSlug} service={props.service} />;
+  }
+
   if (props.gameSlug === "valorant") {
     return <ValorantServiceConfigurator {...props} />;
   }

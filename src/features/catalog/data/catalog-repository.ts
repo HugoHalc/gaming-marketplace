@@ -2,6 +2,7 @@ import { createPublicServerClient } from "@/lib/supabase/server";
 import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 import type { CatalogGame, GameAccent, GameStatus, ServiceCategory, ServiceStatus } from "../types/catalog";
 import { getCatalogGameBySlug as getMockGameBySlug, getCatalogGames as getMockGames } from "./catalog-selectors";
+import { withLeagueOfLegendsServiceNavigation } from "./league-of-legends-services";
 import { withRocketLeagueServiceNavigation } from "./rocket-league-services";
 import { withValorantServiceNavigation } from "./valorant-services";
 
@@ -31,7 +32,9 @@ type DbGame = {
 };
 
 function withGameSpecificServiceNavigation(game: CatalogGame) {
-  return withValorantServiceNavigation(withRocketLeagueServiceNavigation(game));
+  return withLeagueOfLegendsServiceNavigation(
+    withValorantServiceNavigation(withRocketLeagueServiceNavigation(game)),
+  );
 }
 
 function mapGame(row: DbGame): CatalogGame {
