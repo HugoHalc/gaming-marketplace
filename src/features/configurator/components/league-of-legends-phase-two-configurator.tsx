@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   Sparkles,
   Swords,
-  Trophy,
   Users,
   Zap,
 } from "lucide-react";
@@ -182,10 +181,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     championsPreferences: false,
     streaming: false,
     expressDelivery: false,
-    oneTrickPony: false,
     soloQueueOnly: false,
-    scoreMasking: false,
-    insaneClipDrop: false,
   });
   const [quote, setQuote] = useState<QuotePreview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -414,10 +410,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                   {isArena || isClash ? <Extra checked={selection.championsPreferences === true} onChange={(checked) => update("championsPreferences", checked)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Provide champion preferences for the order." /> : null}
                   <Extra checked={selection.streaming === true} onChange={(checked) => update("streaming", checked)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="BoostingPedia price follows the 70% pricing rule." />
                   <Extra checked={selection.expressDelivery === true} onChange={(checked) => update("expressDelivery", checked)} icon={<Zap className="size-3.5" />} title="Express Delivery" price="+20%" description="Prioritize faster fulfillment." />
-                  <Extra checked={selection.oneTrickPony === true} onChange={(checked) => update("oneTrickPony", checked)} icon={<Trophy className="size-3.5" />} title="One Trick Pony" price="+30%" description="Use the documented one-trick modifier." />
                   <Extra checked={selection.soloQueueOnly === true} onChange={(checked) => update("soloQueueOnly", checked)} icon={<Swords className="size-3.5" />} title="Solo Queue Only" price="+40%" description="Use the documented solo-queue-only modifier." />
-                  <Extra checked={selection.scoreMasking === true} onChange={(checked) => update("scoreMasking", checked)} icon={<ShieldCheck className="size-3.5" />} title="Score Masking" price="+50%" description="Add the documented score-masking modifier." />
-                  <Extra checked={selection.insaneClipDrop === true} onChange={(checked) => update("insaneClipDrop", checked)} icon={<Trophy className="size-3.5" />} title="Insane Clip Drop" price="+15%" description="Add the documented clip-drop modifier." />
                 </div>
               </div>
 

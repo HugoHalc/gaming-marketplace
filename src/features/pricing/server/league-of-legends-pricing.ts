@@ -128,10 +128,7 @@ const LP_GAIN_PERCENT: Record<string, number> = {
 
 const COMMON_EXTRA_PERCENT: Record<string, number> = {
   expressDelivery: 0.20,
-  oneTrickPony: 0.30,
   soloQueueOnly: 0.40,
-  scoreMasking: 0.50,
-  insaneClipDrop: 0.15,
 };
 
 function roundMoney(value: number) {

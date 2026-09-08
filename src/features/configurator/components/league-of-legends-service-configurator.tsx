@@ -13,7 +13,6 @@ import {
   MonitorPlay,
   ShieldCheck,
   Sparkles,
-  Trophy,
   Users,
   Zap,
 } from "lucide-react";
@@ -432,12 +431,9 @@ export function LeagueOfLegendsServiceConfigurator({
     championsPreferences: false,
     streaming: false,
     expressDelivery: false,
-    oneTrickPony: false,
     soloQueueOnly: false,
-    scoreMasking: false,
     rankInsurance: false,
     demotionShield: false,
-    insaneClipDrop: false,
   });
 
   const [quote, setQuote] = useState<QuotePreview | null>(null);
@@ -728,9 +724,7 @@ export function LeagueOfLegendsServiceConfigurator({
                     <Extra checked={selection.championsPreferences === true} onChange={(value) => update("championsPreferences", value)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Share preferred champions with your booster." />
                     <Extra checked={selection.streaming === true} onChange={(value) => update("streaming", value)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="BoostingPedia price after the 70% pricing rule." />
                     <Extra checked={selection.expressDelivery === true} onChange={(value) => update("expressDelivery", value)} icon={<Zap className="size-3.5" />} title="Express Delivery" price="+20%" description="Prioritize faster fulfillment." />
-                    <Extra checked={selection.oneTrickPony === true} onChange={(value) => update("oneTrickPony", value)} icon={<Trophy className="size-3.5" />} title="One Trick Pony" price="+30%" description="Use the documented one-trick option." />
                     <Extra checked={selection.soloQueueOnly === true} onChange={(value) => update("soloQueueOnly", value)} icon={<ShieldCheck className="size-3.5" />} title="Solo Queue Only" price="+40%" description="Restrict the order to solo queue play." />
-                    <Extra checked={selection.scoreMasking === true} onChange={(value) => update("scoreMasking", value)} icon={<EyeOff className="size-3.5" />} title="Score Masking" price="+50%" description="Apply the documented score masking option." />
                     {isRank ? (
                       <Extra checked={selection.rankInsurance === true} onChange={(value) => update("rankInsurance", value)} icon={<ShieldCheck className="size-3.5" />} title="Rank Insurance" price="+50%" description="Add the documented rank insurance option." />
                     ) : null}
