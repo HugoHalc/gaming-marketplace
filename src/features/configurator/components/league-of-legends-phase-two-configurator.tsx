@@ -393,10 +393,17 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
                   </select>
                 </label>
-                <div className="min-w-0">
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
-                  <div className="mt-3 flex h-11 items-center justify-between rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white"><span>PC</span><Check className="size-3.5 text-[#82F5A4]" /></div>
-                </div>
+                <label className="block min-w-0">
+                  <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</span>
+                  <select
+                    value="pc"
+                    disabled
+                    aria-label="Platform"
+                    className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none disabled:cursor-default disabled:opacity-100"
+                  >
+                    <option value="pc">PC</option>
+                  </select>
+                </label>
               </div>
 
               <div className="h-px bg-white/[0.07]" />
