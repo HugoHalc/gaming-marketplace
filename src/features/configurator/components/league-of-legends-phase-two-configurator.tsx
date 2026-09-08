@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -379,6 +380,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     <Choice active={selection.boostMethod === "account"} label="Account Boost" meta="Base" onClick={() => update("boostMethod", "account")} />
                     <Choice active={selection.boostMethod === "duo"} label="Play with Booster" meta="+50%" onClick={() => update("boostMethod", "duo")} />
                   </div>
+                  <AccountBoostTrust selected={selection.boostMethod === "account"} accent="gold" showDescription />
                 </div>
               ) : null}
 
@@ -438,6 +440,8 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 ) : <div className="py-6 text-sm text-white/40">Adjust the configuration to generate a quote.</div>}
                 {belowMinimum ? <div className="mt-3 rounded-lg border border-[#C89B3C]/20 bg-[#C89B3C]/[0.05] p-2.5 text-[10px] leading-4 text-[#E7C867]/80">Minimum order total is $5.00. Increase the configuration before creating the order.</div> : null}
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
+                <AccountBoostCheckoutReassurance selected={(isArena || isClash) && selection.boostMethod === "account"} accent="gold" />
+
                 <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create secure order<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
               </div>

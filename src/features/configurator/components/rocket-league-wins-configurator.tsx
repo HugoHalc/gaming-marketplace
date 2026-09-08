@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -679,9 +680,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                   <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
                     Account Boost
                   </p>
-                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
-                    We play on your account.
-                  </p>
+                  <AccountBoostCardDescription />
                 </button>
 
                 <button
@@ -711,6 +710,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
               </div>
             </div>
           </div>
+          <AccountBoostTrust selected={boostMethod === "account"} accent="blue" />
 
           <div>
             <div className="flex items-center justify-between gap-4">
@@ -889,6 +889,8 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 {orderError}
               </div>
             ) : null}
+
+            <AccountBoostCheckoutReassurance selected={boostMethod === "account"} accent="blue" />
 
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"

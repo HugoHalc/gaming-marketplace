@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -701,6 +702,7 @@ export function LeagueOfLegendsServiceConfigurator({
                     </div>
                   </div>
                 </div>
+                <AccountBoostTrust selected={selection.boostMethod === "account"} accent="gold" showDescription />
 
                 <label className="block min-w-0">
                   <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
@@ -841,6 +843,8 @@ export function LeagueOfLegendsServiceConfigurator({
                   ) : null}
 
                   {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
+
+                  <AccountBoostCheckoutReassurance selected={selection.boostMethod === "account"} accent="gold" />
 
                   <Button
                     className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]"
