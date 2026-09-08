@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Check,
   EyeOff,
-  Gauge,
   LoaderCircle,
   MonitorPlay,
   ShieldCheck,
@@ -289,15 +288,26 @@ function Quantity({
 }) {
   return (
     <div>
-      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
-      <div className="mt-3 grid grid-cols-[2.75rem_1fr_2.75rem] gap-2">
-        <button type="button" onClick={() => onChange(Math.max(1, value - 1))} className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg text-white/60 hover:text-white">−</button>
-        <div className="grid h-11 place-items-center rounded-xl border border-amber-300/[0.20] bg-[#15170E]">
-          <span className="font-gaming-value text-lg font-bold text-white">{value}</span>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
+          <p className="mt-1 text-[10px] text-white/30">Choose between 1 and {max}.</p>
         </div>
-        <button type="button" onClick={() => onChange(Math.min(max, value + 1))} className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg text-white/60 hover:text-white">+</button>
+        <span className="font-gaming-value text-xl font-bold text-amber-100">{value}</span>
       </div>
-      <p className="mt-2 text-[10px] text-white/30">Maximum {max} per order in the verified pricing data.</p>
+      <input
+        type="range"
+        min={1}
+        max={max}
+        step={1}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-4 w-full accent-amber-500"
+      />
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28">
+        <span>1</span>
+        <span>{max}</span>
+      </div>
     </div>
   );
 }
@@ -374,9 +384,7 @@ export function LeagueOfLegendsServiceConfigurator({
     scoreMasking: false,
     rankInsurance: false,
     demotionShield: false,
-    vipPriority: false,
     insaneClipDrop: false,
-    eliteTier: false,
   });
 
   const [quote, setQuote] = useState<QuotePreview | null>(null);
@@ -601,35 +609,26 @@ export function LeagueOfLegendsServiceConfigurator({
 
                 {isRank ? (
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current LP</p>
-                      <div className="mt-3 grid gap-2">
-                        {currentLpOptions.map(([value, label, meta]) => (
-                          <Choice key={value} active={selection.currentLp === value} onClick={() => update("currentLp", value)} label={label} meta={meta} />
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</p>
-                        <Gauge className="size-4 text-amber-200/45" />
-                      </div>
-                      <div className="mt-3 grid gap-2">
-                        {lpGainOptions.map(([value, label, meta]) => (
-                          <Choice key={value} active={selection.lpGain === value} onClick={() => update("lpGain", value)} label={label} meta={meta} />
-                        ))}
-                      </div>
-                    </div>
+                    <label>
+                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current LP</span>
+                      <select value={String(selection.currentLp)} onChange={(event) => update("currentLp", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-amber-300/30 focus:ring-2 focus:ring-amber-400/10">
+                        {currentLpOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
+                      </select>
+                    </label>
+                    <label>
+                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
+                      <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-amber-300/30 focus:ring-2 focus:ring-amber-400/10">
+                        {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
+                      </select>
+                    </label>
                   </div>
                 ) : isWins ? (
-                  <div>
-                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                      {lpGainOptions.map(([value, label, meta]) => (
-                        <Choice key={value} active={selection.lpGain === value} onClick={() => update("lpGain", value)} label={label} meta={meta} />
-                      ))}
-                    </div>
-                  </div>
+                  <label>
+                    <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
+                    <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-amber-300/30 focus:ring-2 focus:ring-amber-400/10">
+                      {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
+                    </select>
+                  </label>
                 ) : null}
 
                 <div className="grid gap-5 lg:grid-cols-2">
@@ -654,20 +653,12 @@ export function LeagueOfLegendsServiceConfigurator({
                   </div>
                 </div>
 
-                <div>
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</p>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {servers.map(([value, label]) => (
-                      <Choice
-                        key={value}
-                        active={selection.server === value}
-                        onClick={() => update("server", value)}
-                        label={label}
-                        meta={value === "north-america" || value === "oceania" ? "+10%" : undefined}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <label>
+                  <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
+                  <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-amber-300/30 focus:ring-2 focus:ring-amber-400/10">
+                    {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
+                  </select>
+                </label>
 
                 <div className="h-px bg-white/[0.07]" />
 

@@ -131,9 +131,7 @@ const COMMON_EXTRA_PERCENT: Record<string, number> = {
   oneTrickPony: 0.30,
   soloQueueOnly: 0.40,
   scoreMasking: 0.50,
-  vipPriority: 0.50,
   insaneClipDrop: 0.15,
-  eliteTier: 0.50,
 };
 
 function roundMoney(value: number) {

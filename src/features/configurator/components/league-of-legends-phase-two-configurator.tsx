@@ -113,15 +113,23 @@ function Quantity({ value, min, max, label, helper, onChange }: {
 }) {
   return (
     <div>
-      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
-      <div className="mt-3 grid grid-cols-[2.75rem_1fr_2.75rem] gap-2">
-        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg text-white/60 hover:text-white">−</button>
-        <div className="grid h-11 place-items-center rounded-xl border border-amber-300/[0.20] bg-[#15170E]">
-          <span className="font-gaming-value text-lg font-bold text-white">{value}</span>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
+          <p className="mt-1 text-[10px] text-white/30">{helper}</p>
         </div>
-        <button type="button" onClick={() => onChange(Math.min(max, value + 1))} className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg text-white/60 hover:text-white">+</button>
+        <span className="font-gaming-value text-xl font-bold text-amber-100">{value}</span>
       </div>
-      <p className="mt-2 text-[10px] text-white/30">{helper}</p>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={1}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-4 w-full accent-amber-500"
+      />
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28"><span>{min}</span><span>{max}</span></div>
     </div>
   );
 }
@@ -177,9 +185,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     oneTrickPony: false,
     soloQueueOnly: false,
     scoreMasking: false,
-    vipPriority: false,
     insaneClipDrop: false,
-    eliteTier: false,
   });
   const [quote, setQuote] = useState<QuotePreview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -337,9 +343,10 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                   <div>
                     <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost option</p>
                     <p className="mt-1 text-sm font-semibold text-white">Only fully verified Mastery modes are enabled.</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
                       <Choice active={selection.masteryMode === "points"} label="Mastery Points Farm" onClick={() => update("masteryMode", "points")} />
                       <Choice active={selection.masteryMode === "marks"} label="Marks of Mastery" onClick={() => update("masteryMode", "marks")} />
+                      <Choice active={false} label="Tier Boost" meta="Pricing pending" disabled onClick={() => {}} />
                     </div>
                   </div>
                   {selection.masteryMode === "points" ? (
@@ -403,9 +410,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                   <Extra checked={selection.oneTrickPony === true} onChange={(checked) => update("oneTrickPony", checked)} icon={<Trophy className="size-3.5" />} title="One Trick Pony" price="+30%" description="Use the documented one-trick modifier." />
                   <Extra checked={selection.soloQueueOnly === true} onChange={(checked) => update("soloQueueOnly", checked)} icon={<Swords className="size-3.5" />} title="Solo Queue Only" price="+40%" description="Use the documented solo-queue-only modifier." />
                   <Extra checked={selection.scoreMasking === true} onChange={(checked) => update("scoreMasking", checked)} icon={<ShieldCheck className="size-3.5" />} title="Score Masking" price="+50%" description="Add the documented score-masking modifier." />
-                  <Extra checked={selection.vipPriority === true} onChange={(checked) => update("vipPriority", checked)} icon={<Sparkles className="size-3.5" />} title="VIP Priority" price="+50%" description="Add the documented VIP-priority modifier." />
                   <Extra checked={selection.insaneClipDrop === true} onChange={(checked) => update("insaneClipDrop", checked)} icon={<Trophy className="size-3.5" />} title="Insane Clip Drop" price="+15%" description="Add the documented clip-drop modifier." />
-                  <Extra checked={selection.eliteTier === true} onChange={(checked) => update("eliteTier", checked)} icon={<Sparkles className="size-3.5" />} title="Elite 0.01% Tier" price="+50%" description="Add the documented elite-tier modifier." />
                 </div>
               </div>
 
