@@ -3,7 +3,6 @@ import {
   Bell,
   Crosshair,
   Grid2X2,
-  Radio,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
@@ -43,7 +42,7 @@ export async function SiteHeader() {
           <div className="flex min-w-0 items-center gap-7">
             <Logo />
 
-            <div className="hidden items-center gap-4 lg:flex">
+            <div className="hidden items-center lg:flex">
               <Link
                 href="/games"
                 className="group inline-flex h-10 items-center gap-2.5 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 text-sm font-semibold text-[#F4F7F5] shadow-[inset_0_1px_0_rgba(255,255,255,.025)] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C]"
@@ -53,16 +52,6 @@ export async function SiteHeader() {
                 </span>
                 <span>Select your game</span>
               </Link>
-
-              <div className="flex items-center gap-2.5">
-                <span className="grid size-8 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]">
-                  <Radio className="size-4" />
-                </span>
-                <div className="leading-none">
-                  <p className="font-gaming-value text-sm text-[#F4F7F5]">37</p>
-                  <p className="mt-1 text-[10px] font-medium text-[#667069]">Online Boosters</p>
-                </div>
-              </div>
             </div>
           </div>
 
