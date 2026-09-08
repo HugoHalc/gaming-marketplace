@@ -88,9 +88,9 @@ function Choice({ active, label, meta, disabled, onClick }: {
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={`flex min-h-10 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-colors ${
+      className={`flex h-10 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-colors ${
         active
-          ? "border-amber-300/[0.22] bg-[#15170E] text-white"
+          ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-white"
           : "border-white/[0.08] bg-[#090D0B] text-white/62 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       } disabled:cursor-not-allowed disabled:opacity-35`}
     >
@@ -118,7 +118,7 @@ function Quantity({ value, min, max, label, helper, onChange }: {
           <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
           <p className="mt-1 text-[10px] text-white/30">{helper}</p>
         </div>
-        <span className="font-gaming-value text-xl font-bold text-amber-100">{value}</span>
+        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{value}</span>
       </div>
       <input
         type="range"
@@ -127,7 +127,7 @@ function Quantity({ value, min, max, label, helper, onChange }: {
         step={1}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-4 w-full accent-amber-500"
+        className="mt-4 w-full accent-[#C89B3C]"
       />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28"><span>{min}</span><span>{max}</span></div>
     </div>
@@ -147,15 +147,15 @@ function Extra({ checked, title, price, description, icon, onChange }: {
       type="button"
       aria-pressed={checked}
       onClick={() => onChange(!checked)}
-      className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
-        checked ? "border-amber-300/[0.20] bg-[#15170E]" : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+      className={`flex min-h-[4.5rem] min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+        checked ? "border-[#C89B3C]/30 bg-[#7A5B22]/15" : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-amber-100/65">{icon}</span>
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-[#E7C867]/70">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
-          <span className={`shrink-0 text-[10px] font-bold ${price === "FREE" ? "text-[#82F5A4]" : "text-amber-100/60"}`}>{price}</span>
+          <span className={`shrink-0 text-[10px] font-bold ${price === "FREE" ? "text-[#82F5A4]" : "text-[#E7C867]/65"}`}>{price}</span>
         </span>
         <span className="mt-0.5 block truncate text-[10px] text-[#A0AAA4]">{description}</span>
       </span>
@@ -283,7 +283,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
             {serviceNavigation.map((item) => {
               const active = service.slug === item.slug;
               return (
-                <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors ${active ? "border-amber-300/[0.22] bg-[#15170E] text-[#F4F7F5]" : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"}`}>
+                <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"}`}>
                   {active ? <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" /> : null}
                   {item.mobileLabel}
                 </Link>
@@ -297,14 +297,14 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
         <aside className="hidden xl:block">
           <nav aria-label="League of Legends services" className="sticky top-24 overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09] p-2.5">
             <div className="px-2.5 pb-3 pt-2">
-              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-200/70">League of Legends</p>
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#E7C867]/80">League of Legends</p>
               <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">Services</p>
             </div>
             <div className="space-y-1.5">
               {serviceNavigation.map((item) => {
                 const active = service.slug === item.slug;
                 return (
-                  <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-colors ${active ? "border-amber-300/[0.22] bg-[#15170E] text-[#F4F7F5]" : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"}`}>
+                  <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"}`}>
                     <span className="min-w-0 flex-1 truncate text-xs font-semibold">{item.label}</span>
                     {active ? <span className="size-1.5 shrink-0 rounded-full bg-[#39E56F]" /> : null}
                   </Link>
@@ -318,15 +318,15 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
 
         <div className="grid min-w-0 gap-4 pb-24 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
           <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09]">
-            <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
-                <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-200/70"><Sparkles className="size-3.5" />{serviceLabel}</div>
+                <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/80"><Sparkles className="size-3.5" />{serviceLabel}</div>
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">Verified League of Legends pricing inside the BoostingPedia configurator family.</p>
               </div>
               <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300">Server-calculated pricing</span>
             </div>
 
-            <div className="space-y-5 p-4 sm:p-5 lg:p-6">
+            <div className="space-y-6 p-4 sm:p-5 lg:p-6">
               {isArena ? (
                 <>
                   <Quantity value={Number(selection.games)} min={3} max={60} label="Arena games" helper="Verified public range: 3–60 games." onChange={(value) => update("games", value)} />
@@ -343,7 +343,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                   <div>
                     <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost option</p>
                     <p className="mt-1 text-sm font-semibold text-white">Only fully verified Mastery modes are enabled.</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-3">
                       <Choice active={selection.masteryMode === "points"} label="Mastery Points Farm" onClick={() => update("masteryMode", "points")} />
                       <Choice active={selection.masteryMode === "marks"} label="Marks of Mastery" onClick={() => update("masteryMode", "marks")} />
                       <Choice active={false} label="Tier Boost" meta="Pricing pending" disabled onClick={() => {}} />
@@ -353,9 +353,9 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     <div>
                       <div className="flex items-end justify-between gap-4">
                         <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Mastery points</p><p className="mt-1 text-sm font-semibold text-white">10,000–1,000,000 points</p></div>
-                        <span className="font-gaming-value text-xl font-bold text-amber-100">{Number(selection.masteryPoints).toLocaleString("en-US")}</span>
+                        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{Number(selection.masteryPoints).toLocaleString("en-US")}</span>
                       </div>
-                      <input type="range" min={10000} max={1000000} step={10000} value={Number(selection.masteryPoints)} onChange={(event) => update("masteryPoints", Number(event.target.value))} className="mt-4 w-full accent-amber-500" />
+                      <input type="range" min={10000} max={1000000} step={10000} value={Number(selection.masteryPoints)} onChange={(event) => update("masteryPoints", Number(event.target.value))} className="mt-4 w-full accent-[#C89B3C]" />
                     </div>
                   ) : (
                     <Quantity value={Number(selection.marks)} min={1} max={25} label="Marks of Mastery" helper="Verified public range: 1–25 marks." onChange={(value) => update("marks", value)} />
@@ -389,20 +389,20 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
               <div className="grid gap-5 lg:grid-cols-2">
                 <label>
                   <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
-                  <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-amber-300/30 focus:ring-2 focus:ring-amber-400/10">
+                  <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                     {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
                   </select>
                 </label>
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
-                  <div className="mt-3 flex h-11 items-center justify-between rounded-xl border border-amber-300/[0.18] bg-[#15170E] px-3 text-xs font-semibold text-white"><span>PC</span><Check className="size-3.5 text-[#82F5A4]" /></div>
+                  <div className="mt-3 flex h-11 items-center justify-between rounded-xl border border-[#C89B3C]/25 bg-[#7A5B22]/15 px-3 text-xs font-semibold text-white"><span>PC</span><Check className="size-3.5 text-[#82F5A4]" /></div>
                 </div>
               </div>
 
               <div className="h-px bg-white/[0.07]" />
               <div>
-                <div className="flex items-center justify-between gap-4"><div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize extras</p><p className="mt-1 text-sm font-semibold text-white">Optional modifiers backed by the public service payload.</p></div><Zap className="size-4 text-amber-200/55" /></div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <div className="flex items-center justify-between gap-4"><div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize extras</p><p className="mt-1 text-sm font-semibold text-white">Optional modifiers backed by the public service payload.</p></div><Zap className="size-4 text-[#E7C867]/60" /></div>
+                <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-2">
                   <Extra checked={selection.playOffline === true} onChange={(checked) => update("playOffline", checked)} icon={<EyeOff className="size-3.5" />} title="Play Offline" price="FREE" description="Keep activity discreet where the service exposes this option." />
                   {isArena || isClash ? <Extra checked={selection.championsPreferences === true} onChange={(checked) => update("championsPreferences", checked)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Provide champion preferences for the order." /> : null}
                   <Extra checked={selection.streaming === true} onChange={(checked) => update("streaming", checked)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="BoostingPedia price follows the 70% pricing rule." />
@@ -422,27 +422,27 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
 
           <aside id="boost-summary" className="scroll-mt-24 2xl:sticky 2xl:top-24">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.055] via-transparent to-transparent px-4 py-4">
-                <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-amber-200" /> : <Check className="size-4 text-[#82F5A4]" />}</div>
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-4">
+                <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-[#E7C867]" /> : <Check className="size-4 text-[#82F5A4]" />}</div>
               </div>
               <div className="p-4">
-                <div className="divide-y divide-white/[0.06]">{summaryRows.map(([label, value]) => <div key={label} className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">{label}</span><span className="text-right font-medium text-white/78">{value}</span></div>)}</div>
+                <div className="divide-y divide-white/[0.06]">{summaryRows.map(([label, value]) => <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">{label}</span><span className="text-right font-medium text-white/78">{value}</span></div>)}</div>
                 {error ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{error}</div> : null}
                 {quote ? (
                   <>
                     <div className="my-4 h-px bg-white/[0.08]" />
-                    <div className="space-y-2">{quote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]"><span className="text-[#A0AAA4]">{item.label}</span><span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>{item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}</span></div>)}</div>
+                    <div className="space-y-2">{quote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex min-h-7 items-center justify-between gap-4 text-[11px]"><span className="text-[#A0AAA4]">{item.label}</span><span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>{item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}</span></div>)}</div>
                     <div className="my-4 h-px bg-white/[0.08]" />
                     <div className="flex items-end justify-between gap-4"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div>
                   </>
                 ) : <div className="py-6 text-sm text-white/40">Adjust the configuration to generate a quote.</div>}
-                {belowMinimum ? <div className="mt-3 rounded-lg border border-amber-300/15 bg-amber-400/[0.05] p-2.5 text-[10px] leading-4 text-amber-100/80">Minimum order total is $5.00. Increase the configuration before creating the order.</div> : null}
+                {belowMinimum ? <div className="mt-3 rounded-lg border border-[#C89B3C]/20 bg-[#C89B3C]/[0.05] p-2.5 text-[10px] leading-4 text-[#E7C867]/80">Minimum order total is $5.00. Increase the configuration before creating the order.</div> : null}
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
                 <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create secure order<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
               </div>
             </div>
-            <div className="mt-3 rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5"><div className="flex items-start gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl border border-amber-300/[0.14] bg-amber-400/[0.045] text-amber-200/75"><ShieldCheck className="size-4" /></span><div><p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p><p className="mt-1 text-[10px] leading-4 text-white/40">Payment is processed by Stripe after your order is created.</p></div></div></div>
+            <div className="mt-3 rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-4"><div className="flex items-start gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/20 bg-[#C89B3C]/[0.045] text-[#E7C867]/80"><ShieldCheck className="size-4" /></span><div><p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p><p className="mt-1 text-[10px] leading-4 text-white/40">Payment is processed by Stripe after your order is created.</p></div></div></div>
           </aside>
         </div>
       </div>
