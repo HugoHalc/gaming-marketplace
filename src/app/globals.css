@@ -95,4 +95,25 @@ body {
   transform: none !important;
 }
 
+/*
+ * UI-POLISH — configurator card shadows
+ *
+ * Small option cards (playlist, platform, boost method, upgrades and
+ * Account Security) already use border + surface states without exterior
+ * box shadows. The visible fuzzy halo comes from the large configurator
+ * shell / order-summary shadow utilities surrounding those groups.
+ *
+ * Keep only a restrained elevation on those large panels. Selected states,
+ * borders, backgrounds, spacing, radii, hover behavior and logic remain
+ * untouched.
+ */
+:is(
+  [class*="shadow-[var(--shadow-card)]"],
+  [class*="shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]"],
+  [class*="shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]"],
+  [class*="shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]"]
+) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
 details > summary::-webkit-details-marker { display: none; }
