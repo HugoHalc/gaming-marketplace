@@ -662,13 +662,13 @@ export function LeagueOfLegendsServiceConfigurator({
 
                 {isRank ? (
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <label>
+                    <label className="block min-w-0">
                       <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current LP</span>
                       <select value={String(selection.currentLp)} onChange={(event) => update("currentLp", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                         {currentLpOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
                       </select>
                     </label>
-                    <label>
+                    <label className="block min-w-0">
                       <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
                       <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                         {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
@@ -676,7 +676,7 @@ export function LeagueOfLegendsServiceConfigurator({
                     </label>
                   </div>
                 ) : isWins ? (
-                  <label>
+                  <label className="block min-w-0">
                     <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
                     <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                       {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
@@ -706,7 +706,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   </div>
                 </div>
 
-                <label>
+                <label className="block min-w-0">
                   <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
                   <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                     {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}

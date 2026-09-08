@@ -387,15 +387,15 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
               ) : null}
 
               <div className="grid gap-5 lg:grid-cols-2">
-                <label>
+                <label className="block min-w-0">
                   <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
                   <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
                     {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
                   </select>
                 </label>
-                <div>
+                <div className="min-w-0">
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
-                  <div className="mt-3 flex h-11 items-center justify-between rounded-xl border border-[#C89B3C]/25 bg-[#7A5B22]/15 px-3 text-xs font-semibold text-white"><span>PC</span><Check className="size-3.5 text-[#82F5A4]" /></div>
+                  <div className="mt-3 flex h-11 items-center justify-between rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white"><span>PC</span><Check className="size-3.5 text-[#82F5A4]" /></div>
                 </div>
               </div>
 
