@@ -26,6 +26,9 @@ const serviceNavigation = [
   { slug: "wins", label: "Ranked Wins Boost", mobileLabel: "Wins" },
   { slug: "placement-matches", label: "Placements Boost", mobileLabel: "Placements" },
   { slug: "unrated-matches", label: "Unrated Matches Boost", mobileLabel: "Unrated" },
+  { slug: "arena-boost", label: "Arena Boost", mobileLabel: "Arena" },
+  { slug: "mastery-boost", label: "Mastery Boost", mobileLabel: "Mastery" },
+  { slug: "clash-boost", label: "Clash Boost", mobileLabel: "Clash" },
 ] as const;
 
 const rankFamilies = [

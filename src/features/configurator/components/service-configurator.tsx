@@ -12,6 +12,7 @@ import type {
   ServiceConfiguratorSchema,
 } from "../types/configurator";
 import { LeagueOfLegendsServiceConfigurator } from "./league-of-legends-service-configurator";
+import { LeagueOfLegendsPhaseTwoConfigurator } from "./league-of-legends-phase-two-configurator";
 import { ValorantServiceConfigurator } from "./valorant-service-configurator";
 
 function formatPrice(value: number) {
@@ -30,6 +31,9 @@ interface ServiceConfiguratorProps {
 
 export function ServiceConfigurator(props: ServiceConfiguratorProps) {
   if (props.gameSlug === "league-of-legends") {
+    if (["arena-boost", "mastery-boost", "clash-boost"].includes(props.service.slug)) {
+      return <LeagueOfLegendsPhaseTwoConfigurator gameSlug={props.gameSlug} service={props.service} />;
+    }
     return <LeagueOfLegendsServiceConfigurator gameSlug={props.gameSlug} service={props.service} />;
   }
 

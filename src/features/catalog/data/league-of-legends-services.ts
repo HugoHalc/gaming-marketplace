@@ -1,6 +1,6 @@
 import type { CatalogGame, ServiceSummary } from "../types/catalog";
 
-const leagueOfLegendsPhaseOneServices: ServiceSummary[] = [
+const leagueOfLegendsServices: ServiceSummary[] = [
   {
     id: "service_lol_rank",
     gameId: "game_lol",
@@ -45,6 +45,39 @@ const leagueOfLegendsPhaseOneServices: ServiceSummary[] = [
     currency: "USD",
     status: "active",
   },
+  {
+    id: "service_lol_arena",
+    gameId: "game_lol",
+    slug: "arena-boost",
+    name: "Arena Boost",
+    category: "wins",
+    description: "Arena match packages with role, server, boost method and verified pricing options.",
+    startingPrice: 10.50,
+    currency: "USD",
+    status: "active",
+  },
+  {
+    id: "service_lol_mastery",
+    gameId: "game_lol",
+    slug: "mastery-boost",
+    name: "Mastery Boost",
+    category: "rank",
+    description: "Mastery Points Farm and Marks of Mastery with verified server-calculated pricing.",
+    startingPrice: 3.50,
+    currency: "USD",
+    status: "active",
+  },
+  {
+    id: "service_lol_clash",
+    gameId: "game_lol",
+    slug: "clash-boost",
+    name: "Clash Boost",
+    category: "wins",
+    description: "Clash progression configured by tier, games, boosters, server and boost method.",
+    startingPrice: 2.09,
+    currency: "USD",
+    status: "active",
+  },
 ];
 
 export function withLeagueOfLegendsServiceNavigation(game: CatalogGame): CatalogGame {
@@ -52,7 +85,8 @@ export function withLeagueOfLegendsServiceNavigation(game: CatalogGame): Catalog
 
   return {
     ...game,
-    services: leagueOfLegendsPhaseOneServices,
-    startingPrice: Math.min(...leagueOfLegendsPhaseOneServices.map((service) => service.startingPrice)),
+    accent: "amber",
+    services: leagueOfLegendsServices,
+    startingPrice: Math.min(...leagueOfLegendsServices.map((service) => service.startingPrice)),
   };
 }

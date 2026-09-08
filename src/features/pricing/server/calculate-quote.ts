@@ -8,7 +8,9 @@ import type {
 import { getActivePricingRuleSet, type PricingRule } from "./pricing-repository";
 import {
   calculateLeagueOfLegendsPhaseOneQuote,
+  calculateLeagueOfLegendsPhaseTwoQuote,
   isLeagueOfLegendsPhaseOneQuote,
+  isLeagueOfLegendsPhaseTwoQuote,
 } from "./league-of-legends-pricing";
 import {
   calculateRocketLeagueRankQuote,
@@ -210,6 +212,10 @@ export async function calculateQuotePreview(input: {
 
   if (isLeagueOfLegendsPhaseOneQuote(input)) {
     return calculateLeagueOfLegendsPhaseOneQuote(input.serviceSlug, input.selection);
+  }
+
+  if (isLeagueOfLegendsPhaseTwoQuote(input)) {
+    return calculateLeagueOfLegendsPhaseTwoQuote(input.serviceSlug, input.selection);
   }
 
   if (isRocketLeagueRankQuote(input)) {

@@ -330,3 +330,137 @@ export function calculateLeagueOfLegendsPhaseOneQuote(
 
   throw new Error("League of Legends pricing is not available for this service.");
 }
+
+const CLASH_BM_RATE: Record<string, number> = {
+  "1": 9.99,
+  "2": 6.99,
+  "3": 5.99,
+  "4": 2.99,
+};
+
+function phaseTwoModifierPercent(
+  selection: ConfiguratorSelection,
+  options: { allowDuo: boolean },
+) {
+  let percentage = REGION_PERCENT[asString(selection, "server")] ?? 0;
+
+  if (options.allowDuo && asString(selection, "boostMethod") === "duo") {
+    percentage += 0.50;
+  }
+
+  for (const [key, value] of Object.entries(COMMON_EXTRA_PERCENT)) {
+    if (isEnabled(selection, key)) percentage += value;
+  }
+
+  return percentage;
+}
+
+function finalizePhaseTwoQuote(input: {
+  label: string;
+  bmBase: number;
+  selection: ConfiguratorSelection;
+  allowDuo: boolean;
+}): QuotePreview {
+  const modifierPercent = phaseTwoModifierPercent(input.selection, { allowDuo: input.allowDuo });
+  const bmVariableAmount = input.bmBase * modifierPercent;
+  const bmFixedAmount = fixedExtras(input.selection);
+  const bmSubtotal = input.bmBase + bmVariableAmount + bmFixedAmount;
+  const discountRate = standardDiscountRate(bmSubtotal);
+  const bmDiscount = bmSubtotal * discountRate;
+
+  const base = bp(input.bmBase);
+  const variableAmount = bp(bmVariableAmount);
+  const fixedAmount = bp(bmFixedAmount);
+  const subtotal = bp(bmSubtotal);
+  const discount = bp(bmDiscount);
+  const total = bp(bmSubtotal - bmDiscount);
+
+  const breakdown: QuotePreview["breakdown"] = [{ label: input.label, amount: base }];
+  if (variableAmount > 0) breakdown.push({ label: "Selected modifiers", amount: variableAmount });
+  if (fixedAmount > 0) breakdown.push({ label: "Streaming", amount: fixedAmount });
+  if (discount > 0) breakdown.push({ label: "Progressive discount", amount: -discount });
+
+  return {
+    currency: "USD",
+    subtotal,
+    discount,
+    total,
+    breakdown,
+    ruleSetVersion: "lol-pricing-v2.0",
+  };
+}
+
+export function isLeagueOfLegendsPhaseTwoQuote(input: { gameSlug: string; serviceSlug: string }) {
+  return input.gameSlug === "league-of-legends" &&
+    ["arena-boost", "mastery-boost", "clash-boost"].includes(input.serviceSlug);
+}
+
+export function calculateLeagueOfLegendsPhaseTwoQuote(
+  serviceSlug: string,
+  selection: ConfiguratorSelection,
+): QuotePreview {
+  if (serviceSlug === "arena-boost") {
+    const games = asNumber(selection, "games", 3);
+    validateQuantity(games, 60, "Arena games");
+    if (games < 3) throw new Error("Arena games must be between 3 and 60.");
+
+    return finalizePhaseTwoQuote({
+      label: `${games} Arena game${games === 1 ? "" : "s"}`,
+      bmBase: 5 * games,
+      selection,
+      allowDuo: true,
+    });
+  }
+
+  if (serviceSlug === "mastery-boost") {
+    const mode = asString(selection, "masteryMode", "marks");
+
+    if (mode === "points") {
+      const points = asNumber(selection, "masteryPoints", 10000);
+      if (!Number.isInteger(points) || points < 10000 || points > 1000000 || points % 10000 !== 0) {
+        throw new Error("Mastery Points must be between 10,000 and 1,000,000 in 10,000-point steps.");
+      }
+
+      return finalizePhaseTwoQuote({
+        label: `${points.toLocaleString("en-US")} mastery points`,
+        bmBase: points * 0.0015,
+        selection,
+        allowDuo: false,
+      });
+    }
+
+    if (mode === "marks") {
+      const marks = asNumber(selection, "marks", 1);
+      validateQuantity(marks, 25, "Marks of Mastery");
+
+      return finalizePhaseTwoQuote({
+        label: `${marks} Mark${marks === 1 ? "" : "s"} of Mastery`,
+        bmBase: marks * 5,
+        selection,
+        allowDuo: false,
+      });
+    }
+
+    throw new Error("Tier Boost pricing is not enabled because the verified data is incomplete for that mode.");
+  }
+
+  if (serviceSlug === "clash-boost") {
+    const tier = asString(selection, "clashTier", "1");
+    const games = asNumber(selection, "games", 1);
+    const boosters = asNumber(selection, "boosters", 1);
+    validateQuantity(games, 10, "Clash games");
+    validateQuantity(boosters, 5, "Boosters");
+
+    const rate = CLASH_BM_RATE[tier];
+    if (rate === undefined) throw new Error("Pricing is not available for the selected Clash tier.");
+
+    return finalizePhaseTwoQuote({
+      label: `Tier ${tier}: ${games} game${games === 1 ? "" : "s"} × ${boosters} booster${boosters === 1 ? "" : "s"}`,
+      bmBase: rate * games * boosters,
+      selection,
+      allowDuo: true,
+    });
+  }
+
+  throw new Error("League of Legends pricing is not available for this service.");
+}
