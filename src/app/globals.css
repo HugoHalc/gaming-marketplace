@@ -66,4 +66,33 @@ body {
   font-weight: 700;
 }
 
+/*
+ * GAME-CARDS-VISUAL-02
+ *
+ * These three approved source WebP files contain baked cyan pixels along
+ * their outer edge. The public card frame itself is already the shared
+ * neutral border (#FFFFFF14). Crop only the affected artwork by 3px on
+ * every side so the baked perimeter sits outside the existing clipped
+ * card, without changing card geometry, grid, CTA, status or breakpoints.
+ *
+ * Both direct public URLs and Next/Image encoded URLs are covered.
+ */
+:is(
+  img[src*="/game-cards/rocket-league.webp"],
+  img[src*="/game-cards/battlefield-6.webp"],
+  img[src*="/game-cards/rainbow-six-siege.webp"],
+  img[src*="game-cards%2Frocket-league.webp"],
+  img[src*="game-cards%2Fbattlefield-6.webp"],
+  img[src*="game-cards%2Frainbow-six-siege.webp"]
+) {
+  top: -3px !important;
+  left: -3px !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: calc(100% + 6px) !important;
+  height: calc(100% + 6px) !important;
+  max-width: none;
+  transform: none !important;
+}
+
 details > summary::-webkit-details-marker { display: none; }
