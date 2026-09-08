@@ -24,7 +24,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "League of Legends",
     accent: "emerald",
     category: "MOBA",
-    ready: false,
+    ready: true,
   },
   {
     slug: "valorant",
