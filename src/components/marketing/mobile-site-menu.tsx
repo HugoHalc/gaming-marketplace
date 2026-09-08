@@ -72,7 +72,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
     mounted
       ? createPortal(
           <div
-            className={`fixed inset-0 z-[9999] lg:hidden ${
+            className={`fixed inset-0 z-[9999] xl:hidden ${
               open ? "visible" : "invisible delay-[260ms]"
             }`}
             aria-hidden={!open}
@@ -233,7 +233,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="grid size-10 place-items-center rounded-xl border border-[#FFFFFF14] bg-[#090D0B] text-[#F4F7F5] transition-colors hover:bg-[#131B17] lg:hidden"
+        className="grid size-10 place-items-center rounded-xl border border-[#FFFFFF14] bg-[#090D0B] text-[#F4F7F5] transition-colors hover:bg-[#131B17] xl:hidden"
         aria-label="Open menu"
         aria-expanded={open}
       >
