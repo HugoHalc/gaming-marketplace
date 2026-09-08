@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -31,14 +32,16 @@ const serviceNavigation = [
 ] as const;
 
 const rankFamilies = [
-  { label: "Iron", divisions: ["IV", "III", "II", "I"] },
-  { label: "Bronze", divisions: ["IV", "III", "II", "I"] },
-  { label: "Silver", divisions: ["IV", "III", "II", "I"] },
-  { label: "Gold", divisions: ["IV", "III", "II", "I"] },
-  { label: "Platinum", divisions: ["IV", "III", "II", "I"] },
-  { label: "Emerald", divisions: ["IV", "III", "II", "I"] },
-  { label: "Diamond", divisions: ["IV", "III", "II", "I"] },
+  { label: "Iron", image: "/ranks/league-of-legends/iron.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Bronze", image: "/ranks/league-of-legends/bronze.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Silver", image: "/ranks/league-of-legends/silver.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Gold", image: "/ranks/league-of-legends/gold.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Platinum", image: "/ranks/league-of-legends/platinum.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Emerald", image: "/ranks/league-of-legends/emerald.png", divisions: ["IV", "III", "II", "I"] },
+  { label: "Diamond", image: "/ranks/league-of-legends/diamond.png", divisions: ["IV", "III", "II", "I"] },
 ] as const;
+
+const masterRankImage = "/ranks/league-of-legends/master.png";
 
 const rankOrder = rankFamilies.flatMap((family) =>
   family.divisions.map((division) => `${family.label} ${division}`),
@@ -103,6 +106,12 @@ function splitRank(rank: string) {
   return { family, division };
 }
 
+function imageForRank(rank: string) {
+  if (rank === "Master") return masterRankImage;
+  const { family } = splitRank(rank);
+  return rankFamilies.find((item) => item.label === family)?.image ?? null;
+}
+
 function firstRankForFamily(family: string) {
   return `${family} IV`;
 }
@@ -157,8 +166,18 @@ function RankSelector({
             {value}
           </p>
         </div>
-        <span className="grid size-10 place-items-center rounded-xl border border-amber-300/[0.15] bg-amber-300/[0.04] text-[10px] font-black uppercase tracking-[0.08em] text-amber-100/60">
-          {unranked ? "UR" : master ? "M" : selected.family?.slice(0, 2)}
+        <span className="relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-amber-300/[0.15] bg-amber-300/[0.04]">
+          {unranked ? (
+            <span className="text-[10px] font-black uppercase tracking-[0.08em] text-amber-100/60">UR</span>
+          ) : (
+            <Image
+              src={imageForRank(value) ?? masterRankImage}
+              alt={`${value} rank`}
+              width={44}
+              height={44}
+              className="h-11 w-11 object-contain drop-shadow-[0_7px_12px_rgba(0,0,0,.45)]"
+            />
+          )}
         </span>
       </div>
 
@@ -196,7 +215,14 @@ function RankSelector({
                   : "border-white/[0.08] bg-[#090D0B] text-white/58 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
               } disabled:cursor-not-allowed disabled:opacity-20`}
             >
-              <span className="block text-[10px] font-bold uppercase tracking-[0.05em]">{family.label}</span>
+              <Image
+                src={family.image}
+                alt=""
+                width={48}
+                height={48}
+                className="mx-auto h-11 w-11 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.42)]"
+              />
+              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.05em]">{family.label}</span>
             </button>
           );
         })}
@@ -212,7 +238,10 @@ function RankSelector({
               : "border-white/[0.08] bg-[#090D0B] text-white/58 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
           }`}
         >
-          Master
+          <span className="flex items-center gap-2.5">
+            <Image src={masterRankImage} alt="" width={32} height={32} className="size-8 object-contain" />
+            Master
+          </span>
           {master ? <Check className="size-3.5 text-[#82F5A4]" /> : null}
         </button>
       ) : null}
@@ -722,23 +751,32 @@ export function LeagueOfLegendsServiceConfigurator({
                   {isRank ? (
                     <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-                        <div>
-                          <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Current</p>
-                          <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">{currentRank}</p>
+                        <div className="flex min-w-0 items-center gap-2">
+                          {imageForRank(currentRank) ? <Image src={imageForRank(currentRank)!} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" /> : null}
+                          <div className="min-w-0">
+                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Current</p>
+                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{currentRank}</p>
+                          </div>
                         </div>
                         <ArrowRight className="size-3.5 text-amber-200/35" />
-                        <div className="text-right">
-                          <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Desired</p>
-                          <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">{targetRank}</p>
+                        <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+                          <div className="min-w-0">
+                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Desired</p>
+                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{targetRank}</p>
+                          </div>
+                          {imageForRank(targetRank) ? <Image src={imageForRank(targetRank)!} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" /> : null}
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">{isUnrated ? "Service" : isPlacements ? "Previous rank" : "Current rank"}</p>
-                          <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">{isUnrated ? "Unrated" : currentRank}</p>
+                        <div className="flex min-w-0 items-center gap-2">
+                          {!isUnrated && imageForRank(currentRank) ? <Image src={imageForRank(currentRank)!} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" /> : null}
+                          <div className="min-w-0">
+                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">{isUnrated ? "Service" : isPlacements ? "Previous rank" : "Current rank"}</p>
+                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{isUnrated ? "Unrated" : currentRank}</p>
+                          </div>
                         </div>
                         <div className="text-right">
                           <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">{isWins ? "Wins" : "Matches"}</p>
