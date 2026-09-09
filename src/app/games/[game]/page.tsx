@@ -43,12 +43,12 @@ const rocketLeagueStorefrontHighlights = [
       "Configure eligible services using your current competitive position, target, playlist, and the options relevant to your goal.",
   },
   {
-    title: "Clear pricing before checkout",
+    title: "Server-validated pricing",
     description:
-      "Your configuration updates the service price before you place the order, helping you understand exactly what you are paying for.",
+      "Your configuration updates the current quote, which is validated server-side before the order is created.",
   },
   {
-    title: "Track your progress",
+    title: "Dashboard order tracking",
     description:
       "Once your order is placed, follow its status and key order details directly from your BoostingPedia account.",
   },
@@ -60,11 +60,11 @@ const valorantStorefrontHighlights = [
     description: "Configure your service around your competitive goal.",
   },
   {
-    title: "Secure order flow",
-    description: "Sensitive fulfillment details stay inside your order workspace.",
+    title: "Order workspace",
+    description: "Order details and applicable fulfillment communication stay connected to your order workspace.",
   },
   {
-    title: "Track every update",
+    title: "Track order progress",
     description: "Follow your order status and service progress directly from your dashboard.",
   },
 ] as const;
@@ -465,7 +465,7 @@ export default async function GamePage({ params }: GamePageProps) {
               {isRocketLeague
                 ? "Choose the service that matches your competitive goal and configure your boost around your rank, playlist, and preferred progression."
                 : isValorant
-                  ? "Choose your service, configure your rank or match goal, and track every step from checkout to completion."
+                  ? "Choose your service, configure your rank or match goal, and follow order status from your dashboard."
                   : content.heroDescription}
             </p>
 
@@ -616,14 +616,14 @@ export default async function GamePage({ params }: GamePageProps) {
             <div className="max-w-2xl">
               <p className="text-sm font-semibold text-green-300">Need a different route?</p>
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl">
-                Explore the rest of the launch lineup.
+                Explore more game storefronts.
               </h2>
             </div>
             <Link
               href="/games"
               className="inline-flex items-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
             >
-              View all launch games
+              View all games
               <ArrowRight className="ml-2 size-4" />
             </Link>
           </div>

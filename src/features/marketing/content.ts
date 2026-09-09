@@ -52,69 +52,76 @@ export const howItWorks = [
 export const trustFeatures = [
   {
     icon: ShieldCheck,
-    title: "Secure by design",
-    description: "Server-validated pricing, protected account flows, and secure payment architecture.",
-  },
-  {
-    icon: Zap,
-    title: "Built for speed",
-    description: "A performance-first storefront designed to stay fast on desktop and mobile.",
+    title: "Server-validated pricing",
+    description: "Your quote updates with the selected configuration and is validated server-side before the order is created.",
   },
   {
     icon: LockKeyhole,
-    title: "Privacy focused",
-    description: "Sensitive order information stays scoped to the people who need access.",
-  },
-  {
-    icon: Headphones,
-    title: "Order support",
-    description: "Every purchase is designed around clear progress, communication, and accountability.",
+    title: "Payment through Stripe",
+    description: "When payment is required, checkout is processed through Stripe.",
   },
   {
     icon: Clock3,
-    title: "Clear expectations",
-    description: "Transparent configuration and delivery context before you place an order.",
+    title: "Dashboard order tracking",
+    description: "Your dashboard keeps order status and order details connected to the order.",
   },
   {
     icon: Sparkles,
-    title: "Premium experience",
-    description: "No clutter, no confusing forms, and no surprise pricing at the end of checkout.",
+    title: "Account access after checkout",
+    description: "For Account Boost, account access is requested only after your order is placed.",
+  },
+  {
+    icon: Headphones,
+    title: "Order communication",
+    description: "When a booster is assigned, you can communicate through the order workspace.",
+  },
+  {
+    icon: Zap,
+    title: "Site support",
+    description: "Contact BoostingPedia Support through the site before or after placing an order.",
   },
 ] as const;
 
-export const testimonials = [
-  {
-    quote: "The entire process felt much more polished than the marketplaces I had used before. The order status was especially clear.",
-    name: "Jordan M.",
-    detail: "League of Legends customer",
-  },
-  {
-    quote: "I knew what I was selecting and what it would cost before checkout. That sounds basic, but it makes a huge difference.",
-    name: "Alex R.",
-    detail: "VALORANT customer",
-  },
-  {
-    quote: "Fast, clean, and easy to use from my phone. I did not need to message support just to understand what was happening.",
-    name: "Taylor K.",
-    detail: "Marvel Rivals customer",
-  },
-] as const;
+export type MarketingFaq = {
+  question: string;
+  answer: string;
+  href?: string;
+  linkLabel?: string;
+};
 
-export const faqs = [
+export const faqs: readonly MarketingFaq[] = [
   {
-    question: "How is the final service price calculated?",
-    answer: "Your final price is based on the service configuration you select, including your current position, target, region, queue, priority, and any eligible options. The total is validated before checkout so there are no unexpected price changes.",
+    question: "How does the service work?",
+    answer: "Choose a game and service, configure the options available for that service, and review the current quote. When you continue, BoostingPedia creates the order and takes you through payment and the order workspace.",
   },
   {
-    question: "Can I track my order after purchase?",
-    answer: "Yes. Once your order is placed, you can follow its progress from your account with clear status updates and order details.",
+    question: "How is my price calculated?",
+    answer: "Your quote updates from the configuration you select. Pricing is calculated and validated server-side before the order is created, and the configurator shows the current calculated total for those selections.",
   },
   {
-    question: "What payment methods are available?",
-    answer: "Payments are processed securely through Stripe. Available payment methods may vary depending on your country, currency, and device.",
+    question: "Can my price change while I configure?",
+    answer: "Yes. Changing an option can change the current quote when that option affects the service. Service-card Starting from prices are catalog entry prices; the configurator shows the current calculated total for your selections.",
   },
   {
-    question: "Will more games and services be added?",
-    answer: "Yes. BoostingPedia is built to expand over time with additional games, services, and configurable options without changing the core marketplace experience.",
+    question: "What happens after I place an order?",
+    answer: "Your order is added to your dashboard and, when payment is required, checkout is completed through Stripe. The order workspace keeps status, order details, and fulfillment communication connected as the order progresses.",
   },
-] as const;
+  {
+    question: "Can I track my order and talk to my booster?",
+    answer: "Yes. You can track your order from your dashboard. Once an applicable order has an assigned booster, you can communicate with them through the order workspace.",
+  },
+  {
+    question: "How does Account Boost work?",
+    answer: "For Account Boost, the booster completes the service on your account. Account access is requested only after your order is placed, and relevant login coordination can happen through the order workspace.",
+  },
+  {
+    question: "How are payments processed?",
+    answer: "Payment is processed through Stripe. The payment options available to you are shown during Stripe checkout.",
+  },
+  {
+    question: "What if I need help, cancel, or request a refund?",
+    answer: "Use the site support chat if you need help with a service or an order. Cancellation and refund eligibility depends on the order status and progress; the Refund Policy explains the current terms.",
+    href: "/refunds",
+    linkLabel: "Read the Refund Policy",
+  },
+];

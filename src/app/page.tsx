@@ -10,6 +10,7 @@ import {
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
+import { FaqAccordion } from "@/components/marketing/faq-accordion";
 import { HowItWorksShowcase } from "@/components/marketing/how-it-works-showcase";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
@@ -249,7 +250,7 @@ export default function Home() {
             </div>
 
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--muted-foreground)] sm:text-sm">
-              {["Server-calculated pricing", "Game-specific storefronts", "Order tracking"].map((item) => (
+              {["Server-validated pricing", "Payment through Stripe", "Order tracking"].map((item) => (
                 <span key={item} className="inline-flex items-center gap-2">
                   <span className="grid size-5 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]">
                     <Check className="size-3" />
@@ -465,8 +466,8 @@ export default function Home() {
         <Container>
           <SectionHeading
             eyebrow="Built for confidence"
-            title="A marketplace designed around the details that matter."
-            description="From secure account flows to clear pricing and order progress, every part of BoostingPedia is built to make the experience easier to understand and manage."
+            title="Know what happens before and after you order."
+            description="Pricing is validated server-side, payment is processed through Stripe, and your dashboard keeps order status and order communication connected to the order."
           />
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -494,7 +495,7 @@ export default function Home() {
                     <div className="mt-7 flex items-center gap-3 border-t border-white/[0.06] pt-4">
                       <span className="h-px w-8 bg-[#39E56F]/20" />
                       <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
-                        Built into every order
+                        Supported by the platform
                       </span>
                     </div>
                   </div>
@@ -508,8 +509,8 @@ export default function Home() {
         <Container>
           <SectionHeading
             eyebrow="Customer experience"
-            title="Trusted by players who’ve used BoostingPedia."
-            description="Real customer feedback from our public Trustpilot profile."
+            title="What customers have shared on Trustpilot."
+            description={`${heroTrustpilot.score.toFixed(1)} / 5 based on ${heroTrustpilot.reviewCount} reviews on the public BoostingPedia Trustpilot profile.`}
           />
 
           <a
@@ -519,7 +520,10 @@ export default function Home() {
             className="mx-auto mt-8 flex max-w-fit flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-4 py-2.5 text-xs transition-[border-color,background-color] duration-200 hover:border-white/[0.16] hover:bg-[#0E1411] sm:text-sm"
             aria-label={`BoostingPedia on Trustpilot: ${heroTrustpilot.score} out of 5 from ${heroTrustpilot.reviewCount} reviews`}
           >
-            <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.ratingLabel}</span>
+            <span className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5]">
+              <Star className="size-4 fill-[#00B67A] text-[#00B67A]" strokeWidth={1.6} />
+              {heroTrustpilot.brand}
+            </span>
 
             <span className="flex items-center gap-0.5" aria-hidden="true">
               {Array.from({ length: 5 }).map((_, index) => {
@@ -540,18 +544,10 @@ export default function Home() {
               })}
             </span>
 
-            <span className="text-[#A0AAA4]">
-              <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.score.toFixed(1)}</span>
-              <span className="px-1 text-[#667069]">/</span>
-              5
-              <span className="mx-2 text-[#667069]">·</span>
-              {heroTrustpilot.reviewCount} reviews
+            <span className="font-semibold text-[#F4F7F5]">
+              {heroTrustpilot.score.toFixed(1)} / 5
             </span>
-
-            <span className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5]">
-              <Star className="size-4 fill-[#00B67A] text-[#00B67A]" strokeWidth={1.6} />
-              {heroTrustpilot.brand}
-            </span>
+            <span className="text-[#A0AAA4]">Based on {heroTrustpilot.reviewCount} reviews</span>
           </a>
 
           <div className="mt-10 grid gap-4 lg:grid-cols-3">
@@ -630,32 +626,11 @@ export default function Home() {
               align="left"
             />
             <p className="mt-5 max-w-md text-xs leading-6 text-[#667069]">
-              Still have questions? Support is available before and after your order.
+              Need help? Contact support through the site before or after your order.
             </p>
           </div>
 
-          <div className="divide-y divide-white/[0.07] border-y border-white/[0.07]">
-            {faqs.map((item) => (
-              <details
-                key={item.question}
-                className="group py-[1.15rem] open:pb-5 sm:py-5"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-left marker:hidden">
-                  <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                    {item.question}
-                  </span>
-
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-hover:border-white/[0.12] group-hover:bg-[#0E1411] group-hover:text-[#82F5A4] group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none">
-                    +
-                  </span>
-                </summary>
-
-                <p className="mt-4 max-w-3xl pr-9 text-sm leading-7 text-[#A0AAA4] sm:mt-[1.1rem] sm:text-[15px]">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
-          </div>
+          <FaqAccordion items={faqs} />
         </Container>
       </section>
 
@@ -681,11 +656,11 @@ export default function Home() {
                 </Badge>
 
                 <h2 className="mt-5 text-3xl font-bold tracking-[-0.05em] text-[#F4F7F5] sm:text-4xl">
-                  Start with the game. The rest becomes simpler.
+                  Choose your game and configure your service.
                 </h2>
 
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-[#A0AAA4] sm:text-base">
-                  Explore the launch lineup and enter a dedicated game storefront before choosing a service.
+                  Explore available game storefronts, choose a service, and review your configuration before continuing to checkout.
                 </p>
 
                 <div className="mt-6 hidden items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[#667069] sm:flex">
@@ -700,7 +675,7 @@ export default function Home() {
                 className="w-full rounded-xl border-0 bg-[#39E56F] font-semibold text-[#050807] shadow-[0_8px_22px_-17px_rgba(57,229,111,.52)] transition-[background-color,box-shadow] duration-200 ease-out hover:bg-[#20C95A] hover:text-[#050807] hover:shadow-[0_9px_24px_-17px_rgba(57,229,111,.58)] motion-reduce:transition-none sm:w-auto"
               >
                 <Link href="/games">
-                  Browse games
+                  Explore available services
                   <ChevronRight className="ml-2 size-4" />
                 </Link>
               </Button>

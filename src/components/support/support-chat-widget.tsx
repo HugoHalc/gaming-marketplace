@@ -114,7 +114,7 @@ export function SupportChatWidget() {
                 <p className="mt-0.5 text-[10px] text-[#738079]">Questions before you order? We can help.</p>
               </div>
             </div>
-            <button type="button" onClick={() => setOpen(false)} className="grid size-8 place-items-center rounded-lg text-[#738079] hover:bg-white/[0.04] hover:text-white" aria-label="Close live support">
+            <button type="button" onClick={() => setOpen(false)} className="grid size-8 place-items-center rounded-lg text-[#738079] hover:bg-white/[0.04] hover:text-white" aria-label="Close support chat">
               <X className="size-4" />
             </button>
           </header>
@@ -124,7 +124,7 @@ export function SupportChatWidget() {
               <div className="flex h-full min-h-[280px] flex-col items-center justify-center px-5 text-center">
                 <span className="grid size-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.025] text-[#8F9A94]"><MessageCircle className="size-5" /></span>
                 <h2 className="mt-4 text-[15px] font-semibold text-[#F4F7F5]">How can we help?</h2>
-                <p className="mt-2 max-w-[260px] text-[11px] leading-5 text-[#738079]">Ask us about services, delivery times, account security, pricing or anything else before purchasing.</p>
+                <p className="mt-2 max-w-[260px] text-[11px] leading-5 text-[#738079]">Ask us about services, account security, pricing or order questions before purchasing.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -153,7 +153,7 @@ export function SupportChatWidget() {
         </section>
       ) : null}
 
-      <button type="button" onClick={() => { setOpen(true); setUnread(0); void refresh(true); }} className={`relative ml-auto grid ${launcherSize} place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] shadow-[0_12px_36px_rgba(0,0,0,.36)] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40`} aria-label="Open live support chat">
+      <button type="button" onClick={() => { setOpen(true); setUnread(0); void refresh(true); }} className={`relative ml-auto grid ${launcherSize} place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] shadow-[0_12px_36px_rgba(0,0,0,.36)] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40`} aria-label="Open support chat">
         <MessageCircle className={launcherIconSize} strokeWidth={1.8} />
         {unread > 0 ? <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{unread > 9 ? "9+" : unread}</span> : null}
       </button>

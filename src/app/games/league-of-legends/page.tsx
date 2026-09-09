@@ -40,8 +40,8 @@ const storefrontHighlights = [
     icon: ReceiptText,
   },
   {
-    title: "One BoostingPedia flow",
-    description: "League of Legends uses the same premium order, checkout, dashboard, and tracking family as the rest of BoostingPedia.",
+    title: "Dashboard and order tracking",
+    description: "League of Legends orders use the same checkout, dashboard, tracking, and order workspace flow as other BoostingPedia services.",
     icon: ShieldCheck,
   },
 ] as const;
@@ -264,7 +264,7 @@ export default async function LeagueOfLegendsPage() {
               League of Legends
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-              Choose the League of Legends service that matches your goal, configure the real options for that service, and continue through the same secure BoostingPedia order flow.
+              Choose the League of Legends service that matches your goal, configure the real options for that service, and continue through the same BoostingPedia order flow.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2">
@@ -331,7 +331,7 @@ export default async function LeagueOfLegendsPage() {
           <div className="flex flex-col gap-6 rounded-[1.8rem] border border-white/[0.08] bg-[#090B0A] p-7 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-sm font-semibold text-[#C89B3C]">Explore more games</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl">Continue through the BoostingPedia launch lineup.</h2>
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl">Explore more BoostingPedia game storefronts.</h2>
             </div>
             <Link href="/games" className="inline-flex items-center text-sm font-semibold text-white/70 transition-colors hover:text-white">View all games<ArrowRight className="ml-2 size-4" /></Link>
           </div>
