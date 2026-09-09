@@ -1,3 +1,30 @@
 import Link from "next/link";
+import { safeNextPath } from "@/features/auth/safe-next";
+
 export const metadata = { title: "Authentication error" };
-export default function AuthErrorPage() { return <main className="grid min-h-screen place-items-center px-4"><div className="max-w-lg rounded-3xl border border-white/10 bg-[var(--surface)] p-8 text-center"><h1 className="text-3xl font-semibold">We could not verify that link</h1><p className="mt-3 text-[var(--muted-foreground)]">The confirmation link may have expired or already been used.</p><Link href="/login" className="mt-6 inline-flex rounded-xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold">Back to sign in</Link></div></main>; }
+
+export default async function AuthErrorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const params = await searchParams;
+  const next = safeNextPath(params.next);
+
+  return (
+    <main className="grid min-h-screen place-items-center px-4">
+      <div className="max-w-lg rounded-3xl border border-white/10 bg-[var(--surface)] p-8 text-center">
+        <h1 className="text-3xl font-semibold">We could not verify that link</h1>
+        <p className="mt-3 text-[var(--muted-foreground)]">
+          The confirmation link may have expired or already been used.
+        </p>
+        <Link
+          href={`/login?next=${encodeURIComponent(next)}`}
+          className="mt-6 inline-flex rounded-xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold"
+        >
+          Back to sign in
+        </Link>
+      </div>
+    </main>
+  );
+}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
+import { safeNextPath } from "@/features/auth/safe-next";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { registerAction } from "./actions";
 
@@ -9,12 +10,13 @@ export const metadata = { title: "Create account" };
 export default async function RegisterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; checkEmail?: string }>;
+  searchParams: Promise<{ error?: string; checkEmail?: string; next?: string }>;
 }) {
-  const identity = await getCurrentIdentity();
-  if (identity) redirect("/dashboard");
-
   const params = await searchParams;
+  const next = safeNextPath(params.next);
+
+  const identity = await getCurrentIdentity();
+  if (identity) redirect(next);
 
   return (
     <main className="min-h-screen bg-[#050807] px-4 py-10 sm:py-16">
@@ -50,6 +52,7 @@ export default async function RegisterPage({
 
           {!params.checkEmail ? (
             <form action={registerAction} className="mt-6 space-y-4">
+              <input type="hidden" name="next" value={next} />
               <label className="block text-sm font-medium text-[#F4F7F5]">
                 Full name
                 <input
@@ -144,7 +147,7 @@ export default async function RegisterPage({
 
           <p className="mt-5 text-sm text-[#A0AAA4]">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-[#F4F7F5] transition-colors hover:text-[#82F5A4]">
+            <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-medium text-[#F4F7F5] transition-colors hover:text-[#82F5A4]">
               Sign in
             </Link>
           </p>

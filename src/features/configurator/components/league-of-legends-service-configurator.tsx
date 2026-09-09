@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
@@ -501,12 +502,14 @@ export function LeagueOfLegendsServiceConfigurator({
       const payload = (await response.json()) as { order?: { id: string }; error?: string };
 
       if (response.status === 401) {
+        checkoutIntent.saveForAuthentication();
         const next = `/games/${gameSlug}/${service.slug}`;
         router.push(`/login?next=${encodeURIComponent(next)}`);
         return;
       }
 
       if (!response.ok || !payload.order) throw new Error(payload.error ?? "Unable to create order.");
+      checkoutIntent.clearAfterOrder();
       router.push(`/dashboard/orders/${payload.order.id}`);
       router.refresh();
     } catch (requestError) {
@@ -515,6 +518,16 @@ export function LeagueOfLegendsServiceConfigurator({
       setIsCreatingOrder(false);
     }
   }
+
+  const checkoutIntent = useCheckoutIntentContinuity({
+    gameSlug,
+    serviceSlug: service.slug,
+    selection,
+    setSelection,
+    canAutoResume: Boolean(quote && !isLoading),
+    busy: isCreatingOrder,
+    onResume: createOrder,
+  });
 
   const serviceLabel = isRank
     ? "League of Legends Rank Boost"
@@ -852,7 +865,7 @@ export function LeagueOfLegendsServiceConfigurator({
                     disabled={!quote || quote.total < 5 || isLoading || isCreatingOrder}
                     onClick={createOrder}
                   >
-                    {isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create secure order<ArrowRight className="ml-2 size-4" /></>}
+                    {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}
                   </Button>
                   <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is validated on the server before the order is stored.</p>
                 </div>

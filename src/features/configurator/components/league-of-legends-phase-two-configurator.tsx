@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
@@ -235,10 +236,12 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
       });
       const payload = (await response.json()) as { order?: { id: string }; error?: string };
       if (response.status === 401) {
+        checkoutIntent.saveForAuthentication();
         router.push(`/login?next=${encodeURIComponent(`/games/${gameSlug}/${service.slug}`)}`);
         return;
       }
       if (!response.ok || !payload.order) throw new Error(payload.error ?? "Unable to create order.");
+      checkoutIntent.clearAfterOrder();
       router.push(`/dashboard/orders/${payload.order.id}`);
       router.refresh();
     } catch (requestError) {
@@ -247,6 +250,16 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
       setIsCreatingOrder(false);
     }
   }
+
+  const checkoutIntent = useCheckoutIntentContinuity({
+    gameSlug,
+    serviceSlug: service.slug,
+    selection,
+    setSelection,
+    canAutoResume: Boolean(quote && !isLoading),
+    busy: isCreatingOrder,
+    onResume: createOrder,
+  });
 
   const serviceLabel = isArena
     ? "League of Legends Arena Boost"
@@ -442,7 +455,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
                 <AccountBoostCheckoutReassurance selected={(isArena || isClash) && selection.boostMethod === "account"} accent="gold" />
 
-                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create secure order<ArrowRight className="ml-2 size-4" /></>}</Button>
+                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
               </div>
             </div>

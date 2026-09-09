@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createAuthServerClient } from "@/lib/supabase/auth";
+import { safeNextPath } from "@/features/auth/safe-next";
 import {
   isValidEmail,
   isValidPassword,
@@ -12,14 +13,20 @@ import {
 
 const LEGAL_VERSION = "2026-08-30";
 
+function registerRedirect(params: Record<string, string>) {
+  const search = new URLSearchParams(params);
+  return `/register?${search.toString()}`;
+}
+
 export async function registerAction(formData: FormData) {
   const fullName = normalizeText(formData.get("fullName"), 100);
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   const legalConsent = formData.get("legalConsent") === "accepted";
+  const next = safeNextPath(formData.get("next"));
 
   if (!legalConsent) {
-    redirect("/register?error=legal");
+    redirect(registerRedirect({ error: "legal", next }));
   }
 
   if (
@@ -27,7 +34,7 @@ export async function registerAction(formData: FormData) {
     !isValidEmail(email) ||
     !isValidPassword(password)
   ) {
-    redirect("/register?error=invalid");
+    redirect(registerRedirect({ error: "invalid", next }));
   }
 
   const h = await headers();
@@ -35,6 +42,9 @@ export async function registerAction(formData: FormData) {
     h.get("origin") ??
     process.env.NEXT_PUBLIC_SITE_URL ??
     "http://localhost:3000";
+
+  const confirmationUrl = new URL("/auth/confirm", origin);
+  confirmationUrl.searchParams.set("next", next);
 
   const supabase = await createAuthServerClient();
   const acceptedAt = new Date().toISOString();
@@ -50,17 +60,17 @@ export async function registerAction(formData: FormData) {
         legal_consent_accepted_at: acceptedAt,
         age_or_guardian_confirmed: true,
       },
-      emailRedirectTo: `${origin}/auth/confirm?next=/dashboard`,
+      emailRedirectTo: confirmationUrl.toString(),
     },
   });
 
   if (error) {
-    redirect("/register?error=signup");
+    redirect(registerRedirect({ error: "signup", next }));
   }
 
   if (data.session) {
-    redirect("/dashboard");
+    redirect(next);
   }
 
-  redirect("/register?checkEmail=1");
+  redirect(registerRedirect({ checkEmail: "1", next }));
 }

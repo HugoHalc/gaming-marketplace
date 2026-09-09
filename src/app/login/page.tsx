@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { SocialSignInButtons } from "@/components/auth/social-sign-in-buttons";
+import { safeNextPath } from "@/features/auth/safe-next";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { loginAction } from "./actions";
 
@@ -17,16 +18,11 @@ export default async function LoginPage({
     oauthError?: string;
   }>;
 }) {
-  const identity = await getCurrentIdentity();
-  if (identity) redirect("/dashboard");
-
   const params = await searchParams;
-  const next =
-    typeof params.next === "string" &&
-    params.next.startsWith("/") &&
-    !params.next.startsWith("//")
-      ? params.next
-      : "/dashboard";
+  const next = safeNextPath(params.next);
+
+  const identity = await getCurrentIdentity();
+  if (identity) redirect(next);
 
   const message =
     params.error === "credentials"
@@ -166,7 +162,7 @@ export default async function LoginPage({
                 Forgot password?
               </Link>
               <Link
-                href="/register"
+                href={`/register?next=${encodeURIComponent(next)}`}
                 className="transition-colors hover:text-[#82F5A4] focus-visible:outline-none focus-visible:text-[#82F5A4]"
               >
                 Create account

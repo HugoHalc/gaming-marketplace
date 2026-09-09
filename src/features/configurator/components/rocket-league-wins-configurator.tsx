@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
@@ -448,6 +449,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
       };
 
       if (response.status === 401) {
+        checkoutIntent.saveForAuthentication();
         const next = `/games/${gameSlug}/${service.slug}`;
         router.push(`/login?next=${encodeURIComponent(next)}`);
         return;
@@ -457,6 +459,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
         throw new Error(payload.error ?? "Unable to create order.");
       }
 
+      checkoutIntent.clearAfterOrder();
       router.push(`/dashboard/orders/${payload.order.id}`);
       router.refresh();
     } catch (requestError) {
@@ -469,6 +472,16 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
       setIsCreatingOrder(false);
     }
   }
+
+  const checkoutIntent = useCheckoutIntentContinuity({
+    gameSlug,
+    serviceSlug: service.slug,
+    selection,
+    setSelection,
+    canAutoResume: Boolean(quote && !isLoading),
+    busy: isCreatingOrder,
+    onResume: createOrder,
+  });
 
   const visibleExtraModes = showAllExtras
     ? playlists.filter((playlist) => playlist.group === "Extra")
@@ -900,12 +913,12 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
             >
               {isCreatingOrder ? (
                 <>
-                  Creating order
+                  Preparing checkout
                   <LoaderCircle className="ml-2 size-4 animate-spin" />
                 </>
               ) : (
                 <>
-                  Create secure order
+                  Continue to secure checkout
                   <ArrowRight className="ml-2 size-4" />
                 </>
               )}

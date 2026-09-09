@@ -1,16 +1,13 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/features/auth/safe-next";
 import { createAuthServerClient } from "@/lib/supabase/auth";
-
-function safeNext(value: string | null) {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
-}
 
 export async function GET(request: NextRequest) {
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
   const type = request.nextUrl.searchParams.get("type") as EmailOtpType | null;
   const code = request.nextUrl.searchParams.get("code");
-  const next = safeNext(request.nextUrl.searchParams.get("next"));
+  const next = safeNextPath(request.nextUrl.searchParams.get("next"));
   const supabase = await createAuthServerClient();
   let error: unknown = null;
 
@@ -22,5 +19,9 @@ export async function GET(request: NextRequest) {
     error = new Error("Missing confirmation token");
   }
 
-  return NextResponse.redirect(new URL(error ? "/auth/error" : next, request.url));
+  const destination = error
+    ? `/auth/error?next=${encodeURIComponent(next)}`
+    : next;
+
+  return NextResponse.redirect(new URL(destination, request.url));
 }

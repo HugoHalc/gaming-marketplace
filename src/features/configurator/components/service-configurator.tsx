@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import { getDefaultSelection } from "../data/mock-configurators";
 import type {
@@ -107,6 +108,7 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
       };
 
       if (response.status === 401) {
+        checkoutIntent.saveForAuthentication();
         const next = `/games/${gameSlug}/${service.slug}`;
         router.push(`/login?next=${encodeURIComponent(next)}`);
         return;
@@ -116,6 +118,7 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
         throw new Error(payload.error ?? "Unable to create order.");
       }
 
+      checkoutIntent.clearAfterOrder();
       router.push(`/dashboard/orders/${payload.order.id}`);
       router.refresh();
     } catch (requestError) {
@@ -124,6 +127,16 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
       setIsCreatingOrder(false);
     }
   }
+
+  const checkoutIntent = useCheckoutIntentContinuity({
+    gameSlug,
+    serviceSlug: service.slug,
+    selection,
+    setSelection,
+    canAutoResume: Boolean(quote && !isLoading),
+    busy: isCreatingOrder,
+    onResume: createOrder,
+  });
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start">
@@ -262,7 +275,7 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
             ) : null}
 
             <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>
-              {isCreatingOrder ? <>Creating order<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Create order<ArrowRight className="ml-2 size-4" /></>}
+              {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}
             </Button>
             <div className="mt-4 flex gap-2 text-[11px] leading-5 text-white/40">
               <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
