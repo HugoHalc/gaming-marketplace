@@ -34,6 +34,50 @@ const valorantServiceNavigation = [
   { slug: "placement-matches", label: "Placements Boost", mobileLabel: "Placements" },
 ] as const;
 
+const rocketLeagueRankFaqs = [
+  {
+    question: "What is Rocket League rank boosting?",
+    paragraphs: [
+      "Rocket League rank boosting is a service that helps you progress from your current competitive rank toward a selected target rank. You configure the service based on your rank, playlist, platform and preferred boost method.",
+    ],
+  },
+  {
+    question: "How is the price of my Rocket League rank boost calculated?",
+    paragraphs: [
+      "Pricing depends on the configuration you select. Your current rank, target rank, playlist, boost method and optional upgrades can affect the final amount.",
+      "The final payable price is validated by the server before payment.",
+    ],
+  },
+  {
+    question: "Which Rocket League playlists can I choose?",
+    paragraphs: [
+      "The available playlists are shown directly in the configurator. Select the playlist you want before continuing with your order.",
+      "Any applicable price modifier is displayed as part of the configuration.",
+    ],
+  },
+  {
+    question: "What is the difference between Account Boost and Play With Booster?",
+    paragraphs: [
+      "Account Boost means the booster completes the service directly on your account.",
+      "Play With Booster means you play alongside the booster instead of providing account access.",
+      "Both options can be selected from the configurator when available for the service.",
+    ],
+  },
+  {
+    question: "When do I provide my account information?",
+    paragraphs: [
+      "Account details are not requested while you are configuring the service.",
+      "For Account Boost orders, the required fulfillment information is collected after checkout.",
+    ],
+  },
+  {
+    question: "Can I track my Rocket League boosting order?",
+    paragraphs: [
+      "Yes. After the order is created, you can follow its status and relevant order updates through your BoostingPedia dashboard.",
+    ],
+  },
+] as const;
+
 export async function generateStaticParams() {
   const games = await listCatalogGames();
   return games.flatMap((game) =>
@@ -480,13 +524,149 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>
                   <item.icon className="size-4" />
                 </span>
-                <h2 className="mt-5 text-sm font-semibold text-white">{item.title}</h2>
+                {isRocketLeagueRank ? (
+                  <p className="mt-5 text-sm font-semibold text-white">{item.title}</p>
+                ) : (
+                  <h2 className="mt-5 text-sm font-semibold text-white">{item.title}</h2>
+                )}
                 <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{item.text}</p>
               </div>
             ))}
           </div>
         </Container>
       </section>
+
+      {isRocketLeagueRank ? (
+        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="mx-auto max-w-5xl">
+              <div className="max-w-3xl">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  How Rocket League Rank Boosting Works
+                </h2>
+                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <p>
+                    Rocket League rank boosting lets you configure competitive rank progression around your current rank and the rank you want to reach.
+                  </p>
+                  <p>
+                    Start by selecting your current and target rank in the configurator. Then choose the playlist, platform and boost method that matches how you want the service completed.
+                  </p>
+                  <p>
+                    Your order configuration determines the final price. Optional upgrades are shown separately, so you can review what is included before creating your order.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Rank and Playlist
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>
+                      Your Rocket League boost is configured around the progression you actually need rather than a fixed package.
+                    </p>
+                    <p>
+                      Select your current rank and target rank, then choose from the competitive playlists available in the configurator. Supported options and any applicable price modifiers are displayed before checkout.
+                    </p>
+                    <p>
+                      This makes it easier to understand exactly what you are ordering and how each configuration choice affects the service.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  Account Boost vs Play With Booster
+                </h2>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>With Account Boost, the booster completes the selected service directly on your account.</p>
+                      <p>
+                        Account access is requested only after checkout. Your login details are not required while you are configuring your order or before payment.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Play With Booster allows you to play alongside the booster instead of providing account access.</p>
+                      <p>
+                        Select this method directly in the configurator to see how it affects your order and final price.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  How Your Rocket League Boost Order Is Protected
+                </h2>
+                <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Validated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      The final payable amount is calculated and validated on the server. Your browser does not control the final order price.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">No Hidden Upgrade Selections</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Optional upgrades are displayed separately and are not automatically selected for you.</p>
+                      <p>You can review your configuration before continuing to checkout.</p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      After your order is created, you can follow its status and order updates from your BoostingPedia dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Rocket League Rank Boost FAQ
+                  </h2>
+                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                    {rocketLeagueRankFaqs.map((item) => (
+                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
+                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
+                            {item.question}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
+                          {item.paragraphs.map((paragraph) => (
+                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
       <SiteFooter />
     </main>
