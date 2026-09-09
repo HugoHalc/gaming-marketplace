@@ -215,9 +215,11 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ArrowLeft className="mr-2 size-3.5" />
               Back to {game.name}
             </Link>
-            <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
-              {service.name}
-            </h1>
+            {!isRocketLeagueRank ? (
+              <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
+                {service.name}
+              </h1>
+            ) : null}
           </div>
 
           <div className="hidden sm:block">
@@ -230,41 +232,54 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <span aria-hidden="true">/</span>
               <span className="text-white">{service.name}</span>
             </div>
+          </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-              <div className="max-w-3xl">
-                <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
-                  <Sparkles className="mr-2 size-3.5" />
-                  {heroBadge}
-                </Badge>
+          <div
+            className={`${isRocketLeagueRank ? "mt-2 grid sm:mt-8" : "mt-8 hidden sm:grid"} gap-8 lg:grid-cols-[1fr_auto] lg:items-end`}
+          >
+            <div className="max-w-3xl">
+              <Badge className={`${isRocketLeagueRank ? "hidden sm:inline-flex" : ""} ${theme.border} ${theme.surface} ${theme.text}`}>
+                <Sparkles className="mr-2 size-3.5" />
+                {heroBadge}
+              </Badge>
 
+              {isRocketLeagueRank ? (
+                <>
+                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
+                    Rocket League Rank Boosting
+                  </h1>
+                  <p className="mt-3 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
+                    {heroTitle}
+                  </p>
+                </>
+              ) : (
                 <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
                   {heroTitle}
                 </h1>
+              )}
 
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-                  {heroDescription}
-                </p>
+              <p className={`${isRocketLeagueRank ? "hidden sm:block" : ""} mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg`}>
+                {heroDescription}
+              </p>
 
-                {heroPills ? (
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {heroPills.map((item) => (
-                      <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <Link
-                href={`/games/${game.slug}`}
-                className="inline-flex items-center text-sm font-semibold text-white/65 transition-colors hover:text-white"
-              >
-                <ArrowLeft className="mr-2 size-4" />
-                Back to {game.name}
-              </Link>
+              {heroPills ? (
+                <div className={`${isRocketLeagueRank ? "hidden sm:flex" : "flex"} mt-6 flex-wrap gap-2`}>
+                  {heroPills.map((item) => (
+                    <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
+
+            <Link
+              href={`/games/${game.slug}`}
+              className={`${isRocketLeagueRank ? "hidden sm:inline-flex" : "inline-flex"} items-center text-sm font-semibold text-white/65 transition-colors hover:text-white`}
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Back to {game.name}
+            </Link>
           </div>
         </Container>
       </section>
