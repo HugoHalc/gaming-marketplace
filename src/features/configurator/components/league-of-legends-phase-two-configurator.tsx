@@ -63,10 +63,10 @@ const roles = [
 ] as const;
 
 const clashTiers = [
-  ["1", "Tier 1", "$9.99 BM rate"],
-  ["2", "Tier 2", "$6.99 BM rate"],
-  ["3", "Tier 3", "$5.99 BM rate"],
-  ["4", "Tier 4", "$2.99 BM rate"],
+  ["1", "Tier 1"],
+  ["2", "Tier 2"],
+  ["3", "Tier 3"],
+  ["4", "Tier 4"],
 ] as const;
 
 function formatPrice(value: number) {
@@ -377,7 +377,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 <>
                   <div>
                     <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Clash tier</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{clashTiers.map(([value, label, meta]) => <Choice key={value} active={selection.clashTier === value} label={label} meta={meta} onClick={() => update("clashTier", value)} />)}</div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{clashTiers.map(([value, label]) => <Choice key={value} active={selection.clashTier === value} label={label} onClick={() => update("clashTier", value)} />)}</div>
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <Quantity value={Number(selection.games)} min={1} max={10} label="Clash games" helper="Verified matrix: 1–10 games." onChange={(value) => update("games", value)} />
@@ -423,7 +423,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-2">
                   <Extra checked={selection.playOffline === true} onChange={(checked) => update("playOffline", checked)} icon={<EyeOff className="size-3.5" />} title="Play Offline" price="FREE" description="Keep activity discreet where the service exposes this option." />
                   {isArena || isClash ? <Extra checked={selection.championsPreferences === true} onChange={(checked) => update("championsPreferences", checked)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Provide champion preferences for the order." /> : null}
-                  <Extra checked={selection.streaming === true} onChange={(checked) => update("streaming", checked)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="BoostingPedia price follows the 70% pricing rule." />
+                  <Extra checked={selection.streaming === true} onChange={(checked) => update("streaming", checked)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="Add streaming to your order." />
                   <Extra checked={selection.expressDelivery === true} onChange={(checked) => update("expressDelivery", checked)} icon={<Zap className="size-3.5" />} title="Express Delivery" price="+20%" description="Prioritize faster fulfillment." />
                   <Extra checked={selection.soloQueueOnly === true} onChange={(checked) => update("soloQueueOnly", checked)} icon={<Swords className="size-3.5" />} title="Solo Queue Only" price="+40%" description="Use the documented solo-queue-only modifier." />
                 </div>

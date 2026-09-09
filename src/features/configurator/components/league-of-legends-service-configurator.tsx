@@ -740,7 +740,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-2">
                     <Extra checked={selection.playOffline === true} onChange={(value) => update("playOffline", value)} icon={<EyeOff className="size-3.5" />} title="Play Offline" price="FREE" description="Keep your order activity discreet." />
                     <Extra checked={selection.championsPreferences === true} onChange={(value) => update("championsPreferences", value)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Share preferred champions with your booster." />
-                    <Extra checked={selection.streaming === true} onChange={(value) => update("streaming", value)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="BoostingPedia price after the 70% pricing rule." />
+                    <Extra checked={selection.streaming === true} onChange={(value) => update("streaming", value)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="Add streaming to your order." />
                     <Extra checked={selection.expressDelivery === true} onChange={(value) => update("expressDelivery", value)} icon={<Zap className="size-3.5" />} title="Express Delivery" price="+20%" description="Prioritize faster fulfillment." />
                     <Extra checked={selection.soloQueueOnly === true} onChange={(value) => update("soloQueueOnly", value)} icon={<ShieldCheck className="size-3.5" />} title="Solo Queue Only" price="+40%" description="Restrict the order to solo queue play." />
                     {isRank ? (
@@ -754,9 +754,9 @@ export function LeagueOfLegendsServiceConfigurator({
 
                 <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
                   {[
-                    "70% of normal BM pricing.",
-                    "Temporary -15% campaign excluded.",
-                    "Progressive discounts applied automatically.",
+                    "Server-calculated pricing.",
+                    "Selected options are included in your quote.",
+                    "Available discounts are applied automatically.",
                   ].map((note) => (
                     <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
                       <Check className="size-3 shrink-0 text-emerald-300" />
