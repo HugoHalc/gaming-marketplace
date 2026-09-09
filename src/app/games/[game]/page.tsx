@@ -312,7 +312,7 @@ function ServiceShowcaseCard({
   return (
     <Link
       href={`/games/${gameSlug}/${service.slug}`}
-      className={`group relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:w-[20rem] sm:p-6 ${
+      className={`group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${
         isRocketLeague
           ? "hover:border-blue-300/[0.18]"
           : isValorant
@@ -350,7 +350,7 @@ function ServiceShowcaseCard({
         <h3 className="font-gaming-value max-w-[13rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
           {service.name}
         </h3>
-        <p className="mt-4 line-clamp-4 text-sm leading-6 text-[var(--muted-foreground)]">
+        <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
           {service.description}
         </p>
       </div>
@@ -373,7 +373,7 @@ function ServiceShowcaseCard({
 
 function EmptyServiceCard({ index }: { index: number }) {
   return (
-    <div className="relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-dashed border-white/[0.08] bg-white/[0.012] p-5 sm:w-[20rem] sm:p-6">
+    <div className="relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-dashed border-white/[0.08] bg-white/[0.012] p-5 sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none">
       <div className="flex items-start justify-between">
         <span className="rounded-full border border-white/[0.08] bg-black/15 px-2.5 py-1 text-[10px] font-semibold text-white/30">
           Service slot
@@ -528,7 +528,7 @@ export default async function GamePage({ params }: GamePageProps) {
             </p>
           </div>
 
-          <div className="-mx-4 mt-9 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+          <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {game.services.length > 0
               ? game.services.map((service, index) => (
                   <ServiceShowcaseCard

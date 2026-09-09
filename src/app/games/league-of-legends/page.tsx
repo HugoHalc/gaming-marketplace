@@ -187,7 +187,7 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
   return (
     <Link
       href={`/games/league-of-legends/${service.slug}`}
-      className="group relative flex min-h-[22rem] w-[18rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:border-[#C89B3C]/25 hover:bg-[#0B0D0B] hover:shadow-[0_30px_80px_-44px_rgba(0,0,0,.98)] sm:w-[20rem] sm:p-6"
+      className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:border-[#C89B3C]/25 hover:bg-[#0B0D0B] hover:shadow-[0_30px_80px_-44px_rgba(0,0,0,.98)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#C89B3C]/[0.075] via-[#7A5B22]/[0.025] to-transparent" />
       <div className="pointer-events-none absolute -right-12 -top-14 size-36 rounded-full bg-[#C89B3C]/[0.035] blur-3xl" />
@@ -207,7 +207,7 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
         <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
           {service.name}
         </h3>
-        <p className="mt-4 line-clamp-4 text-sm leading-6 text-[var(--muted-foreground)]">
+        <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
           {service.description}
         </p>
       </div>
@@ -302,7 +302,7 @@ export default async function LeagueOfLegendsPage() {
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">Browse the available services and open the configurator that best matches your League of Legends objective.</p>
           </div>
 
-          <div className="-mx-4 mt-9 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+          <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {game.services.map((service) => <LeagueServiceCard key={service.id} service={service} />)}
           </div>
         </Container>
