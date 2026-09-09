@@ -92,9 +92,15 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
   if (!game) return { title: "Game not found" };
 
   const displayName = getLaunchGameDisplayName(game.slug, game.name);
+  const isRocketLeague = game.slug === "rocket-league";
+
   return {
-    title: displayName,
-    description: `Explore the ${displayName} storefront and available BoostingPedia services.`,
+    title: isRocketLeague
+      ? { absolute: "Rocket League Boosting Services | BoostingPedia" }
+      : displayName,
+    description: isRocketLeague
+      ? "Configure Rocket League rank boosts, competitive wins, placements, tournament boosts and season rewards with transparent pricing and order tracking."
+      : `Explore the ${displayName} storefront and available BoostingPedia services.`,
     alternates: { canonical: `/games/${game.slug}` },
   };
 }
@@ -459,7 +465,7 @@ export default async function GamePage({ params }: GamePageProps) {
               {isValorant ? "VALORANT boosting services" : content.eyebrow}
             </Badge>
             <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-7xl">
-              {displayName}
+              {isRocketLeague ? "Rocket League Boosting Services" : displayName}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
               {isRocketLeague
