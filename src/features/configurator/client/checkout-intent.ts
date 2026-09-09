@@ -112,7 +112,7 @@ function sanitizeSelection(
   return sanitized;
 }
 
-function isSafeSlug(value: unknown) {
+function isSafeSlug(value: unknown): value is string {
   return (
     typeof value === "string" &&
     value.length > 0 &&
