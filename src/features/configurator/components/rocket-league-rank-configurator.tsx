@@ -529,22 +529,22 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
     : playlists.filter((playlist) => playlist.group === "Extra").slice(0, 2);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+    <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
       <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
           <div>
             <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/65">
               <Sparkles className="size-3.5" />
               Rocket League Rank Boost
             </div>
-            <p className="mt-1 text-sm text-[var(--muted-foreground)]">Configure your full order without leaving this panel.</p>
+            <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Configure your full order without leaving this panel.</p>
           </div>
-          <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300">
+          <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
             Live server pricing
           </span>
         </div>
 
-        <div className="space-y-5 p-4 sm:p-5 lg:p-6">
+        <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
           <div className="relative grid gap-5 lg:grid-cols-2">
             <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-blue-200/45 lg:grid">
               <ArrowRight className="size-3.5" />
@@ -554,7 +554,10 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               value={currentRank}
               onChange={(value) => update("currentRank", value)}
             />
-            <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+            <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+              <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-blue-300/[0.12] bg-[#0E1411] text-blue-200/45 lg:hidden" aria-hidden="true">
+                <ArrowRight className="size-3 rotate-90" />
+              </span>
               <CompactRankSelector
                 title="Desired rank"
                 value={targetRank}
@@ -745,7 +748,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
       </section>
 
-      <aside id="boost-summary" className="scroll-mt-24 xl:sticky xl:top-24">
+      <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
             <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.05] via-transparent to-transparent px-4 py-4">
@@ -905,7 +908,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
       </aside>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>

@@ -206,59 +206,74 @@ export default async function ServicePage({ params }: ServicePageProps) {
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
         <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
-        <Container className="py-12 sm:py-16 lg:py-18">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-            <Link href="/" className="transition-colors hover:text-white">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/games" className="transition-colors hover:text-white">Games</Link>
-            <span aria-hidden="true">/</span>
-            <Link href={`/games/${game.slug}`} className="transition-colors hover:text-white">{game.name}</Link>
-            <span aria-hidden="true">/</span>
-            <span className="text-white">{service.name}</span>
-          </div>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="max-w-3xl">
-              <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
-                <Sparkles className="mr-2 size-3.5" />
-                {heroBadge}
-              </Badge>
-
-              <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
-                {heroTitle}
-              </h1>
-
-              <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-                {heroDescription}
-              </p>
-
-              {heroPills ? (
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {heroPills.map((item) => (
-                    <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
+        <Container className="py-5 sm:py-16 lg:py-18">
+          <div className="sm:hidden">
             <Link
               href={`/games/${game.slug}`}
-              className="inline-flex items-center text-sm font-semibold text-white/65 transition-colors hover:text-white"
+              className="inline-flex min-h-11 items-center text-xs font-semibold text-white/60 transition-colors hover:text-white"
             >
-              <ArrowLeft className="mr-2 size-4" />
+              <ArrowLeft className="mr-2 size-3.5" />
               Back to {game.name}
             </Link>
+            <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
+              {service.name}
+            </h1>
+          </div>
+
+          <div className="hidden sm:block">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
+              <Link href="/" className="transition-colors hover:text-white">Home</Link>
+              <span aria-hidden="true">/</span>
+              <Link href="/games" className="transition-colors hover:text-white">Games</Link>
+              <span aria-hidden="true">/</span>
+              <Link href={`/games/${game.slug}`} className="transition-colors hover:text-white">{game.name}</Link>
+              <span aria-hidden="true">/</span>
+              <span className="text-white">{service.name}</span>
+            </div>
+
+            <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="max-w-3xl">
+                <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
+                  <Sparkles className="mr-2 size-3.5" />
+                  {heroBadge}
+                </Badge>
+
+                <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
+                  {heroTitle}
+                </h1>
+
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
+                  {heroDescription}
+                </p>
+
+                {heroPills ? (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {heroPills.map((item) => (
+                      <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
+                href={`/games/${game.slug}`}
+                className="inline-flex items-center text-sm font-semibold text-white/65 transition-colors hover:text-white"
+              >
+                <ArrowLeft className="mr-2 size-4" />
+                Back to {game.name}
+              </Link>
+            </div>
           </div>
         </Container>
       </section>
 
-      <section className="py-10 sm:py-12 lg:py-16">
+      <section className="py-6 sm:py-12 lg:py-16">
         <Container>
           {isCustomRocketLeagueService ? (
             <>
-              <nav aria-label="Rocket League services" className="mb-4 xl:hidden">
+              <nav aria-label="Rocket League services" className="mb-3 sm:mb-4 xl:hidden">
                 <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <div className="flex min-w-max gap-2">
                     {rocketLeagueServiceNavigation.map((item) => {
@@ -269,7 +284,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                           key={item.slug}
                           href={`/games/rocket-league/${item.slug}`}
                           aria-current={active ? "page" : undefined}
-                          className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                          className={`inline-flex h-11 items-center justify-center whitespace-nowrap sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                             active
                               ? "border-blue-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
                               : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -351,7 +366,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             </>
           ) : isCustomValorantService && schema ? (
             <>
-              <nav aria-label="Valorant services" className="mb-4 xl:hidden">
+              <nav aria-label="Valorant services" className="mb-3 sm:mb-4 xl:hidden">
                 <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <div className="flex min-w-max gap-2">
                     {valorantServiceNavigation.map((item) => {
@@ -362,7 +377,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                           key={item.slug}
                           href={`/games/valorant/${item.slug}`}
                           aria-current={active ? "page" : undefined}
-                          className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                          className={`inline-flex h-11 items-center justify-center whitespace-nowrap sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
                             active
                               ? "border-rose-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
                               : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"

@@ -287,13 +287,13 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
 
   return (
     <>
-      <nav aria-label="League of Legends services" className="mb-4 xl:hidden">
+      <nav aria-label="League of Legends services" className="mb-3 sm:mb-4 xl:hidden">
         <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max gap-2">
             {serviceNavigation.map((item) => {
               const active = service.slug === item.slug;
               return (
-                <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"}`}>
+                <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`inline-flex h-11 items-center sm:h-10 justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"}`}>
                   {active ? <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" /> : null}
                   {item.mobileLabel}
                 </Link>
@@ -326,17 +326,17 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
           </nav>
         </aside>
 
-        <div className="grid min-w-0 gap-4 pb-24 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
+        <div className="grid min-w-0 gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
           <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09]">
-            <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
               <div>
                 <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/80"><Sparkles className="size-3.5" />{serviceLabel}</div>
-                <p className="mt-1 text-sm text-[var(--muted-foreground)]">Verified League of Legends pricing inside the BoostingPedia configurator family.</p>
+                <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Verified League of Legends pricing inside the BoostingPedia configurator family.</p>
               </div>
-              <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300">Server-calculated pricing</span>
+              <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">Server-calculated pricing</span>
             </div>
 
-            <div className="space-y-6 p-4 sm:p-5 lg:p-6">
+            <div className="space-y-5 p-4 sm:space-y-6 sm:p-5 lg:p-6">
               {isArena ? (
                 <>
                   <Quantity value={Number(selection.games)} min={3} max={60} label="Arena games" helper="Verified public range: 3–60 games." onChange={(value) => update("games", value)} />
@@ -435,7 +435,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
             </div>
           </section>
 
-          <aside id="boost-summary" className="scroll-mt-24 2xl:sticky 2xl:top-24">
+          <aside id="boost-summary" className="scroll-mt-28 2xl:scroll-mt-24 2xl:sticky 2xl:top-24">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08]">
               <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-4">
                 <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-[#E7C867]" /> : <Check className="size-4 text-[#82F5A4]" />}</div>
@@ -464,7 +464,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl 2xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 2xl:hidden">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3"><div><p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p><p className="font-gaming-value mt-0.5 whitespace-nowrap text-[1.55rem] font-bold leading-none text-[#F4F7F5]">{quote ? formatPrice(quote.total) : "—"}</p></div><a href="#boost-summary" className="inline-flex h-11 items-center justify-center rounded-xl border border-[#39E56F]/35 bg-[#39E56F] px-5 text-sm font-bold text-[#050807]">View order<ArrowRight className="ml-2 size-4" /></a></div>
       </div>
 

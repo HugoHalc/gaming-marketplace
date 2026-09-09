@@ -18,6 +18,12 @@ type Conversation = {
 
 export function SupportChatWidget() {
   const pathname = usePathname();
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const isServiceConfiguratorPage = pathSegments[0] === "games" && pathSegments.length === 3;
+  const isRocketLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "rocket-league";
+  const isLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "league-of-legends";
+  const isValorantConfigurator = isServiceConfiguratorPage && pathSegments[1] === "valorant";
+  const hasMobilePurchaseBar = isRocketLeagueConfigurator || isLeagueConfigurator || isValorantConfigurator;
   const [open, setOpen] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -79,10 +85,25 @@ export function SupportChatWidget() {
     }
   }
 
+  const floatingPosition = hasMobilePurchaseBar
+    ? isLeagueConfigurator
+      ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 2xl:bottom-6"
+      : "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
+    : "bottom-[max(18px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6";
+
+  const panelHeight = hasMobilePurchaseBar
+    ? isLeagueConfigurator
+      ? "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] 2xl:h-[min(620px,calc(100dvh-110px))]"
+      : "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]"
+    : "h-[min(620px,calc(100dvh-110px))]";
+
+  const launcherSize = hasMobilePurchaseBar ? "size-12 sm:size-14" : "size-14";
+  const launcherIconSize = hasMobilePurchaseBar ? "size-5 sm:size-6" : "size-6";
+
   return (
-    <div className="fixed bottom-[max(18px,env(safe-area-inset-bottom))] right-4 z-[70] sm:bottom-6 sm:right-6">
+    <div className={`fixed z-[70] ${floatingPosition}`}>
       {open ? (
-        <section className="mb-3 flex h-[min(620px,calc(100dvh-110px))] w-[min(390px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-white/[0.09] bg-[#080C0A] shadow-[0_24px_80px_rgba(0,0,0,.48)]">
+        <section className={`mb-3 flex ${panelHeight} w-[min(390px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-white/[0.09] bg-[#080C0A] shadow-[0_24px_80px_rgba(0,0,0,.48)]`}>
           <header className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3.5">
             <div className="flex min-w-0 items-center gap-3">
               <span className="grid size-9 shrink-0 place-items-center rounded-full border border-[#39E56F]/15 bg-[#39E56F]/[0.06]">
@@ -132,8 +153,8 @@ export function SupportChatWidget() {
         </section>
       ) : null}
 
-      <button type="button" onClick={() => { setOpen(true); setUnread(0); void refresh(true); }} className="relative ml-auto grid size-14 place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] shadow-[0_12px_36px_rgba(0,0,0,.36)] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40" aria-label="Open live support chat">
-        <MessageCircle className="size-6" strokeWidth={1.8} />
+      <button type="button" onClick={() => { setOpen(true); setUnread(0); void refresh(true); }} className={`relative ml-auto grid ${launcherSize} place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] shadow-[0_12px_36px_rgba(0,0,0,.36)] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40`} aria-label="Open live support chat">
+        <MessageCircle className={launcherIconSize} strokeWidth={1.8} />
         {unread > 0 ? <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{unread > 9 ? "9+" : unread}</span> : null}
       </button>
     </div>

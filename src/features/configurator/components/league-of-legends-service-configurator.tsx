@@ -560,7 +560,7 @@ export function LeagueOfLegendsServiceConfigurator({
 
   return (
     <>
-      <nav aria-label="League of Legends services" className="mb-4 xl:hidden">
+      <nav aria-label="League of Legends services" className="mb-3 sm:mb-4 xl:hidden">
         <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max gap-2">
             {serviceNavigation.map((item) => {
@@ -570,7 +570,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   key={item.slug}
                   href={`/games/league-of-legends/${item.slug}`}
                   aria-current={active ? "page" : undefined}
-                  className={`inline-flex h-10 items-center rounded-xl border px-3.5 text-xs font-semibold transition-colors ${
+                  className={`inline-flex h-11 items-center sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-colors ${
                     active
                       ? "border-[#C89B3C]/30 bg-[#7A5B22]/15 text-[#F4F7F5]"
                       : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:text-white"
@@ -622,29 +622,32 @@ export function LeagueOfLegendsServiceConfigurator({
         </aside>
 
         <div className="min-w-0">
-          <div className="grid gap-4 pb-24 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
+          <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
             <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-              <div className="flex flex-col gap-3 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
                 <div>
                   <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
                     <Sparkles className="size-3.5" />
                     {serviceLabel}
                   </div>
-                  <p className="mt-1 text-sm text-[var(--muted-foreground)]">Configure your order inside the BoostingPedia flow.</p>
+                  <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Configure your order inside the BoostingPedia flow.</p>
                 </div>
-                <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300">
+                <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
                   Server-validated pricing
                 </span>
               </div>
 
-              <div className="space-y-6 p-4 sm:p-5 lg:p-6">
+              <div className="space-y-5 p-4 sm:space-y-6 sm:p-5 lg:p-6">
                 {isRank ? (
                   <div className="relative grid items-stretch gap-5 lg:grid-cols-2">
                     <span className="pointer-events-none absolute left-1/2 top-1/2 hidden size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#E7C867]/50 lg:grid">
                       <ArrowRight className="size-3.5" />
                     </span>
                     <RankSelector label="Current rank" value={currentRank} maxRank="Diamond II" onChange={(value) => update("currentRank", value)} />
-                    <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+                    <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+                      <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#C89B3C]/20 bg-[#0E1411] text-[#E7C867]/55 lg:hidden" aria-hidden="true">
+                        <ArrowRight className="size-3 rotate-90" />
+                      </span>
                       <RankSelector label="Desired rank" value={targetRank} target currentRank={currentRank} onChange={(value) => update("targetRank", value)} />
                     </div>
                   </div>
@@ -764,7 +767,7 @@ export function LeagueOfLegendsServiceConfigurator({
               </div>
             </section>
 
-            <aside id="boost-summary" className="scroll-mt-24 2xl:sticky 2xl:top-24">
+            <aside id="boost-summary" className="scroll-mt-28 2xl:scroll-mt-24 2xl:sticky 2xl:top-24">
               <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
                 <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4">
                   <div className="flex items-start justify-between gap-4">
@@ -875,7 +878,7 @@ export function LeagueOfLegendsServiceConfigurator({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-4 py-3 backdrop-blur-xl 2xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 2xl:hidden">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <div>
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
