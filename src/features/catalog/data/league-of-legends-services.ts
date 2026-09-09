@@ -1,5 +1,7 @@
 import type { CatalogGame, ServiceSummary } from "../types/catalog";
 
+const VERIFIED_BASE_PRICE_CONTEXT = "Based on the smallest base configuration.";
+
 const leagueOfLegendsServices: ServiceSummary[] = [
   {
     id: "service_lol_rank",
@@ -9,6 +11,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "rank",
     description: "League of Legends rank progression with LP, server, queue and boost-method configuration.",
     startingPrice: 2.89,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -20,6 +23,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "wins",
     description: "Ranked wins priced from your current League of Legends rank and selected options.",
     startingPrice: 1.38,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -31,6 +35,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "placements",
     description: "Placement matches priced from your previous League of Legends rank.",
     startingPrice: 0.79,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -42,6 +47,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "wins",
     description: "Unrated match packages with server, queue, boost-method and optional extras.",
     startingPrice: 2.09,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -53,6 +59,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "wins",
     description: "Arena match packages with role, server, boost method and verified pricing options.",
     startingPrice: 10.50,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -64,6 +71,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "rank",
     description: "Mastery Points Farm and Marks of Mastery with verified server-calculated pricing.",
     startingPrice: 3.50,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },
@@ -75,6 +83,7 @@ const leagueOfLegendsServices: ServiceSummary[] = [
     category: "wins",
     description: "Clash progression configured by tier, games, boosters, server and boost method.",
     startingPrice: 2.09,
+    startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
     status: "active",
   },

@@ -21,6 +21,7 @@ export interface ServiceSummary {
   category: ServiceCategory;
   description: string;
   startingPrice: number;
+  startingPriceContext?: string;
   currency: "USD";
   status: ServiceStatus;
 }

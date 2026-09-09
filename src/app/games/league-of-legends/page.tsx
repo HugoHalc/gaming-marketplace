@@ -18,6 +18,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
+import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 
 export const metadata: Metadata = {
@@ -50,14 +51,6 @@ const lolRanks = [
   { src: "/ranks/league-of-legends/emerald.png", alt: "Emerald" },
   { src: "/ranks/league-of-legends/diamond.png", alt: "Diamond" },
 ] as const;
-
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(value);
-}
 
 function categoryLabel(category: ServiceSummary["category"]) {
   if (category === "rank") return "Rank progression";
@@ -215,10 +208,10 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
       <div className="relative mt-auto pt-5">
         <div className="mb-5 h-px bg-gradient-to-r from-[#C89B3C]/20 via-white/[0.08] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-white/30">Starting from</p>
-            <p className="font-gaming-value mt-1 text-lg text-white">{formatPrice(service.startingPrice)}</p>
-          </div>
+          <StartingPriceDisplay
+            value={service.startingPrice}
+            context={service.startingPriceContext}
+          />
           <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color,transform] group-hover:border-[#C89B3C]/30 group-hover:bg-[#7A5B22]/15 group-hover:text-[#E7C867]">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>

@@ -29,6 +29,7 @@ import {
   launchGames,
 } from "@/features/catalog/data/launch-games";
 import { gameThemes } from "@/features/catalog/data/game-theme";
+import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
 import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catalog";
 
 interface GamePageProps {
@@ -67,14 +68,6 @@ const valorantStorefrontHighlights = [
     description: "Follow your order status and service progress directly from your dashboard.",
   },
 ] as const;
-
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(value);
-}
 
 function categoryLabel(category: ServiceSummary["category"]) {
   if (category === "rank") return "Rank progression";
@@ -358,10 +351,10 @@ function ServiceShowcaseCard({
       <div className={`relative mt-auto ${isRocketLeague || isValorant ? "pt-5" : "pt-8"}`}>
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-white/30">Starting from</p>
-            <p className="font-gaming-value mt-1 text-lg text-white">{formatPrice(service.startingPrice)}</p>
-          </div>
+          <StartingPriceDisplay
+            value={service.startingPrice}
+            context={service.startingPriceContext}
+          />
           <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
