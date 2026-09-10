@@ -105,7 +105,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
     title: isRocketLeagueRank
       ? "Rocket League Rank Boosting Service"
       : isRocketLeagueWins
-        ? "Rocket League Competitive Wins"
+        ? "Rocket League Win Boosting"
         : isRocketLeaguePlacements
           ? "Rocket League Placements Boost"
           : isRocketLeagueTournament
@@ -122,7 +122,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
     description: isRocketLeagueRank
       ? "Configure Rocket League rank boosting by current rank, target rank, playlist, platform and boost method with transparent server-calculated pricing."
       : isRocketLeagueWins
-        ? "Configure Rocket League Competitive Wins by current rank, number of wins, playlist, platform and boost method with server-calculated volume discounts."
+        ? "Configure Rocket League win boosting by current rank, number of wins, playlist, platform and boost method with server-calculated volume discounts."
         : isRocketLeaguePlacements
           ? "Configure Rocket League Placements Boost by previous season rank, placement matches, playlist, platform and boost method with server-calculated package discounts."
           : isRocketLeagueTournament
