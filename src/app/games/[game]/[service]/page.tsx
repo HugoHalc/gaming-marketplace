@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, LockKeyhole, ShieldCheck, Sparkles } from "luc
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { RocketLeagueFaqAccordion } from "@/components/marketing/rocket-league-faq-accordion";
 import { Badge } from "@/components/ui/badge";
 import { findCatalogGameBySlug, listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { gameThemes } from "@/features/catalog/data/game-theme";
@@ -781,14 +782,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
       </section>
 
       {isRocketLeagueRank ? (
-        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+        <section className="border-b border-white/[0.06] bg-[#050807] pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <Container>
-            <div className="mx-auto max-w-5xl">
-              <div className="max-w-3xl">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+            <div className="mx-auto max-w-6xl">
+              <div className="max-w-[52rem]">
+                <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                  Rocket League · {service.name}
+                </p>
+                <h2 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Rocket League Rank Boosting Works
                 </h2>
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
                     Rocket League rank boosting lets you configure competitive rank progression around your current rank and the rank you want to reach.
                   </p>
@@ -801,12 +805,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Rank and Playlist
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>
                       Your Rocket League boost is configured around the progression you actually need rather than a fixed package.
                     </p>
@@ -820,14 +824,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   Account Boost vs Play With Booster
                 </h2>
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>With Account Boost, the booster completes the selected service directly on your account.</p>
                       <p>
                         Account access is requested only after checkout. Your login details are not required while you are configuring your order or before payment.
@@ -835,9 +839,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Play With Booster allows you to play alongside the booster instead of providing account access.</p>
                       <p>
                         Select this method directly in the configurator to see how it affects your order and final price.
@@ -847,64 +851,46 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Your Rocket League Boost Order Is Protected
                 </h2>
                 <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Validated Pricing</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Server-Validated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       The final payable amount is calculated and validated on the server. Your browser does not control the final order price.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">No Hidden Upgrade Selections</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">No Hidden Upgrade Selections</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Optional upgrades are displayed separately and are not automatically selected for you.</p>
                       <p>You can review your configuration before continuing to checkout.</p>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       After your order is created, you can follow its status and order updates from your BoostingPedia dashboard.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
-                    Rocket League Rank Boost FAQ
-                  </h2>
-                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-                    {rocketLeagueRankFaqs.map((item) => (
-                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
-                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                            {item.question}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
-                          {item.paragraphs.map((paragraph) => (
-                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </details>
-                    ))}
+              <div className="mt-16 sm:mt-20 lg:mt-24">
+                <div className="mx-auto max-w-[60rem]">
+                  <div className="mb-6 sm:mb-7">
+                    <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                      Frequently Asked Questions
+                    </p>
+                    <h2 className="mt-3 text-balance text-[1.65rem] font-bold leading-[1.15] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2rem]">
+                      Rocket League Rank Boost FAQ
+                    </h2>
                   </div>
+                  <RocketLeagueFaqAccordion items={rocketLeagueRankFaqs} />
                 </div>
               </div>
             </div>
@@ -913,14 +899,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
 
       {isRocketLeagueWins ? (
-        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+        <section className="border-b border-white/[0.06] bg-[#050807] pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <Container>
-            <div className="mx-auto max-w-5xl">
-              <div className="max-w-3xl">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+            <div className="mx-auto max-w-6xl">
+              <div className="max-w-[52rem]">
+                <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                  Rocket League · {service.name}
+                </p>
+                <h2 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Rocket League Win Boosting Works
                 </h2>
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
                     Rocket League win boosting lets you choose a specific number of competitive wins without setting a target rank.
                   </p>
@@ -933,12 +922,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Competitive Win Package
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Build your order around the number of competitive wins you need.</p>
                     <p>
                       The configurator lets you adjust the number of wins directly and shows the volume discount available for your selected package. Larger packages can unlock additional discounts automatically as you increase the number of wins.
@@ -950,12 +939,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Playlist, Platform and Boost Method
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Configure the service for the Rocket League playlist and platform you use.</p>
                     <p>
                       Available competitive and extra-mode playlists are shown directly in the configurator, along with any applicable price modifiers.
@@ -964,9 +953,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>With Account Boost, the booster completes the selected competitive wins directly on your account.</p>
                       <p>
                         Account access is requested only after checkout and is not required while you are configuring the order.
@@ -974,9 +963,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Play With Booster lets you play alongside the booster while completing the selected wins.</p>
                       <p>
                         Choose this option directly in the configurator to see how it affects your final order price.
@@ -986,63 +975,45 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   Transparent Pricing and Volume Discounts
                 </h2>
                 <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Your final payable amount is calculated and validated on the server based on your selected configuration.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Volume Discounts</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Volume Discounts</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Eligible win packages receive the volume discount displayed in the configurator. As you change the number of wins, the available discount is updated with the package.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       After your order is created, you can follow its status and relevant updates from your BoostingPedia dashboard.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
-                    Rocket League Win Boost FAQ
-                  </h2>
-                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-                    {rocketLeagueWinsFaqs.map((item) => (
-                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
-                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                            {item.question}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
-                          {item.paragraphs.map((paragraph) => (
-                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </details>
-                    ))}
+              <div className="mt-16 sm:mt-20 lg:mt-24">
+                <div className="mx-auto max-w-[60rem]">
+                  <div className="mb-6 sm:mb-7">
+                    <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                      Frequently Asked Questions
+                    </p>
+                    <h2 className="mt-3 text-balance text-[1.65rem] font-bold leading-[1.15] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2rem]">
+                      Rocket League Win Boost FAQ
+                    </h2>
                   </div>
+                  <RocketLeagueFaqAccordion items={rocketLeagueWinsFaqs} />
                 </div>
               </div>
             </div>
@@ -1050,14 +1021,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </section>
       ) : null}
       {isRocketLeagueTournament ? (
-        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+        <section className="border-b border-white/[0.06] bg-[#050807] pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <Container>
-            <div className="mx-auto max-w-5xl">
-              <div className="max-w-3xl">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+            <div className="mx-auto max-w-6xl">
+              <div className="max-w-[52rem]">
+                <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                  Rocket League · {service.name}
+                </p>
+                <h2 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Rocket League Tournament Boosting Works
                 </h2>
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
                     Rocket League tournament boosting is configured around your current rank family, tournament playlist, platform and preferred boost method.
                   </p>
@@ -1070,12 +1044,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Tournament Rank Family
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Tournament Boost pricing is based on the Rocket League rank family you select.</p>
                     <p>
                       Choose your current competitive rank family directly in the configurator, from Bronze through Supersonic Legend.
@@ -1087,12 +1061,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Tournament Playlist and Platform
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Select the tournament playlist that matches how you want the service configured.</p>
                     <p>
                       Supported competitive and extra-mode playlists are shown directly in the configurator. Any applicable playlist price modifier is displayed before checkout.
@@ -1102,9 +1076,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>With Account Boost, the booster completes the selected tournament service directly on your account.</p>
                       <p>
                         Account access is not required while configuring your order and is requested only after checkout.
@@ -1112,9 +1086,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Play With Booster lets you participate alongside the booster instead of providing account access.</p>
                       <p>
                         Select this method directly in the configurator to see how it affects your final order price.
@@ -1124,63 +1098,45 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   Transparent Tournament Pricing and Order Tracking
                 </h2>
                 <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Your final payable amount is calculated and validated on the server based on the tournament configuration you select.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Configuration Shown Upfront</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Configuration Shown Upfront</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Your selected rank family, playlist, platform, boost method and optional upgrades are shown before you continue to checkout.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
-                    Rocket League Tournament Boost FAQ
-                  </h2>
-                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-                    {rocketLeagueTournamentFaqs.map((item) => (
-                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
-                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                            {item.question}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
-                          {item.paragraphs.map((paragraph) => (
-                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </details>
-                    ))}
+              <div className="mt-16 sm:mt-20 lg:mt-24">
+                <div className="mx-auto max-w-[60rem]">
+                  <div className="mb-6 sm:mb-7">
+                    <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                      Frequently Asked Questions
+                    </p>
+                    <h2 className="mt-3 text-balance text-[1.65rem] font-bold leading-[1.15] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2rem]">
+                      Rocket League Tournament Boost FAQ
+                    </h2>
                   </div>
+                  <RocketLeagueFaqAccordion items={rocketLeagueTournamentFaqs} />
                 </div>
               </div>
             </div>
@@ -1188,14 +1144,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </section>
       ) : null}
       {isRocketLeagueRewards ? (
-        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+        <section className="border-b border-white/[0.06] bg-[#050807] pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <Container>
-            <div className="mx-auto max-w-5xl">
-              <div className="max-w-3xl">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+            <div className="mx-auto max-w-6xl">
+              <div className="max-w-[52rem]">
+                <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                  Rocket League · {service.name}
+                </p>
+                <h2 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Rocket League Season Rewards Boosting Works
                 </h2>
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
                     Rocket League season rewards boosting lets you configure progress toward your seasonal reward wins based on your current competitive rank.
                   </p>
@@ -1208,12 +1167,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Current Rank and Reward Wins
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Your current Rocket League rank is part of the season rewards configuration.</p>
                     <p>
                       Select your rank and tier directly in the configurator, then choose the number of reward wins you want to add to your order.
@@ -1225,12 +1184,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Season Rewards Package Discounts
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Larger reward win packages can unlock automatic discounts.</p>
                     <p>
                       The applicable package discount is displayed directly in the configurator and updates as you change the number of reward wins.
@@ -1242,12 +1201,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Playlist, Platform and Boost Method
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Select the Rocket League playlist and platform you want to use for your season rewards order.</p>
                     <p>
                       Supported competitive and extra-mode playlists are shown directly in the configurator, together with any applicable price modifiers.
@@ -1256,9 +1215,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>With Account Boost, the booster completes the selected reward wins directly on your account.</p>
                       <p>
                         Account information is not required while configuring your order and is requested only after checkout.
@@ -1266,9 +1225,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Play With Booster lets you participate alongside the booster while completing the selected reward wins.</p>
                       <p>
                         Choose this method directly in the configurator to see how it affects your final order price.
@@ -1278,21 +1237,21 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   Transparent Pricing and Order Tracking
                 </h2>
                 <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Your final payable amount is calculated and validated on the server based on the configuration you select.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Optional Upgrades</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Optional Upgrades</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Optional upgrades are displayed separately and are not automatically selected.</p>
                       <p>
                         You can review any selected upgrades together with your rank, reward wins, playlist, platform and boost method before checkout.
@@ -1300,44 +1259,26 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
-                    Rocket League Season Rewards Boost FAQ
-                  </h2>
-                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-                    {rocketLeagueRewardsFaqs.map((item) => (
-                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
-                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                            {item.question}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
-                          {item.paragraphs.map((paragraph) => (
-                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </details>
-                    ))}
+              <div className="mt-16 sm:mt-20 lg:mt-24">
+                <div className="mx-auto max-w-[60rem]">
+                  <div className="mb-6 sm:mb-7">
+                    <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                      Frequently Asked Questions
+                    </p>
+                    <h2 className="mt-3 text-balance text-[1.65rem] font-bold leading-[1.15] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2rem]">
+                      Rocket League Season Rewards Boost FAQ
+                    </h2>
                   </div>
+                  <RocketLeagueFaqAccordion items={rocketLeagueRewardsFaqs} />
                 </div>
               </div>
             </div>
@@ -1345,14 +1286,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </section>
       ) : null}
       {isRocketLeaguePlacements ? (
-        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+        <section className="border-b border-white/[0.06] bg-[#050807] pb-16 pt-14 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <Container>
-            <div className="mx-auto max-w-5xl">
-              <div className="max-w-3xl">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+            <div className="mx-auto max-w-6xl">
+              <div className="max-w-[52rem]">
+                <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                  Rocket League · {service.name}
+                </p>
+                <h2 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   How Rocket League Placement Boosting Works
                 </h2>
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
                     Rocket League placement boosting lets you configure the placement matches you want completed based on your previous competitive rank.
                   </p>
@@ -1365,12 +1309,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Previous Rank and Placement Matches
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Your previous Rocket League rank provides context for your placement boost configuration.</p>
                     <p>If you do not have a previous rank, you can select Unrated directly in the configurator.</p>
                     <p>
@@ -1380,12 +1324,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Placement Match Package Discounts
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Eligible placement match packages can unlock automatic discounts.</p>
                     <p>
                       The applicable package discount is displayed directly in the configurator and updates as you change the number of placement matches.
@@ -1395,12 +1339,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+              <div className="mt-16 sm:mt-20">
                 <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                     Choose Your Playlist, Platform and Boost Method
                   </h2>
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                     <p>Select the Rocket League playlist and platform you want to use for your placement boost.</p>
                     <p>
                       Supported competitive and extra-mode playlists are shown directly in the configurator, together with any applicable price modifiers.
@@ -1409,9 +1353,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>With Account Boost, the booster completes the selected placement matches directly on your account.</p>
                       <p>
                         Account information is not required while configuring your order and is requested only after checkout.
@@ -1419,9 +1363,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Play With Booster lets you participate alongside the booster while completing the selected placement matches.</p>
                       <p>
                         Choose this method directly in the configurator to see how it affects your final order price.
@@ -1431,21 +1375,21 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+              <div className="mt-16 sm:mt-20">
+                <h2 className="text-balance text-[1.75rem] font-bold leading-[1.12] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2.125rem]">
                   Transparent Placement Boost Pricing and Order Tracking
                 </h2>
                 <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       Your final payable amount is calculated and validated on the server based on the configuration you select.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Optional Upgrades</h3>
-                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Optional Upgrades</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       <p>Optional upgrades are displayed separately and are not automatically selected.</p>
                       <p>
                         You can review any selected upgrades together with your previous rank, placement matches, playlist, platform and boost method before checkout.
@@ -1453,44 +1397,26 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
-                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
-                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                  <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
                       After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
-                <div className="max-w-3xl">
-                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
-                    Rocket League Placement Boost FAQ
-                  </h2>
-                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-                    {rocketLeaguePlacementsFaqs.map((item) => (
-                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
-                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
-                            {item.question}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
-                          {item.paragraphs.map((paragraph) => (
-                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </details>
-                    ))}
+              <div className="mt-16 sm:mt-20 lg:mt-24">
+                <div className="mx-auto max-w-[60rem]">
+                  <div className="mb-6 sm:mb-7">
+                    <p className="font-gaming-label text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/70 sm:text-xs">
+                      Frequently Asked Questions
+                    </p>
+                    <h2 className="mt-3 text-balance text-[1.65rem] font-bold leading-[1.15] tracking-[-0.035em] text-[#F4F7F5] sm:text-[2rem]">
+                      Rocket League Placement Boost FAQ
+                    </h2>
                   </div>
+                  <RocketLeagueFaqAccordion items={rocketLeaguePlacementsFaqs} />
                 </div>
               </div>
             </div>
