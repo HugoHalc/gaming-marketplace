@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: { default: siteConfig.name, template: `%s | ${siteConfig.name}` },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
-  robots: { index: false, follow: false },
+  robots: { index: siteConfig.allowIndexing, follow: siteConfig.allowIndexing },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

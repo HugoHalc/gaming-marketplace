@@ -4,6 +4,7 @@ const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 export const siteConfig = {
   name: "BoostingPedia",
   url: (configuredSiteUrl || fallbackSiteUrl).replace(/\/+$/, ""),
+  allowIndexing: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
   description:
     "Premium gaming services with transparent pricing, secure checkout, and clear order tracking.",
   navigation: [
