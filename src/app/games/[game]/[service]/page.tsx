@@ -78,6 +78,53 @@ const rocketLeagueRankFaqs = [
   },
 ] as const;
 
+const rocketLeagueWinsFaqs = [
+  {
+    question: "What is Rocket League win boosting?",
+    paragraphs: [
+      "Rocket League win boosting is a service for players who want a selected number of competitive wins rather than progression toward a specific target rank. You choose the number of wins and configure the service around your current rank, playlist, platform and boost method.",
+    ],
+  },
+  {
+    question: "How many Rocket League wins can I select?",
+    paragraphs: [
+      "The available win range is displayed directly in the configurator. You can adjust the number of wins before checkout and review how your package changes.",
+    ],
+  },
+  {
+    question: "Do larger win packages receive a discount?",
+    paragraphs: [
+      "Eligible larger packages can receive volume discounts. The applicable discount is displayed automatically in the configurator based on the number of wins you select.",
+    ],
+  },
+  {
+    question: "Which Rocket League playlists are available?",
+    paragraphs: [
+      "Available playlists are shown directly in the configurator and include supported competitive and extra modes. Any applicable price modifier is displayed before checkout.",
+    ],
+  },
+  {
+    question: "Can I choose between Account Boost and Play With Booster?",
+    paragraphs: [
+      "Yes. When both methods are available, you can select either Account Boost or Play With Booster directly in the configurator.",
+      "Account Boost allows the booster to complete the service on your account, while Play With Booster lets you participate alongside the booster.",
+    ],
+  },
+  {
+    question: "When are my account details requested?",
+    paragraphs: [
+      "Account details are not required while configuring your order.",
+      "For Account Boost orders, the required account information is requested after checkout.",
+    ],
+  },
+  {
+    question: "Can I track my competitive win order?",
+    paragraphs: [
+      "Yes. Once your order has been created, you can follow its status and relevant updates through your BoostingPedia dashboard.",
+    ],
+  },
+] as const;
+
 export async function generateStaticParams() {
   const games = await listCatalogGames();
   return games.flatMap((game) =>
@@ -533,7 +580,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>
                   <item.icon className="size-4" />
                 </span>
-                {isRocketLeagueRank ? (
+                {isRocketLeagueRank || isRocketLeagueWins ? (
                   <p className="mt-5 text-sm font-semibold text-white">{item.title}</p>
                 ) : (
                   <h2 className="mt-5 text-sm font-semibold text-white">{item.title}</h2>
@@ -677,6 +724,143 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </section>
       ) : null}
 
+      {isRocketLeagueWins ? (
+        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="mx-auto max-w-5xl">
+              <div className="max-w-3xl">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  How Rocket League Win Boosting Works
+                </h2>
+                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <p>
+                    Rocket League win boosting lets you choose a specific number of competitive wins without setting a target rank.
+                  </p>
+                  <p>
+                    Select your current rank, choose how many wins you want, and configure the playlist, platform and boost method that fit your order.
+                  </p>
+                  <p>
+                    Your configuration is used to calculate the final price before checkout, including any applicable playlist modifiers, boost method adjustments and volume discounts.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Competitive Win Package
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Build your order around the number of competitive wins you need.</p>
+                    <p>
+                      The configurator lets you adjust the number of wins directly and shows the volume discount available for your selected package. Larger packages can unlock additional discounts automatically as you increase the number of wins.
+                    </p>
+                    <p>
+                      Your current rank is also included in the configuration so the service can be priced according to the selected competitive level.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Playlist, Platform and Boost Method
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Configure the service for the Rocket League playlist and platform you use.</p>
+                    <p>
+                      Available competitive and extra-mode playlists are shown directly in the configurator, along with any applicable price modifiers.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>With Account Boost, the booster completes the selected competitive wins directly on your account.</p>
+                      <p>
+                        Account access is requested only after checkout and is not required while you are configuring the order.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Play With Booster lets you play alongside the booster while completing the selected wins.</p>
+                      <p>
+                        Choose this option directly in the configurator to see how it affects your final order price.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  Transparent Pricing and Volume Discounts
+                </h2>
+                <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      Your final payable amount is calculated and validated on the server based on your selected configuration.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Volume Discounts</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      Eligible win packages receive the volume discount displayed in the configurator. As you change the number of wins, the available discount is updated with the package.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      After your order is created, you can follow its status and relevant updates from your BoostingPedia dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Rocket League Win Boost FAQ
+                  </h2>
+                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                    {rocketLeagueWinsFaqs.map((item) => (
+                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
+                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
+                            {item.question}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
+                          {item.paragraphs.map((paragraph) => (
+                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+      ) : null}
       <SiteFooter />
     </main>
   );
