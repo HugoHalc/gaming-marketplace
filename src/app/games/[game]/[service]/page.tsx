@@ -411,7 +411,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ArrowLeft className="mr-2 size-3.5" />
               Back to {game.name}
             </Link>
-            {!isRocketLeagueRank && !isRocketLeagueWins && !isRocketLeagueTournament && !isRocketLeagueRewards ? (
+            {!isRocketLeagueRank && !isRocketLeagueWins && !isRocketLeaguePlacements && !isRocketLeagueTournament && !isRocketLeagueRewards ? (
               <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
                 {service.name}
               </h1>
@@ -431,10 +431,10 @@ export default async function ServicePage({ params }: ServicePageProps) {
           </div>
 
           <div
-            className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? "mt-2 grid sm:mt-8" : "mt-8 hidden sm:grid"} gap-8 lg:grid-cols-[1fr_auto] lg:items-end`}
+            className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "mt-2 grid sm:mt-8" : "mt-8 hidden sm:grid"} gap-8 lg:grid-cols-[1fr_auto] lg:items-end`}
           >
             <div className="max-w-3xl">
-              <Badge className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : ""} ${theme.border} ${theme.surface} ${theme.text}`}>
+              <Badge className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : ""} ${theme.border} ${theme.surface} ${theme.text}`}>
                 <Sparkles className="mr-2 size-3.5" />
                 {heroBadge}
               </Badge>
@@ -452,6 +452,15 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 <>
                   <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
                     Rocket League Win Boosting
+                  </h1>
+                  <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
+                    {heroTitle}
+                  </p>
+                </>
+              ) : isRocketLeaguePlacements ? (
+                <>
+                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
+                    Rocket League Placement Boosting
                   </h1>
                   <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
                     {heroTitle}
@@ -481,12 +490,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </h1>
               )}
 
-              <p className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:block" : ""} mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg`}>
+              <p className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:block" : ""} mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg`}>
                 {heroDescription}
               </p>
 
               {heroPills ? (
-                <div className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:flex" : "flex"} mt-6 flex-wrap gap-2`}>
+                <div className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:flex" : "flex"} mt-6 flex-wrap gap-2`}>
                   {heroPills.map((item) => (
                     <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                       {item}
@@ -498,7 +507,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
             <Link
               href={`/games/${game.slug}`}
-              className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : "inline-flex"} items-center text-sm font-semibold text-white/65 transition-colors hover:text-white`}
+              className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : "inline-flex"} items-center text-sm font-semibold text-white/65 transition-colors hover:text-white`}
             >
               <ArrowLeft className="mr-2 size-4" />
               Back to {game.name}
