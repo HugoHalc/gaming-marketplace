@@ -10,7 +10,7 @@ const sections = [
   {
     title: "1. About BoostingPedia",
     paragraphs: [
-      "These Terms & Conditions govern access to and use of BoostingPedia, a gaming-services marketplace operated from Jalisco, Mexico. Until a separate legal entity is formally established, references to “BoostingPedia,” “we,” “us,” or “our” refer to the BoostingPedia business operating the platform.",
+      "These Terms & Conditions govern access to and use of BoostingPedia, a gaming-services marketplace operated from California, United States. Until a separate legal entity is formally established, references to “BoostingPedia,” “we,” “us,” or “our” refer to the BoostingPedia business operating the platform.",
       "BoostingPedia is an independent marketplace and is not affiliated with, endorsed by, or sponsored by the publishers or owners of the games referenced on the platform.",
     ],
   },
@@ -97,7 +97,7 @@ const sections = [
   {
     title: "13. Governing law and disputes",
     paragraphs: [
-      "These Terms are governed by the laws of Mexico, with the business domiciled in Jalisco, Mexico, except where mandatory laws in a customer’s jurisdiction require otherwise. Before initiating formal proceedings, we encourage customers to contact us so we can attempt to resolve the issue directly.",
+      "These Terms are governed by the laws of Mexico, with the business domiciled in California, United States, except where mandatory laws in a customer’s jurisdiction require otherwise. Before initiating formal proceedings, we encourage customers to contact us so we can attempt to resolve the issue directly.",
     ],
   },
   {

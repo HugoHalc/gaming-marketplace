@@ -27,7 +27,7 @@ export function SiteFooter() {
               Premium gaming services with transparent configuration, secure checkout, and clear order progress.
             </p>
             <p className="mt-4 text-xs text-[#667069]">
-              Jalisco, Mexico · boostingpedia@gmail.com
+              California, United States · boostingpedia@gmail.com
             </p>
           </div>
 

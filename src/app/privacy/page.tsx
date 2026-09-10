@@ -10,7 +10,7 @@ const sections = [
   {
     title: "1. Who controls your information",
     paragraphs: [
-      "BoostingPedia, operating from Jalisco, Mexico, is responsible for the personal information described in this Privacy Policy. Until a separate legal entity is formally established, the service operates under the BoostingPedia name.",
+      "BoostingPedia, operating from California, United States, is responsible for the personal information described in this Privacy Policy. Until a separate legal entity is formally established, the service operates under the BoostingPedia name.",
       "Privacy questions and rights requests may be sent to boostingpedia@gmail.com.",
     ],
   },
