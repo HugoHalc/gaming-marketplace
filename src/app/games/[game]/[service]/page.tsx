@@ -230,6 +230,62 @@ const rocketLeagueRewardsFaqs = [
   },
 ] as const;
 
+const rocketLeaguePlacementsFaqs = [
+  {
+    question: "What is Rocket League placement boosting?",
+    paragraphs: [
+      "Rocket League placement boosting is a service for completing a selected number of placement matches. You configure the order around your previous rank, number of placement matches, playlist, platform and preferred boost method.",
+    ],
+  },
+  {
+    question: "How many placement matches can I select?",
+    paragraphs: [
+      "The available placement match range is shown directly in the configurator.",
+      "You can adjust the number of matches before checkout and review how your package and applicable discount change.",
+    ],
+  },
+  {
+    question: "What should I select if I do not have a previous rank?",
+    paragraphs: [
+      "Select Unrated if you do not have a previous competitive rank to use for the placement boost configuration.",
+    ],
+  },
+  {
+    question: "How are placement package discounts applied?",
+    paragraphs: [
+      "Eligible placement match packages receive the package discount displayed in the configurator.",
+      "The available discount updates automatically when you change the number of placement matches.",
+    ],
+  },
+  {
+    question: "Which Rocket League playlists can I choose?",
+    paragraphs: [
+      "Available playlists are shown directly in the configurator and include supported competitive and extra modes.",
+      "Any applicable playlist price modifier is displayed before checkout.",
+    ],
+  },
+  {
+    question: "Can I choose between Account Boost and Play With Booster?",
+    paragraphs: [
+      "Yes. When both methods are available, you can select either Account Boost or Play With Booster directly in the configurator.",
+      "Account Boost allows the booster to complete the placement matches on your account, while Play With Booster lets you participate alongside the booster.",
+    ],
+  },
+  {
+    question: "When do I provide my account information?",
+    paragraphs: [
+      "Account details are not required while you configure the service.",
+      "For Account Boost orders, the required account information is requested after checkout.",
+    ],
+  },
+  {
+    question: "Can I track my placement boost order?",
+    paragraphs: [
+      "Yes. After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.",
+    ],
+  },
+] as const;
+
 export async function generateStaticParams() {
   const games = await listCatalogGames();
   return games.flatMap((game) =>
@@ -712,7 +768,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>
                   <item.icon className="size-4" />
                 </span>
-                {isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament || isRocketLeagueRewards ? (
+                {isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? (
                   <p className="mt-5 text-sm font-semibold text-white">{item.title}</p>
                 ) : (
                   <h2 className="mt-5 text-sm font-semibold text-white">{item.title}</h2>
@@ -1260,6 +1316,159 @@ export default async function ServicePage({ params }: ServicePageProps) {
                   </h2>
                   <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
                     {rocketLeagueRewardsFaqs.map((item) => (
+                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
+                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
+                            {item.question}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
+                          {item.paragraphs.map((paragraph) => (
+                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+      ) : null}
+      {isRocketLeaguePlacements ? (
+        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="mx-auto max-w-5xl">
+              <div className="max-w-3xl">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  How Rocket League Placement Boosting Works
+                </h2>
+                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <p>
+                    Rocket League placement boosting lets you configure the placement matches you want completed based on your previous competitive rank.
+                  </p>
+                  <p>
+                    Select your previous season rank, choose the number of placement matches you need, and configure the playlist, platform and preferred boost method.
+                  </p>
+                  <p>
+                    Your selected configuration is used to calculate the final price before checkout, including any applicable package discounts, playlist modifiers and optional upgrades.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Previous Rank and Placement Matches
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Your previous Rocket League rank provides context for your placement boost configuration.</p>
+                    <p>If you do not have a previous rank, you can select Unrated directly in the configurator.</p>
+                    <p>
+                      Choose the number of placement matches you want from the available range before continuing with your order.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Placement Match Package Discounts
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Eligible placement match packages can unlock automatic discounts.</p>
+                    <p>
+                      The applicable package discount is displayed directly in the configurator and updates as you change the number of placement matches.
+                    </p>
+                    <p>This lets you review the selected package and its discount before checkout.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Playlist, Platform and Boost Method
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Select the Rocket League playlist and platform you want to use for your placement boost.</p>
+                    <p>
+                      Supported competitive and extra-mode playlists are shown directly in the configurator, together with any applicable price modifiers.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>With Account Boost, the booster completes the selected placement matches directly on your account.</p>
+                      <p>
+                        Account information is not required while configuring your order and is requested only after checkout.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Play With Booster lets you participate alongside the booster while completing the selected placement matches.</p>
+                      <p>
+                        Choose this method directly in the configurator to see how it affects your final order price.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  Transparent Placement Boost Pricing and Order Tracking
+                </h2>
+                <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      Your final payable amount is calculated and validated on the server based on the configuration you select.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Optional Upgrades</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Optional upgrades are displayed separately and are not automatically selected.</p>
+                      <p>
+                        You can review any selected upgrades together with your previous rank, placement matches, playlist, platform and boost method before checkout.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Rocket League Placement Boost FAQ
+                  </h2>
+                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                    {rocketLeaguePlacementsFaqs.map((item) => (
                       <details key={item.question} className="group py-[1.15rem] sm:py-5">
                         <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
                           <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
