@@ -125,6 +125,55 @@ const rocketLeagueWinsFaqs = [
   },
 ] as const;
 
+const rocketLeagueTournamentFaqs = [
+  {
+    question: "What is Rocket League tournament boosting?",
+    paragraphs: [
+      "Rocket League tournament boosting is a service configured around your current rank family, tournament playlist, platform and preferred boost method. You select the options you need before continuing to checkout.",
+    ],
+  },
+  {
+    question: "How is Rocket League Tournament Boost pricing calculated?",
+    paragraphs: [
+      "Pricing is based on the configuration you select, including your current rank family, playlist, boost method and any optional upgrades.",
+      "The final payable amount is calculated and validated on the server.",
+    ],
+  },
+  {
+    question: "Do I need to choose Tier I, Tier II or Tier III?",
+    paragraphs: [
+      "No separate Tier I, Tier II or Tier III selection is required in the current configurator.",
+      "Choose your current rank family and the available tournament configuration options directly on the page.",
+    ],
+  },
+  {
+    question: "Which tournament playlists can I choose?",
+    paragraphs: [
+      "The available playlists are shown directly in the configurator. Supported competitive and extra modes can have different price modifiers, which are displayed before checkout.",
+    ],
+  },
+  {
+    question: "Can I choose between Account Boost and Play With Booster?",
+    paragraphs: [
+      "Yes. When both methods are available, you can select either Account Boost or Play With Booster.",
+      "Account Boost allows the booster to complete the service directly on your account, while Play With Booster lets you participate alongside the booster.",
+    ],
+  },
+  {
+    question: "When do I provide my account details?",
+    paragraphs: [
+      "Account details are not required while you configure the service.",
+      "For Account Boost orders, the required account information is requested after checkout.",
+    ],
+  },
+  {
+    question: "Can I track my tournament boost order?",
+    paragraphs: [
+      "Yes. After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.",
+    ],
+  },
+] as const;
+
 export async function generateStaticParams() {
   const games = await listCatalogGames();
   return games.flatMap((game) =>
@@ -589,7 +638,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 <span className={`grid size-10 place-items-center rounded-xl border ${theme.icon}`}>
                   <item.icon className="size-4" />
                 </span>
-                {isRocketLeagueRank || isRocketLeagueWins ? (
+                {isRocketLeagueRank || isRocketLeagueWins || isRocketLeagueTournament ? (
                   <p className="mt-5 text-sm font-semibold text-white">{item.title}</p>
                 ) : (
                   <h2 className="mt-5 text-sm font-semibold text-white">{item.title}</h2>
@@ -842,6 +891,144 @@ export default async function ServicePage({ params }: ServicePageProps) {
                   </h2>
                   <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
                     {rocketLeagueWinsFaqs.map((item) => (
+                      <details key={item.question} className="group py-[1.15rem] sm:py-5">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
+                          <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
+                            {item.question}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="grid size-7 shrink-0 place-items-center rounded-full border border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] transition-[background-color,border-color,color,transform] duration-200 ease-out group-open:rotate-45 group-open:border-[#39E56F]/30 group-open:bg-[#39E56F]/[0.045] group-open:text-[#82F5A4] motion-reduce:transition-none"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="mt-4 space-y-3 pr-9 sm:mt-[1.1rem]">
+                          {item.paragraphs.map((paragraph) => (
+                            <p key={paragraph} className="max-w-3xl text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </section>
+      ) : null}
+      {isRocketLeagueTournament ? (
+        <section className="border-b border-white/[0.06] bg-[#050807] py-16 sm:py-20 lg:py-24">
+          <Container>
+            <div className="mx-auto max-w-5xl">
+              <div className="max-w-3xl">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  How Rocket League Tournament Boosting Works
+                </h2>
+                <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <p>
+                    Rocket League tournament boosting is configured around your current rank family, tournament playlist, platform and preferred boost method.
+                  </p>
+                  <p>
+                    Start by selecting your current rank family in the configurator. Then choose the playlist and platform you use and decide whether you prefer Account Boost or Play With Booster.
+                  </p>
+                  <p>
+                    Your selected configuration is used to calculate the final price before checkout.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Tournament Rank Family
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Tournament Boost pricing is based on the Rocket League rank family you select.</p>
+                    <p>
+                      Choose your current competitive rank family directly in the configurator, from Bronze through Supersonic Legend.
+                    </p>
+                    <p>
+                      The service uses the selected rank family for pricing rather than requiring separate Tier I, Tier II or Tier III selections.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Choose Your Tournament Playlist and Platform
+                  </h2>
+                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                    <p>Select the tournament playlist that matches how you want the service configured.</p>
+                    <p>
+                      Supported competitive and extra-mode playlists are shown directly in the configurator. Any applicable playlist price modifier is displayed before checkout.
+                    </p>
+                    <p>You can also select your platform as part of the same order configuration.</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Account Boost</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>With Account Boost, the booster completes the selected tournament service directly on your account.</p>
+                      <p>
+                        Account access is not required while configuring your order and is requested only after checkout.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Play With Booster</h3>
+                    <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4]">
+                      <p>Play With Booster lets you participate alongside the booster instead of providing account access.</p>
+                      <p>
+                        Select this method directly in the configurator to see how it affects your final order price.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  Transparent Tournament Pricing and Order Tracking
+                </h2>
+                <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Server-Calculated Pricing</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      Your final payable amount is calculated and validated on the server based on the tournament configuration you select.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Configuration Shown Upfront</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      Your selected rank family, playlist, platform, boost method and optional upgrades are shown before you continue to checkout.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.018] p-5 sm:p-6">
+                    <h3 className="text-base font-semibold text-[#F4F7F5]">Order Tracking</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#A0AAA4]">
+                      After your order is created, you can follow its status and relevant updates through your BoostingPedia dashboard.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-14 border-t border-white/[0.07] pt-14 sm:mt-16 sm:pt-16">
+                <div className="max-w-3xl">
+                  <h2 className="text-balance text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                    Rocket League Tournament Boost FAQ
+                  </h2>
+                  <div className="mt-6 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                    {rocketLeagueTournamentFaqs.map((item) => (
                       <details key={item.question} className="group py-[1.15rem] sm:py-5">
                         <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-4 focus-visible:ring-offset-[#050807] [&::-webkit-details-marker]:hidden">
                           <span className="text-[15px] font-semibold leading-6 text-[#F4F7F5] sm:text-base">
