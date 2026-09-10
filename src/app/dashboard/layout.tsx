@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { requireUser } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 import { createAuthServerClient } from "@/lib/supabase/auth";
 import { UserPresenceReporter } from "@/components/presence/user-presence-reporter";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 function getAvatarInitials(identity: Awaited<ReturnType<typeof requireUser>>) {
   const source =

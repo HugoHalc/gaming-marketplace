@@ -5,7 +5,13 @@ import { safeNextPath } from "@/features/auth/safe-next";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { registerAction } from "./actions";
 
-export const metadata = { title: "Create account" };
+export const metadata = {
+  title: "Create account",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function RegisterPage({
   searchParams,

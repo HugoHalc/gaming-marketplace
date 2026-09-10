@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { BoosterShell } from "@/components/booster/booster-shell";
 import { requireBooster } from "@/features/auth/server/auth";
 import { UserPresenceReporter } from "@/components/presence/user-presence-reporter";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function BoosterLayout({ children }: { children: ReactNode }) {
   const identity = await requireBooster();

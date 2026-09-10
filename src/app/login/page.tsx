@@ -7,7 +7,13 @@ import { safeNextPath } from "@/features/auth/safe-next";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { loginAction } from "./actions";
 
-export const metadata = { title: "Sign in" };
+export const metadata = {
+  title: "Sign in",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function LoginPage({
   searchParams,
