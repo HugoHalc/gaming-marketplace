@@ -333,6 +333,57 @@ const CLASH_BM_RATE: Record<string, number> = {
   "4": 2.99,
 };
 
+const MASTERY_TIER_BM_STEP: Record<number, number> = {
+  2: 7.65,
+  3: 11.05,
+  4: 12.75,
+  5: 14.45,
+  6: 16.15,
+  7: 17.00,
+  8: 18.70,
+  9: 20.40,
+};
+
+function calculateMasteryTierBase(currentLevel: number, targetLevel: number) {
+  if (!Number.isInteger(currentLevel) || currentLevel < 1 || currentLevel > 9) {
+    throw new Error("Current mastery level must be between 1 and 9.");
+  }
+
+  if (!Number.isInteger(targetLevel) || targetLevel < 2 || targetLevel > 10) {
+    throw new Error("Target mastery level must be between 2 and 10.");
+  }
+
+  if (targetLevel <= currentLevel) {
+    throw new Error("Target mastery level must be above current mastery level.");
+  }
+
+  if (currentLevel === 1 && targetLevel < 3) {
+    throw new Error("From mastery level 1, the minimum target level is 3.");
+  }
+
+  let bmBase = 0;
+  let level = currentLevel;
+
+  if (level === 1) {
+    bmBase += 11.05;
+    level = 3;
+  } else if (level === 2) {
+    bmBase += MASTERY_TIER_BM_STEP[2];
+    level = 3;
+  }
+
+  while (level < targetLevel) {
+    const price = MASTERY_TIER_BM_STEP[level];
+    if (price === undefined) {
+      throw new Error("Pricing is not available for the selected mastery level step.");
+    }
+    bmBase += price;
+    level += 1;
+  }
+
+  return bmBase;
+}
+
 function phaseTwoModifierPercent(
   selection: ConfiguratorSelection,
   options: { allowDuo: boolean },
@@ -436,7 +487,20 @@ export function calculateLeagueOfLegendsPhaseTwoQuote(
       });
     }
 
-    throw new Error("Tier Boost pricing is not enabled because the verified data is incomplete for that mode.");
+    if (mode === "tier") {
+      const currentLevel = asNumber(selection, "masteryCurrentLevel", 1);
+      const targetLevel = asNumber(selection, "masteryTargetLevel", 3);
+      const base = calculateMasteryTierBase(currentLevel, targetLevel);
+
+      return finalizePhaseTwoQuote({
+        label: `Mastery Level ${currentLevel} → ${targetLevel}`,
+        bmBase: base,
+        selection,
+        allowDuo: false,
+      });
+    }
+
+    throw new Error("Pricing is not available for the selected Mastery Boost option.");
   }
 
   if (serviceSlug === "clash-boost") {

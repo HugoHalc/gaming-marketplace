@@ -177,7 +177,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     server: "europe-west",
     platform: "pc",
     ...(isArena ? { games: 3, role: "top", boostMethod: "account" } : {}),
-    ...(isMastery ? { masteryMode: "marks", marks: 2, masteryPoints: 10000 } : {}),
+    ...(isMastery ? { masteryMode: "marks", marks: 2, masteryPoints: 10000, masteryCurrentLevel: 1, masteryTargetLevel: 3 } : {}),
     ...(isClash ? { clashTier: "1", games: 1, boosters: 1, boostMethod: "account" } : {}),
     playOffline: false,
     championsPreferences: false,
@@ -224,6 +224,21 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
+  function updateMasteryCurrentLevel(value: number) {
+    setSelection((current) => {
+      const minimumTarget = value === 1 ? 3 : value + 1;
+      const currentTarget = Number(current.masteryTargetLevel);
+      return {
+        ...current,
+        masteryCurrentLevel: value,
+        masteryTargetLevel:
+          Number.isInteger(currentTarget) && currentTarget >= minimumTarget && currentTarget <= 10
+            ? currentTarget
+            : minimumTarget,
+      };
+    });
+  }
+
   async function createOrder() {
     if (!quote || quote.total < 5 || isLoading || isCreatingOrder) return;
     setIsCreatingOrder(true);
@@ -268,20 +283,40 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
       : "League of Legends Clash Boost";
 
   const serverLabel = servers.find(([value]) => value === selection.server)?.[1] ?? "Europe West";
+  const rawMasteryCurrentLevel = Number(selection.masteryCurrentLevel);
+  const masteryCurrentLevel =
+    Number.isInteger(rawMasteryCurrentLevel) && rawMasteryCurrentLevel >= 1 && rawMasteryCurrentLevel <= 9
+      ? rawMasteryCurrentLevel
+      : 1;
+  const masteryTargetMinimum = masteryCurrentLevel === 1 ? 3 : masteryCurrentLevel + 1;
+  const rawMasteryTargetLevel = Number(selection.masteryTargetLevel);
+  const masteryTargetLevel =
+    Number.isInteger(rawMasteryTargetLevel) && rawMasteryTargetLevel >= masteryTargetMinimum && rawMasteryTargetLevel <= 10
+      ? rawMasteryTargetLevel
+      : masteryTargetMinimum;
   const summaryRows = useMemo(() => {
     const rows: Array<[string, string]> = [["Server", serverLabel], ["Platform", "PC"]];
     if (isArena) {
       rows.unshift(["Arena games", String(selection.games)], ["Role", roles.find(([value]) => value === selection.role)?.[1] ?? "Top"], ["Boost method", selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"]);
     }
     if (isMastery) {
-      const mode = selection.masteryMode === "points" ? "Mastery Points Farm" : "Marks of Mastery";
-      rows.unshift(["Boost option", mode], [selection.masteryMode === "points" ? "Points" : "Marks", Number(selection.masteryMode === "points" ? selection.masteryPoints : selection.marks).toLocaleString("en-US")]);
+      if (selection.masteryMode === "points") {
+        rows.unshift(["Boost option", "Mastery Points Farm"], ["Points", Number(selection.masteryPoints).toLocaleString("en-US")]);
+      } else if (selection.masteryMode === "tier") {
+        rows.unshift(
+          ["Boost option", "Tier Boost"],
+          ["Current level", `Level ${masteryCurrentLevel}`],
+          ["Target level", `Level ${masteryTargetLevel}`],
+        );
+      } else {
+        rows.unshift(["Boost option", "Marks of Mastery"], ["Marks", Number(selection.marks).toLocaleString("en-US")]);
+      }
     }
     if (isClash) {
       rows.unshift(["Clash tier", `Tier ${selection.clashTier}`], ["Games", String(selection.games)], ["Boosters", String(selection.boosters)], ["Boost method", selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"]);
     }
     return rows;
-  }, [isArena, isMastery, isClash, selection, serverLabel]);
+  }, [isArena, isMastery, isClash, masteryCurrentLevel, masteryTargetLevel, selection, serverLabel]);
 
   const belowMinimum = Boolean(quote && quote.total < 5);
 
@@ -356,7 +391,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-3">
                       <Choice active={selection.masteryMode === "points"} label="Mastery Points Farm" onClick={() => update("masteryMode", "points")} />
                       <Choice active={selection.masteryMode === "marks"} label="Marks of Mastery" onClick={() => update("masteryMode", "marks")} />
-                      <Choice active={false} label="Tier Boost" meta="Pricing pending" disabled onClick={() => {}} />
+                      <Choice active={selection.masteryMode === "tier"} label="Tier Boost" onClick={() => update("masteryMode", "tier")} />
                     </div>
                   </div>
                   {selection.masteryMode === "points" ? (
@@ -366,6 +401,25 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                         <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{Number(selection.masteryPoints).toLocaleString("en-US")}</span>
                       </div>
                       <input type="range" min={10000} max={1000000} step={10000} value={Number(selection.masteryPoints)} onChange={(event) => update("masteryPoints", Number(event.target.value))} className="mt-4 w-full accent-[#C89B3C]" />
+                    </div>
+                  ) : selection.masteryMode === "tier" ? (
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <Quantity
+                        value={masteryCurrentLevel}
+                        min={1}
+                        max={9}
+                        label="Current Level"
+                        helper="Level 1 starts with a minimum target of Level 3."
+                        onChange={updateMasteryCurrentLevel}
+                      />
+                      <Quantity
+                        value={masteryTargetLevel}
+                        min={masteryTargetMinimum}
+                        max={10}
+                        label="Target Level"
+                        helper="Choose a target above your current level, up to Level 10."
+                        onChange={(value) => update("masteryTargetLevel", value)}
+                      />
                     </div>
                   ) : (
                     <Quantity value={Number(selection.marks)} min={1} max={25} label="Marks of Mastery" helper="Verified public range: 1–25 marks." onChange={(value) => update("marks", value)} />
