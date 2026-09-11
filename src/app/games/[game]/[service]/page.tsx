@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { RocketLeagueFaqAccordion } from "@/components/marketing/rocket-league-faq-accordion";
 import { Badge } from "@/components/ui/badge";
+import { siteConfig } from "@/config/site";
 import { findCatalogGameBySlug, listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { gameThemes } from "@/features/catalog/data/game-theme";
 import { RocketLeagueRankConfigurator } from "@/features/configurator/components/rocket-league-rank-configurator";
@@ -34,6 +35,10 @@ const valorantServiceNavigation = [
   { slug: "wins", label: "Competitive Wins", mobileLabel: "Wins" },
   { slug: "placement-matches", label: "Placements Boost", mobileLabel: "Placements" },
 ] as const;
+
+function serializeJsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
 
 const rocketLeagueRankFaqs = [
   {
@@ -368,6 +373,42 @@ export default async function ServicePage({ params }: ServicePageProps) {
     isRocketLeaguePlacements ||
     isRocketLeagueTournament ||
     isRocketLeagueRewards;
+  const rocketLeagueBreadcrumbLabel =
+    game.slug === "rocket-league"
+      ? rocketLeagueServiceNavigation.find((item) => item.slug === service.slug)?.label
+      : undefined;
+  const breadcrumbJsonLd = rocketLeagueBreadcrumbLabel
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${siteConfig.url}/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Games",
+            item: `${siteConfig.url}/games`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Rocket League",
+            item: `${siteConfig.url}/games/rocket-league`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: rocketLeagueBreadcrumbLabel,
+            item: `${siteConfig.url}/games/rocket-league/${service.slug}`,
+          },
+        ],
+      }
+    : null;
 
   const isValorantRank = game.slug === "valorant" && service.slug === "rank-boost";
   const isValorantWins = game.slug === "valorant" && service.slug === "wins";
@@ -454,6 +495,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   return (
     <main className="min-h-screen overflow-hidden">
+      {breadcrumbJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
+        />
+      ) : null}
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">

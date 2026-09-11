@@ -18,6 +18,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 import {
   findCatalogGameBySlug,
   listCatalogGames,
@@ -74,6 +75,10 @@ function categoryLabel(category: ServiceSummary["category"]) {
   if (category === "wins") return "Competitive";
   if (category === "placements") return "Placements";
   return "Coaching";
+}
+
+function serializeJsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
 export async function generateStaticParams() {
@@ -407,9 +412,41 @@ export default async function GamePage({ params }: GamePageProps) {
   const shell = !catalogGame;
   const isRocketLeague = game.slug === "rocket-league";
   const isValorant = game.slug === "valorant";
+  const breadcrumbJsonLd = isRocketLeague
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${siteConfig.url}/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Games",
+            item: `${siteConfig.url}/games`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Rocket League",
+            item: `${siteConfig.url}/games/rocket-league`,
+          },
+        ],
+      }
+    : null;
 
   return (
     <main className="min-h-screen overflow-hidden">
+      {breadcrumbJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
+        />
+      ) : null}
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
