@@ -20,6 +20,7 @@ import { launchGames } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { faqs, trustFeatures } from "@/features/marketing/content";
+import { siteConfig } from "@/config/site";
 
 const gameVisual = {
   emerald: "from-emerald-500/[0.18] via-emerald-500/[0.045] to-transparent border-emerald-300/15",
@@ -47,6 +48,30 @@ const heroTrustpilot = {
   reviewCount: 9,
   profileUrl: "https://www.trustpilot.com/review/boostingpedia.com",
 } as const;
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteConfig.url}/#organization`,
+  name: "BoostingPedia",
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/brand/boostingpedia-mark.png`,
+} as const;
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${siteConfig.url}/#website`,
+  url: siteConfig.url,
+  name: "BoostingPedia",
+  publisher: {
+    "@id": `${siteConfig.url}/#organization`,
+  },
+} as const;
+
+function serializeJsonLd(data: unknown) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
 
 const trustpilotReviews = [
   {
@@ -113,6 +138,14 @@ function BoosterAvatar({ initials }: { initials: string }) {
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }}
+      />
       <style>{`
 
         @keyframes boostingpediaHeroFloat {
