@@ -14,6 +14,7 @@ import type {
 } from "../types/configurator";
 import { LeagueOfLegendsServiceConfigurator } from "./league-of-legends-service-configurator";
 import { LeagueOfLegendsPhaseTwoConfigurator } from "./league-of-legends-phase-two-configurator";
+import { OverwatchServiceConfigurator } from "./overwatch-service-configurator";
 import { ValorantServiceConfigurator } from "./valorant-service-configurator";
 
 function formatPrice(value: number) {
@@ -40,6 +41,10 @@ export function ServiceConfigurator(props: ServiceConfiguratorProps) {
 
   if (props.gameSlug === "valorant") {
     return <ValorantServiceConfigurator {...props} />;
+  }
+
+  if (props.gameSlug === "overwatch-2") {
+    return <OverwatchServiceConfigurator {...props} />;
   }
 
   return <GenericServiceConfigurator {...props} />;

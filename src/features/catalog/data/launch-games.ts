@@ -48,7 +48,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Overwatch",
     accent: "amber",
     category: "Hero shooter",
-    ready: false,
+    ready: true,
   },
   {
     slug: "battlefield-6",

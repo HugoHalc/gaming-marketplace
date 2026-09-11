@@ -44,6 +44,10 @@ import {
   calculateValorantPlacementsQuote,
   isValorantPlacementsQuote,
 } from "./valorant-placements-pricing";
+import {
+  calculateOverwatchWinsQuote,
+  isOverwatchWinsQuote,
+} from "./overwatch-wins-pricing";
 
 const MOCK_RULE_SET_VERSION = "mock-v1.0";
 
@@ -248,6 +252,10 @@ export async function calculateQuotePreview(input: {
 
   if (isValorantPlacementsQuote(input)) {
     return calculateValorantPlacementsQuote(input.selection);
+  }
+
+  if (isOverwatchWinsQuote(input)) {
+    return calculateOverwatchWinsQuote(input.selection);
   }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });

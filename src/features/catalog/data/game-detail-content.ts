@@ -79,16 +79,16 @@ export const gameDetailContent: Record<string, GameDetailContent> = {
   "overwatch-2": {
     slug: "overwatch-2",
     eyebrow: "Overwatch services",
-    heroDescription: "A dedicated storefront prepared for Overwatch competitive services.",
+    heroDescription: "Configure Overwatch competitive wins around your current rank, server, platform, and win target.",
     categoryLabel: "Hero shooter",
-    fulfillmentLabel: "Game-specific configuration",
-    trustPoints: ["Clear service structure", "Server-calculated pricing", "Order progress visibility"],
+    fulfillmentLabel: "Rank-based win pricing",
+    trustPoints: ["Rank-based pricing", "Server-calculated quotes", "Order progress visibility"],
     highlights: [
-      { title: "Game-first discovery", description: "Start with Overwatch before choosing the service that matches your goal." },
-      { title: "Visual service browsing", description: "Large service cards make the catalog easier to compare before configuration." },
-      { title: "Expandable structure", description: "Game-specific content and artwork can be added later without rebuilding the page." },
+      { title: "Rank-based pricing", description: "Competitive Win pricing uses the rate for your selected current rank." },
+      { title: "Platform and server selection", description: "Choose your Overwatch platform and server before creating the order." },
+      { title: "Order tracking", description: "After purchase, follow your order status from the BoostingPedia dashboard." },
     ],
-    serviceIntro: "Choose the Overwatch service that matches your goal.",
+    serviceIntro: "Choose your Overwatch service and configure the competitive win order that matches your goal.",
     accent: "amber",
   },
   "teamfight-tactics": {

@@ -3,6 +3,7 @@ import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 import type { ServiceCategory } from "@/features/catalog/types/catalog";
 import type { ConfiguratorField, ConfiguratorOption, ServiceConfiguratorSchema } from "../types/configurator";
 import { getConfiguratorSchema } from "./mock-configurators";
+import { getOverwatchConfiguratorSchema } from "./overwatch-configurators";
 import { getValorantConfiguratorSchema } from "./valorant-configurators";
 
 type DbOption = { value: string; label: string; price_multiplier: number | null; sort_order: number };
@@ -53,6 +54,9 @@ export async function getServiceConfiguratorSchema(input: {
 }): Promise<ServiceConfiguratorSchema> {
   const valorantSchema = getValorantConfiguratorSchema(input.serviceId);
   if (valorantSchema) return valorantSchema;
+
+  const overwatchSchema = getOverwatchConfiguratorSchema(input.serviceId);
+  if (overwatchSchema) return overwatchSchema;
 
   if (input.serviceId.startsWith("service_lol_")) {
     return getConfiguratorSchema(input.category);
