@@ -3,8 +3,9 @@ import type {
   QuoteBreakdownItem,
   QuotePreview,
 } from "@/features/configurator/types/configurator";
+import { OVERWATCH_EXTRA_PRICING } from "@/features/pricing/overwatch-pricing-rules";
 
-const VERSION = "overwatch-v1.0";
+const VERSION = "overwatch-v1.1";
 const BOOSTINGPEDIA_FACTOR = 0.7;
 
 const RANK_FAMILIES = [
@@ -20,7 +21,6 @@ const RANK_FAMILIES = [
 ] as const;
 
 const DIVISIONS = ["5", "4", "3", "2", "1"] as const;
-
 const RANK_ORDER = RANK_FAMILIES.flatMap((family) =>
   DIVISIONS.map((division) => `${family}-${division}`),
 );
@@ -190,26 +190,21 @@ const DRIVE_BM_NORMAL: Record<string, { starting: number; step: number }> = {
 };
 
 const UNRATED_BM_NORMAL_PER_MATCH = 3.44;
-
-const ROLE_MODIFIER: Record<string, number> = {
-  tank: 0,
-  damage: 0,
-  support: 0.15,
-  "open-queue": 0.3,
-};
-
 const ROLE_LABEL: Record<string, string> = {
   tank: "Tank",
   damage: "Damage",
   support: "Support",
   "open-queue": "Open Queue",
 };
-
 const SERVERS = new Set(["north-america", "europe", "asia", "middle-east"]);
 const PLATFORMS = new Set(["pc", "xbox", "playstation", "nintendo-switch"]);
 
 function roundMoney(value: number) {
   return Math.round((value + 1e-9) * 100) / 100;
+}
+
+function sumBreakdown(items: QuoteBreakdownItem[]) {
+  return roundMoney(items.reduce((total, item) => total + item.amount, 0));
 }
 
 function asInteger(value: unknown) {
@@ -248,7 +243,7 @@ function validateCommon(selection: ConfiguratorSelection) {
   if (!Number.isFinite(boosters) || boosters < 1 || boosters > 5) {
     throw new Error("Boosters must be between 1 and 5.");
   }
-  if (!(role in ROLE_MODIFIER)) throw new Error("Select a valid role or queue.");
+  if (!(role in OVERWATCH_EXTRA_PRICING.role)) throw new Error("Select a valid role or queue.");
   if (!SERVERS.has(server)) throw new Error("Select a valid server.");
   if (!PLATFORMS.has(platform)) throw new Error("Select a valid platform.");
 
@@ -279,70 +274,55 @@ function calculateCommonQuote(input: {
     throw new Error("Rank Insurance is not available for Competitive Wins.");
   }
 
-  let percentageModifier = 0;
-  let fixedBmNormal = 0;
+  const boostingPediaBasePrice = roundMoney(input.baseBmNormal * BOOSTINGPEDIA_FACTOR);
   const breakdown: QuoteBreakdownItem[] = [
-    {
-      label: input.baseLabel,
-      amount: roundMoney(input.baseBmNormal * BOOSTINGPEDIA_FACTOR),
-    },
+    { label: input.baseLabel, amount: boostingPediaBasePrice },
   ];
 
-  const roleModifier = ROLE_MODIFIER[role];
+  const roleModifier = OVERWATCH_EXTRA_PRICING.role[role as keyof typeof OVERWATCH_EXTRA_PRICING.role];
   if (roleModifier > 0) {
-    percentageModifier += roleModifier;
     breakdown.push({
       label: `${ROLE_LABEL[role]} (+${Math.round(roleModifier * 100)}%)`,
-      amount: roundMoney(input.baseBmNormal * roleModifier * BOOSTINGPEDIA_FACTOR),
+      amount: roundMoney(boostingPediaBasePrice * roleModifier),
     });
   }
 
   if (boostMethod === "duo") {
-    const duoModifier = 0.8 + Math.max(0, boosters - 1) * 0.75;
-    percentageModifier += duoModifier;
+    const duoModifier =
+      OVERWATCH_EXTRA_PRICING.playWithBooster +
+      Math.max(0, boosters - 1) * OVERWATCH_EXTRA_PRICING.additionalBooster;
     breakdown.push({
       label: `Play With Booster · ${boosters} booster${boosters === 1 ? "" : "s"}`,
-      amount: roundMoney(input.baseBmNormal * duoModifier * BOOSTINGPEDIA_FACTOR),
+      amount: roundMoney(boostingPediaBasePrice * duoModifier),
     });
   }
 
   if (input.selection.expressDelivery === true) {
-    percentageModifier += 0.2;
     breakdown.push({
       label: "Express Delivery (+20%)",
-      amount: roundMoney(input.baseBmNormal * 0.2 * BOOSTINGPEDIA_FACTOR),
+      amount: roundMoney(boostingPediaBasePrice * OVERWATCH_EXTRA_PRICING.expressDelivery),
     });
   }
 
   if (allowRankInsurance && input.selection.rankInsurance === true) {
-    percentageModifier += 0.6;
     breakdown.push({
       label: "Rank Insurance (+60%)",
-      amount: roundMoney(input.baseBmNormal * 0.6 * BOOSTINGPEDIA_FACTOR),
+      amount: roundMoney(boostingPediaBasePrice * OVERWATCH_EXTRA_PRICING.rankInsurance),
     });
   }
 
   if (input.selection.streaming === true) {
-    fixedBmNormal += 10;
-    breakdown.push({ label: "Streaming", amount: 7 });
+    breakdown.push({ label: "Streaming", amount: OVERWATCH_EXTRA_PRICING.streaming });
   }
 
   if (allowBonusWin && input.selection.extraWin === true) {
-    fixedBmNormal += 3;
-    breakdown.push({ label: "+1 Bonus Win", amount: 2.1 });
+    breakdown.push({ label: "+1 Bonus Win", amount: OVERWATCH_EXTRA_PRICING.bonusWin });
   }
 
-  if (input.selection.playOffline === true) {
-    breakdown.push({ label: "Play Offline", amount: 0 });
-  }
-  if (input.selection.specificHeroes === true) {
-    breakdown.push({ label: "Specific Heroes", amount: 0 });
-  }
+  if (input.selection.playOffline === true) breakdown.push({ label: "Play Offline", amount: 0 });
+  if (input.selection.specificHeroes === true) breakdown.push({ label: "Specific Heroes", amount: 0 });
 
-  const bmNormalTotal =
-    input.baseBmNormal + input.baseBmNormal * percentageModifier + fixedBmNormal;
-  const total = roundMoney(bmNormalTotal * BOOSTINGPEDIA_FACTOR);
-
+  const total = sumBreakdown(breakdown);
   return {
     currency: "USD" as const,
     subtotal: total,
@@ -416,25 +396,13 @@ function calculateDrivesBase(selection: ConfiguratorSelection) {
   const pricing = DRIVE_BM_NORMAL[rank];
 
   if (!pricing) throw new Error("Select a valid Competitive Drive rank.");
-  if (
-    !Number.isFinite(currentDrive) ||
-    currentDrive < 0 ||
-    currentDrive > 3950 ||
-    currentDrive % 50 !== 0
-  ) {
+  if (!Number.isFinite(currentDrive) || currentDrive < 0 || currentDrive > 3950 || currentDrive % 50 !== 0) {
     throw new Error("Current Drive must be between 0 and 3950 in 50-point steps.");
   }
-  if (
-    !Number.isFinite(desiredDrive) ||
-    desiredDrive < 50 ||
-    desiredDrive > 4000 ||
-    desiredDrive % 50 !== 0
-  ) {
+  if (!Number.isFinite(desiredDrive) || desiredDrive < 50 || desiredDrive > 4000 || desiredDrive % 50 !== 0) {
     throw new Error("Desired Drive must be between 50 and 4000 in 50-point steps.");
   }
-  if (desiredDrive <= currentDrive) {
-    throw new Error("Desired Drive must be above Current Drive.");
-  }
+  if (desiredDrive <= currentDrive) throw new Error("Desired Drive must be above Current Drive.");
 
   const steps = (desiredDrive - currentDrive) / 50;
   return {
@@ -448,7 +416,6 @@ function calculateUnratedBase(selection: ConfiguratorSelection) {
   if (!Number.isFinite(matches) || matches < 1 || matches > 10) {
     throw new Error("Unrated Matches must be between 1 and 10.");
   }
-
   return {
     baseBmNormal: UNRATED_BM_NORMAL_PER_MATCH * matches,
     label: `${matches} unrated match${matches === 1 ? "" : "es"}`,
@@ -472,26 +439,21 @@ export function calculateOverwatchQuote(
     const base = calculateRankBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });
   }
-
   if (serviceSlug === "wins") {
     const base = calculateWinsBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });
   }
-
   if (serviceSlug === "competitive-drives") {
     const base = calculateDrivesBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });
   }
-
   if (serviceSlug === "placement-matches") {
     const base = calculatePlacementsBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });
   }
-
   if (serviceSlug === "unrated-matches") {
     const base = calculateUnratedBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });
   }
-
   throw new Error("Unsupported Overwatch service.");
 }

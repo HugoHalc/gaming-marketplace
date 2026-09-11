@@ -23,7 +23,12 @@ export function SupportChatWidget() {
   const isRocketLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "rocket-league";
   const isLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "league-of-legends";
   const isValorantConfigurator = isServiceConfiguratorPage && pathSegments[1] === "valorant";
-  const hasMobilePurchaseBar = isRocketLeagueConfigurator || isLeagueConfigurator || isValorantConfigurator;
+  const isOverwatchConfigurator = isServiceConfiguratorPage && pathSegments[1] === "overwatch-2";
+  const hasMobilePurchaseBar =
+    isRocketLeagueConfigurator ||
+    isLeagueConfigurator ||
+    isValorantConfigurator ||
+    isOverwatchConfigurator;
   const [open, setOpen] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -88,12 +93,14 @@ export function SupportChatWidget() {
   const floatingPosition = hasMobilePurchaseBar
     ? isLeagueConfigurator
       ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 2xl:bottom-6"
-      : "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
+      : isOverwatchConfigurator
+        ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
+        : "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
     : "bottom-[max(18px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6";
 
   const panelHeight = hasMobilePurchaseBar
-    ? isLeagueConfigurator
-      ? "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] 2xl:h-[min(620px,calc(100dvh-110px))]"
+    ? isLeagueConfigurator || isOverwatchConfigurator
+      ? "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]"
       : "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]"
     : "h-[min(620px,calc(100dvh-110px))]";
 
