@@ -52,11 +52,11 @@ export async function getServiceConfiguratorSchema(input: {
   serviceId: string;
   category: ServiceCategory;
 }): Promise<ServiceConfiguratorSchema> {
-  const valorantSchema = getValorantConfiguratorSchema(input.serviceId);
-  if (valorantSchema) return valorantSchema;
-
   const overwatchSchema = getOverwatchConfiguratorSchema(input.serviceId);
   if (overwatchSchema) return overwatchSchema;
+
+  const valorantSchema = getValorantConfiguratorSchema(input.serviceId);
+  if (valorantSchema) return valorantSchema;
 
   if (input.serviceId.startsWith("service_lol_")) {
     return getConfiguratorSchema(input.category);

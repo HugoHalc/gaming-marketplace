@@ -13,6 +13,10 @@ import {
   isLeagueOfLegendsPhaseTwoQuote,
 } from "./league-of-legends-pricing";
 import {
+  calculateOverwatchQuote,
+  isOverwatchQuote,
+} from "./overwatch-pricing";
+import {
   calculateRocketLeagueRankQuote,
   isRocketLeagueRankQuote,
 } from "./rocket-league-rank-pricing";
@@ -44,10 +48,6 @@ import {
   calculateValorantPlacementsQuote,
   isValorantPlacementsQuote,
 } from "./valorant-placements-pricing";
-import {
-  calculateOverwatchWinsQuote,
-  isOverwatchWinsQuote,
-} from "./overwatch-wins-pricing";
 
 const MOCK_RULE_SET_VERSION = "mock-v1.0";
 
@@ -254,8 +254,8 @@ export async function calculateQuotePreview(input: {
     return calculateValorantPlacementsQuote(input.selection);
   }
 
-  if (isOverwatchWinsQuote(input)) {
-    return calculateOverwatchWinsQuote(input.selection);
+  if (isOverwatchQuote(input)) {
+    return calculateOverwatchQuote(input.serviceSlug, input.selection);
   }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
