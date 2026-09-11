@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -41,15 +42,15 @@ const serviceNavigation = [
 ] as const;
 
 const rankFamilies = [
-  { key: "bronze", label: "Bronze", mark: "B" },
-  { key: "silver", label: "Silver", mark: "S" },
-  { key: "gold", label: "Gold", mark: "G" },
-  { key: "platinum", label: "Platinum", mark: "P" },
-  { key: "emerald", label: "Emerald", mark: "E" },
-  { key: "diamond", label: "Diamond", mark: "D" },
-  { key: "master", label: "Master", mark: "M" },
-  { key: "grandmaster", label: "Grandmaster", mark: "GM" },
-  { key: "champion", label: "Champion", mark: "C" },
+  { key: "bronze", label: "Bronze", mark: "B", badge: "/ranks/overwatch/bronze.png" },
+  { key: "silver", label: "Silver", mark: "S", badge: "/ranks/overwatch/silver.png" },
+  { key: "gold", label: "Gold", mark: "G", badge: "/ranks/overwatch/gold.png" },
+  { key: "platinum", label: "Platinum", mark: "P", badge: "/ranks/overwatch/platinum.png" },
+  { key: "emerald", label: "Emerald", mark: "E", badge: null },
+  { key: "diamond", label: "Diamond", mark: "D", badge: "/ranks/overwatch/diamond.png" },
+  { key: "master", label: "Master", mark: "M", badge: "/ranks/overwatch/master.png" },
+  { key: "grandmaster", label: "Grandmaster", mark: "GM", badge: "/ranks/overwatch/grandmaster.png" },
+  { key: "champion", label: "Champion", mark: "C", badge: "/ranks/overwatch/champion.png" },
 ] as const;
 
 const divisions = ["5", "4", "3", "2", "1"] as const;
@@ -131,6 +132,32 @@ function RankFallbackBadge({ familyKey, mark }: { familyKey: string; mark: strin
       <span className="relative">{mark}</span>
       <span className="sr-only">{familyKey}</span>
     </span>
+  );
+}
+
+function RankBadge({
+  familyKey,
+  label,
+  mark,
+  badge,
+  compact = false,
+}: {
+  familyKey: string;
+  label: string;
+  mark: string;
+  badge: string | null;
+  compact?: boolean;
+}) {
+  if (!badge) return <RankFallbackBadge familyKey={familyKey} mark={mark} />;
+
+  return (
+    <Image
+      src={badge}
+      alt={`${label} rank badge`}
+      width={96}
+      height={96}
+      className={`${compact ? "size-10" : "size-12"} object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,.42)]`}
+    />
   );
 }
 
@@ -277,7 +304,13 @@ function RankSelector({
           {unrated ? (
             <span className="text-[10px] font-black text-white/45">NR</span>
           ) : (
-            <RankFallbackBadge familyKey={selectedFamily?.key ?? "bronze"} mark={selectedFamily?.mark ?? "B"} />
+            <RankBadge
+              familyKey={selectedFamily?.key ?? "bronze"}
+              label={selectedFamily?.label ?? "Bronze"}
+              mark={selectedFamily?.mark ?? "B"}
+              badge={selectedFamily?.badge ?? null}
+              compact
+            />
           )}
         </div>
         <div className="min-w-0">
@@ -299,7 +332,9 @@ function RankSelector({
           const available = !target || firstAvailableRankForFamily(family.key, currentRank ?? "bronze-5") !== null;
           return (
             <button key={family.key} type="button" disabled={!available} onClick={() => chooseFamily(family.key)} title={family.label} className={`group/rank relative min-w-0 overflow-hidden rounded-xl border px-2 py-2.5 text-center transition-[border-color,background-color] duration-200 disabled:cursor-not-allowed disabled:opacity-20 ${active ? "border-amber-300/[0.18] bg-[#131B17]" : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"}`}>
-              <span className="mx-auto grid size-10 place-items-center"><RankFallbackBadge familyKey={family.key} mark={family.mark} /></span>
+              <span className="mx-auto grid h-12 place-items-center">
+                <RankBadge familyKey={family.key} label={family.label} mark={family.mark} badge={family.badge} />
+              </span>
               <span className={`mt-1.5 block truncate text-[9px] font-semibold ${active ? "text-white" : "text-white/55"}`}>{family.label}</span>
               {active ? <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]"><Check className="size-2.5" strokeWidth={3} /></span> : null}
             </button>
@@ -333,7 +368,34 @@ function DriveRankSelector({ value, onChange }: { value: string; onChange: (valu
     <div>
       <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current rank</p>
       <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3 2xl:grid-cols-5">
-        {rankFamilies.map((family) => <ChoicePill key={family.key} active={value === family.key} onClick={() => onChange(family.key)} label={family.label} />)}
+        {rankFamilies.map((family) => {
+          const active = value === family.key;
+          return (
+            <button
+              key={family.key}
+              type="button"
+              onClick={() => onChange(family.key)}
+              aria-pressed={active}
+              className={`relative min-w-0 overflow-hidden rounded-xl border px-2 py-2.5 text-center transition-[border-color,background-color] duration-200 ${
+                active
+                  ? "border-amber-300/[0.18] bg-[#131B17]"
+                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+              }`}
+            >
+              <span className="mx-auto grid h-12 place-items-center">
+                <RankBadge familyKey={family.key} label={family.label} mark={family.mark} badge={family.badge} />
+              </span>
+              <span className={`mt-1.5 block truncate text-[9px] font-semibold ${active ? "text-white" : "text-white/55"}`}>
+                {family.label}
+              </span>
+              {active ? (
+                <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                  <Check className="size-2.5" strokeWidth={3} />
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
