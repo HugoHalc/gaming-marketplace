@@ -21,7 +21,7 @@ const workflowSteps = [
   "Track progress and communicate through your order workspace.",
 ] as const;
 
-type AccountBoostAccent = "blue" | "gold";
+type AccountBoostAccent = "blue" | "gold" | "violet";
 
 const accentStyles: Record<
   AccountBoostAccent,
@@ -47,6 +47,13 @@ const accentStyles: Record<
     label: "text-[#E7C867]/80",
     focus: "focus-visible:ring-[#C89B3C]/35",
   },
+  violet: {
+    border: "border-[#A38CFF]/20",
+    background: "bg-[#7A63F2]/[0.035]",
+    icon: "text-[#CEC5FF]/80",
+    label: "text-[#CEC5FF]/80",
+    focus: "focus-visible:ring-[#A38CFF]/35",
+  },
 };
 
 export function AccountBoostCardDescription() {
@@ -61,10 +68,12 @@ export function AccountBoostTrust({
   selected,
   accent = "blue",
   showDescription = false,
+  methodLabel = "Account Boost",
 }: {
   selected: boolean;
   accent?: AccountBoostAccent;
   showDescription?: boolean;
+  methodLabel?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const panelId = useId();
@@ -128,7 +137,7 @@ export function AccountBoostTrust({
           </div>
 
           <div className="mt-3 border-t border-white/[0.06] pt-3">
-            <p className="text-[10px] font-semibold text-[#F4F7F5]">How Account Boost works</p>
+            <p className="text-[10px] font-semibold text-[#F4F7F5]">How {methodLabel} works</p>
             <ol className="mt-2 space-y-1.5">
               {workflowSteps.map((step, index) => (
                 <li key={step} className="flex items-start gap-2 text-[10px] leading-4 text-white/42">

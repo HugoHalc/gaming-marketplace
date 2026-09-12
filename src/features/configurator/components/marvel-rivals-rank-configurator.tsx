@@ -25,6 +25,7 @@ import {
   GameMobileOrderBar,
   GameOrderAside,
 } from "./game-configurator-family-shell";
+import { AccountBoostTrust } from "./account-boost-trust";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
@@ -43,11 +44,17 @@ type Selection = {
 };
 
 const rankOrder = marvelRivalsRanks.map((rank) => rank.key);
-const regions = [{ value: "north-america", label: "North America" }] as const;
+const regions = [
+  { value: "north-america", label: "North America" },
+  { value: "europe", label: "Europe" },
+  { value: "middle-east", label: "Middle East" },
+  { value: "south-america", label: "South America" },
+  { value: "asia-pacific", label: "Asia-Pacific" },
+] as const;
 const platforms = [
-  { value: "pc", label: "PC" },
-  { value: "xbox", label: "Xbox" },
-  { value: "playstation", label: "PlayStation" },
+  { value: "pc", label: "PC", color: "text-sky-300" },
+  { value: "xbox", label: "Xbox", color: "text-green-300" },
+  { value: "playstation", label: "PlayStation", color: "text-blue-300" },
 ] as const;
 
 const extraDefinitions: Array<{
@@ -490,16 +497,18 @@ export function MarvelRivalsRankConfigurator({ service }: {
   );
 
   const summaryRows = useMemo(() => {
+    const serverLabel =
+      regions.find((item) => item.value === selection.region)?.label ?? "North America";
     const platformLabel = platforms.find((item) => item.value === selection.platform)?.label ?? "PC";
     const rows: Array<[string, string]> = [
-      ["Server", "North America"],
+      ["Server", serverLabel],
       ["Platform", platformLabel],
       ["Boost Method", selection.boostMethod === "solo" ? "Solo" : "Duo"],
     ];
 
     if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform]);
+  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region]);
 
   return (
     <>
@@ -547,34 +556,34 @@ export function MarvelRivalsRankConfigurator({ service }: {
 
             <div className="h-px bg-white/[0.07]" />
 
-            <div>
-              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                Server
-              </p>
-              <div className="relative mt-3">
-                <select
-                  value={selection.region}
-                  onChange={(event) =>
-                    setSelection((current) => ({ ...current, region: event.target.value }))
-                  }
-                  className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18]"
-                >
-                  {regions.map((region) => (
-                    <option key={region.value} value={region.value}>
-                      {region.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
+            <div className="grid gap-5 lg:grid-cols-2">
+              <div>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                  Server
+                </p>
+                <div className="relative mt-3">
+                  <select
+                    value={selection.region}
+                    onChange={(event) =>
+                      setSelection((current) => ({ ...current, region: event.target.value }))
+                    }
+                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18]"
+                  >
+                    {regions.map((region) => (
+                      <option key={region.value} value={region.value}>
+                        {region.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Platform
                 </p>
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid gap-2 sm:grid-cols-3">
                   {platforms.map((platform) => {
                     const active = selection.platform === platform.value;
 
@@ -586,16 +595,24 @@ export function MarvelRivalsRankConfigurator({ service }: {
                         onClick={() =>
                           setSelection((current) => ({ ...current, platform: platform.value }))
                         }
-                        className={`flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border px-2 text-xs font-semibold transition-colors ${
+                        className={`flex h-11 min-w-0 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
                           active
                             ? "border-[#A38CFF]/[0.18] bg-[#131B17] text-white"
                             : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                         }`}
                       >
-                        <span className="shrink-0 text-[#CEC5FF]/75">
+                        <span
+                          className={`grid size-7 shrink-0 place-items-center rounded-lg border ${
+                            active
+                              ? "border-white/[0.12] bg-[#090D0B]"
+                              : "border-white/[0.08] bg-white/[0.02]"
+                          } ${platform.color}`}
+                        >
                           <PlatformIcon platform={platform.value} />
                         </span>
-                        <span className="truncate">{platform.label}</span>
+                        <span className="min-w-0 flex-1 truncate text-xs font-semibold">
+                          {platform.label}
+                        </span>
                         {active ? (
                           <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
                             <Check className="size-2.5" strokeWidth={3} />
@@ -606,64 +623,88 @@ export function MarvelRivalsRankConfigurator({ service }: {
                   })}
                 </div>
               </div>
+            </div>
 
-              <div className="lg:border-l lg:border-white/[0.07] lg:pl-5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                  Boost method
-                </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {[
-                    {
-                      value: "solo" as const,
-                      title: "Solo",
-                      description: "Configure the service as a solo boost.",
-                      icon: <Target className="size-4" />,
-                    },
-                    {
-                      value: "duo" as const,
-                      title: "Duo",
-                      description: "Play alongside your booster.",
-                      icon: <Users className="size-4" />,
-                    },
-                  ].map((method) => {
-                    const active = selection.boostMethod === method.value;
+            <div className="h-px bg-white/[0.07]" />
 
-                    return (
-                      <button
-                        key={method.value}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() =>
-                          setSelection((current) => ({
-                            ...current,
-                            boostMethod: method.value,
-                          }))
-                        }
-                        className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
+            <div>
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                Boost method
+              </p>
+              <p className="mt-1 text-sm font-semibold text-white">
+                Choose how you want the service completed.
+              </p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {[
+                  {
+                    value: "solo" as const,
+                    title: "Solo",
+                    description: "Our booster plays directly on your account.",
+                    icon: <Target className="size-4" />,
+                  },
+                  {
+                    value: "duo" as const,
+                    title: "Duo",
+                    description: "You play alongside your booster.",
+                    icon: <Users className="size-4" />,
+                  },
+                ].map((method) => {
+                  const active = selection.boostMethod === method.value;
+
+                  return (
+                    <button
+                      key={method.value}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() =>
+                        setSelection((current) => ({
+                          ...current,
+                          boostMethod: method.value,
+                        }))
+                      }
+                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
+                        active
+                          ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                          : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+                      }`}
+                    >
+                      <span
+                        className={`grid size-9 shrink-0 place-items-center rounded-lg border ${
                           active
-                            ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
-                            : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+                            ? "border-[#A38CFF]/20 bg-[#7A63F2]/[0.06] text-[#CEC5FF]"
+                            : "border-white/[0.08] bg-white/[0.025] text-white/50"
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-[#CEC5FF]/75">
-                            {method.icon}
-                          </span>
-                          {active ? (
-                            <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
-                              <Check className="size-2.5" strokeWidth={3} />
-                            </span>
-                          ) : null}
-                        </div>
-                        <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">{method.title}</p>
-                        <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
+                        {method.icon}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-semibold text-[#F4F7F5]">
+                          {method.title}
+                        </span>
+                        <span className="mt-0.5 block text-[10px] leading-4 text-[#A0AAA4]">
                           {method.description}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`grid size-4 shrink-0 place-items-center rounded-full border ${
+                          active
+                            ? "border-[#39E56F]/40 bg-[#39E56F] text-[#050807]"
+                            : "border-white/[0.12] bg-white/[0.02] text-transparent"
+                        }`}
+                      >
+                        <Check className="size-2.5" strokeWidth={3} />
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
+              <AccountBoostTrust
+                selected={selection.boostMethod === "solo"}
+                accent="violet"
+                showDescription
+                methodLabel="Solo"
+              />
             </div>
 
             <div>
