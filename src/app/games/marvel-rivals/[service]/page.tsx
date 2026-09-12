@@ -10,6 +10,7 @@ import {
   getMarvelRivalsService,
   marvelRivalsServices,
 } from "@/features/catalog/data/marvel-rivals-foundation";
+import { MarvelRivalsRankConfigurator } from "@/features/configurator/components/marvel-rivals-rank-configurator";
 import { MarvelRivalsServiceConfigurator } from "@/features/configurator/components/marvel-rivals-service-configurator";
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
 
@@ -157,7 +158,11 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
               accentBorderClass="border-[#A38CFF]/[0.20]"
             />
             <div className="min-w-0">
-              <MarvelRivalsServiceConfigurator service={service} />
+              {service.slug === "rank-boost" ? (
+                <MarvelRivalsRankConfigurator service={service} />
+              ) : (
+                <MarvelRivalsServiceConfigurator service={service} />
+              )}
             </div>
           </div>
         </Container>
