@@ -19,7 +19,7 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Rank Boost",
     eyebrow: "Competitive progression",
     description:
-      "Build a current-to-target competitive progression with the Marvel Rivals options required for your service.",
+      "Choose your current rank and target rank, then configure the service around the way you want to play.",
     summary: "Current rank → target rank",
   },
   {
@@ -27,7 +27,7 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Placements Boost",
     eyebrow: "Season placement",
     description:
-      "Configure placement games from your previous-season rank or an unranked starting point.",
+      "Configure your placement matches from your previous-season rank or an unranked starting point.",
     summary: "Previous rank + number of games",
   },
   {
@@ -35,7 +35,7 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Competitive Wins",
     eyebrow: "Competitive wins",
     description:
-      "Choose your current competitive position and the number of wins you want to configure.",
+      "Choose your current competitive rank and the number of wins you want.",
     summary: "Current rank + number of wins",
   },
   {
@@ -43,7 +43,7 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Hero Boost",
     eyebrow: "Hero progression",
     description:
-      "Configure a hero-level progression from your current level to your desired level.",
+      "Configure progression from your current hero level to the level you want to reach.",
     summary: "Current level → desired level",
   },
   {
@@ -51,20 +51,20 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Unrated Games",
     eyebrow: "Unrated play",
     description:
-      "Configure a straightforward package of unrated games without a competitive rank selection.",
+      "Choose the number of unrated games you want and configure the service around your preferred setup.",
     summary: "Number of games",
   },
 ];
 
 export const marvelRivalsRanks = [
-  { key: "bronze", label: "Bronze", mark: "B" },
-  { key: "silver", label: "Silver", mark: "S" },
-  { key: "gold", label: "Gold", mark: "G" },
-  { key: "platinum", label: "Platinum", mark: "P" },
-  { key: "diamond", label: "Diamond", mark: "D" },
-  { key: "grandmaster", label: "Grandmaster", mark: "GM" },
-  { key: "celestial", label: "Celestial", mark: "C" },
-  { key: "eternity", label: "Eternity", mark: "E" },
+  { key: "bronze", label: "Bronze", badge: null, hasDivisions: true },
+  { key: "silver", label: "Silver", badge: null, hasDivisions: true },
+  { key: "gold", label: "Gold", badge: null, hasDivisions: true },
+  { key: "platinum", label: "Platinum", badge: null, hasDivisions: true },
+  { key: "diamond", label: "Diamond", badge: null, hasDivisions: true },
+  { key: "grandmaster", label: "Grandmaster", badge: null, hasDivisions: true },
+  { key: "celestial", label: "Celestial", badge: null, hasDivisions: true },
+  { key: "eternity", label: "Eternity", badge: null, hasDivisions: false },
 ] as const;
 
 export const marvelRivalsDivisionOptions = ["III", "II", "I"] as const;
