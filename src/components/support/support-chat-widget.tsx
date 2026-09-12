@@ -24,11 +24,13 @@ export function SupportChatWidget() {
   const isLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "league-of-legends";
   const isValorantConfigurator = isServiceConfiguratorPage && pathSegments[1] === "valorant";
   const isOverwatchConfigurator = isServiceConfiguratorPage && pathSegments[1] === "overwatch-2";
+  const isMarvelRivalsConfigurator = isServiceConfiguratorPage && pathSegments[1] === "marvel-rivals";
   const hasMobilePurchaseBar =
     isRocketLeagueConfigurator ||
     isLeagueConfigurator ||
     isValorantConfigurator ||
-    isOverwatchConfigurator;
+    isOverwatchConfigurator ||
+    isMarvelRivalsConfigurator;
   const [open, setOpen] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);

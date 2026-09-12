@@ -40,7 +40,7 @@ export const launchGames: LaunchGameCard[] = [
     displayName: "Marvel Rivals",
     accent: "violet",
     category: "Hero shooter",
-    ready: false,
+    ready: true,
   },
   {
     slug: "overwatch-2",
