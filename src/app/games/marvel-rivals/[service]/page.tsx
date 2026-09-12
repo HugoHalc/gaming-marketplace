@@ -60,6 +60,11 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
             ? ["Current → desired hero level", "Specific Hero preference", "Flexible extras"]
             : ["Game quantity", "Solo or Duo", "Flexible extras"];
 
+  const serviceNavigation = marvelRivalsServices.map((item) => ({
+    slug: item.slug,
+    label: item.name,
+  }));
+
   return (
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
@@ -142,7 +147,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
               gameName="Marvel Rivals"
               gameSlug="marvel-rivals"
               activeSlug={service.slug}
-              items={marvelRivalsServices}
+              items={serviceNavigation}
               accentTextClass="text-violet-200/60"
               accentBorderClass="border-violet-300/[0.20]"
             />
