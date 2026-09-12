@@ -46,7 +46,7 @@ const rankFamilies = [
   { key: "silver", label: "Silver", mark: "S", badge: "/ranks/overwatch/silver.png" },
   { key: "gold", label: "Gold", mark: "G", badge: "/ranks/overwatch/gold.png" },
   { key: "platinum", label: "Platinum", mark: "P", badge: "/ranks/overwatch/platinum.png" },
-  { key: "emerald", label: "Emerald", mark: "E", badge: null },
+  { key: "emerald", label: "Emerald", mark: "E", badge: "/ranks/overwatch/emerald.png" },
   { key: "diamond", label: "Diamond", mark: "D", badge: "/ranks/overwatch/diamond.png" },
   { key: "master", label: "Master", mark: "M", badge: "/ranks/overwatch/master.png" },
   { key: "grandmaster", label: "Grandmaster", mark: "GM", badge: "/ranks/overwatch/grandmaster.png" },
