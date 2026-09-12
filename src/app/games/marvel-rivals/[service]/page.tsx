@@ -63,6 +63,14 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
   const serviceNavigation = marvelRivalsServices.map((item) => ({
     slug: item.slug,
     label: item.name,
+    mobileLabel:
+      item.slug === "placement-matches"
+        ? "Placements"
+        : item.slug === "wins"
+          ? "Wins"
+          : item.slug === "unrated-games"
+            ? "Unrated"
+            : item.name,
   }));
 
   return (
@@ -71,7 +79,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
-        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-[#7A63F2]/[0.08] blur-[120px]" />
 
         <Container className="py-5 sm:py-16 lg:py-18">
           <div className="sm:hidden">
@@ -82,9 +90,6 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
               <ArrowLeft className="mr-2 size-3.5" />
               Back to Marvel Rivals
             </Link>
-            <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
-              Marvel Rivals {service.name}
-            </h1>
           </div>
 
           <div className="hidden sm:block">
@@ -101,7 +106,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
           <div className="mt-2 grid gap-8 sm:mt-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="max-w-3xl">
-              <Badge className="hidden border-violet-300/20 bg-violet-400/[0.06] text-violet-200 sm:inline-flex">
+              <Badge className="hidden border-[#A38CFF]/20 bg-[#7A63F2]/[0.06] text-[#CEC5FF] sm:inline-flex">
                 <Sparkles className="mr-2 size-3.5" />
                 Marvel Rivals {service.name}
               </Badge>
@@ -148,8 +153,8 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
               gameSlug="marvel-rivals"
               activeSlug={service.slug}
               items={serviceNavigation}
-              accentTextClass="text-violet-200/60"
-              accentBorderClass="border-violet-300/[0.20]"
+              accentTextClass="text-[#CEC5FF]/60"
+              accentBorderClass="border-[#A38CFF]/[0.20]"
             />
             <div className="min-w-0">
               <MarvelRivalsServiceConfigurator service={service} />
