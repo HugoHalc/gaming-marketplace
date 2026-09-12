@@ -30,6 +30,7 @@ import { AccountBoostTrust } from "./account-boost-trust";
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
 type BoostMethod = "solo" | "duo";
+type Role = "duelist" | "vanguard" | "strategist" | "any";
 type ExtraKey = "playOffline" | "specificHeroes" | "streaming" | "expressDelivery";
 
 type Selection = {
@@ -40,6 +41,7 @@ type Selection = {
   region: string;
   platform: string;
   boostMethod: BoostMethod;
+  role: Role;
   extras: Record<ExtraKey, boolean>;
 };
 
@@ -56,6 +58,12 @@ const platforms = [
   { value: "xbox", label: "Xbox", color: "text-green-300" },
   { value: "playstation", label: "PlayStation", color: "text-blue-300" },
 ] as const;
+const roles: Array<{ value: Role; label: string }> = [
+  { value: "duelist", label: "Duelist" },
+  { value: "vanguard", label: "Vanguard" },
+  { value: "strategist", label: "Strategist" },
+  { value: "any", label: "Any" },
+];
 
 const extraDefinitions: Array<{
   key: ExtraKey;
@@ -431,6 +439,7 @@ export function MarvelRivalsRankConfigurator({ service }: {
     region: "north-america",
     platform: "pc",
     boostMethod: "solo",
+    role: "any",
     extras: {
       playOffline: false,
       specificHeroes: false,
@@ -500,15 +509,17 @@ export function MarvelRivalsRankConfigurator({ service }: {
     const serverLabel =
       regions.find((item) => item.value === selection.region)?.label ?? "North America";
     const platformLabel = platforms.find((item) => item.value === selection.platform)?.label ?? "PC";
+    const roleLabel = roles.find((item) => item.value === selection.role)?.label ?? "Any";
     const rows: Array<[string, string]> = [
       ["Server", serverLabel],
       ["Platform", platformLabel],
       ["Boost Method", selection.boostMethod === "solo" ? "Solo" : "Duo"],
+      ["Role", roleLabel],
     ];
 
     if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region]);
+  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region, selection.role]);
 
   return (
     <>
@@ -705,6 +716,39 @@ export function MarvelRivalsRankConfigurator({ service }: {
                 showDescription
                 methodLabel="Solo"
               />
+            </div>
+
+            <div className="h-px bg-white/[0.07]" />
+
+            <div>
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                Role
+              </p>
+              <div className="mt-3 rounded-xl border border-white/[0.07] bg-black/10 p-3">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {roles.map((role) => {
+                    const active = selection.role === role.value;
+
+                    return (
+                      <button
+                        key={role.value}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() =>
+                          setSelection((current) => ({ ...current, role: role.value }))
+                        }
+                        className={`flex h-10 items-center justify-center rounded-lg border px-3 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ${
+                          active
+                            ? "border-[#A38CFF]/40 bg-[#7A63F2]/[0.10] text-white"
+                            : "border-white/[0.06] bg-white/[0.035] text-white/65 hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
+                        }`}
+                      >
+                        {role.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             <div>
