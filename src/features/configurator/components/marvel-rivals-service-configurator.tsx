@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
@@ -17,13 +16,17 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   marvelRivalsDivisionOptions,
   marvelRivalsRanks,
-  marvelRivalsServices,
   type MarvelRivalsServiceFoundation,
 } from "@/features/catalog/data/marvel-rivals-foundation";
+import {
+  GameConfiguratorColumns,
+  GameConfiguratorPanel,
+  GameMobileOrderBar,
+  GameOrderAside,
+} from "./game-configurator-family-shell";
 
 const rankOrder = marvelRivalsRanks.map((rank) => rank.key);
 const platforms = [
@@ -572,83 +575,6 @@ function Extras({
   );
 }
 
-function ServiceSidebar({ activeSlug }: { activeSlug: string }) {
-  return (
-    <aside className="hidden xl:block">
-      <nav
-        aria-label="Marvel Rivals services"
-        className="sticky top-24 overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09] p-2.5"
-      >
-        <div className="px-2.5 pb-3 pt-2">
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
-            Marvel Rivals
-          </p>
-          <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">Services</p>
-        </div>
-
-        <div className="space-y-1.5">
-          {marvelRivalsServices.map((item) => {
-            const active = item.slug === activeSlug;
-            return (
-              <Link
-                key={item.slug}
-                href={`/games/marvel-rivals/${item.slug}`}
-                aria-current={active ? "page" : undefined}
-                className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-[border-color,background-color,color] duration-200 ${
-                  active
-                    ? "border-[#A38CFF]/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                    : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"
-                }`}
-              >
-                <span className="min-w-0 flex-1 truncate text-xs font-semibold">{item.name}</span>
-                {active ? <span className="size-1.5 shrink-0 rounded-full bg-[#39E56F]" /> : null}
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="mx-2.5 my-3 h-px bg-white/[0.06]" />
-        <Link
-          href="/games/marvel-rivals"
-          className="flex items-center px-3 pb-2 text-[10px] font-medium text-white/35 transition-colors hover:text-white/65"
-        >
-          <ArrowRight className="mr-2 size-3 rotate-180" />
-          Marvel Rivals overview
-        </Link>
-      </nav>
-    </aside>
-  );
-}
-
-function MobileServiceNav({ activeSlug }: { activeSlug: string }) {
-  return (
-    <nav aria-label="Marvel Rivals services" className="mb-3 sm:mb-4 xl:hidden">
-      <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex min-w-max gap-2">
-          {marvelRivalsServices.map((item) => {
-            const active = item.slug === activeSlug;
-            return (
-              <Link
-                key={item.slug}
-                href={`/games/marvel-rivals/${item.slug}`}
-                aria-current={active ? "page" : undefined}
-                className={`inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors sm:h-10 ${
-                  active
-                    ? "border-[#A38CFF]/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                    : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-                }`}
-              >
-                {active ? <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" /> : null}
-                {item.name}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-    </nav>
-  );
-}
-
 function SummaryRankPair({
   currentRank,
   currentDivision,
@@ -661,22 +587,22 @@ function SummaryRankPair({
   targetDivision: string | null;
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3.5 py-3">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
+    <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <RankBadge rank={currentRank} size="summary" />
           <div className="min-w-0">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/30">Current</p>
-            <p className="truncate text-[11px] font-semibold text-white/85">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
+            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">
               {rankLabel(currentRank)} {currentDivision ?? ""}
             </p>
           </div>
         </div>
-        <ArrowRight className="size-3.5 text-white/25" />
-        <div className="flex min-w-0 items-center justify-end gap-2.5">
-          <div className="min-w-0 text-right">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/30">Target</p>
-            <p className="truncate text-[11px] font-semibold text-white/85">
+        <ArrowRight className="size-3.5 text-violet-200/35" />
+        <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+          <div className="min-w-0">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
+            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">
               {rankLabel(targetRank)} {targetDivision ?? ""}
             </p>
           </div>
@@ -686,14 +612,13 @@ function SummaryRankPair({
     </div>
   );
 }
-
 function SummaryRows({ rows }: { rows: Array<[string, string]> }) {
   return (
-    <div className="space-y-2.5">
+    <div className="mt-2 divide-y divide-white/[0.06]">
       {rows.map(([label, value]) => (
-        <div key={label} className="flex items-start justify-between gap-4 text-xs">
-          <span className="text-white/38">{label}</span>
-          <span className="max-w-[12rem] text-right font-medium text-white/72">{value}</span>
+        <div key={label} className="flex items-center justify-between gap-4 py-2 text-[11px]">
+          <span className="text-white/40">{label}</span>
+          <span className="max-w-[12rem] text-right font-medium text-white/78">{value}</span>
         </div>
       ))}
     </div>
@@ -812,67 +737,212 @@ export function MarvelRivalsServiceConfigurator({
   }, [isHero, isPlacements, isUnrated, isWins, selectedExtras, selection]);
 
   return (
-    <div className="pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:pb-0">
-      <MobileServiceNav activeSlug={service.slug} />
+    <>
+      <GameConfiguratorColumns>
+        <GameConfiguratorPanel
+          eyebrow={`Marvel Rivals ${service.name}`}
+          description="Configure your full order without leaving this panel."
+          accentTextClass="text-violet-200/65"
+          accentGradientClass="from-violet-500/[0.055]"
+          statusLabel="Pricing pending"
+        >
+          <div className={`${isRank ? "space-y-4 sm:space-y-5" : "space-y-6"} p-4 sm:p-5 lg:p-6`}>
+            {isRank ? (
+              <>
+                <div className="relative grid gap-5 lg:grid-cols-2">
+                  <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-violet-200/45 lg:grid">
+                    <ArrowRight className="size-3.5" />
+                  </span>
 
-      <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
-        <ServiceSidebar activeSlug={service.slug} />
+                  <div>
+                    <RankSelector value={selection.currentRank} onChange={setCurrentRank} />
+                    <DivisionSelector
+                      rank={selection.currentRank}
+                      value={selection.currentDivision}
+                      onChange={(value) =>
+                        setSelection((current) => ({ ...current, currentDivision: value }))
+                      }
+                    />
+                  </div>
 
-        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] 2xl:grid-cols-[minmax(0,1fr)_22rem]">
-          <section className="min-w-0 overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-[#080B09]">
-            <div className="flex min-h-[4.55rem] items-center justify-between gap-4 border-b border-white/[0.07] px-4 py-3 sm:px-5 lg:px-6">
-              <div>
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                  Marvel Rivals {service.name}
-                </p>
-                <p className="mt-1 text-sm text-[#A0AAA4]">Configure your full order without leaving this panel.</p>
-              </div>
-            </div>
+                  <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+                    <span
+                      className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-violet-300/[0.12] bg-[#0E1411] text-violet-200/45 lg:hidden"
+                      aria-hidden="true"
+                    >
+                      <ArrowRight className="size-3 rotate-90" />
+                    </span>
+                    <RankSelector
+                      value={selection.targetRank}
+                      target
+                      currentRank={selection.currentRank}
+                      onChange={(value) =>
+                        setSelection((current) => ({
+                          ...current,
+                          targetRank: value,
+                          targetDivision: rankHasDivisions(value) ? "III" : null,
+                        }))
+                      }
+                    />
+                    <DivisionSelector
+                      rank={selection.targetRank}
+                      value={selection.targetDivision}
+                      onChange={(value) =>
+                        setSelection((current) => ({ ...current, targetDivision: value }))
+                      }
+                    />
+                  </div>
+                </div>
 
-            <div className={`${isRank ? "space-y-4" : "space-y-6"} p-4 sm:p-5 lg:p-6`}>
-              {isRank ? (
+                <div className="h-px bg-white/[0.07]" />
+
                 <div>
-                  <div className="relative grid gap-4 lg:grid-cols-2">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
-                      <RankSelector value={selection.currentRank} onChange={setCurrentRank} />
-                      <DivisionSelector
-                        rank={selection.currentRank}
-                        value={selection.currentDivision}
-                        onChange={(value) =>
-                          setSelection((current) => ({ ...current, currentDivision: value }))
-                        }
-                      />
+                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                        Server
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-white">Choose your server.</p>
                     </div>
+                  </div>
+                  <div className="relative mt-3">
+                    <select
+                      value={selection.region}
+                      onChange={(event) =>
+                        setSelection((current) => ({ ...current, region: event.target.value }))
+                      }
+                      className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-violet-300/[0.18]"
+                    >
+                      {regions.map((region) => (
+                        <option key={region.value} value={region.value}>
+                          {region.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
+                  </div>
+                </div>
 
-                    <div className="relative border-t border-white/[0.07] pt-4 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
-                      <span className="pointer-events-none absolute left-1/2 top-[-0.8rem] grid size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-white/45 lg:left-[-0.85rem] lg:top-5 lg:translate-x-0">
-                        <ArrowRight className="size-3.5" />
-                      </span>
-                      <RankSelector
-                        value={selection.targetRank}
-                        target
-                        currentRank={selection.currentRank}
-                        onChange={(value) =>
-                          setSelection((current) => ({
-                            ...current,
-                            targetRank: value,
-                            targetDivision: rankHasDivisions(value) ? "III" : null,
-                          }))
-                        }
-                      />
-                      <DivisionSelector
-                        rank={selection.targetRank}
-                        value={selection.targetDivision}
-                        onChange={(value) =>
-                          setSelection((current) => ({ ...current, targetDivision: value }))
-                        }
-                      />
+                <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
+                  <div>
+                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                      Platform
+                    </p>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {platforms.map((platform) => {
+                        const active = selection.platform === platform.value;
+                        return (
+                          <button
+                            key={platform.value}
+                            type="button"
+                            onClick={() =>
+                              setSelection((current) => ({ ...current, platform: platform.value }))
+                            }
+                            className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-colors ${
+                              active
+                                ? "border-violet-300/[0.18] bg-[#131B17] text-white"
+                                : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
+                            }`}
+                          >
+                            <span
+                              className={`grid size-7 place-items-center rounded-lg border ${
+                                active
+                                  ? "border-white/[0.12] bg-[#090D0B]"
+                                  : "border-white/[0.08] bg-white/[0.02]"
+                              } text-violet-200/75`}
+                            >
+                              <PlatformIcon platform={platform.value} />
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-xs font-semibold">
+                              {platform.label}
+                            </span>
+                            {active ? (
+                              <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                                <Check className="size-2.5" strokeWidth={3} />
+                              </span>
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="lg:border-l lg:border-white/[0.07] lg:pl-5">
+                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                      Boost method
+                    </p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {[
+                        {
+                          value: "solo" as const,
+                          title: "Solo",
+                          description: "Configure the service as a solo boost.",
+                          icon: <Target className="size-4" />,
+                        },
+                        {
+                          value: "duo" as const,
+                          title: "Duo",
+                          description: "Play alongside your booster.",
+                          icon: <Users className="size-4" />,
+                        },
+                      ].map((method) => {
+                        const active = selection.boostMethod === method.value;
+                        return (
+                          <button
+                            key={method.value}
+                            type="button"
+                            onClick={() =>
+                              setSelection((current) => ({
+                                ...current,
+                                boostMethod: method.value,
+                              }))
+                            }
+                            className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
+                              active
+                                ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                                : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-violet-200/75">
+                                {method.icon}
+                              </span>
+                              {active ? (
+                                <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                                  <Check className="size-2.5" strokeWidth={3} />
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">{method.title}</p>
+                            <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
+                              {method.description}
+                            </p>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
-              ) : null}
 
-              {isPlacements ? (
+                <div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
+                        Customize
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-white">Optional upgrades.</p>
+                    </div>
+                    <span className="text-[10px] text-white/35">Nothing preselected</span>
+                  </div>
+                  <div className="mt-3">
+                    <Extras selection={selection} onToggle={toggleExtra} />
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {isPlacements ? (
+              <>
                 <div>
                   <SectionHeader title="Previous Season Rank" description="Choose your previous rank or select Unranked." />
                   <div className="mt-5">
@@ -898,23 +968,37 @@ export function MarvelRivalsServiceConfigurator({
                       />
                     ) : null}
                   </div>
-
                   <div className="mt-5 border-t border-white/[0.07] pt-5">
-                    <SectionHeader title="Number of Games" description="Choose how many placement games you need." />
-                    <div className="mt-4">
-                      <QuantityControl
-                        value={selection.games}
-                        min={1}
-                        max={10}
-                        label="Games"
-                        onChange={(games) => setSelection((current) => ({ ...current, games }))}
-                      />
-                    </div>
+                    <QuantityControl
+                      value={selection.games}
+                      min={1}
+                      max={10}
+                      label="Games"
+                      onChange={(games) => setSelection((current) => ({ ...current, games }))}
+                    />
                   </div>
                 </div>
-              ) : null}
+                <div className="h-px bg-white/[0.07]" />
+                <ServiceDetails
+                  selection={selection}
+                  showPlatform
+                  onRegion={(region) => setSelection((current) => ({ ...current, region }))}
+                  onPlatform={(platform) => setSelection((current) => ({ ...current, platform }))}
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <BoostMethod
+                  value={selection.boostMethod}
+                  onChange={(boostMethod) =>
+                    setSelection((current) => ({ ...current, boostMethod }))
+                  }
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <Extras selection={selection} onToggle={toggleExtra} />
+              </>
+            ) : null}
 
-              {isWins ? (
+            {isWins ? (
+              <>
                 <div>
                   <SectionHeader title="Current Rank" description="Choose your current competitive position." />
                   <div className="mt-5">
@@ -927,22 +1011,36 @@ export function MarvelRivalsServiceConfigurator({
                       }
                     />
                   </div>
-
                   <div className="mt-5 border-t border-white/[0.07] pt-5">
-                    <SectionHeader title="Number of Wins" description="Choose how many competitive wins you need." />
-                    <div className="mt-4">
-                      <QuantityControl
-                        value={selection.wins}
-                        min={1}
-                        label="Wins"
-                        onChange={(wins) => setSelection((current) => ({ ...current, wins }))}
-                      />
-                    </div>
+                    <QuantityControl
+                      value={selection.wins}
+                      min={1}
+                      label="Wins"
+                      onChange={(wins) => setSelection((current) => ({ ...current, wins }))}
+                    />
                   </div>
                 </div>
-              ) : null}
+                <div className="h-px bg-white/[0.07]" />
+                <ServiceDetails
+                  selection={selection}
+                  showPlatform
+                  onRegion={(region) => setSelection((current) => ({ ...current, region }))}
+                  onPlatform={(platform) => setSelection((current) => ({ ...current, platform }))}
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <BoostMethod
+                  value={selection.boostMethod}
+                  onChange={(boostMethod) =>
+                    setSelection((current) => ({ ...current, boostMethod }))
+                  }
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <Extras selection={selection} onToggle={toggleExtra} />
+              </>
+            ) : null}
 
-              {isHero ? (
+            {isHero ? (
+              <>
                 <div>
                   <SectionHeader title="Hero Progression" description="Set your current and desired hero level." />
                   <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -976,7 +1074,10 @@ export function MarvelRivalsServiceConfigurator({
                       <select
                         value={selection.specificHero}
                         onChange={(event) =>
-                          setSelection((current) => ({ ...current, specificHero: event.target.value }))
+                          setSelection((current) => ({
+                            ...current,
+                            specificHero: event.target.value,
+                          }))
                         }
                         disabled
                         className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs text-white/50 outline-none disabled:cursor-not-allowed"
@@ -987,9 +1088,27 @@ export function MarvelRivalsServiceConfigurator({
                     </div>
                   </label>
                 </div>
-              ) : null}
+                <div className="h-px bg-white/[0.07]" />
+                <ServiceDetails
+                  selection={selection}
+                  showPlatform={false}
+                  onRegion={(region) => setSelection((current) => ({ ...current, region }))}
+                  onPlatform={(platform) => setSelection((current) => ({ ...current, platform }))}
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <BoostMethod
+                  value={selection.boostMethod}
+                  onChange={(boostMethod) =>
+                    setSelection((current) => ({ ...current, boostMethod }))
+                  }
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <Extras selection={selection} onToggle={toggleExtra} />
+              </>
+            ) : null}
 
-              {isUnrated ? (
+            {isUnrated ? (
+              <>
                 <div>
                   <SectionHeader title="Number of Games" description="Choose how many unrated games you need." />
                   <div className="mt-4 max-w-xl">
@@ -1001,192 +1120,46 @@ export function MarvelRivalsServiceConfigurator({
                     />
                   </div>
                 </div>
-              ) : null}
-
-              <div className="h-px bg-white/[0.07]" />
-
-              {isRank ? (
-                <>
-                  <div>
-                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Server</p>
-                    <div className="relative mt-2">
-                      <select
-                        value={selection.region}
-                        onChange={(event) => setSelection((current) => ({ ...current, region: event.target.value }))}
-                        className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-white/[0.22]"
-                      >
-                        {regions.map((region) => (
-                          <option key={region.value} value={region.value}>{region.label}</option>
-                        ))}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/35" />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-5 lg:grid-cols-2">
-                    <div className="min-w-0 lg:border-r lg:border-white/[0.07] lg:pr-5">
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Platform</p>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        {platforms.map((platform) => {
-                          const active = selection.platform === platform.value;
-                          return (
-                            <button
-                              key={platform.value}
-                              type="button"
-                              aria-pressed={active}
-                              onClick={() => setSelection((current) => ({ ...current, platform: platform.value }))}
-                              className={`flex h-11 min-w-0 items-center gap-3 rounded-xl border px-3 text-left text-xs font-semibold transition-colors ${
-                                active
-                                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
-                                  : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-                              }`}
-                            >
-                              <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025]">
-                                <PlatformIcon platform={platform.value} />
-                              </span>
-                              <span className="truncate">{platform.label}</span>
-                              {active ? <span className="ml-auto grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]"><Check className="size-2.5" strokeWidth={3} /></span> : null}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="min-w-0">
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Boost Method</p>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        {[
-                          { value: "solo" as const, title: "Solo", description: "Solo boost" },
-                          { value: "duo" as const, title: "Duo", description: "Play alongside your booster" },
-                        ].map((method) => {
-                          const active = selection.boostMethod === method.value;
-                          return (
-                            <button
-                              key={method.value}
-                              type="button"
-                              aria-pressed={active}
-                              onClick={() => setSelection((current) => ({ ...current, boostMethod: method.value }))}
-                              className={`relative min-h-[5.75rem] rounded-xl border p-3 text-left transition-colors ${
-                                active
-                                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
-                                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
-                              }`}
-                            >
-                              <span className="grid size-8 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-white/60">
-                                {method.value === "solo" ? <Target className="size-4" /> : <Users className="size-4" />}
-                              </span>
-                              <p className="mt-3 text-xs font-semibold text-white">{method.title}</p>
-                              <p className="mt-1 text-[10px] leading-4 text-[#A0AAA4]">{method.description}</p>
-                              {active ? <span className="absolute right-3 top-3 grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]"><Check className="size-2.5" strokeWidth={3} /></span> : null}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/[0.07]" />
-                  <Extras selection={selection} onToggle={toggleExtra} />
-                </>
-              ) : (
-                <>
-                  <ServiceDetails
-                    selection={selection}
-                    showPlatform={!isHero}
-                    onRegion={(region) => setSelection((current) => ({ ...current, region }))}
-                    onPlatform={(platform) => setSelection((current) => ({ ...current, platform }))}
-                  />
-                  <div className="h-px bg-white/[0.07]" />
-                  <BoostMethod
-                    value={selection.boostMethod}
-                    onChange={(boostMethod) => setSelection((current) => ({ ...current, boostMethod }))}
-                  />
-                  <div className="h-px bg-white/[0.07]" />
-                  <Extras selection={selection} onToggle={toggleExtra} />
-                </>
-              )}
-            </div>
-          </section>
-
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-[#0B0C0A]">
-              <div className="flex items-start justify-between gap-3 border-b border-white/[0.07] p-5">
-                <div>
-                  <p className="font-gaming-value text-[1.35rem] font-bold tracking-[-0.035em] text-white">Order Summary</p>
-                  <p className="mt-1 text-[10px] font-medium text-white/40">Marvel Rivals {service.name}</p>
-                </div>
-                <span className="rounded-full border border-white/[0.10] bg-white/[0.035] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white/45">
-                  Pending
-                </span>
-              </div>
-
-              <div className="p-5">
-                {isRank ? (
-                  <SummaryRankPair
-                    currentRank={selection.currentRank}
-                    currentDivision={selection.currentDivision}
-                    targetRank={selection.targetRank}
-                    targetDivision={selection.targetDivision}
-                  />
-                ) : null}
-
-                <div className={isRank ? "mt-4" : ""}>
-                  <SummaryRows rows={serviceRows} />
-                </div>
-
-                <div className="my-5 h-px bg-white/[0.08]" />
-
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/30">
-                      Total
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-white/62">Pricing pending</p>
-                  </div>
-                  <span className="font-gaming-value text-2xl font-bold tracking-[-0.04em] text-white/35">—</span>
-                </div>
-
-                <Button
-                  className="mt-5 w-full cursor-not-allowed border border-white/[0.06] bg-white/[0.055] text-white/35 opacity-100 shadow-none hover:bg-white/[0.055] hover:text-white/35"
-                  size="lg"
-                  disabled
-                >
-                  Checkout unavailable
-                </Button>
-
-                <div className="mt-4 flex gap-2 text-[10px] leading-4 text-white/35">
-                  <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-                  <span>Final order details will be validated before checkout.</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 rounded-[1.2rem] border border-white/[0.08] bg-[#0B0C0A] p-4">
-              <div className="flex items-center gap-3">
-                <span className="grid size-9 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-white/55"><ShieldCheck className="size-4" /></span>
-                <div>
-                  <p className="text-xs font-semibold text-white">Secure payment</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/35">Encrypted checkout and account protection are built into the BoostingPedia order flow.</p>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#080B09]/95 p-3 pb-[calc(.75rem+env(safe-area-inset-bottom))] backdrop-blur-xl xl:hidden">
-        <div className="mx-auto flex max-w-3xl items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-white/35">{service.name}</p>
-            <p className="truncate text-sm font-semibold text-white/65">Total · Pricing pending</p>
+                <div className="h-px bg-white/[0.07]" />
+                <ServiceDetails
+                  selection={selection}
+                  showPlatform
+                  onRegion={(region) => setSelection((current) => ({ ...current, region }))}
+                  onPlatform={(platform) => setSelection((current) => ({ ...current, platform }))}
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <BoostMethod
+                  value={selection.boostMethod}
+                  onChange={(boostMethod) =>
+                    setSelection((current) => ({ ...current, boostMethod }))
+                  }
+                />
+                <div className="h-px bg-white/[0.07]" />
+                <Extras selection={selection} onToggle={toggleExtra} />
+              </>
+            ) : null}
           </div>
-          <Button
-            disabled
-            className="min-w-[10rem] cursor-not-allowed border border-white/[0.06] bg-white/[0.055] text-white/35 opacity-100 shadow-none hover:bg-white/[0.055] hover:text-white/35"
-          >
-            Checkout unavailable
-          </Button>
-        </div>
-      </div>
-    </div>
+        </GameConfiguratorPanel>
+
+        <GameOrderAside
+          gameLabel={`Marvel Rivals ${service.name}`}
+          statusLabel="Pending"
+          progression={
+            isRank ? (
+              <SummaryRankPair
+                currentRank={selection.currentRank}
+                currentDivision={selection.currentDivision}
+                targetRank={selection.targetRank}
+                targetDivision={selection.targetDivision}
+              />
+            ) : undefined
+          }
+          metadata={<SummaryRows rows={serviceRows} />}
+          totalLabel="Pricing pending"
+        />
+      </GameConfiguratorColumns>
+
+      <GameMobileOrderBar label="Pricing pending" />
+    </>
   );
 }

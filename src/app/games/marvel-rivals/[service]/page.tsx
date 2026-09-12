@@ -11,6 +11,7 @@ import {
   marvelRivalsServices,
 } from "@/features/catalog/data/marvel-rivals-foundation";
 import { MarvelRivalsServiceConfigurator } from "@/features/configurator/components/marvel-rivals-service-configurator";
+import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
 
 interface MarvelRivalsServicePageProps {
   params: Promise<{ service: string }>;
@@ -37,13 +38,36 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
   const service = getMarvelRivalsService(serviceSlug);
   if (!service) notFound();
 
+  const heroTitle =
+    service.slug === "rank-boost"
+      ? "Reach your target rank without the unnecessary grind."
+      : service.slug === "placement-matches"
+        ? "Complete your placement matches with a clean, configurable order."
+        : service.slug === "wins"
+          ? "Stack the competitive wins you need with a clear configuration."
+          : service.slug === "hero-boost"
+            ? "Build the hero progression you want."
+            : "Configure the unrated games you need.";
+
+  const heroPills =
+    service.slug === "rank-boost"
+      ? ["Bronze → Eternity", "Solo or Duo", "Flexible extras"]
+      : service.slug === "placement-matches"
+        ? ["Previous rank + games", "Solo or Duo", "Flexible extras"]
+        : service.slug === "wins"
+          ? ["Rank + win quantity", "Solo or Duo", "Flexible extras"]
+          : service.slug === "hero-boost"
+            ? ["Current → desired hero level", "Specific Hero preference", "Flexible extras"]
+            : ["Game quantity", "Solo or Duo", "Flexible extras"];
+
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050807]">
+    <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-        
+        <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
+        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[120px]" />
+
         <Container className="py-5 sm:py-16 lg:py-18">
           <div className="sm:hidden">
             <Link
@@ -54,7 +78,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
               Back to Marvel Rivals
             </Link>
             <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
-              {service.name}
+              Marvel Rivals {service.name}
             </h1>
           </div>
 
@@ -72,16 +96,32 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
           <div className="mt-2 grid gap-8 sm:mt-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="max-w-3xl">
-              <Badge className="hidden border-[#A38CFF]/20 bg-[#7A63F2]/[0.06] text-[#CEC5FF] sm:inline-flex">
+              <Badge className="hidden border-violet-300/20 bg-violet-400/[0.06] text-violet-200 sm:inline-flex">
                 <Sparkles className="mr-2 size-3.5" />
-                Marvel Rivals · {service.eyebrow}
+                Marvel Rivals {service.name}
               </Badge>
-              <h1 className="hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:mt-5 sm:block sm:text-5xl">
-                {service.name}
+
+              <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
+                Marvel Rivals {service.name}
               </h1>
+              <p className="mt-3 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
+                {heroTitle}
+              </p>
+
               <p className="mt-4 hidden max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:block sm:text-lg">
                 {service.description}
               </p>
+
+              <div className="mt-5 hidden flex-wrap gap-2 sm:flex">
+                {heroPills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-xs font-medium text-white/58"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <Link
@@ -97,7 +137,19 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
       <section className="py-6 sm:py-12 lg:py-16">
         <Container>
-          <MarvelRivalsServiceConfigurator service={service} />
+          <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
+            <GameServiceNavigation
+              gameName="Marvel Rivals"
+              gameSlug="marvel-rivals"
+              activeSlug={service.slug}
+              items={marvelRivalsServices}
+              accentTextClass="text-violet-200/60"
+              accentBorderClass="border-violet-300/[0.20]"
+            />
+            <div className="min-w-0">
+              <MarvelRivalsServiceConfigurator service={service} />
+            </div>
+          </div>
         </Container>
       </section>
 
