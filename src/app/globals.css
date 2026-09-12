@@ -116,4 +116,147 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
 }
 
+/*
+ * PLATFORM-ICONS-GLOBAL-01
+ *
+ * Official BoostingPedia platform artwork supplied by the project owner.
+ * Existing platform labels and availability stay unchanged:
+ * PC uses the Steam mark, while PlayStation, Xbox and Nintendo Switch use
+ * their matching marks. The masks preserve each supplied silhouette and
+ * keep the established per-platform accent colors on the dark UI.
+ */
+button > span.grid.size-7.place-items-center.rounded-lg.border:is(.text-sky-300, .text-blue-300, .text-green-300, .text-red-300) > svg,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border:is(.text-sky-300, .text-blue-300, .text-green-300, .text-red-300) > svg,
+div > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300 > svg {
+  display: none;
+}
+
+button > span.grid.size-7.place-items-center.rounded-lg.border:is(.text-sky-300, .text-blue-300, .text-green-300, .text-red-300)::before,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border:is(.text-sky-300, .text-blue-300, .text-green-300, .text-red-300)::before,
+div > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+button > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-sky-300::before,
+div > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before {
+  -webkit-mask-image: url("/platform-icons/steam.png");
+  mask-image: url("/platform-icons/steam.png");
+}
+
+button > span.grid.size-7.place-items-center.rounded-lg.border.text-blue-300::before,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-blue-300::before {
+  -webkit-mask-image: url("/platform-icons/playstation.png");
+  mask-image: url("/platform-icons/playstation.png");
+}
+
+button > span.grid.size-7.place-items-center.rounded-lg.border.text-green-300::before,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-green-300::before {
+  -webkit-mask-image: url("/platform-icons/xbox.png");
+  mask-image: url("/platform-icons/xbox.png");
+}
+
+button > span.grid.size-7.place-items-center.rounded-lg.border.text-red-300::before,
+button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-red-300::before {
+  -webkit-mask-image: url("/platform-icons/nintendo-switch.webp");
+  mask-image: url("/platform-icons/nintendo-switch.webp");
+}
+
+/* Marvel Rivals shared configurator: existing violet icon containers are
+ * ordered PC, Xbox, PlayStation. Replace only those size-7 platform marks. */
+button > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"] > svg {
+  display: none;
+}
+
+button:nth-child(1) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before,
+button:nth-child(2) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before,
+button:nth-child(3) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+button:nth-child(1) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
+  background-color: #7dd3fc;
+  -webkit-mask-image: url("/platform-icons/steam.png");
+  mask-image: url("/platform-icons/steam.png");
+}
+
+button:nth-child(2) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
+  background-color: #86efac;
+  -webkit-mask-image: url("/platform-icons/xbox.png");
+  mask-image: url("/platform-icons/xbox.png");
+}
+
+button:nth-child(3) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
+  background-color: #93c5fd;
+  -webkit-mask-image: url("/platform-icons/playstation.png");
+  mask-image: url("/platform-icons/playstation.png");
+}
+
+/* Overwatch: the Platform group is the second of two consecutive
+ * two-column option groups (Boost method/Role, then Server/Platform). */
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button {
+  justify-content: flex-start;
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button > span:last-child {
+  margin-left: auto;
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button::before {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 1rem;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(1)::before {
+  background-color: #7dd3fc;
+  -webkit-mask-image: url("/platform-icons/steam.png");
+  mask-image: url("/platform-icons/steam.png");
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(2)::before {
+  background-color: #86efac;
+  -webkit-mask-image: url("/platform-icons/xbox.png");
+  mask-image: url("/platform-icons/xbox.png");
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(3)::before {
+  background-color: #93c5fd;
+  -webkit-mask-image: url("/platform-icons/playstation.png");
+  mask-image: url("/platform-icons/playstation.png");
+}
+
+.space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(4)::before {
+  background-color: #fca5a5;
+  -webkit-mask-image: url("/platform-icons/nintendo-switch.webp");
+  mask-image: url("/platform-icons/nintendo-switch.webp");
+}
+
 details > summary::-webkit-details-marker { display: none; }
