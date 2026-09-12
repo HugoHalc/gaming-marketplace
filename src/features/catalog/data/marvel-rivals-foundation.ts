@@ -57,14 +57,14 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
 ];
 
 export const marvelRivalsRanks = [
-  { key: "bronze", label: "Bronze", badge: null, hasDivisions: true },
-  { key: "silver", label: "Silver", badge: null, hasDivisions: true },
-  { key: "gold", label: "Gold", badge: null, hasDivisions: true },
-  { key: "platinum", label: "Platinum", badge: null, hasDivisions: true },
-  { key: "diamond", label: "Diamond", badge: null, hasDivisions: true },
-  { key: "grandmaster", label: "Grandmaster", badge: null, hasDivisions: true },
-  { key: "celestial", label: "Celestial", badge: null, hasDivisions: true },
-  { key: "eternity", label: "Eternity", badge: null, hasDivisions: false },
+  { key: "bronze", label: "Bronze", badge: "/ranks/marvel-rivals/bronze.png", hasDivisions: true },
+  { key: "silver", label: "Silver", badge: "/ranks/marvel-rivals/silver.png", hasDivisions: true },
+  { key: "gold", label: "Gold", badge: "/ranks/marvel-rivals/gold.png", hasDivisions: true },
+  { key: "platinum", label: "Platinum", badge: "/ranks/marvel-rivals/platinum.png", hasDivisions: true },
+  { key: "diamond", label: "Diamond", badge: "/ranks/marvel-rivals/diamond.png", hasDivisions: true },
+  { key: "grandmaster", label: "Grandmaster", badge: "/ranks/marvel-rivals/grandmaster.png", hasDivisions: true },
+  { key: "celestial", label: "Celestial", badge: "/ranks/marvel-rivals/celestial.png", hasDivisions: true },
+  { key: "eternity", label: "Eternity", badge: "/ranks/marvel-rivals/eternity.png", hasDivisions: false },
 ] as const;
 
 export const marvelRivalsDivisionOptions = ["III", "II", "I"] as const;

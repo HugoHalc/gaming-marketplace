@@ -113,14 +113,6 @@ export default function MarvelRivalsPage() {
                 {marvelRivalsServices.length} services
               </span>
             </div>
-
-            <Link
-              href="/games/marvel-rivals/rank-boost"
-              className="mt-8 inline-flex min-h-11 items-center rounded-xl border border-[#A38CFF]/20 bg-[#7A63F2]/[0.08] px-4 text-sm font-semibold text-white transition-colors hover:border-[#A38CFF]/35 hover:bg-[#7A63F2]/[0.12]"
-            >
-              Configure Rank Boost
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
           </div>
         </Container>
       </section>

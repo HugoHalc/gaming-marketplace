@@ -131,7 +131,7 @@ function RankBadge({
         <span
           className={`${imageSize} grid place-items-center rounded-xl border ${
             selected
-              ? "border-[#A38CFF]/30 bg-[#7A63F2]/[0.10] text-[#D4CCFF]"
+              ? "border-[#39E56F]/25 bg-[#39E56F]/[0.035] text-white/80"
               : "border-white/[0.10] bg-white/[0.03] text-white/45"
           }`}
           aria-hidden="true"
@@ -190,7 +190,7 @@ function DivisionSelector({
             onClick={() => onChange(division)}
             className={`h-9 rounded-lg border text-xs font-bold transition-colors ${
               value === division
-                ? "border-[#A38CFF]/30 bg-[#7A63F2]/[0.08] text-white"
+                ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
                 : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:text-white"
             }`}
           >
@@ -274,7 +274,7 @@ function RankSelector({
               onClick={() => onChange(rank.key)}
               className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-25 ${
                 active
-                  ? "border-[#A38CFF]/30 bg-[#7A63F2]/[0.065]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
@@ -328,7 +328,7 @@ function QuantityControl({
         >
           −
         </button>
-        <div className="grid h-11 place-items-center rounded-xl border border-[#A38CFF]/[0.16] bg-[#7A63F2]/[0.04]">
+        <div className="grid h-11 place-items-center rounded-xl border border-white/[0.10] bg-[#0E1411]">
           <span className="font-gaming-value text-lg font-bold text-white">{value}</span>
         </div>
         <button
@@ -371,7 +371,7 @@ function ServiceDetails({
             <select
               value={selection.region}
               onChange={(event) => onRegion(event.target.value)}
-              className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/30"
+              className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-white/[0.22]"
             >
               {regions.map((region) => (
                 <option key={region.value} value={region.value}>
@@ -399,7 +399,7 @@ function ServiceDetails({
                     onClick={() => onPlatform(platform.value)}
                     className={`flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border px-2 text-xs font-semibold transition-colors ${
                       active
-                        ? "border-[#A38CFF]/30 bg-[#7A63F2]/[0.065] text-white"
+                        ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
                         : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                     }`}
                   >
@@ -452,7 +452,7 @@ function BoostMethod({
               onClick={() => onChange(item.value)}
               className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
                 active
-                  ? "border-[#A38CFF]/30 bg-[#7A63F2]/[0.065]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
@@ -509,14 +509,14 @@ function Extras({
               onClick={() => onToggle(extra.key)}
               className={`flex min-h-[4.4rem] min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
                 checked
-                  ? "border-[#A38CFF]/[0.20] bg-[#7A63F2]/[0.05]"
+                  ? "border-[#39E56F]/20 bg-[#39E56F]/[0.035]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
               <span
                 className={`grid size-9 shrink-0 place-items-center rounded-lg border ${
                   checked
-                    ? "border-[#A38CFF]/[0.18] bg-[#7A63F2]/[0.05] text-[#CEC5FF]"
+                    ? "border-white/[0.10] bg-white/[0.035] text-white/70"
                     : "border-white/[0.08] bg-white/[0.025] text-white/50"
                 }`}
               >
