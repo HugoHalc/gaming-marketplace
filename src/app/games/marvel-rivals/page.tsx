@@ -242,7 +242,7 @@ export default function MarvelRivalsPage() {
             priority
             sizes="(min-width: 1280px) 64vw, (min-width: 1024px) 68vw, (min-width: 640px) 78vw, 100vw"
             quality={100}
-            className="object-cover object-[73%_50%] opacity-48 sm:object-[72%_50%] sm:opacity-72 lg:object-[70%_50%] lg:opacity-94 xl:opacity-100"
+            className="object-cover object-[72%_50%] opacity-45 sm:object-contain sm:object-right sm:opacity-72 lg:opacity-94 xl:opacity-100"
           />
           <div className="absolute inset-0 bg-[#5D45CC]/[0.018]" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.99)_17%,rgba(5,8,7,.90)_34%,rgba(5,8,7,.58)_52%,rgba(5,8,7,.15)_73%,transparent_100%)]" />
