@@ -10,9 +10,7 @@ import {
   ChevronDown,
   Crosshair,
   EyeOff,
-  Gamepad2,
   Layers3,
-  Monitor,
   MonitorPlay,
   ShieldCheck,
   Target,
@@ -177,21 +175,21 @@ function DivisionSelector({
   if (!rankHasDivisions(rank)) return null;
 
   return (
-    <div className="mt-3">
-      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
+    <div className="mt-3 flex items-center gap-2">
+      <span className="mr-1 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
         Division
-      </p>
-      <div className="mt-2 grid grid-cols-3 gap-2">
+      </span>
+      <div className="flex items-center gap-1.5">
         {marvelRivalsDivisionOptions.map((division) => (
           <button
             key={division}
             type="button"
             aria-pressed={value === division}
             onClick={() => onChange(division)}
-            className={`h-9 rounded-lg border text-xs font-bold transition-colors ${
+            className={`h-8 min-w-10 rounded-lg border px-2.5 text-[11px] font-bold transition-colors ${
               value === division
                 ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
-                : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:text-white"
+                : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
             }`}
           >
             {division}
@@ -227,12 +225,12 @@ function RankSelector({
             <span className="size-3 rounded-full border border-white/20 bg-white/[0.04]" />
           </span>
         ) : (
-          <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-[#0E1411]">
+          <div className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-violet-300/[0.12] bg-violet-400/[0.035]">
             <RankBadge rank={value} size="summary" />
           </div>
         )}
         <div className="min-w-0">
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-200/65">
             {target ? "Target rank" : allowUnranked ? "Previous season rank" : "Current rank"}
           </p>
           <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
@@ -347,8 +345,34 @@ function QuantityControl({
 }
 
 function PlatformIcon({ platform }: { platform: string }) {
-  if (platform === "pc") return <Monitor className="size-4" />;
-  return <Gamepad2 className="size-4" />;
+  if (platform === "pc") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" opacity="0.95" />
+        <circle cx="9.15" cy="14.2" r="1.85" fill="currentColor" />
+        <path d="M10.7 13.4 14.7 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="15.9" cy="10.2" r="2.15" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+
+  if (platform === "playstation") {
+    return (
+      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+        <path d="M10 5.2v10.6c0 .9-.34 1.44-1.08 1.62L6.3 18.2v-2.1l1.62-.55c.34-.12.5-.32.5-.68V5.85l1.58-.65Z" fill="currentColor" />
+        <path d="M11.4 7.1c2.2.7 4.22 1.44 5.85 2.15.72.32 1.05.77 1.05 1.35 0 .55-.33.98-1 1.2l-6.52 2.08v-2.13l4.75-1.48c.26-.08.28-.22.05-.32-1.17-.47-2.83-1.02-4.18-1.42V7.1Z" fill="currentColor" opacity=".92" />
+        <path d="m11.18 12.75 5.05-1.6v1.85l-4.02 1.3c-.55.18-.78.4-.78.73 0 .35.25.48.72.38l2.9-.62v1.8l-3.45.78c-1.57.35-2.57-.25-2.57-1.48 0-1.03.65-1.86 2.25-2.34Z" fill="currentColor" opacity=".84" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M8.2 8.05c1.1.48 2.26 1.3 3.78 2.77 1.5-1.46 2.68-2.28 3.82-2.77" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.85 16.25c.9-1.55 1.88-2.83 3.13-4.12 1.23 1.28 2.23 2.56 3.17 4.12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 function ServiceDetails({
@@ -805,7 +829,7 @@ export function MarvelRivalsServiceConfigurator({
               </div>
             </div>
 
-            <div className={`${isRank ? "space-y-5" : "space-y-6"} p-4 sm:p-5 lg:p-6`}>
+            <div className={`${isRank ? "space-y-4" : "space-y-6"} p-4 sm:p-5 lg:p-6`}>
               {isRank ? (
                 <div>
                   <div className="relative grid gap-4 lg:grid-cols-2">
@@ -1086,9 +1110,14 @@ export function MarvelRivalsServiceConfigurator({
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-[#0B0C0A]">
-              <div className="border-b border-white/[0.07] p-5">
-                <p className="font-gaming-value text-[1.35rem] font-bold tracking-[-0.035em] text-white">Order Summary</p>
-                <p className="mt-1 text-[10px] font-medium text-white/40">Marvel Rivals {service.name}</p>
+              <div className="flex items-start justify-between gap-3 border-b border-white/[0.07] p-5">
+                <div>
+                  <p className="font-gaming-value text-[1.35rem] font-bold tracking-[-0.035em] text-white">Order Summary</p>
+                  <p className="mt-1 text-[10px] font-medium text-white/40">Marvel Rivals {service.name}</p>
+                </div>
+                <span className="rounded-full border border-white/[0.10] bg-white/[0.035] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white/45">
+                  Pending
+                </span>
               </div>
 
               <div className="p-5">
@@ -1110,10 +1139,11 @@ export function MarvelRivalsServiceConfigurator({
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/30">
-                      Pricing
+                      Total
                     </p>
                     <p className="mt-1 text-xs font-semibold text-white/62">Pricing pending</p>
                   </div>
+                  <span className="font-gaming-value text-2xl font-bold tracking-[-0.04em] text-white/35">—</span>
                 </div>
 
                 <Button
@@ -1135,7 +1165,7 @@ export function MarvelRivalsServiceConfigurator({
                 <span className="grid size-9 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-white/55"><ShieldCheck className="size-4" /></span>
                 <div>
                   <p className="text-xs font-semibold text-white">Secure payment</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/35">Payment remains unavailable until Marvel Rivals pricing is implemented.</p>
+                  <p className="mt-0.5 text-[10px] leading-4 text-white/35">Encrypted checkout and account protection are built into the BoostingPedia order flow.</p>
                 </div>
               </div>
             </div>
@@ -1147,7 +1177,7 @@ export function MarvelRivalsServiceConfigurator({
         <div className="mx-auto flex max-w-3xl items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.12em] text-white/35">{service.name}</p>
-            <p className="truncate text-sm font-semibold text-white/65">Pricing pending</p>
+            <p className="truncate text-sm font-semibold text-white/65">Total · Pricing pending</p>
           </div>
           <Button
             disabled

@@ -43,8 +43,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-[#7A63F2]/[0.07] blur-[120px]" />
-
+        
         <Container className="py-5 sm:py-16 lg:py-18">
           <div className="sm:hidden">
             <Link
