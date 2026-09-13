@@ -396,22 +396,28 @@ function ExtraCard({
   icon,
   title,
   description,
+  disabled = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
   icon: ReactNode;
   title: string;
   description: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       aria-pressed={checked}
+      aria-disabled={disabled}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
-        checked
-          ? "border-[#A38CFF]/[0.16] bg-[#131B17]"
-          : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+        disabled
+          ? "cursor-not-allowed border-white/[0.05] bg-[#090D0B] opacity-40"
+          : checked
+            ? "border-[#A38CFF]/[0.16] bg-[#131B17]"
+            : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
       <span
@@ -517,10 +523,14 @@ export function MarvelRivalsPlacementsConfigurator({
   }
 
   function toggleExtra(key: ExtraKey) {
-    setSelection((current) => ({
-      ...current,
-      extras: { ...current.extras, [key]: !current.extras[key] },
-    }));
+    setSelection((current) => {
+      if (key === "playOffline" && current.boostMethod === "duo") return current;
+
+      return {
+        ...current,
+        extras: { ...current.extras, [key]: !current.extras[key] },
+      };
+    });
   }
 
   const selectedExtras = useMemo(
@@ -669,7 +679,14 @@ export function MarvelRivalsPlacementsConfigurator({
                       type="button"
                       aria-pressed={active}
                       onClick={() =>
-                        setSelection((current) => ({ ...current, boostMethod: method.value }))
+                        setSelection((current) => ({
+                          ...current,
+                          boostMethod: method.value,
+                          extras:
+                            method.value === "duo"
+                              ? { ...current.extras, playOffline: false }
+                              : current.extras,
+                        }))
                       }
                       className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
                         active
@@ -760,10 +777,15 @@ export function MarvelRivalsPlacementsConfigurator({
                   <ExtraCard
                     key={extra.key}
                     checked={selection.extras[extra.key]}
+                    disabled={extra.key === "playOffline" && selection.boostMethod === "duo"}
                     onChange={() => toggleExtra(extra.key)}
                     icon={extra.icon}
                     title={extra.title}
-                    description={extra.description}
+                    description={
+                      extra.key === "playOffline" && selection.boostMethod === "duo"
+                        ? "Available with Solo only."
+                        : extra.description
+                    }
                   />
                 ))}
               </div>

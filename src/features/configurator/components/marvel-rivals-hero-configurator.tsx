@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   ArrowRight,
   Check,
@@ -108,19 +108,16 @@ const platforms = [
     value: "pc",
     label: "PC",
     color: "text-sky-300",
-    icon: "/platform-icons/steam.png",
   },
   {
     value: "xbox",
     label: "Xbox",
     color: "text-green-300",
-    icon: "/platform-icons/xbox.png",
   },
   {
     value: "playstation",
     label: "PlayStation",
     color: "text-blue-300",
-    icon: "/platform-icons/playstation.png",
   },
 ] as const;
 
@@ -152,21 +149,6 @@ const extraDefinitions: Array<{
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
-}
-
-function PlatformMark({ icon }: { icon: string }) {
-  const style = {
-    WebkitMaskImage: `url("${icon}")`,
-    maskImage: `url("${icon}")`,
-    WebkitMaskPosition: "center",
-    maskPosition: "center",
-    WebkitMaskRepeat: "no-repeat",
-    maskRepeat: "no-repeat",
-    WebkitMaskSize: "contain",
-    maskSize: "contain",
-  } satisfies CSSProperties;
-
-  return <span className="block size-4 bg-current" aria-hidden="true" style={style} />;
 }
 
 function HeroSelector({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -281,22 +263,28 @@ function ExtraCard({
   icon,
   title,
   description,
+  disabled = false,
 }: {
   checked: boolean;
   onChange: () => void;
   icon: ReactNode;
   title: string;
   description: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       aria-pressed={checked}
+      aria-disabled={disabled}
+      disabled={disabled}
       onClick={onChange}
       className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
-        checked
-          ? "border-[#A38CFF]/[0.16] bg-[#131B17]"
-          : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
+        disabled
+          ? "cursor-not-allowed border-white/[0.05] bg-[#090D0B] opacity-40"
+          : checked
+            ? "border-[#A38CFF]/[0.16] bg-[#131B17]"
+            : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
       <span
@@ -417,10 +405,14 @@ export function MarvelRivalsHeroConfigurator({
   }
 
   function toggleExtra(key: ExtraKey) {
-    setSelection((current) => ({
-      ...current,
-      extras: { ...current.extras, [key]: !current.extras[key] },
-    }));
+    setSelection((current) => {
+      if (key === "playOffline" && current.boostMethod === "duo") return current;
+
+      return {
+        ...current,
+        extras: { ...current.extras, [key]: !current.extras[key] },
+      };
+    });
   }
 
   const selectedExtras = useMemo(
@@ -546,9 +538,8 @@ export function MarvelRivalsHeroConfigurator({
                               ? "border-white/[0.12] bg-[#090D0B]"
                               : "border-white/[0.08] bg-white/[0.02]"
                           } ${platform.color}`}
-                        >
-                          <PlatformMark icon={platform.icon} />
-                        </span>
+                          aria-hidden="true"
+                        />
                         <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
                         {active ? (
                           <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
@@ -593,7 +584,14 @@ export function MarvelRivalsHeroConfigurator({
                       type="button"
                       aria-pressed={active}
                       onClick={() =>
-                        setSelection((current) => ({ ...current, boostMethod: method.value }))
+                        setSelection((current) => ({
+                          ...current,
+                          boostMethod: method.value,
+                          extras:
+                            method.value === "duo"
+                              ? { ...current.extras, playOffline: false }
+                              : current.extras,
+                        }))
                       }
                       className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
                         active
@@ -658,10 +656,15 @@ export function MarvelRivalsHeroConfigurator({
                   <ExtraCard
                     key={extra.key}
                     checked={selection.extras[extra.key]}
+                    disabled={extra.key === "playOffline" && selection.boostMethod === "duo"}
                     onChange={() => toggleExtra(extra.key)}
                     icon={extra.icon}
                     title={extra.title}
-                    description={extra.description}
+                    description={
+                      extra.key === "playOffline" && selection.boostMethod === "duo"
+                        ? "Available with Solo only."
+                        : extra.description
+                    }
                   />
                 ))}
               </div>
