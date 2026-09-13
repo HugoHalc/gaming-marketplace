@@ -131,14 +131,17 @@ export default async function OverwatchPage() {
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
         <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-15" />
         <div className="absolute right-[-10rem] top-[-13rem] -z-20 h-[38rem] w-[52rem] rounded-full bg-amber-400/[0.075] blur-[130px]" />
-        <div className="absolute inset-y-0 right-0 -z-20 hidden w-[68%] md:block">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full overflow-hidden sm:w-[84%] md:w-[76%] lg:w-[68%] xl:w-[64%]"
+        >
           <Image
             src="/game-heroes/overwatch-hero.jpg"
             alt=""
             fill
             priority
-            sizes="68vw"
-            className="object-cover object-[58%_center] opacity-85"
+            sizes="(min-width: 1280px) 64vw, (min-width: 1024px) 68vw, (min-width: 768px) 76vw, (min-width: 640px) 84vw, 100vw"
+            className="object-cover object-[76%_50%] opacity-40 sm:object-[72%_50%] sm:opacity-58 md:object-[68%_50%] md:opacity-72 lg:object-[58%_50%] lg:opacity-85 xl:opacity-90"
           />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.985)_18%,rgba(5,8,7,.88)_36%,rgba(5,8,7,.5)_56%,rgba(5,8,7,.14)_100%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/72 via-[#050807]/10 to-[#050807]/18" />
@@ -200,12 +203,12 @@ export default async function OverwatchPage() {
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {game.services.map((service) => (
               <Link
                 key={service.id}
                 href={`/games/overwatch-2/${service.slug}`}
-                className="group relative flex min-h-[22rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6"
+                className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
               >
                 <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.055] to-transparent" />
                 <div className="relative flex items-start justify-between gap-4">

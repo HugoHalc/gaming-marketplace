@@ -143,25 +143,16 @@ export async function SiteHeader() {
             Games
           </Link>
 
-          {launchGames.slice(0, 4).map((game) =>
-            game.ready ? (
-              <Link
-                key={game.slug}
-                href={`/games/${game.slug}`}
-                className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
-              >
-                <span className="size-1.5 rounded-full bg-[#39E56F]" />
-                {game.displayName}
-              </Link>
-            ) : (
-              <span
-                key={game.slug}
-                className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs text-[#667069]"
-              >
-                {game.displayName}
-              </span>
-            ),
-          )}
+          {launchGames.filter((game) => game.ready).map((game) => (
+            <Link
+              key={game.slug}
+              href={`/games/${game.slug}`}
+              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
+            >
+              <span className="size-1.5 rounded-full bg-[#39E56F]" />
+              {game.displayName}
+            </Link>
+          ))}
         </div>
       </Container>
     </header>
