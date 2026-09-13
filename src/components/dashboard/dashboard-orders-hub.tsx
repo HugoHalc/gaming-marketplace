@@ -15,6 +15,7 @@ import type { OrderRecord } from "@/features/orders/types/orders";
 import {
   GameRankValue,
   gameCardAsset,
+  isMarvelRivalsGame,
   resolveGameRank,
 } from "@/components/orders/game-order-presentation";
 
@@ -46,6 +47,14 @@ function formatLabel(value: string) {
     .replace(/([A-Z])/g, " $1")
     .replace(/[_-]/g, " ")
     .replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function platformLabel(value: string, marvel: boolean) {
+  if (!marvel) return formatLabel(value);
+  if (value === "pc") return "PC";
+  if (value === "xbox") return "Xbox";
+  if (value === "playstation") return "PlayStation";
+  return formatLabel(value);
 }
 
 function operationalLabel(order: DashboardOrder) {
@@ -100,27 +109,42 @@ function matchesFilter(order: DashboardOrder, filter: FilterKey) {
 
 function Extras({
   configuration,
+  gameName,
 }: {
   configuration: Record<string, string | number | boolean>;
+  gameName: unknown;
 }) {
   const extras: string[] = [];
+  const marvel = isMarvelRivalsGame(gameName);
 
-  if (configuration.playlist) extras.push(String(configuration.playlist));
-  if (configuration.boostMethod === "play-with-booster")
-    extras.push("Play With Booster");
-  if (configuration.liveStream === true) extras.push("Live Stream");
-  if (configuration.express === true) extras.push("Express");
-  if (configuration.appearOffline === true) extras.push("Appear Offline");
-  if (configuration.rankInsurance === true) extras.push("Rank Insurance");
+  if (marvel) {
+    if (configuration.boostMethod === "duo") extras.push("Duo");
+    if (configuration.playOffline === true) extras.push("Play Offline");
+    if (configuration.specificHeroes === true) extras.push("Specific Heroes");
+    if (configuration.streaming === true) extras.push("Streaming");
+    if (configuration.expressDelivery === true) extras.push("Express Delivery");
+  } else {
+    if (configuration.playlist) extras.push(String(configuration.playlist));
+    if (configuration.boostMethod === "play-with-booster")
+      extras.push("Play With Booster");
+    if (configuration.liveStream === true) extras.push("Live Stream");
+    if (configuration.express === true) extras.push("Express");
+    if (configuration.appearOffline === true) extras.push("Appear Offline");
+    if (configuration.rankInsurance === true) extras.push("Rank Insurance");
+  }
 
   return extras.length ? (
     <div className="flex flex-wrap gap-1.5">
-      {extras.slice(0, 4).map((extra) => (
+      {extras.slice(0, marvel ? extras.length : 4).map((extra) => (
         <span
           key={extra}
-          className="rounded-full border border-white/[0.06] bg-white/[0.025] px-2 py-1 text-[8px] font-medium text-[#A0AAA4]"
+          className={`rounded-full border px-2 py-1 text-[8px] font-medium ${
+            marvel
+              ? "border-[#A38CFF]/10 bg-[#7A63F2]/[0.035] text-[#CEC5FF]/80"
+              : "border-white/[0.06] bg-white/[0.025] text-[#A0AAA4]"
+          }`}
         >
-          {formatLabel(extra)}
+          {marvel ? extra : formatLabel(extra)}
         </span>
       ))}
     </div>
@@ -136,17 +160,48 @@ function CustomerOrderCard({
 }) {
   const item = order.items[0];
   const config = item?.configuration ?? {};
-  const currentRank =
-    typeof config.currentRank !== "undefined"
-      ? config.currentRank
-      : config.previousRank;
+  const marvel = isMarvelRivalsGame(item?.gameName);
+  const hasCurrentRank = typeof config.currentRank !== "undefined";
+  const currentRank = hasCurrentRank ? config.currentRank : config.previousRank;
+  const currentDivision = hasCurrentRank
+    ? config.currentDivision
+    : config.previousDivision;
   const targetRank = config.targetRank;
-  const currentResolved = resolveGameRank(item?.gameName, currentRank);
-  const targetResolved = resolveGameRank(item?.gameName, targetRank);
+  const targetDivision = config.targetDivision;
+  const currentResolved = resolveGameRank(
+    item?.gameName,
+    currentRank,
+    currentDivision,
+  );
+  const targetResolved = resolveGameRank(
+    item?.gameName,
+    targetRank,
+    targetDivision,
+  );
+  const currentRankLabel = marvel && !hasCurrentRank ? "Previous" : "Current";
   const platform =
-    typeof config.platform === "string" ? formatLabel(config.platform) : null;
+    typeof config.platform === "string"
+      ? platformLabel(config.platform, marvel)
+      : null;
   const wins = typeof config.wins === "number" ? config.wins : null;
   const matches = typeof config.matches === "number" ? config.matches : null;
+  const games = typeof config.games === "number" ? config.games : null;
+  const eternityPoints =
+    config.currentRank === "eternity" && typeof config.eternityPoints === "number"
+      ? config.eternityPoints
+      : null;
+  const activityCount = matches ?? wins ?? games;
+  const activityLabel =
+    matches !== null ? "Matches" : wins !== null ? "Wins" : games !== null ? "Games" : null;
+  const hero = typeof config.hero === "string" && config.hero ? config.hero : null;
+  const currentProficiency =
+    typeof config.currentProficiency === "number" ? config.currentProficiency : null;
+  const targetProficiency =
+    typeof config.targetProficiency === "number" ? config.targetProficiency : null;
+  const proficiency =
+    currentProficiency !== null && targetProficiency !== null
+      ? `${currentProficiency} → ${targetProficiency}`
+      : null;
 
   if (viewMode === "list") {
     return (
@@ -177,23 +232,69 @@ function CustomerOrderCard({
           </div>
         </div>
 
-        <div className="flex min-w-0 items-center gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-4">
           {currentResolved ? (
-            <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" size="sm" />
+            <GameRankValue
+              gameName={item?.gameName}
+              value={currentRank}
+              division={currentDivision}
+              label={currentRankLabel}
+              size="sm"
+            />
           ) : null}
           {currentResolved && targetResolved ? (
-            <ArrowRight className="size-3 shrink-0 text-blue-200/30" />
+            <ArrowRight
+              className={`size-3 shrink-0 ${
+                marvel ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+              }`}
+            />
           ) : null}
           {targetResolved ? (
-            <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" size="sm" />
+            <GameRankValue
+              gameName={item?.gameName}
+              value={targetRank}
+              division={targetDivision}
+              label="Target"
+              size="sm"
+            />
           ) : null}
-          {wins !== null || matches !== null ? (
+          {activityCount !== null && activityLabel ? (
             <div>
               <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
-                {matches !== null ? "Matches" : "Wins"}
+                {activityLabel}
               </p>
               <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
-                {matches ?? wins}
+                {activityCount}
+              </p>
+            </div>
+          ) : null}
+          {eternityPoints !== null ? (
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
+                Eternity Points
+              </p>
+              <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                {eternityPoints}
+              </p>
+            </div>
+          ) : null}
+          {!currentResolved && !targetResolved && hero ? (
+            <div className="min-w-0">
+              <p className="text-[8px] uppercase tracking-[0.1em] text-[#CEC5FF]/50">
+                Hero
+              </p>
+              <p className="mt-1 max-w-[10rem] truncate text-[10px] font-semibold text-[#F4F7F5]">
+                {hero}
+              </p>
+            </div>
+          ) : null}
+          {!currentResolved && !targetResolved && proficiency ? (
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.1em] text-[#667069]">
+                Proficiency
+              </p>
+              <p className="font-gaming-value mt-1 text-[10px] font-bold text-[#F4F7F5]">
+                {proficiency}
               </p>
             </div>
           ) : null}
@@ -253,8 +354,12 @@ function CustomerOrderCard({
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">
-              {item?.gameName ?? "Rocket League"}
+            <p
+              className={`font-gaming-label text-[8px] uppercase tracking-[0.12em] ${
+                marvel ? "text-[#CEC5FF]/50" : "text-[#667069]"
+              }`}
+            >
+              {item?.gameName ?? "Gaming service"}
             </p>
             <h3 className="mt-1 truncate text-[14px] font-semibold tracking-[-0.02em] text-[#F4F7F5]">
               {item?.serviceName ?? "Gaming Service"}
@@ -269,29 +374,67 @@ function CustomerOrderCard({
         </div>
 
         {(currentResolved || targetResolved) ? (
-          <div className="mt-4 flex min-h-[58px] items-center gap-3 border-y border-white/[0.05] py-3">
+          <div className="mt-4 flex min-h-[58px] flex-wrap items-center gap-3 border-y border-white/[0.05] py-3">
             {currentResolved ? (
-              <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" />
+              <GameRankValue
+                gameName={item?.gameName}
+                value={currentRank}
+                division={currentDivision}
+                label={currentRankLabel}
+              />
             ) : null}
             {currentResolved && targetResolved ? (
-              <ArrowRight className="size-3.5 shrink-0 text-blue-200/30" />
+              <ArrowRight
+                className={`size-3.5 shrink-0 ${
+                  marvel ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+                }`}
+              />
             ) : null}
             {targetResolved ? (
-              <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" />
+              <GameRankValue
+                gameName={item?.gameName}
+                value={targetRank}
+                division={targetDivision}
+                label="Target"
+              />
             ) : null}
-            {wins !== null || matches !== null ? (
+            {activityCount !== null && activityLabel ? (
               <div className="ml-auto min-w-[54px] border-l border-white/[0.05] pl-3">
                 <p className="text-[8px] text-[#667069]">
-                  {matches !== null ? "Matches" : "Wins"}
+                  {activityLabel}
                 </p>
                 <p className="font-gaming-value mt-1 text-[12px] font-bold text-[#F4F7F5]">
-                  {matches ?? wins}
+                  {activityCount}
+                </p>
+              </div>
+            ) : null}
+            {eternityPoints !== null ? (
+              <div className="min-w-[64px] border-l border-white/[0.05] pl-3">
+                <p className="text-[8px] text-[#667069]">Eternity Points</p>
+                <p className="font-gaming-value mt-1 text-[12px] font-bold text-[#F4F7F5]">
+                  {eternityPoints}
                 </p>
               </div>
             ) : null}
           </div>
         ) : (
           <div className="mt-4 grid grid-cols-2 gap-4 border-y border-white/[0.05] py-3">
+            {hero ? (
+              <div className="min-w-0">
+                <p className="text-[8px] text-[#667069]">Hero</p>
+                <p className="mt-1 truncate text-[10px] font-semibold text-[#F4F7F5]">
+                  {hero}
+                </p>
+              </div>
+            ) : null}
+            {proficiency ? (
+              <div>
+                <p className="text-[8px] text-[#667069]">Proficiency</p>
+                <p className="font-gaming-value mt-1 text-[10px] font-bold text-[#F4F7F5]">
+                  {proficiency}
+                </p>
+              </div>
+            ) : null}
             {platform ? (
               <div>
                 <p className="text-[8px] text-[#667069]">Platform</p>
@@ -300,13 +443,13 @@ function CustomerOrderCard({
                 </p>
               </div>
             ) : null}
-            {wins !== null || matches !== null ? (
+            {activityCount !== null && activityLabel ? (
               <div>
                 <p className="text-[8px] text-[#667069]">
-                  {matches !== null ? "Matches" : "Wins"}
+                  {activityLabel}
                 </p>
                 <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
-                  {matches ?? wins}
+                  {activityCount}
                 </p>
               </div>
             ) : null}
@@ -314,7 +457,7 @@ function CustomerOrderCard({
         )}
 
         <div className="mt-3">
-          <Extras configuration={config} />
+          <Extras configuration={config} gameName={item?.gameName} />
         </div>
 
         <div className="mt-4 flex items-end justify-between gap-4">

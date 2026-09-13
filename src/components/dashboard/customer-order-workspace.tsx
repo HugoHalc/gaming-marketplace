@@ -25,6 +25,7 @@ import { OrderAccountDetails } from "@/components/dashboard/order-account-detail
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 import {
   GameRankValue,
+  isMarvelRivalsGame,
   resolveGameRank,
 } from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
@@ -145,15 +146,27 @@ export function CustomerOrderWorkspace({
 }: Props) {
   const item = order.items[0];
   const config = item?.configuration ?? {};
+  const isMarvelRivals = isMarvelRivalsGame(item?.gameName);
 
-  const currentValue =
-    typeof config.currentRank !== "undefined"
-      ? config.currentRank
-      : config.previousRank;
+  const hasCurrentRank = typeof config.currentRank !== "undefined";
+  const currentValue = hasCurrentRank ? config.currentRank : config.previousRank;
+  const currentDivision = hasCurrentRank
+    ? config.currentDivision
+    : config.previousDivision;
   const targetValue = config.targetRank;
+  const targetDivision = config.targetDivision;
 
-  const currentRank = resolveGameRank(item?.gameName, currentValue);
-  const targetRank = resolveGameRank(item?.gameName, targetValue);
+  const currentRank = resolveGameRank(
+    item?.gameName,
+    currentValue,
+    currentDivision,
+  );
+  const targetRank = resolveGameRank(
+    item?.gameName,
+    targetValue,
+    targetDivision,
+  );
+  const currentRankLabel = isMarvelRivals && !hasCurrentRank ? "Previous" : "Current";
 
   const suggestedPlatform =
     typeof config.platform === "string"
@@ -204,7 +217,11 @@ export function CustomerOrderWorkspace({
 
       <header className="flex flex-col gap-5 py-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-[#4DA3FF]/70">
+          <p
+            className={`font-gaming-label text-[10px] uppercase tracking-[0.14em] ${
+              isMarvelRivals ? "text-[#CEC5FF]/70" : "text-[#4DA3FF]/70"
+            }`}
+          >
             {item?.gameName ?? "Gaming service"}
           </p>
 
@@ -221,26 +238,36 @@ export function CustomerOrderWorkspace({
         </div>
 
         {(currentRank || targetRank) ? (
-          <div className="flex min-w-0 items-center gap-4 border-l border-[#4DA3FF]/20 pl-4 lg:justify-end">
+          <div
+            className={`flex min-w-0 flex-wrap items-center gap-3 border-l pl-4 sm:gap-4 lg:justify-end ${
+              isMarvelRivals ? "border-[#A38CFF]/20" : "border-[#4DA3FF]/20"
+            }`}
+          >
             {currentRank ? (
               <GameRankValue
                 gameName={item?.gameName}
                 value={currentValue}
-                label="Current"
-                size="lg"
+                division={currentDivision}
+                label={currentRankLabel}
+                size={isMarvelRivals ? "md" : "lg"}
               />
             ) : null}
 
             {currentRank && targetRank ? (
-              <ArrowRight className="size-4 shrink-0 text-blue-200/30" />
+              <ArrowRight
+                className={`size-4 shrink-0 ${
+                  isMarvelRivals ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+                }`}
+              />
             ) : null}
 
             {targetRank ? (
               <GameRankValue
                 gameName={item?.gameName}
                 value={targetValue}
+                division={targetDivision}
                 label="Desired"
-                size="lg"
+                size={isMarvelRivals ? "md" : "lg"}
               />
             ) : null}
           </div>
