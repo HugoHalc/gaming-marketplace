@@ -13,6 +13,7 @@ import {
 import { MarvelRivalsPlacementsConfigurator } from "@/features/configurator/components/marvel-rivals-placements-configurator";
 import { MarvelRivalsRankConfigurator } from "@/features/configurator/components/marvel-rivals-rank-configurator";
 import { MarvelRivalsServiceConfigurator } from "@/features/configurator/components/marvel-rivals-service-configurator";
+import { MarvelRivalsWinsConfigurator } from "@/features/configurator/components/marvel-rivals-wins-configurator";
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
 
 interface MarvelRivalsServicePageProps {
@@ -163,6 +164,8 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
                 <MarvelRivalsRankConfigurator service={service} />
               ) : service.slug === "placement-matches" ? (
                 <MarvelRivalsPlacementsConfigurator service={service} />
+              ) : service.slug === "wins" ? (
+                <MarvelRivalsWinsConfigurator service={service} />
               ) : (
                 <MarvelRivalsServiceConfigurator service={service} />
               )}
