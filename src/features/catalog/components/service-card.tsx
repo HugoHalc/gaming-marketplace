@@ -3,8 +3,10 @@ import {
   ArrowRight,
   Award,
   Crosshair,
+  Gamepad2,
   GraduationCap,
   Medal,
+  Sparkles,
   Trophy,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -15,6 +17,8 @@ const categoryMeta: Record<ServiceCategory, { label: string; icon: typeof Trophy
   wins: { label: "Competitive wins", icon: Trophy },
   placements: { label: "Placements", icon: Crosshair },
   coaching: { label: "Coaching", icon: GraduationCap },
+  hero: { label: "Hero progression", icon: Sparkles },
+  unrated: { label: "Unrated games", icon: Gamepad2 },
 };
 
 const rocketLeagueServiceMeta: Record<
