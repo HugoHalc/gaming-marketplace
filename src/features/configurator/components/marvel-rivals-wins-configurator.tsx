@@ -737,12 +737,14 @@ export function MarvelRivalsWinsConfigurator({ service }: {
                   {
                     value: "solo" as const,
                     title: "Solo",
+                    meta: "Base",
                     description: "Our booster plays directly on your account.",
                     icon: <Target className="size-4" />,
                   },
                   {
                     value: "duo" as const,
                     title: "Duo",
+                    meta: "+75%",
                     description: "You play alongside your booster.",
                     icon: <Users className="size-4" />,
                   },
@@ -779,7 +781,12 @@ export function MarvelRivalsWinsConfigurator({ service }: {
                         {method.icon}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-xs font-semibold text-[#F4F7F5]">{method.title}</span>
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-xs font-semibold text-[#F4F7F5]">{method.title}</span>
+                          <span className={`shrink-0 text-[10px] font-bold ${method.value === "duo" ? "text-[#CEC5FF]/75" : "text-white/40"}`}>
+                            {method.meta}
+                          </span>
+                        </span>
                         <span className="mt-0.5 block text-[10px] leading-4 text-[#A0AAA4]">
                           {method.description}
                         </span>
