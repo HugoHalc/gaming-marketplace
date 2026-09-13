@@ -77,30 +77,35 @@ const roles: Array<{ value: Role; label: string }> = [
 const extraDefinitions: Array<{
   key: ExtraKey;
   title: string;
+  price: string;
   description: string;
   icon: ReactNode;
 }> = [
   {
     key: "playOffline",
     title: "Play Offline",
+    price: "FREE",
     description: "Keep your account presence discreet during the service.",
     icon: <EyeOff className="size-4" />,
   },
   {
     key: "specificHeroes",
     title: "Specific Heroes",
+    price: "+10%",
     description: "Include hero preferences with your service configuration.",
     icon: <Crosshair className="size-4" />,
   },
   {
     key: "streaming",
     title: "Streaming",
+    price: "+$10",
     description: "Watch the service through the supported streaming option.",
     icon: <MonitorPlay className="size-4" />,
   },
   {
     key: "expressDelivery",
     title: "Express Delivery",
+    price: "+20%",
     description: "Prioritize your order when this option is available.",
     icon: <Zap className="size-4" />,
   },
@@ -419,6 +424,7 @@ function ExtraCard({
   onChange,
   icon,
   title,
+  price,
   description,
   disabled = false,
 }: {
@@ -426,9 +432,12 @@ function ExtraCard({
   onChange: () => void;
   icon: ReactNode;
   title: string;
+  price: string;
   description: string;
   disabled?: boolean;
 }) {
+  const isFree = price === "FREE";
+
   return (
     <button
       type="button"
@@ -454,7 +463,20 @@ function ExtraCard({
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
+        <span className="flex items-center gap-2">
+          <span className="truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
+          <span
+            className={`shrink-0 text-[10px] font-bold ${
+              disabled
+                ? "text-white/35"
+                : isFree
+                  ? "text-[#82F5A4]"
+                  : "text-[#CEC5FF]/70"
+            }`}
+          >
+            {disabled ? "Solo only" : price}
+          </span>
+        </span>
         <span className="mt-0.5 block truncate text-[10px] text-[#A0AAA4]" title={description}>
           {description}
         </span>
@@ -836,6 +858,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
                     onChange={() => toggleExtra(extra.key)}
                     icon={extra.icon}
                     title={extra.title}
+                    price={extra.price}
                     description={
                       extra.key === "playOffline" && selection.boostMethod === "duo"
                         ? "Available with Solo only."
