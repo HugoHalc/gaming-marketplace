@@ -444,17 +444,17 @@ function ExtraCard({
 }
 
 function PreviousRankSummary({ selection }: { selection: Selection }) {
-  const unranked = selection.previousRank === "unranked";
+  const previousRank = selection.previousRank;
 
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
       <div className="flex min-w-0 items-center gap-2.5">
-        {unranked ? (
+        {previousRank === "unranked" ? (
           <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.09] bg-white/[0.025] text-[10px] font-black uppercase tracking-[0.08em] text-white/45">
             NR
           </span>
         ) : (
-          <RankBadge rank={selection.previousRank} compact />
+          <RankBadge rank={previousRank} compact />
         )}
         <div className="min-w-0">
           <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
