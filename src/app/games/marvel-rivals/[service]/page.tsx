@@ -14,6 +14,7 @@ import { MarvelRivalsHeroConfigurator } from "@/features/configurator/components
 import { MarvelRivalsPlacementsConfigurator } from "@/features/configurator/components/marvel-rivals-placements-configurator";
 import { MarvelRivalsRankConfigurator } from "@/features/configurator/components/marvel-rivals-rank-configurator";
 import { MarvelRivalsServiceConfigurator } from "@/features/configurator/components/marvel-rivals-service-configurator";
+import { MarvelRivalsUnratedConfigurator } from "@/features/configurator/components/marvel-rivals-unrated-configurator";
 import { MarvelRivalsWinsConfigurator } from "@/features/configurator/components/marvel-rivals-wins-configurator";
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
 
@@ -62,7 +63,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
           ? ["Rank + win quantity", "Solo or Duo", "Flexible extras"]
           : service.slug === "hero-boost"
             ? ["Hero Proficiency 1 → 70", "Choose your hero", "Solo or Duo"]
-            : ["Game quantity", "Solo or Duo", "Flexible extras"];
+            : ["1–10 games", "Solo or Duo", "Flexible extras"];
 
   const serviceNavigation = marvelRivalsServices.map((item) => ({
     slug: item.slug,
@@ -169,6 +170,8 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
                 <MarvelRivalsWinsConfigurator service={service} />
               ) : service.slug === "hero-boost" ? (
                 <MarvelRivalsHeroConfigurator service={service} />
+              ) : service.slug === "unrated-games" ? (
+                <MarvelRivalsUnratedConfigurator service={service} />
               ) : (
                 <MarvelRivalsServiceConfigurator service={service} />
               )}
