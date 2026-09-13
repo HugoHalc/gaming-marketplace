@@ -51,6 +51,81 @@ const PLATFORMS = new Set(["pc", "xbox", "playstation"]);
 const ROLES = new Set<MarvelRivalsRole>(["duelist", "vanguard", "strategist", "any"]);
 const BOOST_METHODS = new Set<MarvelRivalsBoostMethod>(["solo", "duo"]);
 
+const SERVICE_SELECTION_KEYS: Record<MarvelRivalsServiceSlug, ReadonlySet<string>> = {
+  "rank-boost": new Set([
+    "currentRank",
+    "currentDivision",
+    "targetRank",
+    "targetDivision",
+    "region",
+    "platform",
+    "boostMethod",
+    "role",
+    "playOffline",
+    "specificHeroes",
+    "streaming",
+    "expressDelivery",
+  ]),
+  "placement-matches": new Set([
+    "previousRank",
+    "previousDivision",
+    "matches",
+    "region",
+    "platform",
+    "boostMethod",
+    "role",
+    "playOffline",
+    "specificHeroes",
+    "streaming",
+    "expressDelivery",
+  ]),
+  wins: new Set([
+    "currentRank",
+    "currentDivision",
+    "eternityPoints",
+    "wins",
+    "region",
+    "platform",
+    "boostMethod",
+    "role",
+    "playOffline",
+    "specificHeroes",
+    "streaming",
+    "expressDelivery",
+  ]),
+  "hero-boost": new Set([
+    "hero",
+    "currentProficiency",
+    "targetProficiency",
+    "region",
+    "platform",
+    "boostMethod",
+    "playOffline",
+    "streaming",
+    "expressDelivery",
+  ]),
+  "unrated-games": new Set([
+    "games",
+    "region",
+    "platform",
+    "boostMethod",
+    "playOffline",
+    "specificHeroes",
+    "streaming",
+    "expressDelivery",
+  ]),
+};
+
+function validateSelectionKeys(
+  serviceSlug: MarvelRivalsServiceSlug,
+  selection: ConfiguratorSelection,
+) {
+  const allowed = SERVICE_SELECTION_KEYS[serviceSlug];
+  for (const key of Object.keys(selection)) {
+    if (!allowed.has(key)) throw new Error("Invalid Marvel Rivals order selection.");
+  }
+}
+
 const RANK_STATES = marvelRivalsRanks.flatMap((rank) =>
   rank.hasDivisions
     ? marvelRivalsDivisionOptions.map((division) => `${rank.key}-${division}`)
@@ -219,6 +294,7 @@ function toQuotePreview(
 }
 
 function calculateRank(selection: ConfiguratorSelection) {
+  validateSelectionKeys("rank-boost", selection);
   const common = validateCommon(selection);
   const role = validateRole(selection);
   const specificHeroes = validateSpecificHeroes(selection);
@@ -255,6 +331,7 @@ function calculateRank(selection: ConfiguratorSelection) {
 }
 
 function calculatePlacements(selection: ConfiguratorSelection) {
+  validateSelectionKeys("placement-matches", selection);
   const common = validateCommon(selection);
   const role = validateRole(selection);
   const specificHeroes = validateSpecificHeroes(selection);
@@ -296,6 +373,7 @@ function calculatePlacements(selection: ConfiguratorSelection) {
 }
 
 function calculateWins(selection: ConfiguratorSelection) {
+  validateSelectionKeys("wins", selection);
   const common = validateCommon(selection);
   const role = validateRole(selection);
   const specificHeroes = validateSpecificHeroes(selection);
@@ -338,6 +416,7 @@ function calculateWins(selection: ConfiguratorSelection) {
 }
 
 function calculateHero(selection: ConfiguratorSelection) {
+  validateSelectionKeys("hero-boost", selection);
   const common = validateCommon(selection);
   const hero = asString(selection, "hero");
   if (!HEROES.has(hero)) throw new Error("Select a valid hero.");
@@ -373,6 +452,7 @@ function calculateHero(selection: ConfiguratorSelection) {
 }
 
 function calculateUnrated(selection: ConfiguratorSelection) {
+  validateSelectionKeys("unrated-games", selection);
   const common = validateCommon(selection);
   const specificHeroes = validateSpecificHeroes(selection);
   const games = asInteger(selection, "games");

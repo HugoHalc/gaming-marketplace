@@ -27,6 +27,10 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import {
+  MarvelRivalsCheckoutButton,
+  useMarvelRivalsCheckout,
+} from "@/features/configurator/client/use-marvel-rivals-checkout";
+import {
   formatMarvelQuoteUsd,
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
@@ -602,6 +606,49 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     quoteSelection,
   );
   const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
+  const checkoutContinuitySelection = useMemo<ConfiguratorSelection>(
+    () => ({
+      currentRank: selection.currentRank,
+      currentDivision: selection.currentDivision ?? "",
+      eternityPoints: selection.eternityPoints,
+      wins: selection.wins,
+      region: selection.region,
+      platform: selection.platform,
+      boostMethod: selection.boostMethod,
+      role: selection.role,
+      playOffline: selection.extras.playOffline,
+      specificHeroes: selection.extras.specificHeroes,
+      streaming: selection.extras.streaming,
+      expressDelivery: selection.extras.expressDelivery,
+    }),
+    [selection],
+  );
+  const checkout = useMarvelRivalsCheckout({
+    serviceSlug: service.slug,
+    orderSelection: quoteSelection,
+    continuitySelection: checkoutContinuitySelection,
+    canCheckout: Boolean(quote && !quoteLoading && !quoteError),
+    restoreSelection: (restored) =>
+      setSelection((current) => ({
+        ...current,
+        currentRank: restored.currentRank as RankKey,
+        currentDivision: restored.currentDivision
+          ? (restored.currentDivision as Division)
+          : null,
+        eternityPoints: Number(restored.eternityPoints),
+        wins: Number(restored.wins),
+        region: String(restored.region),
+        platform: String(restored.platform),
+        boostMethod: restored.boostMethod as BoostMethod,
+        role: restored.role as Role,
+        extras: {
+          playOffline: Boolean(restored.playOffline),
+          specificHeroes: Boolean(restored.specificHeroes),
+          streaming: Boolean(restored.streaming),
+          expressDelivery: Boolean(restored.expressDelivery),
+        },
+      })),
+  });
 
   const summaryRows = useMemo(() => {
     const serverLabel = regions.find((item) => item.value === selection.region)?.label ?? "North America";
@@ -897,6 +944,14 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           metadata={<SummaryRows rows={summaryRows} />}
           totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
           totalValue={totalPrice}
+          checkoutError={checkout.orderError}
+          checkoutAction={
+            <MarvelRivalsCheckoutButton
+              onClick={checkout.createOrder}
+              disabled={!quote || quoteLoading || Boolean(quoteError)}
+              loading={checkout.isCreatingOrder}
+            />
+          }
         >
           {quoteError ? (
             <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
@@ -906,7 +961,18 @@ export function MarvelRivalsWinsConfigurator({ service }: {
         </GameOrderAside>
       </GameConfiguratorColumns>
 
-      <GameMobileOrderBar label="USD" value={totalPrice} />
+      <GameMobileOrderBar
+        label="USD"
+        value={totalPrice}
+        action={
+          <MarvelRivalsCheckoutButton
+            mobile
+            onClick={checkout.createOrder}
+            disabled={!quote || quoteLoading || Boolean(quoteError)}
+            loading={checkout.isCreatingOrder}
+          />
+        }
+      />
     </>
   );
 }

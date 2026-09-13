@@ -56,6 +56,8 @@ export function GameOrderAside({
   metadata,
   totalLabel = "Pricing pending",
   totalValue,
+  checkoutAction,
+  checkoutError,
   children,
 }: {
   gameLabel: string;
@@ -65,6 +67,8 @@ export function GameOrderAside({
   metadata?: ReactNode;
   totalLabel?: string;
   totalValue?: string;
+  checkoutAction?: ReactNode;
+  checkoutError?: string | null;
   children?: ReactNode;
 }) {
   const ready = statusTone === "ready";
@@ -115,13 +119,21 @@ export function GameOrderAside({
 
             {children}
 
-            <Button
-              className="mt-4 h-12 w-full cursor-not-allowed rounded-xl border border-white/[0.06] bg-white/[0.055] font-semibold text-white/35 opacity-100 shadow-none hover:bg-white/[0.055] hover:text-white/35"
-              size="lg"
-              disabled
-            >
-              Checkout unavailable
-            </Button>
+            {checkoutError ? (
+              <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
+                {checkoutError}
+              </div>
+            ) : null}
+
+            {checkoutAction ?? (
+              <Button
+                className="mt-4 h-12 w-full cursor-not-allowed rounded-xl border border-white/[0.06] bg-white/[0.055] font-semibold text-white/35 opacity-100 shadow-none hover:bg-white/[0.055] hover:text-white/35"
+                size="lg"
+                disabled
+              >
+                Checkout unavailable
+              </Button>
+            )}
 
             <p className="mt-3 text-center text-[10px] leading-4 text-white/35">
               Final order details will be validated before checkout.
@@ -147,7 +159,15 @@ export function GameOrderAside({
   );
 }
 
-export function GameMobileOrderBar({ label, value }: { label: string; value?: string }) {
+export function GameMobileOrderBar({
+  label,
+  value,
+  action,
+}: {
+  label: string;
+  value?: string;
+  action?: ReactNode;
+}) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">
       <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
@@ -162,13 +182,15 @@ export function GameMobileOrderBar({ label, value }: { label: string; value?: st
             <span className="text-[9px] text-[#A0AAA4]">{label}</span>
           </div>
         </div>
-        <a
-          href="#boost-summary"
-          className="inline-flex h-11 items-center justify-center rounded-xl border border-white/[0.10] bg-white/[0.055] px-5 text-sm font-bold text-white/55 transition-colors hover:border-white/[0.16] hover:text-white"
-        >
-          View order
-          <ArrowRight className="ml-2 size-4" />
-        </a>
+        {action ?? (
+          <a
+            href="#boost-summary"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-white/[0.10] bg-white/[0.055] px-5 text-sm font-bold text-white/55 transition-colors hover:border-white/[0.16] hover:text-white"
+          >
+            View order
+            <ArrowRight className="ml-2 size-4" />
+          </a>
+        )}
       </div>
     </div>
   );
