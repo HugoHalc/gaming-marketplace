@@ -131,17 +131,18 @@ export default async function OverwatchPage() {
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
         <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-15" />
         <div className="absolute right-[-10rem] top-[-13rem] -z-20 h-[38rem] w-[52rem] rounded-full bg-amber-400/[0.075] blur-[130px]" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[60%] overflow-hidden md:block">
+        <div className="absolute inset-y-0 right-0 -z-20 hidden w-[68%] md:block">
           <Image
-            src="/game-cards/overwatch.webp"
+            src="/game-heroes/overwatch-hero.jpg"
             alt=""
             fill
             priority
-            sizes="60vw"
-            className="object-cover object-center opacity-50 lg:opacity-65"
+            sizes="68vw"
+            className="object-cover object-[58%_center] opacity-85"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_18%,rgba(5,8,7,.82)_38%,rgba(5,8,7,.32)_62%,rgba(5,8,7,.08)_100%)]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/55 via-transparent to-[#050807]/20" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.985)_18%,rgba(5,8,7,.88)_36%,rgba(5,8,7,.5)_56%,rgba(5,8,7,.14)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/72 via-[#050807]/10 to-[#050807]/18" />
+          <div className="absolute left-[44%] top-[14%] h-44 w-44 rounded-full bg-amber-300/[0.10] blur-[100px] lg:h-56 lg:w-56" />
         </div>
 
         <Container className="relative py-12 sm:py-16 lg:min-h-[31rem] lg:py-20">
