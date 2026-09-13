@@ -199,6 +199,44 @@ const ROLE_LABEL: Record<string, string> = {
 const SERVERS = new Set(["north-america", "europe", "asia", "middle-east"]);
 const PLATFORMS = new Set(["pc", "xbox", "playstation", "nintendo-switch"]);
 
+
+const COMMON_SELECTION_KEYS = [
+  "boostMethod",
+  "boosters",
+  "role",
+  "server",
+  "platform",
+  "playOffline",
+  "specificHeroes",
+  "streaming",
+  "expressDelivery",
+  "extraWin",
+  "rankInsurance",
+] as const;
+
+const SERVICE_SELECTION_KEYS: Record<string, ReadonlySet<string>> = {
+  "rank-boost": new Set(["currentRank", "targetRank", ...COMMON_SELECTION_KEYS]),
+  wins: new Set(["currentRank", "wins", ...COMMON_SELECTION_KEYS]),
+  "competitive-drives": new Set([
+    "driveRank",
+    "currentDrive",
+    "desiredDrive",
+    ...COMMON_SELECTION_KEYS,
+  ]),
+  "placement-matches": new Set(["currentRank", "matches", ...COMMON_SELECTION_KEYS]),
+  "unrated-matches": new Set(["matches", ...COMMON_SELECTION_KEYS]),
+};
+
+function validateSelectionKeys(serviceSlug: string, selection: ConfiguratorSelection) {
+  const allowed = SERVICE_SELECTION_KEYS[serviceSlug];
+  if (!allowed) throw new Error("Unsupported Overwatch service.");
+
+  const unexpected = Object.keys(selection).filter((key) => !allowed.has(key));
+  if (unexpected.length) {
+    throw new Error("Invalid Overwatch order selection.");
+  }
+}
+
 function roundMoney(value: number) {
   return Math.round((value + 1e-9) * 100) / 100;
 }
@@ -242,6 +280,9 @@ function validateCommon(selection: ConfiguratorSelection) {
   }
   if (!Number.isFinite(boosters) || boosters < 1 || boosters > 5) {
     throw new Error("Boosters must be between 1 and 5.");
+  }
+  if (boostMethod === "account" && boosters !== 1) {
+    throw new Error("Account Boost uses exactly one booster.");
   }
   if (!(role in OVERWATCH_EXTRA_PRICING.role)) throw new Error("Select a valid role or queue.");
   if (!SERVERS.has(server)) throw new Error("Select a valid server.");
@@ -439,6 +480,8 @@ export function calculateOverwatchQuote(
   serviceSlug: string,
   selection: ConfiguratorSelection,
 ): QuotePreview {
+  validateSelectionKeys(serviceSlug, selection);
+
   if (serviceSlug === "rank-boost") {
     const base = calculateRankBase(selection);
     return calculateCommonQuote({ ...base, baseLabel: base.label, serviceSlug, selection });

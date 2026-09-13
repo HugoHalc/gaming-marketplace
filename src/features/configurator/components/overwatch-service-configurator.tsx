@@ -374,7 +374,7 @@ function RankSelector({
 function DriveRankSelector({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <div>
-      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current rank</p>
+      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Drive Rank</p>
       <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3 2xl:grid-cols-5">
         {rankFamilies.map((family) => {
           const active = value === family.key;
@@ -487,6 +487,15 @@ export function OverwatchServiceConfigurator({
   }, [selection.boostMethod, selection.playOffline]);
 
   useEffect(() => {
+    if (!isWins || (selection.extraWin !== true && selection.rankInsurance !== true)) return;
+    setSelection((current) => ({
+      ...current,
+      extraWin: false,
+      rankInsurance: false,
+    }));
+  }, [isWins, selection.extraWin, selection.rankInsurance]);
+
+  useEffect(() => {
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setIsLoading(true);
@@ -517,6 +526,10 @@ export function OverwatchServiceConfigurator({
       ...current,
       [key]: value,
       ...(key === "boostMethod" && value === "duo" ? { playOffline: false } : {}),
+      ...(key === "boostMethod" && value === "account" ? { boosters: 1 } : {}),
+      ...(isWins && (key === "extraWin" || key === "rankInsurance")
+        ? { extraWin: false, rankInsurance: false }
+        : {}),
     }));
   }
 

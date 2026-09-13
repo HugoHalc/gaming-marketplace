@@ -16,6 +16,7 @@ import {
   GameRankValue,
   gameCardAsset,
   isMarvelRivalsGame,
+  isOverwatchGame,
   resolveGameRank,
 } from "@/components/orders/game-order-presentation";
 
@@ -49,11 +50,15 @@ function formatLabel(value: string) {
     .replace(/^./, (letter) => letter.toUpperCase());
 }
 
-function platformLabel(value: string, marvel: boolean) {
-  if (!marvel) return formatLabel(value);
-  if (value === "pc") return "PC";
-  if (value === "xbox") return "Xbox";
-  if (value === "playstation") return "PlayStation";
+function platformLabel(value: string, gameName: unknown) {
+  const marvel = isMarvelRivalsGame(gameName);
+  const overwatch = isOverwatchGame(gameName);
+  if (marvel || overwatch) {
+    if (value === "pc") return "PC";
+    if (value === "xbox") return "Xbox";
+    if (value === "playstation") return "PlayStation";
+    if (value === "nintendo-switch") return "Nintendo Switch";
+  }
   return formatLabel(value);
 }
 
@@ -116,6 +121,7 @@ function Extras({
 }) {
   const extras: string[] = [];
   const marvel = isMarvelRivalsGame(gameName);
+  const overwatch = isOverwatchGame(gameName);
 
   if (marvel) {
     if (configuration.boostMethod === "duo") extras.push("Duo");
@@ -123,6 +129,18 @@ function Extras({
     if (configuration.specificHeroes === true) extras.push("Specific Heroes");
     if (configuration.streaming === true) extras.push("Streaming");
     if (configuration.expressDelivery === true) extras.push("Express Delivery");
+  } else if (overwatch) {
+    if (configuration.boostMethod === "duo") {
+      const boosters =
+        typeof configuration.boosters === "number" ? configuration.boosters : 1;
+      extras.push(`Play With Booster · ${boosters}`);
+    }
+    if (configuration.playOffline === true) extras.push("Play Offline");
+    if (configuration.specificHeroes === true) extras.push("Specific Heroes");
+    if (configuration.streaming === true) extras.push("Streaming");
+    if (configuration.expressDelivery === true) extras.push("Express Delivery");
+    if (configuration.extraWin === true) extras.push("+1 Bonus Win");
+    if (configuration.rankInsurance === true) extras.push("Rank Insurance");
   } else {
     if (configuration.playlist) extras.push(String(configuration.playlist));
     if (configuration.boostMethod === "play-with-booster")
@@ -135,16 +153,18 @@ function Extras({
 
   return extras.length ? (
     <div className="flex flex-wrap gap-1.5">
-      {extras.slice(0, marvel ? extras.length : 4).map((extra) => (
+      {extras.slice(0, marvel || overwatch ? extras.length : 4).map((extra) => (
         <span
           key={extra}
           className={`rounded-full border px-2 py-1 text-[8px] font-medium ${
             marvel
               ? "border-[#A38CFF]/10 bg-[#7A63F2]/[0.035] text-[#CEC5FF]/80"
-              : "border-white/[0.06] bg-white/[0.025] text-[#A0AAA4]"
+              : overwatch
+                ? "border-amber-300/10 bg-amber-300/[0.035] text-amber-100/80"
+                : "border-white/[0.06] bg-white/[0.025] text-[#A0AAA4]"
           }`}
         >
-          {marvel ? extra : formatLabel(extra)}
+          {marvel || overwatch ? extra : formatLabel(extra)}
         </span>
       ))}
     </div>
@@ -161,12 +181,22 @@ function CustomerOrderCard({
   const item = order.items[0];
   const config = item?.configuration ?? {};
   const marvel = isMarvelRivalsGame(item?.gameName);
+  const overwatch = isOverwatchGame(item?.gameName);
+  const normalizedServiceName = item?.serviceName?.trim().toLowerCase() ?? "";
+  const overwatchDrives = overwatch && normalizedServiceName === "competitive drives";
+  const overwatchPlacements = overwatch && normalizedServiceName === "placements boost";
+  const overwatchRankBoost = overwatch && normalizedServiceName === "rank boost";
+
   const hasCurrentRank = typeof config.currentRank !== "undefined";
-  const currentRank = hasCurrentRank ? config.currentRank : config.previousRank;
+  const currentRank = overwatchDrives
+    ? config.driveRank
+    : hasCurrentRank
+      ? config.currentRank
+      : config.previousRank;
   const currentDivision = hasCurrentRank
     ? config.currentDivision
     : config.previousDivision;
-  const targetRank = config.targetRank;
+  const targetRank = overwatchRankBoost || !overwatch ? config.targetRank : undefined;
   const targetDivision = config.targetDivision;
   const currentResolved = resolveGameRank(
     item?.gameName,
@@ -178,10 +208,14 @@ function CustomerOrderCard({
     targetRank,
     targetDivision,
   );
-  const currentRankLabel = marvel && !hasCurrentRank ? "Previous" : "Current";
+  const currentRankLabel = overwatchDrives
+    ? "Drive Rank"
+    : overwatchPlacements || (marvel && !hasCurrentRank)
+      ? "Previous"
+      : "Current";
   const platform =
     typeof config.platform === "string"
-      ? platformLabel(config.platform, marvel)
+      ? platformLabel(config.platform, item?.gameName)
       : null;
   const wins = typeof config.wins === "number" ? config.wins : null;
   const matches = typeof config.matches === "number" ? config.matches : null;
@@ -201,6 +235,18 @@ function CustomerOrderCard({
   const proficiency =
     currentProficiency !== null && targetProficiency !== null
       ? `${currentProficiency} → ${targetProficiency}`
+      : null;
+  const currentDrive =
+    overwatchDrives && typeof config.currentDrive === "number"
+      ? config.currentDrive
+      : null;
+  const desiredDrive =
+    overwatchDrives && typeof config.desiredDrive === "number"
+      ? config.desiredDrive
+      : null;
+  const driveProgression =
+    currentDrive !== null && desiredDrive !== null
+      ? `${currentDrive.toLocaleString("en-US")} → ${desiredDrive.toLocaleString("en-US")}`
       : null;
 
   if (viewMode === "list") {
@@ -245,7 +291,11 @@ function CustomerOrderCard({
           {currentResolved && targetResolved ? (
             <ArrowRight
               className={`size-3 shrink-0 ${
-                marvel ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+                marvel
+                  ? "text-[#CEC5FF]/35"
+                  : overwatch
+                    ? "text-amber-200/35"
+                    : "text-blue-200/30"
               }`}
             />
           ) : null}
@@ -295,6 +345,16 @@ function CustomerOrderCard({
               </p>
               <p className="font-gaming-value mt-1 text-[10px] font-bold text-[#F4F7F5]">
                 {proficiency}
+              </p>
+            </div>
+          ) : null}
+          {driveProgression ? (
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.1em] text-amber-200/50">
+                Drive
+              </p>
+              <p className="font-gaming-value mt-1 text-[10px] font-bold text-[#F4F7F5]">
+                {driveProgression}
               </p>
             </div>
           ) : null}
@@ -356,7 +416,11 @@ function CustomerOrderCard({
           <div className="min-w-0">
             <p
               className={`font-gaming-label text-[8px] uppercase tracking-[0.12em] ${
-                marvel ? "text-[#CEC5FF]/50" : "text-[#667069]"
+                marvel
+                  ? "text-[#CEC5FF]/50"
+                  : overwatch
+                    ? "text-amber-200/55"
+                    : "text-[#667069]"
               }`}
             >
               {item?.gameName ?? "Gaming service"}
@@ -386,7 +450,11 @@ function CustomerOrderCard({
             {currentResolved && targetResolved ? (
               <ArrowRight
                 className={`size-3.5 shrink-0 ${
-                  marvel ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+                  marvel
+                  ? "text-[#CEC5FF]/35"
+                  : overwatch
+                    ? "text-amber-200/35"
+                    : "text-blue-200/30"
                 }`}
               />
             ) : null}
@@ -405,6 +473,14 @@ function CustomerOrderCard({
                 </p>
                 <p className="font-gaming-value mt-1 text-[12px] font-bold text-[#F4F7F5]">
                   {activityCount}
+                </p>
+              </div>
+            ) : null}
+            {driveProgression ? (
+              <div className="ml-auto min-w-[92px] border-l border-white/[0.05] pl-3">
+                <p className="text-[8px] text-amber-200/50">Drive</p>
+                <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                  {driveProgression}
                 </p>
               </div>
             ) : null}

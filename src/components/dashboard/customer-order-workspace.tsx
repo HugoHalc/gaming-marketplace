@@ -26,6 +26,7 @@ import { OrderOperationsPanel } from "@/components/dashboard/order-operations-pa
 import {
   GameRankValue,
   isMarvelRivalsGame,
+  isOverwatchGame,
   resolveGameRank,
 } from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
@@ -147,13 +148,21 @@ export function CustomerOrderWorkspace({
   const item = order.items[0];
   const config = item?.configuration ?? {};
   const isMarvelRivals = isMarvelRivalsGame(item?.gameName);
+  const isOverwatch = isOverwatchGame(item?.gameName);
+  const normalizedServiceName = item?.serviceName?.trim().toLowerCase() ?? "";
+  const isOverwatchDrives = isOverwatch && normalizedServiceName === "competitive drives";
+  const isOverwatchPlacements = isOverwatch && normalizedServiceName === "placements boost";
 
   const hasCurrentRank = typeof config.currentRank !== "undefined";
-  const currentValue = hasCurrentRank ? config.currentRank : config.previousRank;
+  const currentValue = isOverwatchDrives
+    ? config.driveRank
+    : hasCurrentRank
+      ? config.currentRank
+      : config.previousRank;
   const currentDivision = hasCurrentRank
     ? config.currentDivision
     : config.previousDivision;
-  const targetValue = config.targetRank;
+  const targetValue = isOverwatchDrives ? undefined : config.targetRank;
   const targetDivision = config.targetDivision;
 
   const currentRank = resolveGameRank(
@@ -166,7 +175,19 @@ export function CustomerOrderWorkspace({
     targetValue,
     targetDivision,
   );
-  const currentRankLabel = isMarvelRivals && !hasCurrentRank ? "Previous" : "Current";
+  const currentRankLabel = isOverwatchDrives
+    ? "Drive Rank"
+    : isOverwatchPlacements || (isMarvelRivals && !hasCurrentRank)
+      ? "Previous"
+      : "Current";
+  const currentDrive =
+    isOverwatchDrives && typeof config.currentDrive === "number"
+      ? config.currentDrive
+      : null;
+  const desiredDrive =
+    isOverwatchDrives && typeof config.desiredDrive === "number"
+      ? config.desiredDrive
+      : null;
 
   const suggestedPlatform =
     typeof config.platform === "string"
@@ -219,7 +240,11 @@ export function CustomerOrderWorkspace({
         <div className="min-w-0">
           <p
             className={`font-gaming-label text-[10px] uppercase tracking-[0.14em] ${
-              isMarvelRivals ? "text-[#CEC5FF]/70" : "text-[#4DA3FF]/70"
+              isMarvelRivals
+                ? "text-[#CEC5FF]/70"
+                : isOverwatch
+                  ? "text-amber-200/60"
+                  : "text-[#4DA3FF]/70"
             }`}
           >
             {item?.gameName ?? "Gaming service"}
@@ -237,10 +262,14 @@ export function CustomerOrderWorkspace({
           </div>
         </div>
 
-        {(currentRank || targetRank) ? (
+        {(currentRank || targetRank || (currentDrive !== null && desiredDrive !== null)) ? (
           <div
             className={`flex min-w-0 flex-wrap items-center gap-3 border-l pl-4 sm:gap-4 lg:justify-end ${
-              isMarvelRivals ? "border-[#A38CFF]/20" : "border-[#4DA3FF]/20"
+              isMarvelRivals
+                ? "border-[#A38CFF]/20"
+                : isOverwatch
+                  ? "border-amber-300/20"
+                  : "border-[#4DA3FF]/20"
             }`}
           >
             {currentRank ? (
@@ -249,14 +278,18 @@ export function CustomerOrderWorkspace({
                 value={currentValue}
                 division={currentDivision}
                 label={currentRankLabel}
-                size={isMarvelRivals ? "md" : "lg"}
+                size={isMarvelRivals || isOverwatch ? "md" : "lg"}
               />
             ) : null}
 
             {currentRank && targetRank ? (
               <ArrowRight
                 className={`size-4 shrink-0 ${
-                  isMarvelRivals ? "text-[#CEC5FF]/35" : "text-blue-200/30"
+                  isMarvelRivals
+                    ? "text-[#CEC5FF]/35"
+                    : isOverwatch
+                      ? "text-amber-200/35"
+                      : "text-blue-200/30"
                 }`}
               />
             ) : null}
@@ -267,8 +300,30 @@ export function CustomerOrderWorkspace({
                 value={targetValue}
                 division={targetDivision}
                 label="Desired"
-                size={isMarvelRivals ? "md" : "lg"}
+                size={isMarvelRivals || isOverwatch ? "md" : "lg"}
               />
+            ) : null}
+
+            {currentDrive !== null && desiredDrive !== null ? (
+              <div className="flex min-w-0 items-center gap-2 rounded-xl border border-amber-300/10 bg-amber-300/[0.025] px-3 py-2">
+                <div>
+                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-amber-200/50">
+                    Current Drive
+                  </p>
+                  <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                    {currentDrive.toLocaleString("en-US")}
+                  </p>
+                </div>
+                <ArrowRight className="size-3.5 shrink-0 text-amber-200/35" />
+                <div>
+                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-amber-200/50">
+                    Desired Drive
+                  </p>
+                  <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
+                    {desiredDrive.toLocaleString("en-US")}
+                  </p>
+                </div>
+              </div>
             ) : null}
           </div>
         ) : null}
@@ -315,6 +370,7 @@ export function CustomerOrderWorkspace({
             <div className="mt-6">
               <OrderConfigurationSummary
                 gameName={item.gameName}
+                serviceName={item.serviceName}
                 configuration={item.configuration}
                 priceBreakdown={item.priceBreakdown}
               />

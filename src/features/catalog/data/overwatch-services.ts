@@ -68,9 +68,31 @@ const overwatchServices: ServiceSummary[] = [
 export function withOverwatchServiceNavigation(game: CatalogGame): CatalogGame {
   if (game.slug !== "overwatch-2") return game;
 
+  const existingBySlug = new Map(game.services.map((service) => [service.slug, service]));
+  const services = overwatchServices.map((blueprint) => {
+    const canonical = existingBySlug.get(blueprint.slug);
+
+    if (!canonical) {
+      return {
+        ...blueprint,
+        gameId: game.id,
+      };
+    }
+
+    return {
+      ...blueprint,
+      ...canonical,
+      slug: blueprint.slug,
+      name: blueprint.name,
+      category: blueprint.category,
+      description: blueprint.description,
+      startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
+    };
+  });
+
   return {
     ...game,
-    services: overwatchServices,
-    startingPrice: Math.min(...overwatchServices.map((service) => service.startingPrice)),
+    services,
+    startingPrice: Math.min(...services.map((service) => service.startingPrice)),
   };
 }

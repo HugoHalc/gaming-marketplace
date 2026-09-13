@@ -28,6 +28,27 @@ const MARVEL_RIVALS_RANK_ASSETS: Record<string, string> = {
   eternity: "/ranks/marvel-rivals/eternity.png",
 };
 
+
+const OVERWATCH_RANK_ASSETS: Record<string, string> = {
+  bronze: "/ranks/overwatch/bronze.png",
+  silver: "/ranks/overwatch/silver.png",
+  gold: "/ranks/overwatch/gold.png",
+  platinum: "/ranks/overwatch/platinum.png",
+  emerald: "/ranks/overwatch/emerald.png",
+  diamond: "/ranks/overwatch/diamond.png",
+  master: "/ranks/overwatch/master.png",
+  grandmaster: "/ranks/overwatch/grandmaster.png",
+  champion: "/ranks/overwatch/champion.png",
+};
+
+const OVERWATCH_DIVISION_LABELS: Record<string, string> = {
+  "5": "V",
+  "4": "IV",
+  "3": "III",
+  "2": "II",
+  "1": "I",
+};
+
 export function normalizedGameSlug(gameName: unknown) {
   if (typeof gameName !== "string") return "";
   return gameName.trim().toLowerCase().replace(/\s+/g, "-");
@@ -35,6 +56,10 @@ export function normalizedGameSlug(gameName: unknown) {
 
 export function isMarvelRivalsGame(gameName: unknown) {
   return normalizedGameSlug(gameName) === "marvel-rivals";
+}
+
+export function isOverwatchGame(gameName: unknown) {
+  return normalizedGameSlug(gameName) === "overwatch-2";
 }
 
 function valorantRankFamily(value: string) {
@@ -113,12 +138,45 @@ export function resolveMarvelRivalsRank(value: unknown, division?: unknown) {
   };
 }
 
+export function resolveOverwatchRank(value: unknown) {
+  if (typeof value !== "string") return null;
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "unranked") {
+    return { key: normalized, label: "Unranked", asset: null };
+  }
+
+  const matched = normalized.match(/^([a-z]+(?:-[a-z]+)?)-(5|4|3|2|1)$/);
+  if (matched) {
+    const [, family, division] = matched;
+    const asset = OVERWATCH_RANK_ASSETS[family];
+    const divisionLabel = OVERWATCH_DIVISION_LABELS[division];
+    if (!asset || !divisionLabel) return null;
+
+    return {
+      key: normalized,
+      label: `${familyLabel(family)} ${divisionLabel}`,
+      asset,
+    };
+  }
+
+  const familyAsset = OVERWATCH_RANK_ASSETS[normalized];
+  if (!familyAsset) return null;
+
+  return {
+    key: normalized,
+    label: familyLabel(normalized),
+    asset: familyAsset,
+  };
+}
+
 export function gameCardAsset(gameName: unknown) {
   const slug = normalizedGameSlug(gameName);
 
   if (slug === "valorant") return "/game-cards/valorant.webp";
   if (slug === "rocket-league") return "/game-cards/rocket-league.webp";
   if (slug === "marvel-rivals") return "/game-cards/marvel-rivals.webp";
+  if (slug === "overwatch-2") return "/game-cards/overwatch.webp";
 
   return "/brand/boostingpedia-hero-art.webp";
 }
@@ -129,6 +187,7 @@ export function resolveGameRank(gameName: unknown, value: unknown, division?: un
   if (slug === "valorant") return resolveValorantRank(value);
   if (slug === "rocket-league") return resolveRocketLeagueRank(value);
   if (slug === "marvel-rivals") return resolveMarvelRivalsRank(value, division);
+  if (slug === "overwatch-2") return resolveOverwatchRank(value);
 
   return null;
 }
@@ -158,12 +217,15 @@ export function GameRankValue({
     );
   }
 
-  if (slug !== "valorant" && slug !== "marvel-rivals") return null;
+  if (slug !== "valorant" && slug !== "marvel-rivals" && slug !== "overwatch-2") return null;
 
   const marvel = slug === "marvel-rivals";
+  const overwatch = slug === "overwatch-2";
   const rank = marvel
     ? resolveMarvelRivalsRank(value, division)
-    : resolveValorantRank(value);
+    : overwatch
+      ? resolveOverwatchRank(value)
+      : resolveValorantRank(value);
   if (!rank) return null;
 
   const dimensions = size === "sm" ? 26 : size === "lg" ? 46 : 34;
@@ -184,7 +246,11 @@ export function GameRankValue({
         {label ? (
           <p
             className={`font-gaming-label text-[8px] uppercase tracking-[0.12em] ${
-              marvel ? "text-[#CEC5FF]/55" : "text-rose-200/50"
+              marvel
+                ? "text-[#CEC5FF]/55"
+                : overwatch
+                  ? "text-amber-200/60"
+                  : "text-rose-200/50"
             }`}
           >
             {label}
@@ -192,7 +258,7 @@ export function GameRankValue({
         ) : null}
         <p
           className={`font-gaming-value font-bold text-[#F4F7F5] ${
-            marvel ? "break-words leading-tight" : "truncate"
+            marvel || overwatch ? "break-words leading-tight" : "truncate"
           } ${
             size === "lg" ? "text-sm" : size === "sm" ? "text-[10px]" : "text-[11px]"
           }`}
