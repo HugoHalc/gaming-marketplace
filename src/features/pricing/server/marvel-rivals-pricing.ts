@@ -29,7 +29,7 @@ import type {
   QuotePreview,
 } from "@/features/configurator/types/configurator";
 
-const VERSION = "marvel-rivals-v1.0";
+const VERSION = "marvel-rivals-v1.1";
 const FINAL_SERVICES = new Set<MarvelRivalsServiceSlug>([
   "rank-boost",
   "placement-matches",
@@ -153,20 +153,20 @@ function modifierBreakdown(input: {
   specificHeroesPaid: boolean;
 }) {
   const items: QuoteBreakdownItem[] = [];
-  const base = roundMarvelUsd(input.quote.boostingPediaBase);
+  const base = roundMarvelUsd(input.quote.baseBeforeModifiers);
   items.push({ label: input.baseLabel, amount: base });
 
   if (input.boostMethod === "duo") {
     items.push({
       label: `Duo (+${MARVEL_RIVALS_DUO_PERCENT}%)`,
-      amount: roundMarvelUsd(input.quote.boostingPediaBase * (MARVEL_RIVALS_DUO_PERCENT / 100)),
+      amount: roundMarvelUsd(input.quote.baseBeforeModifiers * (MARVEL_RIVALS_DUO_PERCENT / 100)),
     });
   }
   if (input.role === "strategist") {
     items.push({
       label: `Strategist (+${MARVEL_RIVALS_STRATEGIST_PERCENT}%)`,
       amount: roundMarvelUsd(
-        input.quote.boostingPediaBase * (MARVEL_RIVALS_STRATEGIST_PERCENT / 100),
+        input.quote.baseBeforeModifiers * (MARVEL_RIVALS_STRATEGIST_PERCENT / 100),
       ),
     });
   }
@@ -177,7 +177,7 @@ function modifierBreakdown(input: {
         : "Specific Heroes",
       amount: input.specificHeroesPaid
         ? roundMarvelUsd(
-            input.quote.boostingPediaBase * (MARVEL_RIVALS_SPECIFIC_HEROES_PERCENT / 100),
+            input.quote.baseBeforeModifiers * (MARVEL_RIVALS_SPECIFIC_HEROES_PERCENT / 100),
           )
         : 0,
     });
@@ -186,7 +186,7 @@ function modifierBreakdown(input: {
     items.push({
       label: `Express Delivery (+${MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT}%)`,
       amount: roundMarvelUsd(
-        input.quote.boostingPediaBase * (MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT / 100),
+        input.quote.baseBeforeModifiers * (MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT / 100),
       ),
     });
   }

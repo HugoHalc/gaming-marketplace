@@ -1,3 +1,5 @@
+import "server-only";
+
 export type MarvelRivalsRankKey =
   | "bronze"
   | "silver"
@@ -20,14 +22,14 @@ export type MarvelRivalsPricingExtras = {
 };
 
 export type MarvelRivalsPriceQuote = {
-  boostingMarketRawBase: number;
-  boostingPediaBase: number;
+  rawBase: number;
+  baseBeforeModifiers: number;
   percentageModifiers: number;
   fixedFees: number;
   total: number;
 };
 
-export const MARVEL_RIVALS_BOOSTINGPEDIA_BASE_FACTOR = 0.7;
+export const MARVEL_RIVALS_BASE_FACTOR = 0.7;
 export const MARVEL_RIVALS_DUO_PERCENT = 75;
 export const MARVEL_RIVALS_STRATEGIST_PERCENT = 15;
 export const MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT = 20;
@@ -59,88 +61,88 @@ const RANK_STATES = [
   ["eternity", null],
 ] as const satisfies ReadonlyArray<readonly [MarvelRivalsRankKey, MarvelRivalsDivision | null]>;
 
-// Raw BoostingMarket transition prices captured from the public Marvel Rivals configurator.
-// BoostingPedia applies its 70% base factor after summing the required transitions.
 const RANK_TRANSITION_RAW_USD = [
   3.15,
   3.15,
   3.15,
-  3.89,
-  3.89,
-  3.89,
-  4.99,
-  4.99,
-  4.99,
-  5.16,
-  5.16,
-  12.43,
-  10.88,
-  10.88,
-  33.92,
-  25.49,
-  24.04,
-  50,
-  55,
-  65,
-  100.14,
+  3.4384,
+  3.4384,
+  3.4384,
+  5.7114,
+  5.7114,
+  5.7114,
+  8.6828,
+  8.6828,
+  8.6828,
+  11.6116,
+  11.6116,
+  11.6116,
+  21.6174,
+  21.6174,
+  21.6174,
+  42.7196,
+  42.7196,
+  42.7196,
 ] as const;
 
 const PLACEMENT_RAW_PRICE_PER_MATCH: Record<string, number> = {
   unranked: 4.8,
   bronze: 2.4,
-  silver: 3,
-  gold: 3.6,
-  platinum: 4.8,
-  diamond: 6,
-  grandmaster: 7.2,
-  celestial: 8.4,
-  eternity: 9.6,
+  silver: 2.4,
+  gold: 2.4,
+  platinum: 2.7576,
+  diamond: 4.572,
+  grandmaster: 6.588,
+  celestial: 8.28,
+  eternity: 8.28,
 };
 
 const COMPETITIVE_WIN_RAW_PRICE: Record<string, number> = {
   "bronze-III": 3.3516,
   "bronze-II": 3.3516,
   "bronze-I": 3.3516,
-  "silver-III": 3.3516,
-  "silver-II": 3.3516,
-  "silver-I": 3.3516,
-  "gold-III": 6.1236,
-  "gold-II": 6.1236,
-  "gold-I": 6.1236,
-  "platinum-III": 7.9716,
-  "platinum-II": 6.643,
-  "platinum-I": 6.643,
-  "diamond-III": 10.143,
-  "diamond-II": 10.143,
-  "diamond-I": 10.143,
-  "grandmaster-III": 12.943,
-  "grandmaster-II": 13.643,
-  "grandmaster-I": 13.643,
-  "celestial-III": 17.143,
-  "celestial-II": 20.643,
-  "celestial-I": 27.643,
+  "silver-III": 3.5196,
+  "silver-II": 3.5196,
+  "silver-I": 3.5196,
+  "gold-III": 3.5196,
+  "gold-II": 3.5196,
+  "gold-I": 3.5196,
+  "platinum-III": 4.2252,
+  "platinum-II": 4.2252,
+  "platinum-I": 4.2252,
+  "diamond-III": 5.208,
+  "diamond-II": 5.208,
+  "diamond-I": 5.208,
+  "grandmaster-III": 9.072,
+  "grandmaster-II": 9.072,
+  "grandmaster-I": 9.072,
+  "celestial-III": 17.136,
+  "celestial-II": 17.136,
+  "celestial-I": 17.136,
 };
 
 const ETERNITY_WIN_RAW_PRICE_BY_MAX_POINTS = [
-  [100, 66.493],
-  [200, 90.993],
-  [300, 171.493],
-  [400, 171.493],
-  [500, 104.993],
-  [600, 171.493],
-  [700, 171.493],
-  [800, 171.493],
-  [900, 171.493],
-  [1000, 171.493],
+  [99, 17.136],
+  [199, 22.68],
+  [299, 28.224],
+  [399, 33.768],
+  [499, 39.312],
+  [599, 44.856],
+  [699, 50.4],
+  [799, 55.944],
+  [899, 61.488],
+  [1000, 67.032],
 ] as const;
 
 const HERO_PROFICIENCY_RAW_PRICE_BY_SOURCE_LEVEL = [
   [1, 7.014],
-  [10, 8.4],
-  [20, 12.6],
-  [40, 21],
-  [50, 13.125],
-  [60, 21],
+  [5, 9.114],
+  [10, 11.214],
+  [20, 13.314],
+  [30, 15.414],
+  [40, 17.514],
+  [50, 19.614],
+  [60, 21.714],
 ] as const;
 
 const UNRATED_RAW_PRICE_PER_GAME = 5.988;
@@ -170,7 +172,7 @@ function quoteFromRawBase({
   role?: MarvelRivalsRole;
   extras: MarvelRivalsPricingExtras;
 }): MarvelRivalsPriceQuote {
-  const boostingPediaBase = rawBase * MARVEL_RIVALS_BOOSTINGPEDIA_BASE_FACTOR;
+  const baseBeforeModifiers = rawBase * MARVEL_RIVALS_BASE_FACTOR;
   let percentageModifiers = 0;
 
   if (boostMethod === "duo") percentageModifiers += MARVEL_RIVALS_DUO_PERCENT;
@@ -181,11 +183,11 @@ function quoteFromRawBase({
   }
 
   const fixedFees = extras.streaming ? MARVEL_RIVALS_STREAMING_FIXED_USD : 0;
-  const total = boostingPediaBase * (1 + percentageModifiers / 100) + fixedFees;
+  const total = baseBeforeModifiers * (1 + percentageModifiers / 100) + fixedFees;
 
   return {
-    boostingMarketRawBase: rawBase,
-    boostingPediaBase,
+    rawBase,
+    baseBeforeModifiers,
     percentageModifiers,
     fixedFees,
     total: roundMarvelUsd(total),
