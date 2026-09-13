@@ -21,6 +21,10 @@ import {
   GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
+import {
+  calculateMarvelHeroProficiencyPrice,
+  formatMarvelUsd,
+} from "@/features/configurator/data/marvel-rivals-pricing";
 
 type BoostMethod = "solo" | "duo";
 type ExtraKey = "playOffline" | "streaming" | "expressDelivery";
@@ -420,6 +424,18 @@ export function MarvelRivalsHeroConfigurator({
     [selection.extras],
   );
 
+  const priceQuote = useMemo(
+    () =>
+      calculateMarvelHeroProficiencyPrice({
+        currentProficiency: selection.currentProficiency,
+        targetProficiency: selection.targetProficiency,
+        boostMethod: selection.boostMethod,
+        extras: selection.extras,
+      }),
+    [selection],
+  );
+  const totalPrice = formatMarvelUsd(priceQuote.total);
+
   const summaryRows = useMemo(() => {
     const serverLabel =
       regions.find((item) => item.value === selection.region)?.label ?? "North America";
@@ -442,7 +458,7 @@ export function MarvelRivalsHeroConfigurator({
           description="Choose your hero and configure Hero Proficiency from your current level to your target level."
           accentTextClass="text-[#CEC5FF]/65"
           accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Pricing pending"
+          statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
             <HeroSelector
@@ -674,14 +690,16 @@ export function MarvelRivalsHeroConfigurator({
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Pending"
+          statusLabel="Calculated"
+          statusTone="ready"
           progression={<HeroSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="Pricing pending"
+          totalLabel="BoostingPedia price"
+          totalValue={totalPrice}
         />
       </GameConfiguratorColumns>
 
-      <GameMobileOrderBar label="Pricing pending" />
+      <GameMobileOrderBar label="USD" value={totalPrice} />
     </>
   );
 }

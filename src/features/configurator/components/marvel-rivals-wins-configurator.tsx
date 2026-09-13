@@ -26,6 +26,10 @@ import {
   GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
+import {
+  calculateMarvelCompetitiveWinsPrice,
+  formatMarvelUsd,
+} from "@/features/configurator/data/marvel-rivals-pricing";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
@@ -37,6 +41,7 @@ type Selection = {
   currentRank: RankKey;
   currentDivision: Division | null;
   wins: number;
+  eternityPoints: number;
   region: string;
   platform: string;
   boostMethod: BoostMethod;
@@ -45,6 +50,8 @@ type Selection = {
 };
 
 const MAX_WINS = 5;
+const MIN_ETERNITY_POINTS = 30;
+const MAX_ETERNITY_POINTS = 1000;
 
 const regions = [
   { value: "north-america", label: "North America" },
@@ -348,6 +355,65 @@ function PlatformIcon({ platform }: { platform: string }) {
   );
 }
 
+function EternityPointsControl({
+  points,
+  onChange,
+}: {
+  points: number;
+  onChange: (points: number) => void;
+}) {
+  const progress =
+    ((points - MIN_ETERNITY_POINTS) / (MAX_ETERNITY_POINTS - MIN_ETERNITY_POINTS)) * 100;
+
+  function clampPoints(value: number) {
+    return Math.min(MAX_ETERNITY_POINTS, Math.max(MIN_ETERNITY_POINTS, value));
+  }
+
+  return (
+    <div className="mt-4 rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.025] p-3.5">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-[#CEC5FF]/65">
+            Current Eternity Points
+          </p>
+          <p className="mt-1 text-[10px] leading-4 text-[#A0AAA4]">
+            Required to select the correct Eternity win tier.
+          </p>
+        </div>
+        <input
+          aria-label="Current Eternity Points"
+          type="number"
+          min={MIN_ETERNITY_POINTS}
+          max={MAX_ETERNITY_POINTS}
+          value={points}
+          onChange={(event) =>
+            onChange(clampPoints(Number(event.target.value) || MIN_ETERNITY_POINTS))
+          }
+          className="font-gaming-value h-10 w-20 rounded-xl border border-white/[0.09] bg-black/20 px-2 text-center text-base font-bold text-white outline-none focus:border-[#A38CFF]/[0.22]"
+        />
+      </div>
+
+      <input
+        aria-label="Current Eternity Points slider"
+        type="range"
+        min={MIN_ETERNITY_POINTS}
+        max={MAX_ETERNITY_POINTS}
+        step={1}
+        value={points}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]"
+        style={{
+          background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)`,
+        }}
+      />
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
+        <span>{MIN_ETERNITY_POINTS}</span>
+        <span>{MAX_ETERNITY_POINTS}</span>
+      </div>
+    </div>
+  );
+}
+
 function ExtraCard({
   checked,
   onChange,
@@ -452,6 +518,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     currentRank: "bronze",
     currentDivision: "III",
     wins: 1,
+    eternityPoints: MIN_ETERNITY_POINTS,
     region: "north-america",
     platform: "pc",
     boostMethod: "solo",
@@ -488,6 +555,21 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     [selection.extras],
   );
 
+  const priceQuote = useMemo(
+    () =>
+      calculateMarvelCompetitiveWinsPrice({
+        currentRank: selection.currentRank,
+        currentDivision: selection.currentDivision,
+        eternityPoints: selection.eternityPoints,
+        wins: selection.wins,
+        boostMethod: selection.boostMethod,
+        role: selection.role,
+        extras: selection.extras,
+      }),
+    [selection],
+  );
+  const totalPrice = formatMarvelUsd(priceQuote.total);
+
   const summaryRows = useMemo(() => {
     const serverLabel = regions.find((item) => item.value === selection.region)?.label ?? "North America";
     const platformLabel = platforms.find((item) => item.value === selection.platform)?.label ?? "PC";
@@ -499,9 +581,20 @@ export function MarvelRivalsWinsConfigurator({ service }: {
       ["Role", roleLabel],
     ];
 
+    if (selection.currentRank === "eternity") {
+      rows.push(["Eternity Points", String(selection.eternityPoints)]);
+    }
     if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region, selection.role]);
+  }, [
+    selectedExtras,
+    selection.boostMethod,
+    selection.currentRank,
+    selection.eternityPoints,
+    selection.platform,
+    selection.region,
+    selection.role,
+  ]);
 
   return (
     <>
@@ -511,18 +604,28 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           description="Choose your current rank and configure between 1 and 5 competitive wins."
           accentTextClass="text-[#CEC5FF]/65"
           accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Pricing pending"
+          statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
             <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
-              <CurrentRankSelector
-                rank={selection.currentRank}
-                division={selection.currentDivision}
-                onRankChange={setCurrentRank}
-                onDivisionChange={(currentDivision) =>
-                  setSelection((current) => ({ ...current, currentDivision }))
-                }
-              />
+              <div>
+                <CurrentRankSelector
+                  rank={selection.currentRank}
+                  division={selection.currentDivision}
+                  onRankChange={setCurrentRank}
+                  onDivisionChange={(currentDivision) =>
+                    setSelection((current) => ({ ...current, currentDivision }))
+                  }
+                />
+                {selection.currentRank === "eternity" ? (
+                  <EternityPointsControl
+                    points={selection.eternityPoints}
+                    onChange={(eternityPoints) =>
+                      setSelection((current) => ({ ...current, eternityPoints }))
+                    }
+                  />
+                ) : null}
+              </div>
 
               <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
                 <WinsSelector
@@ -747,14 +850,16 @@ export function MarvelRivalsWinsConfigurator({ service }: {
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Pending"
+          statusLabel="Calculated"
+          statusTone="ready"
           progression={<WinsSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="Pricing pending"
+          totalLabel="BoostingPedia price"
+          totalValue={totalPrice}
         />
       </GameConfiguratorColumns>
 
-      <GameMobileOrderBar label="Pricing pending" />
+      <GameMobileOrderBar label="USD" value={totalPrice} />
     </>
   );
 }

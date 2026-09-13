@@ -55,6 +55,7 @@ export function GameOrderAside({
   progression,
   metadata,
   totalLabel = "Pricing pending",
+  totalValue,
   children,
 }: {
   gameLabel: string;
@@ -63,6 +64,7 @@ export function GameOrderAside({
   progression?: ReactNode;
   metadata?: ReactNode;
   totalLabel?: string;
+  totalValue?: string;
   children?: ReactNode;
 }) {
   const ready = statusTone === "ready";
@@ -97,8 +99,10 @@ export function GameOrderAside({
             <div className="flex items-end justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
-                <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-white/30">
-                  —
+                <p className={`font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] ${
+                  totalValue ? "text-white" : "text-white/30"
+                }`}>
+                  {totalValue ?? "—"}
                 </p>
                 <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
                   {totalLabel}
@@ -143,14 +147,18 @@ export function GameOrderAside({
   );
 }
 
-export function GameMobileOrderBar({ label }: { label: string }) {
+export function GameMobileOrderBar({ label, value }: { label: string; value?: string }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">
       <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
           <div className="mt-0.5 flex items-baseline gap-2">
-            <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-white/30">—</p>
+            <p className={`font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] ${
+              value ? "text-white" : "text-white/30"
+            }`}>
+              {value ?? "—"}
+            </p>
             <span className="text-[9px] text-[#A0AAA4]">{label}</span>
           </div>
         </div>

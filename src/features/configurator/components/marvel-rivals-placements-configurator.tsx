@@ -25,6 +25,10 @@ import {
   GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
+import {
+  calculateMarvelPlacementsPrice,
+  formatMarvelUsd,
+} from "@/features/configurator/data/marvel-rivals-pricing";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
@@ -538,6 +542,19 @@ export function MarvelRivalsPlacementsConfigurator({
     [selection.extras],
   );
 
+  const priceQuote = useMemo(
+    () =>
+      calculateMarvelPlacementsPrice({
+        previousRank: selection.previousRank,
+        matches: selection.matches,
+        boostMethod: selection.boostMethod,
+        role: selection.role,
+        extras: selection.extras,
+      }),
+    [selection],
+  );
+  const totalPrice = formatMarvelUsd(priceQuote.total);
+
   const summaryRows = useMemo(() => {
     const serverLabel = regions.find((item) => item.value === selection.region)?.label ?? "North America";
     const platformLabel = platforms.find((item) => item.value === selection.platform)?.label ?? "PC";
@@ -561,7 +578,7 @@ export function MarvelRivalsPlacementsConfigurator({
           description="Choose your previous rank and configure up to 10 placement matches."
           accentTextClass="text-[#CEC5FF]/65"
           accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Pricing pending"
+          statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
             <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
@@ -795,14 +812,16 @@ export function MarvelRivalsPlacementsConfigurator({
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Pending"
+          statusLabel="Calculated"
+          statusTone="ready"
           progression={<PreviousRankSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="Pricing pending"
+          totalLabel="BoostingPedia price"
+          totalValue={totalPrice}
         />
       </GameConfiguratorColumns>
 
-      <GameMobileOrderBar label="Pricing pending" />
+      <GameMobileOrderBar label="USD" value={totalPrice} />
     </>
   );
 }
