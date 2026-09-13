@@ -10,6 +10,7 @@ import {
   getMarvelRivalsService,
   marvelRivalsServices,
 } from "@/features/catalog/data/marvel-rivals-foundation";
+import { MarvelRivalsHeroConfigurator } from "@/features/configurator/components/marvel-rivals-hero-configurator";
 import { MarvelRivalsPlacementsConfigurator } from "@/features/configurator/components/marvel-rivals-placements-configurator";
 import { MarvelRivalsRankConfigurator } from "@/features/configurator/components/marvel-rivals-rank-configurator";
 import { MarvelRivalsServiceConfigurator } from "@/features/configurator/components/marvel-rivals-service-configurator";
@@ -49,7 +50,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
         : service.slug === "wins"
           ? "Stack the competitive wins you need with a clear configuration."
           : service.slug === "hero-boost"
-            ? "Build the hero progression you want."
+            ? "Build the Hero Proficiency progression you want."
             : "Configure the unrated games you need.";
 
   const heroPills =
@@ -60,7 +61,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
         : service.slug === "wins"
           ? ["Rank + win quantity", "Solo or Duo", "Flexible extras"]
           : service.slug === "hero-boost"
-            ? ["Current → desired hero level", "Specific Hero preference", "Flexible extras"]
+            ? ["Hero Proficiency 1 → 70", "Choose your hero", "Solo or Duo"]
             : ["Game quantity", "Solo or Duo", "Flexible extras"];
 
   const serviceNavigation = marvelRivalsServices.map((item) => ({
@@ -166,6 +167,8 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
                 <MarvelRivalsPlacementsConfigurator service={service} />
               ) : service.slug === "wins" ? (
                 <MarvelRivalsWinsConfigurator service={service} />
+              ) : service.slug === "hero-boost" ? (
+                <MarvelRivalsHeroConfigurator service={service} />
               ) : (
                 <MarvelRivalsServiceConfigurator service={service} />
               )}
