@@ -1,7 +1,7 @@
 export type GameStatus = "active" | "draft" | "archived";
 export type ServiceStatus = "active" | "draft" | "archived";
 export type GameAccent = "emerald" | "rose" | "violet" | "cyan" | "amber" | "blue";
-export type ServiceCategory = "rank" | "wins" | "placements" | "coaching";
+export type ServiceCategory = "rank" | "wins" | "placements" | "coaching" | "hero" | "unrated";
 
 export interface GameSummary {
   id: string;

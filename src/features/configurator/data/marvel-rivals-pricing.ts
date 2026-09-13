@@ -27,12 +27,12 @@ export type MarvelRivalsPriceQuote = {
   total: number;
 };
 
-const BOOSTINGPEDIA_BASE_FACTOR = 0.7;
-const DUO_PERCENT = 75;
-const STRATEGIST_PERCENT = 15;
-const EXPRESS_DELIVERY_PERCENT = 20;
-const SPECIFIC_HEROES_PERCENT = 10;
-const STREAMING_FIXED_USD = 10;
+export const MARVEL_RIVALS_BOOSTINGPEDIA_BASE_FACTOR = 0.7;
+export const MARVEL_RIVALS_DUO_PERCENT = 75;
+export const MARVEL_RIVALS_STRATEGIST_PERCENT = 15;
+export const MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT = 20;
+export const MARVEL_RIVALS_SPECIFIC_HEROES_PERCENT = 10;
+export const MARVEL_RIVALS_STREAMING_FIXED_USD = 10;
 
 const RANK_STATES = [
   ["bronze", "III"],
@@ -145,7 +145,7 @@ const HERO_PROFICIENCY_RAW_PRICE_BY_SOURCE_LEVEL = [
 
 const UNRATED_RAW_PRICE_PER_GAME = 5.988;
 
-function roundUsd(value: number) {
+export function roundMarvelUsd(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
@@ -170,17 +170,17 @@ function quoteFromRawBase({
   role?: MarvelRivalsRole;
   extras: MarvelRivalsPricingExtras;
 }): MarvelRivalsPriceQuote {
-  const boostingPediaBase = rawBase * BOOSTINGPEDIA_BASE_FACTOR;
+  const boostingPediaBase = rawBase * MARVEL_RIVALS_BOOSTINGPEDIA_BASE_FACTOR;
   let percentageModifiers = 0;
 
-  if (boostMethod === "duo") percentageModifiers += DUO_PERCENT;
-  if (role === "strategist") percentageModifiers += STRATEGIST_PERCENT;
-  if (extras.expressDelivery) percentageModifiers += EXPRESS_DELIVERY_PERCENT;
+  if (boostMethod === "duo") percentageModifiers += MARVEL_RIVALS_DUO_PERCENT;
+  if (role === "strategist") percentageModifiers += MARVEL_RIVALS_STRATEGIST_PERCENT;
+  if (extras.expressDelivery) percentageModifiers += MARVEL_RIVALS_EXPRESS_DELIVERY_PERCENT;
   if (extras.specificHeroes && (service === "rank" || service === "wins")) {
-    percentageModifiers += SPECIFIC_HEROES_PERCENT;
+    percentageModifiers += MARVEL_RIVALS_SPECIFIC_HEROES_PERCENT;
   }
 
-  const fixedFees = extras.streaming ? STREAMING_FIXED_USD : 0;
+  const fixedFees = extras.streaming ? MARVEL_RIVALS_STREAMING_FIXED_USD : 0;
   const total = boostingPediaBase * (1 + percentageModifiers / 100) + fixedFees;
 
   return {
@@ -188,7 +188,7 @@ function quoteFromRawBase({
     boostingPediaBase,
     percentageModifiers,
     fixedFees,
-    total: roundUsd(total),
+    total: roundMarvelUsd(total),
   };
 }
 
@@ -316,5 +316,5 @@ export function calculateMarvelUnratedPrice({
 }
 
 export function formatMarvelUsd(value: number) {
-  return `$${roundUsd(value).toFixed(2)}`;
+  return `$${roundMarvelUsd(value).toFixed(2)}`;
 }

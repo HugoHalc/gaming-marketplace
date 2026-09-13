@@ -18,7 +18,7 @@ const rankOptions = [
   "Master", "Grandmaster",
 ].map((label, index) => ({ value: String(index), label }));
 
-const schemas: Record<ServiceCategory, ServiceConfiguratorSchema> = {
+const schemas: Record<Exclude<ServiceCategory, "hero" | "unrated">, ServiceConfiguratorSchema> = {
   rank: {
     category: "rank",
     fields: [
@@ -197,8 +197,23 @@ const schemas: Record<ServiceCategory, ServiceConfiguratorSchema> = {
   },
 };
 
+const dedicatedSchemas: Record<"hero" | "unrated", ServiceConfiguratorSchema> = {
+  hero: {
+    category: "hero",
+    fields: [],
+    notes: ["This service uses its dedicated game configurator."],
+  },
+  unrated: {
+    category: "unrated",
+    fields: [],
+    notes: ["This service uses its dedicated game configurator."],
+  },
+};
+
 export function getConfiguratorSchema(category: ServiceCategory) {
-  return schemas[category];
+  return category === "hero" || category === "unrated"
+    ? dedicatedSchemas[category]
+    : schemas[category];
 }
 
 export function getDefaultSelection(schema: ServiceConfiguratorSchema) {

@@ -13,7 +13,10 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import type { MarvelRivalsServiceFoundation } from "@/features/catalog/data/marvel-rivals-foundation";
+import {
+  marvelRivalsHeroes,
+  type MarvelRivalsServiceFoundation,
+} from "@/features/catalog/data/marvel-rivals-foundation";
 import {
   GameConfiguratorColumns,
   GameConfiguratorPanel,
@@ -22,9 +25,10 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import {
-  calculateMarvelHeroProficiencyPrice,
-  formatMarvelUsd,
-} from "@/features/configurator/data/marvel-rivals-pricing";
+  formatMarvelQuoteUsd,
+  useMarvelRivalsQuote,
+} from "@/features/configurator/client/use-marvel-rivals-quote";
+import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
 
 type BoostMethod = "solo" | "duo";
 type ExtraKey = "playOffline" | "streaming" | "expressDelivery";
@@ -42,62 +46,7 @@ type Selection = {
 const MAX_PROFICIENCY = 70;
 const MAX_CURRENT_PROFICIENCY = MAX_PROFICIENCY - 1;
 
-const heroes = [
-  "Adam Warlock",
-  "Angela",
-  "Black Cat",
-  "Black Panther",
-  "Black Widow",
-  "Blade",
-  "Captain America",
-  "Cloak & Dagger",
-  "Cyclops",
-  "Daredevil",
-  "Deadpool",
-  "Devil Dinosaur",
-  "Doctor Strange",
-  "Elsa Bloodstone",
-  "Emma Frost",
-  "Gambit",
-  "Gorr the God Butcher",
-  "Groot",
-  "Hawkeye",
-  "Hela",
-  "Hulk",
-  "Human Torch",
-  "Invisible Woman",
-  "Iron Fist",
-  "Iron Man",
-  "Jeff the Land Shark",
-  "Jubilee",
-  "Loki",
-  "Luna Snow",
-  "Magik",
-  "Magneto",
-  "Mantis",
-  "Mister Fantastic",
-  "Moon Knight",
-  "Namor",
-  "Peni Parker",
-  "Phoenix",
-  "Psylocke",
-  "Rocket Raccoon",
-  "Rogue",
-  "Scarlet Witch",
-  "Spider-Man",
-  "Squirrel Girl",
-  "Star-Lord",
-  "Storm",
-  "The Hood",
-  "The Punisher",
-  "The Thing",
-  "Thor",
-  "Ultron",
-  "Venom",
-  "White Fox",
-  "Winter Soldier",
-  "Wolverine",
-] as const;
+const heroes = marvelRivalsHeroes;
 
 const regions = [
   { value: "north-america", label: "North America" },
@@ -445,17 +394,26 @@ export function MarvelRivalsHeroConfigurator({
     [selection.extras],
   );
 
-  const priceQuote = useMemo(
-    () =>
-      calculateMarvelHeroProficiencyPrice({
-        currentProficiency: selection.currentProficiency,
-        targetProficiency: selection.targetProficiency,
-        boostMethod: selection.boostMethod,
-        extras: selection.extras,
-      }),
+  const quoteSelection = useMemo<ConfiguratorSelection>(
+    () => ({
+      hero: selection.hero,
+      currentProficiency: selection.currentProficiency,
+      targetProficiency: selection.targetProficiency,
+      region: selection.region,
+      platform: selection.platform,
+      boostMethod: selection.boostMethod,
+      playOffline: selection.extras.playOffline,
+      streaming: selection.extras.streaming,
+      expressDelivery: selection.extras.expressDelivery,
+    }),
     [selection],
   );
-  const totalPrice = formatMarvelUsd(priceQuote.total);
+  const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
+    service.slug,
+    quoteSelection,
+    Boolean(selection.hero),
+  );
+  const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
 
   const summaryRows = useMemo(() => {
     const serverLabel =
@@ -719,13 +677,29 @@ export function MarvelRivalsHeroConfigurator({
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Calculated"
-          statusTone="ready"
+          statusLabel={
+            !selection.hero
+              ? "Select hero"
+              : quoteError
+                ? "Pricing unavailable"
+                : quoteLoading
+                  ? "Updating"
+                  : quote
+                    ? "Server priced"
+                    : "Pricing pending"
+          }
+          statusTone={quote && !quoteError ? "ready" : "pending"}
           progression={<HeroSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="BoostingPedia price"
+          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
           totalValue={totalPrice}
-        />
+        >
+          {quoteError ? (
+            <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
+              {quoteError}
+            </div>
+          ) : null}
+        </GameOrderAside>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar label="USD" value={totalPrice} />

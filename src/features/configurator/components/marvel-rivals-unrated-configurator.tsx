@@ -22,9 +22,10 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import {
-  calculateMarvelUnratedPrice,
-  formatMarvelUsd,
-} from "@/features/configurator/data/marvel-rivals-pricing";
+  formatMarvelQuoteUsd,
+  useMarvelRivalsQuote,
+} from "@/features/configurator/client/use-marvel-rivals-quote";
+import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
 
 type BoostMethod = "solo" | "duo";
 type ExtraKey = "playOffline" | "specificHeroes" | "streaming" | "expressDelivery";
@@ -317,16 +318,24 @@ export function MarvelRivalsUnratedConfigurator({
     [selection.extras],
   );
 
-  const priceQuote = useMemo(
-    () =>
-      calculateMarvelUnratedPrice({
-        games: selection.games,
-        boostMethod: selection.boostMethod,
-        extras: selection.extras,
-      }),
+  const quoteSelection = useMemo<ConfiguratorSelection>(
+    () => ({
+      games: selection.games,
+      region: selection.region,
+      platform: selection.platform,
+      boostMethod: selection.boostMethod,
+      playOffline: selection.extras.playOffline,
+      specificHeroes: selection.extras.specificHeroes,
+      streaming: selection.extras.streaming,
+      expressDelivery: selection.extras.expressDelivery,
+    }),
     [selection],
   );
-  const totalPrice = formatMarvelUsd(priceQuote.total);
+  const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
+    service.slug,
+    quoteSelection,
+  );
+  const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
 
   const summaryRows = useMemo(() => {
     const serverLabel = regions.find((item) => item.value === selection.region)?.label ?? "North America";
@@ -551,13 +560,19 @@ export function MarvelRivalsUnratedConfigurator({
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Calculated"
-          statusTone="ready"
+          statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
+          statusTone={quote && !quoteError ? "ready" : "pending"}
           progression={<GamesSummary games={selection.games} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="BoostingPedia price"
+          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
           totalValue={totalPrice}
-        />
+        >
+          {quoteError ? (
+            <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
+              {quoteError}
+            </div>
+          ) : null}
+        </GameOrderAside>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar label="USD" value={totalPrice} />

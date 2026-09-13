@@ -13,6 +13,10 @@ import {
   isLeagueOfLegendsPhaseTwoQuote,
 } from "./league-of-legends-pricing";
 import {
+  calculateMarvelRivalsQuote,
+  isMarvelRivalsQuote,
+} from "./marvel-rivals-pricing";
+import {
   calculateOverwatchQuote,
   isOverwatchQuote,
 } from "./overwatch-pricing";
@@ -256,6 +260,10 @@ export async function calculateQuotePreview(input: {
 
   if (isOverwatchQuote(input)) {
     return calculateOverwatchQuote(input.serviceSlug, input.selection);
+  }
+
+  if (isMarvelRivalsQuote(input)) {
+    return calculateMarvelRivalsQuote(input.serviceSlug, input.selection);
   }
 
   const schema = await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });

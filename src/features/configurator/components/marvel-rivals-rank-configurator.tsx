@@ -27,9 +27,10 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import {
-  calculateMarvelRankBoostPrice,
-  formatMarvelUsd,
-} from "@/features/configurator/data/marvel-rivals-pricing";
+  formatMarvelQuoteUsd,
+  useMarvelRivalsQuote,
+} from "@/features/configurator/client/use-marvel-rivals-quote";
+import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
@@ -541,20 +542,28 @@ export function MarvelRivalsRankConfigurator({ service }: {
     [selection.extras],
   );
 
-  const priceQuote = useMemo(
-    () =>
-      calculateMarvelRankBoostPrice({
-        currentRank: selection.currentRank,
-        currentDivision: selection.currentDivision,
-        targetRank: selection.targetRank,
-        targetDivision: selection.targetDivision,
-        boostMethod: selection.boostMethod,
-        role: selection.role,
-        extras: selection.extras,
-      }),
+  const quoteSelection = useMemo<ConfiguratorSelection>(
+    () => ({
+      currentRank: selection.currentRank,
+      ...(selection.currentDivision ? { currentDivision: selection.currentDivision } : {}),
+      targetRank: selection.targetRank,
+      ...(selection.targetDivision ? { targetDivision: selection.targetDivision } : {}),
+      region: selection.region,
+      platform: selection.platform,
+      boostMethod: selection.boostMethod,
+      role: selection.role,
+      playOffline: selection.extras.playOffline,
+      specificHeroes: selection.extras.specificHeroes,
+      streaming: selection.extras.streaming,
+      expressDelivery: selection.extras.expressDelivery,
+    }),
     [selection],
   );
-  const totalPrice = formatMarvelUsd(priceQuote.total);
+  const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
+    service.slug,
+    quoteSelection,
+  );
+  const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
 
   const summaryRows = useMemo(() => {
     const serverLabel =
@@ -848,13 +857,19 @@ export function MarvelRivalsRankConfigurator({ service }: {
 
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel="Calculated"
-          statusTone="ready"
+          statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
+          statusTone={quote && !quoteError ? "ready" : "pending"}
           progression={<SummaryRankPair selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel="BoostingPedia price"
+          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
           totalValue={totalPrice}
-        />
+        >
+          {quoteError ? (
+            <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
+              {quoteError}
+            </div>
+          ) : null}
+        </GameOrderAside>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar label="USD" value={totalPrice} />
