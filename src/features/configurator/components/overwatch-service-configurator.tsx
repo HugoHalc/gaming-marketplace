@@ -239,6 +239,7 @@ function ExtraCard({
   title,
   price,
   description,
+  disabled = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -246,14 +247,17 @@ function ExtraCard({
   title: string;
   price: string;
   description: string;
+  disabled?: boolean;
 }) {
   const free = price === "FREE";
   return (
     <button
       type="button"
       aria-pressed={checked}
+      aria-disabled={disabled}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
         checked ? "border-amber-300/[0.16] bg-[#131B17]" : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
@@ -261,7 +265,9 @@ function ExtraCard({
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
-          <span className={`shrink-0 text-[10px] font-bold ${free ? "text-[#82F5A4]" : "text-amber-200/65"}`}>{price}</span>
+          <span className={`shrink-0 text-[10px] font-bold ${disabled ? "text-white/35" : free ? "text-[#82F5A4]" : "text-amber-200/65"}`}>
+            {disabled ? "Account only" : price}
+          </span>
         </span>
         <span className="mt-0.5 block truncate text-[10px] text-[#A0AAA4]" title={description}>{description}</span>
       </span>
@@ -278,6 +284,7 @@ function RankSelector({
   currentRank,
   allowUnranked,
   omitChampionOne,
+  sourceLabel,
   onChange,
 }: {
   value: string;
@@ -285,6 +292,7 @@ function RankSelector({
   currentRank?: string;
   allowUnranked?: boolean;
   omitChampionOne?: boolean;
+  sourceLabel?: string;
   onChange: (value: string) => void;
 }) {
   const unrated = value === "unranked";
@@ -314,7 +322,7 @@ function RankSelector({
           )}
         </div>
         <div className="min-w-0">
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-200/65">{target ? "Target rank" : "Current rank"}</p>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-200/65">{target ? "Target rank" : sourceLabel ?? "Current rank"}</p>
           <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">{rankLabel(value)}</p>
         </div>
       </div>
@@ -474,6 +482,11 @@ export function OverwatchServiceConfigurator({
   }, [isDrives, selection.currentDrive, selection.desiredDrive]);
 
   useEffect(() => {
+    if (selection.boostMethod !== "duo" || selection.playOffline !== true) return;
+    setSelection((current) => ({ ...current, playOffline: false }));
+  }, [selection.boostMethod, selection.playOffline]);
+
+  useEffect(() => {
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setIsLoading(true);
@@ -500,7 +513,11 @@ export function OverwatchServiceConfigurator({
   }, [gameSlug, service.slug, selection]);
 
   function update(key: string, value: string | number | boolean) {
-    setSelection((current) => ({ ...current, [key]: value }));
+    setSelection((current) => ({
+      ...current,
+      [key]: value,
+      ...(key === "boostMethod" && value === "duo" ? { playOffline: false } : {}),
+    }));
   }
 
   function updateDriveCurrent(value: number) {
@@ -549,6 +566,11 @@ export function OverwatchServiceConfigurator({
   const roleLabel = roles.find((item) => item.value === selection.role)?.label ?? "Tank";
   const playWithBooster = selection.boostMethod === "duo";
   const accountBoostSelected = selection.boostMethod === "account";
+  const boosterCount = Math.min(5, Math.max(1, Number(selection.boosters) || 1));
+  const duoModifier =
+    OVERWATCH_EXTRA_PRICING.playWithBooster +
+    Math.max(0, boosterCount - 1) * OVERWATCH_EXTRA_PRICING.additionalBooster;
+  const duoMeta = `+${Math.round(duoModifier * 100)}%`;
 
   const summaryRows = useMemo(() => {
     const rows: Array<[string, string]> = [];
@@ -635,7 +657,7 @@ export function OverwatchServiceConfigurator({
               ) : null}
 
               {isWins ? <><RankSelector value={currentRank} onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><QuantityControl value={Number(selection.wins)} min={1} max={5} label="Competitive Wins" helper="Maximum 5 wins per order." onChange={(value) => update("wins", value)} /></> : null}
-              {isPlacements ? <><RankSelector value={currentRank} allowUnranked onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><QuantityControl value={Number(selection.matches)} min={1} max={10} label="Placement Matches" helper="Maximum 10 placement matches per order." onChange={(value) => update("matches", value)} /></> : null}
+              {isPlacements ? <><RankSelector value={currentRank} allowUnranked sourceLabel="Previous rank" onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><QuantityControl value={Number(selection.matches)} min={1} max={10} label="Placement Matches" helper="Maximum 10 placement matches per order." onChange={(value) => update("matches", value)} /></> : null}
               {isDrives ? <><DriveRankSelector value={String(selection.driveRank)} onChange={(value) => update("driveRank", value)} /><DriveControl current={Number(selection.currentDrive)} desired={Number(selection.desiredDrive)} onCurrent={updateDriveCurrent} onDesired={(value) => update("desiredDrive", value)} /></> : null}
               {isUnrated ? <QuantityControl value={Number(selection.matches)} min={1} max={10} label="Unrated Matches" helper="No rank selection is required. Maximum 10 matches per order." onChange={(value) => update("matches", value)} /> : null}
 
@@ -647,7 +669,7 @@ export function OverwatchServiceConfigurator({
                   <p className="mt-1 text-sm font-semibold text-white">Choose how you want the service completed.</p>
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <ChoicePill active={accountBoostSelected} onClick={() => update("boostMethod", "account")} label="Account Boost" meta="Base" />
-                    <ChoicePill active={playWithBooster} onClick={() => update("boostMethod", "duo")} label="Play With Booster" meta={`+${OVERWATCH_EXTRA_PRICING.playWithBooster * 100}%`} />
+                    <ChoicePill active={playWithBooster} onClick={() => update("boostMethod", "duo")} label="Play With Booster" meta={duoMeta} />
                   </div>
                   <AccountBoostTrust selected={accountBoostSelected} accent="gold" showDescription />
                   {playWithBooster ? <div className="mt-4 rounded-xl border border-white/[0.07] bg-black/15 p-4"><QuantityControl value={Number(selection.boosters)} min={1} max={5} label="Boosters" helper={`1 booster +${OVERWATCH_EXTRA_PRICING.playWithBooster * 100}%. Each additional booster adds +${OVERWATCH_EXTRA_PRICING.additionalBooster * 100}%.`} onChange={(value) => update("boosters", value)} /></div> : null}
@@ -669,7 +691,7 @@ export function OverwatchServiceConfigurator({
               <div>
                 <div className="flex items-end justify-between gap-4"><div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p><p className="mt-1 text-sm font-semibold text-white">Add only the options you want.</p></div><span className="text-[10px] text-white/30">Optional</span></div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-                  <ExtraCard checked={selection.playOffline === true} onChange={(value) => update("playOffline", value)} icon={<EyeOff className="size-4" />} title="Play Offline" price="FREE" description="Keep the account activity discreet during fulfillment." />
+                  <ExtraCard checked={selection.playOffline === true} onChange={(value) => update("playOffline", value)} icon={<EyeOff className="size-4" />} title="Play Offline" price="FREE" description={playWithBooster ? "Available with Account Boost only." : "Keep the account activity discreet during fulfillment."} disabled={playWithBooster} />
                   <ExtraCard checked={selection.specificHeroes === true} onChange={(value) => update("specificHeroes", value)} icon={<Crosshair className="size-4" />} title="Specific Heroes" price="FREE" description="Save preferred heroes for the order." />
                   <ExtraCard checked={selection.streaming === true} onChange={(value) => update("streaming", value)} icon={<MonitorPlay className="size-4" />} title="Streaming" price={`+${formatPrice(OVERWATCH_EXTRA_PRICING.streaming)}`} description="Add streaming to your order." />
                   <ExtraCard checked={selection.expressDelivery === true} onChange={(value) => update("expressDelivery", value)} icon={<Zap className="size-4" />} title="Express Delivery" price={`+${OVERWATCH_EXTRA_PRICING.expressDelivery * 100}%`} description="Prioritize faster fulfillment when capacity is available." />

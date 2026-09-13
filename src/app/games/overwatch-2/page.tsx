@@ -209,7 +209,13 @@ export default async function OverwatchPage() {
                 <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.055] to-transparent" />
                 <div className="relative flex items-start justify-between gap-4">
                   <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-                    {service.slug === "rank-boost" ? "Rank progression" : service.slug === "placement-matches" ? "Placements" : "Competitive"}
+                    {service.slug === "rank-boost"
+                      ? "Rank progression"
+                      : service.slug === "placement-matches"
+                        ? "Placements"
+                        : service.slug === "unrated-matches"
+                          ? "Unrated"
+                          : "Competitive"}
                   </Badge>
                   <span className="grid size-8 place-items-center rounded-lg border border-amber-300/[0.12] bg-amber-300/[0.035] text-amber-200/60">
                     <Layers3 className="size-3.5" />

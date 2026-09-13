@@ -5,7 +5,7 @@ import type {
 } from "@/features/configurator/types/configurator";
 import { OVERWATCH_EXTRA_PRICING } from "@/features/pricing/overwatch-pricing-rules";
 
-const VERSION = "overwatch-v1.1";
+const VERSION = "overwatch-v1.2";
 const BOOSTINGPEDIA_FACTOR = 0.7;
 
 const RANK_FAMILIES = [
@@ -253,6 +253,10 @@ function validateCommon(selection: ConfiguratorSelection) {
   assertBoolean(selection, "expressDelivery");
   assertBoolean(selection, "extraWin");
   assertBoolean(selection, "rankInsurance");
+
+  if (boostMethod === "duo" && selection.playOffline === true) {
+    throw new Error("Play Offline is only available with Account Boost.");
+  }
 
   return { boostMethod, boosters, role };
 }
