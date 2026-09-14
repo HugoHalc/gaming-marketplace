@@ -9,8 +9,6 @@ import {
   Layers3,
   ShieldCheck,
   Sparkles,
-  Swords,
-  Target,
   Trophy,
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
@@ -18,6 +16,9 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
+import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
+import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import {
   marvelRivalsRanks,
   marvelRivalsServices,
@@ -57,37 +58,54 @@ function rankByKey(key: (typeof rankPreviewKeys)[number]) {
   return marvelRivalsRanks.find((rank) => rank.key === key) ?? marvelRivalsRanks[0];
 }
 
+const marvelOverviewMeta = {
+  "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
+  "placement-matches": { badge: "PLACEMENTS", icon: Layers3 },
+  wins: { badge: "COMPETITIVE WINS", icon: Trophy },
+  "hero-boost": { badge: "HERO PROGRESSION", icon: Crosshair },
+  "unrated-games": { badge: "UNRATED", icon: Gamepad2 },
+} as const;
+
+function marvelServiceMeta(service: MarvelRivalsServiceFoundation) {
+  return marvelOverviewMeta[service.slug] ?? {
+    badge: service.eyebrow.toUpperCase(),
+    icon: Sparkles,
+  };
+}
+
 function MarvelServiceMicrovisual({
   service,
 }: {
   service: MarvelRivalsServiceFoundation;
 }) {
   const base =
-    "relative mt-6 flex h-[4.1rem] items-center overflow-hidden text-white/70 transition-colors duration-200 group-hover:text-white/90";
+    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-[#A38CFF]/[0.11] group-hover:bg-[#7A63F2]/[0.018] group-hover:text-white/90";
 
   if (service.slug === "rank-boost") {
     const ranks = rankPreviewKeys.map(rankByKey);
 
     return (
-      <div className={`${base} gap-2.5`} aria-label="Marvel Rivals rank progression preview">
+      <div className={`${base} justify-between gap-2`} aria-label="Marvel Rivals rank progression preview">
         {ranks.map((rank, index) => (
           <div key={rank.key} className="contents">
-            <span className="grid size-9 shrink-0 place-items-center sm:size-10">
-              {rank.badge ? (
-                <Image
-                  src={rank.badge}
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="size-9 object-contain opacity-90 drop-shadow-[0_7px_14px_rgba(0,0,0,.55)] transition-[opacity,transform] duration-200 group-hover:scale-[1.04] group-hover:opacity-100 sm:size-10"
-                />
-              ) : null}
+            <span className="group/rank-preview flex min-w-0 flex-col items-center gap-1.5">
+              <span className="grid size-10 place-items-center rounded-xl border border-white/[0.075] bg-black/20 transition-[border-color,background-color] group-hover:border-[#A38CFF]/[0.15] group-hover:bg-[#7A63F2]/[0.025]">
+                {rank.badge ? (
+                  <Image
+                    src={rank.badge}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="size-9 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover/rank-preview:scale-[1.045]"
+                  />
+                ) : null}
+              </span>
+              <span className="max-w-14 truncate text-[8px] font-semibold text-white/40">
+                {rank.label}
+              </span>
             </span>
             {index < ranks.length - 1 ? (
-              <ArrowRight
-                className="size-3.5 shrink-0 text-[#BDB2FF]/35"
-                strokeWidth={1.6}
-              />
+              <ArrowRight className="size-3.5 shrink-0 text-[#CEC5FF]/25" />
             ) : null}
           </div>
         ))}
@@ -97,18 +115,23 @@ function MarvelServiceMicrovisual({
 
   if (service.slug === "placement-matches") {
     return (
-      <div className={`${base} w-full gap-4`} aria-label="Marvel Rivals placements preview">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.14] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/75">
-          <Layers3 className="size-4" strokeWidth={1.7} />
+      <div className={`${base} gap-3`} aria-label="Marvel Rivals placements preview">
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
+          Unranked
         </span>
+        <ArrowRight className="size-3.5 shrink-0 text-[#CEC5FF]/25" />
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
-            Placement path
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Placement matches
           </p>
           <div className="mt-2 flex items-center gap-1.5">
-            <span className="h-1.5 w-[22%] rounded-full bg-[#A38CFF]/45" />
-            <span className="h-1.5 w-[22%] rounded-full bg-[#A38CFF]/22" />
-            <span className="h-1.5 flex-1 rounded-full bg-white/[0.07]" />
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span
+                key={index}
+                className="size-3 rounded-full border border-[#A38CFF]/[0.22] bg-[#7A63F2]/[0.018]"
+              />
+            ))}
+            <span className="ml-1 text-[8px] font-medium text-white/30">1–10</span>
           </div>
         </div>
       </div>
@@ -116,17 +139,34 @@ function MarvelServiceMicrovisual({
   }
 
   if (service.slug === "wins") {
+    const gold = rankByKey("gold");
+
     return (
-      <div className={`${base} gap-4`} aria-label="Marvel Rivals competitive wins preview">
-        <Trophy className="size-7 text-[#CEC5FF]/70" strokeWidth={1.6} />
+      <div className={`${base} gap-3.5`} aria-label="Marvel Rivals competitive wins preview">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04]">
+          {gold.badge ? (
+            <Image
+              src={gold.badge}
+              alt=""
+              width={44}
+              height={44}
+              className="size-10 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+            />
+          ) : null}
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
-            Competitive wins
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Win targets
           </p>
-          <div className="mt-2 flex items-center gap-1.5">
-            <span className="h-1.5 flex-1 rounded-full bg-[#A38CFF]/48" />
-            <span className="h-1.5 flex-1 rounded-full bg-white/[0.07]" />
-            <span className="h-1.5 flex-1 rounded-full bg-white/[0.07]" />
+          <div className="mt-2 flex gap-1.5">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span
+                key={index}
+                className="flex h-6 flex-1 items-center justify-center rounded-lg border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.035] font-gaming-label text-[8px] font-semibold tracking-[0.1em] text-[#CEC5FF]/60"
+              >
+                WIN
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -135,18 +175,22 @@ function MarvelServiceMicrovisual({
 
   if (service.slug === "hero-boost") {
     return (
-      <div className={`${base} gap-4`} aria-label="Marvel Rivals hero progression preview">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.14] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/75">
-          <Target className="size-4" strokeWidth={1.7} />
+      <div className={`${base} gap-3.5`} aria-label="Marvel Rivals hero progression preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/70">
+          <Crosshair className="size-4" strokeWidth={1.7} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
-            Hero progression
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Hero proficiency
           </p>
-          <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-            <span className="h-1.5 rounded-full bg-white/[0.08]" />
-            <ArrowRight className="size-3 text-[#BDB2FF]/40" />
-            <span className="h-1.5 rounded-full bg-[#A38CFF]/45" />
+          <div className="mt-2 grid grid-cols-[auto_1fr_auto] items-center gap-2">
+            <span className="font-gaming-value text-[9px] text-white/45">1</span>
+            <div className="relative h-px bg-white/[0.12]">
+              <span className="absolute -left-0.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border border-[#A38CFF]/35 bg-[#090B0A]" />
+              <ArrowRight className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 text-[#CEC5FF]/35" />
+              <span className="absolute -right-0.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border border-[#A38CFF]/35 bg-[#090B0A]" />
+            </div>
+            <span className="font-gaming-value text-[9px] text-white/65">70</span>
           </div>
         </div>
       </div>
@@ -154,14 +198,24 @@ function MarvelServiceMicrovisual({
   }
 
   return (
-    <div className={`${base} gap-4`} aria-label="Marvel Rivals unrated games preview">
-      <Gamepad2 className="size-7 text-[#CEC5FF]/70" strokeWidth={1.6} />
+    <div className={`${base} gap-3.5`} aria-label="Marvel Rivals unrated games preview">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[#CEC5FF]/60">
+        <Gamepad2 className="size-4" strokeWidth={1.7} />
+      </span>
       <div className="min-w-0 flex-1">
-        <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
-          Unrated games
-        </p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-          <div className="h-full w-[42%] rounded-full bg-[#A38CFF]/42" />
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Unrated sessions
+          </p>
+          <span className="text-[8px] font-medium text-white/35">No rank required</span>
+        </div>
+        <div className="mt-2 flex gap-1.5">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <span
+              key={index}
+              className="h-2 flex-1 rounded-full border border-white/[0.08] bg-white/[0.025]"
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -170,13 +224,13 @@ function MarvelServiceMicrovisual({
 
 function MarvelServiceCard({
   service,
-  index,
+  catalogService,
 }: {
   service: MarvelRivalsServiceFoundation;
-  index: number;
+  catalogService?: ServiceSummary;
 }) {
-  const serviceIcons = [Target, Layers3, Swords, Crosshair, Gamepad2] as const;
-  const Icon = serviceIcons[index] ?? Sparkles;
+  const meta = marvelServiceMeta(service);
+  const Icon = meta.icon;
 
   return (
     <Link
@@ -187,7 +241,7 @@ function MarvelServiceCard({
 
       <div className="relative flex items-start justify-between gap-4">
         <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-          {service.eyebrow}
+          {meta.badge}
         </Badge>
         <span className="grid size-8 place-items-center rounded-lg border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.035] text-[#C7B9FF]/65 transition-colors group-hover:border-[#A38CFF]/[0.18] group-hover:text-[#CEC5FF]/90">
           <Icon className="size-3.5" strokeWidth={1.7} />
@@ -208,13 +262,20 @@ function MarvelServiceCard({
       <div className="relative mt-auto pt-5">
         <div className="mb-5 h-px bg-gradient-to-r from-[#A38CFF]/16 via-white/[0.08] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/30">
-              Service
-            </p>
-            <p className="mt-1 text-xs font-semibold text-white/62">Configure service</p>
-          </div>
-          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color,transform] group-hover:border-[#A38CFF]/25 group-hover:bg-[#7A63F2]/[0.07] group-hover:text-[#CEC5FF]">
+          {catalogService ? (
+            <StartingPriceDisplay
+              value={catalogService.startingPrice}
+              context={catalogService.startingPriceContext}
+            />
+          ) : (
+            <div>
+              <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/30">
+                Service
+              </p>
+              <p className="mt-1 text-xs font-semibold text-white/62">Configure service</p>
+            </div>
+          )}
+          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#A38CFF]/25 group-hover:bg-[#7A63F2]/[0.07] group-hover:text-[#CEC5FF]">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>
@@ -223,7 +284,12 @@ function MarvelServiceCard({
   );
 }
 
-export default function MarvelRivalsPage() {
+export default async function MarvelRivalsPage() {
+  const catalogGame = await findCatalogGameBySlug("marvel-rivals");
+  const catalogServicesBySlug = new Map(
+    (catalogGame?.services ?? []).map((service) => [service.slug, service]),
+  );
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
       <SiteHeader />
@@ -321,8 +387,12 @@ export default function MarvelRivalsPage() {
           </div>
 
           <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
-            {marvelRivalsServices.map((service, index) => (
-              <MarvelServiceCard key={service.slug} service={service} index={index} />
+            {marvelRivalsServices.map((service) => (
+              <MarvelServiceCard
+                key={service.slug}
+                service={service}
+                catalogService={catalogServicesBySlug.get(service.slug)}
+              />
             ))}
           </div>
         </Container>

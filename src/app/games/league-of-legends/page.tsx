@@ -52,32 +52,48 @@ const lolRanks = [
   { src: "/ranks/league-of-legends/diamond.png", alt: "Diamond" },
 ] as const;
 
-function categoryLabel(category: ServiceSummary["category"]) {
-  if (category === "rank") return "Rank progression";
-  if (category === "wins") return "Competitive";
-  if (category === "placements") return "Placements";
-  return "Service";
+const leagueOverviewMeta = {
+  "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
+  wins: { badge: "RANKED WINS", icon: Trophy },
+  "placement-matches": { badge: "PLACEMENTS", icon: Layers3 },
+  "unrated-matches": { badge: "UNRATED", icon: Gamepad2 },
+  "arena-boost": { badge: "ARENA", icon: Trophy },
+  "mastery-boost": { badge: "MASTERY", icon: Sparkles },
+  "clash-boost": { badge: "CLASH", icon: ShieldCheck },
+} as const;
+
+function leagueServiceMeta(service: ServiceSummary) {
+  return leagueOverviewMeta[service.slug as keyof typeof leagueOverviewMeta] ?? {
+    badge: "LEAGUE SERVICE",
+    icon: Gamepad2,
+  };
 }
 
 function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
-  const base = "relative mt-6 flex h-[4.1rem] items-center overflow-hidden";
+  const base =
+    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-[#C89B3C]/[0.12] group-hover:bg-[#C89B3C]/[0.018] group-hover:text-white/90";
 
   if (service.slug === "rank-boost") {
     return (
-      <div className={`${base} gap-2.5`} aria-label="League of Legends rank progression preview">
+      <div className={`${base} justify-between gap-2`} aria-label="League of Legends rank progression preview">
         {lolRanks.map((rank, index) => (
           <div key={rank.src} className="contents">
-            <span className="grid size-9 shrink-0 place-items-center sm:size-10">
-              <Image
-                src={rank.src}
-                alt={rank.alt}
-                width={40}
-                height={40}
-                className="size-9 object-contain opacity-85 drop-shadow-[0_7px_14px_rgba(0,0,0,.55)] transition-[opacity,transform] duration-200 group-hover:scale-[1.04] group-hover:opacity-100 sm:size-10"
-              />
+            <span className="group/rank-preview flex min-w-0 flex-col items-center gap-1.5">
+              <span className="grid size-10 place-items-center rounded-xl border border-white/[0.075] bg-black/20 transition-[border-color,background-color] group-hover:border-[#C89B3C]/[0.16] group-hover:bg-[#C89B3C]/[0.025]">
+                <Image
+                  src={rank.src}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="size-9 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover/rank-preview:scale-[1.045]"
+                />
+              </span>
+              <span className="max-w-14 truncate text-[8px] font-semibold text-white/40">
+                {rank.alt}
+              </span>
             </span>
             {index < lolRanks.length - 1 ? (
-              <ArrowRight className="size-3.5 shrink-0 text-[#C89B3C]/35" strokeWidth={1.6} />
+              <ArrowRight className="size-3.5 shrink-0 text-[#E7C867]/25" />
             ) : null}
           </div>
         ))}
@@ -87,13 +103,28 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "wins") {
     return (
-      <div className={`${base} gap-4`} aria-label="Ranked wins preview">
-        <span className="font-gaming-value text-[1.8rem] leading-none tracking-[-0.04em] text-[#E7C867]">+1</span>
+      <div className={`${base} gap-3.5`} aria-label="Ranked wins preview">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08]">
+          <Image
+            src="/ranks/league-of-legends/gold.png"
+            alt=""
+            width={44}
+            height={44}
+            className="size-10 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+          />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Ranked win</p>
-          <div className="mt-2 flex items-center gap-1.5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <span key={index} className={`h-1.5 flex-1 rounded-full ${index < 2 ? "bg-[#C89B3C]/55" : "bg-white/[0.07]"}`} />
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Win targets
+          </p>
+          <div className="mt-2 flex gap-1.5">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span
+                key={index}
+                className="flex h-6 flex-1 items-center justify-center rounded-lg border border-[#C89B3C]/[0.13] bg-[#7A5B22]/[0.07] font-gaming-label text-[8px] font-semibold tracking-[0.1em] text-[#E7C867]/60"
+              >
+                WIN
+              </span>
             ))}
           </div>
         </div>
@@ -103,12 +134,21 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "placement-matches") {
     return (
-      <div className={`${base} w-full`} aria-label="Placement matches preview">
-        <div className="w-full">
-          <p className="font-gaming-value text-[13px] uppercase tracking-[0.12em] text-[#E7C867]/85">Placements</p>
-          <div className="mt-3 flex items-center gap-2">
+      <div className={`${base} gap-3`} aria-label="Placement matches preview">
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
+          Unranked
+        </span>
+        <ArrowRight className="size-3.5 shrink-0 text-[#E7C867]/25" />
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Placement matches
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
-              <span key={index} className={`size-2.5 rounded-full border ${index === 0 ? "border-[#C89B3C]/50 bg-[#C89B3C]/25" : "border-white/15 bg-white/[0.025]"}`} />
+              <span
+                key={index}
+                className="size-3 rounded-full border border-[#C89B3C]/[0.22] bg-[#C89B3C]/[0.018]"
+              />
             ))}
           </div>
         </div>
@@ -118,12 +158,24 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "unrated-matches") {
     return (
-      <div className={`${base} gap-4`} aria-label="Unrated matches preview">
-        <Gamepad2 className="size-7 text-[#E7C867]/75" strokeWidth={1.6} />
+      <div className={`${base} gap-3.5`} aria-label="Unrated matches preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[#E7C867]/60">
+          <Gamepad2 className="size-4" strokeWidth={1.7} />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Match package</p>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-            <div className="h-full w-[42%] rounded-full bg-[#C89B3C]/50" />
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+              Match package
+            </p>
+            <span className="text-[8px] font-medium text-white/35">No rank required</span>
+          </div>
+          <div className="mt-2 flex gap-1.5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span
+                key={index}
+                className="h-2 flex-1 rounded-full border border-white/[0.08] bg-white/[0.025]"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -132,12 +184,22 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "arena-boost") {
     return (
-      <div className={`${base} gap-4`} aria-label="Arena boost preview">
-        <Trophy className="size-7 text-[#E7C867]/78" strokeWidth={1.6} />
-        <div className="grid flex-1 grid-cols-4 gap-1.5">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <span key={index} className={`h-7 rounded-md border ${index === 0 ? "border-[#C89B3C]/30 bg-[#7A5B22]/18" : "border-white/[0.07] bg-white/[0.02]"}`} />
-          ))}
+      <div className={`${base} gap-3.5`} aria-label="Arena boost preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
+          <Trophy className="size-4" strokeWidth={1.7} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Arena stages
+          </p>
+          <div className="mt-2 grid grid-cols-4 gap-1.5">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <span
+                key={index}
+                className="h-7 rounded-lg border border-[#C89B3C]/[0.11] bg-[#7A5B22]/[0.045]"
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -145,16 +207,21 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "mastery-boost") {
     return (
-      <div className={`${base} gap-4`} aria-label="Mastery boost preview">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/20 bg-[#7A5B22]/15 text-[#E7C867]">
+      <div className={`${base} gap-3.5`} aria-label="Mastery boost preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
           <Sparkles className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Mastery progress</p>
-          <div className="mt-2 flex gap-1.5">
-            <span className="h-1.5 w-1/3 rounded-full bg-[#C89B3C]/55" />
-            <span className="h-1.5 w-1/3 rounded-full bg-[#C89B3C]/28" />
-            <span className="h-1.5 w-1/3 rounded-full bg-white/[0.07]" />
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Mastery progression
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <span
+                key={index}
+                className="h-2 flex-1 rounded-full border border-[#C89B3C]/[0.11] bg-[#7A5B22]/[0.045]"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -162,13 +229,20 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   }
 
   return (
-    <div className={`${base} gap-4`} aria-label="Clash boost preview">
-      <ShieldCheck className="size-7 text-[#E7C867]/75" strokeWidth={1.6} />
+    <div className={`${base} gap-3.5`} aria-label="Clash boost preview">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
+        <ShieldCheck className="size-4" strokeWidth={1.7} />
+      </span>
       <div className="min-w-0 flex-1">
-        <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Clash path</p>
+        <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+          Clash path
+        </p>
         <div className="mt-2 flex items-center gap-2">
           {Array.from({ length: 3 }).map((_, index) => (
-            <span key={index} className={`h-2 flex-1 rounded-full ${index === 0 ? "bg-[#C89B3C]/55" : "bg-white/[0.07]"}`} />
+            <span
+              key={index}
+              className="h-2 flex-1 rounded-full border border-[#C89B3C]/[0.11] bg-[#7A5B22]/[0.045]"
+            />
           ))}
         </div>
       </div>
@@ -177,6 +251,9 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 }
 
 function LeagueServiceCard({ service }: { service: ServiceSummary }) {
+  const meta = leagueServiceMeta(service);
+  const Icon = meta.icon;
+
   return (
     <Link
       href={`/games/league-of-legends/${service.slug}`}
@@ -187,10 +264,10 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
 
       <div className="relative flex items-start justify-between gap-4">
         <Badge className="border-[#C89B3C]/16 bg-[#7A5B22]/10 text-[#E7C867]/75">
-          {categoryLabel(service.category)}
+          {meta.badge}
         </Badge>
-        <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-black/20 text-[#E7C867]/45 transition-colors group-hover:border-[#C89B3C]/18 group-hover:text-[#E7C867]/75">
-          <Sparkles className="size-3.5" strokeWidth={1.7} />
+        <span className="grid size-8 place-items-center rounded-lg border border-[#C89B3C]/[0.11] bg-black/20 text-[#E7C867]/50 transition-colors group-hover:border-[#C89B3C]/18 group-hover:text-[#E7C867]/80">
+          <Icon className="size-3.5" strokeWidth={1.7} />
         </span>
       </div>
 
@@ -212,7 +289,7 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
             value={service.startingPrice}
             context={service.startingPriceContext}
           />
-          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color,transform] group-hover:border-[#C89B3C]/30 group-hover:bg-[#7A5B22]/15 group-hover:text-[#E7C867]">
+          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#C89B3C]/30 group-hover:bg-[#7A5B22]/15 group-hover:text-[#E7C867]">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>

@@ -12,6 +12,7 @@ import {
   ReceiptText,
   ShieldCheck,
   Sparkles,
+  Trophy,
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
@@ -111,11 +112,45 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 }
 
 
-function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }) {
-  const base =
-    "relative mt-6 flex h-[3.9rem] items-center overflow-hidden text-white/70 transition-[opacity,color,border-color,background-color] duration-200 ease-out group-hover:text-white/85 motion-reduce:transition-none";
+const rocketLeagueOverviewMeta = {
+  "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
+  wins: { badge: "COMPETITIVE WINS", icon: Trophy },
+  "placements-boost": { badge: "PLACEMENTS", icon: Layers3 },
+  "tournament-boost": { badge: "TOURNAMENT", icon: Trophy },
+  "rewards-boost": { badge: "SEASON REWARDS", icon: Sparkles },
+} as const;
 
-  if (serviceName === "Rank Boost") {
+const valorantOverviewMeta = {
+  "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
+  wins: { badge: "COMPETITIVE WINS", icon: Trophy },
+  "placement-matches": { badge: "PLACEMENTS", icon: Layers3 },
+} as const;
+
+function overviewMeta(
+  service: ServiceSummary,
+  isRocketLeague: boolean,
+  isValorant: boolean,
+) {
+  if (isRocketLeague) {
+    return rocketLeagueOverviewMeta[
+      service.slug as keyof typeof rocketLeagueOverviewMeta
+    ] ?? { badge: categoryLabel(service.category), icon: Gamepad2 };
+  }
+
+  if (isValorant) {
+    return valorantOverviewMeta[
+      service.slug as keyof typeof valorantOverviewMeta
+    ] ?? { badge: categoryLabel(service.category), icon: Gamepad2 };
+  }
+
+  return null;
+}
+
+function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
+  const base =
+    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-blue-300/[0.10] group-hover:bg-blue-300/[0.018] group-hover:text-white/90";
+
+  if (service.slug === "rank-boost") {
     const ranks = [
       { src: "/ranks/rocket-league/diamond.svg", alt: "Diamond" },
       { src: "/ranks/rocket-league/champion.svg", alt: "Champion" },
@@ -123,20 +158,25 @@ function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }
     ];
 
     return (
-      <div className={`${base} gap-2.5`} aria-label="Rank progression preview">
+      <div className={`${base} justify-between gap-2`} aria-label="Rank progression preview">
         {ranks.map((rank, index) => (
           <div key={rank.src} className="contents">
-            <div className="relative size-8 shrink-0 sm:size-9">
-              <Image
-                src={rank.src}
-                alt={rank.alt}
-                fill
-                sizes="36px"
-                className="object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none"
-              />
-            </div>
+            <span className="group/rank-preview flex min-w-0 flex-col items-center gap-1.5">
+              <span className="relative grid size-10 place-items-center rounded-xl border border-white/[0.075] bg-black/20 transition-[border-color,background-color] group-hover:border-blue-300/[0.14] group-hover:bg-blue-300/[0.025]">
+                <Image
+                  src={rank.src}
+                  alt=""
+                  fill
+                  sizes="40px"
+                  className="object-contain p-0.5 drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover/rank-preview:scale-[1.045]"
+                />
+              </span>
+              <span className="max-w-16 truncate text-[8px] font-semibold text-white/40">
+                {rank.alt}
+              </span>
+            </span>
             {index < ranks.length - 1 ? (
-              <ArrowRight className="size-3.5 shrink-0 text-white/25" strokeWidth={1.6} />
+              <ArrowRight className="size-3.5 shrink-0 text-blue-200/25" />
             ) : null}
           </div>
         ))}
@@ -144,86 +184,103 @@ function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }
     );
   }
 
-  if (serviceName === "Competitive Wins") {
+  if (service.slug === "wins") {
     return (
-      <div className={`${base} gap-4`} aria-label="Competitive wins preview">
-        <span className="font-gaming-value text-[1.75rem] leading-none tracking-[-0.04em] text-blue-200/85">
-          +1
+      <div className={`${base} gap-3.5`} aria-label="Competitive wins preview">
+        <span className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025]">
+          <Image
+            src="/ranks/rocket-league/champion.svg"
+            alt=""
+            fill
+            sizes="44px"
+            className="object-contain p-0.5 drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+          />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">
-            Win
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Win targets
+          </p>
+          <div className="mt-2 flex gap-1.5">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span
+                key={index}
+                className="flex h-6 flex-1 items-center justify-center rounded-lg border border-blue-300/[0.11] bg-blue-300/[0.025] font-gaming-label text-[8px] font-semibold tracking-[0.1em] text-blue-100/55"
+              >
+                WIN
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (service.slug === "tournament-boost") {
+    return (
+      <div className={`${base} gap-4`} aria-label="Tournament bracket preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025] text-blue-100/60">
+          <Trophy className="size-4" strokeWidth={1.7} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Bracket path
+          </p>
+          <div className="relative mt-2 h-8 max-w-40">
+            <span className="absolute left-0 top-0.5 size-2 rounded-full border border-white/20 bg-[#090B0A]" />
+            <span className="absolute left-0 bottom-0.5 size-2 rounded-full border border-white/20 bg-[#090B0A]" />
+            <span className="absolute left-2 top-[5px] h-px w-7 bg-white/12" />
+            <span className="absolute left-2 bottom-[5px] h-px w-7 bg-white/12" />
+            <span className="absolute left-9 top-[5px] h-[22px] w-px bg-white/12" />
+            <span className="absolute left-9 top-1/2 h-px w-10 bg-blue-300/25" />
+            <span className="absolute left-[4.65rem] top-1/2 size-2.5 -translate-y-1/2 rounded-full border border-blue-300/35 bg-blue-300/[0.08]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (service.slug === "rewards-boost") {
+    return (
+      <div className={`${base} gap-3.5`} aria-label="Season rewards preview">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025] text-blue-100/60">
+          <Sparkles className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Season rewards
+          </p>
+          <div className="mt-2 grid grid-cols-5 gap-1.5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span
+                key={index}
+                className="h-6 rounded-lg border border-blue-300/[0.10] bg-blue-300/[0.018]"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (service.slug === "placements-boost") {
+    return (
+      <div className={`${base} gap-3`} aria-label="Placements preview">
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
+          Unranked
+        </span>
+        <ArrowRight className="size-3.5 shrink-0 text-blue-200/25" />
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Placement matches
           </p>
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
               <span
                 key={index}
-                className={`h-1.5 flex-1 rounded-full ${
-                  index === 0 ? "bg-blue-300/50" : "bg-white/[0.07]"
-                }`}
+                className="size-3 rounded-full border border-blue-200/[0.20] bg-blue-200/[0.018]"
               />
             ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (serviceName === "Tournament Boost") {
-    return (
-      <div className={`${base} gap-5`} aria-label="Tournament bracket preview">
-        <div className="relative h-12 w-24">
-          <span className="absolute left-0 top-1.5 size-2 rounded-full border border-white/20 bg-[#090b0a]" />
-          <span className="absolute left-0 bottom-1.5 size-2 rounded-full border border-white/20 bg-[#090b0a]" />
-          <span className="absolute left-2 top-[9px] h-px w-7 bg-white/12" />
-          <span className="absolute left-2 bottom-[9px] h-px w-7 bg-white/12" />
-          <span className="absolute left-9 top-[9px] h-[30px] w-px bg-white/12" />
-          <span className="absolute left-9 top-1/2 h-px w-8 bg-blue-300/25" />
-          <span className="absolute left-[4.15rem] top-[1.18rem] size-2.5 rounded-full border border-blue-300/35 bg-blue-300/15" />
-        </div>
-        <span className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-white/30">
-          Bracket path
-        </span>
-      </div>
-    );
-  }
-
-  if (serviceName === "Rewards Boost") {
-    return (
-      <div className={`${base} w-full`} aria-label="Season rewards progression preview">
-        <div className="w-full">
-          <p className="font-gaming-value text-[13px] uppercase tracking-[0.12em] text-blue-200/75">
-            Season rewards
-          </p>
-          <div className="mt-3 grid grid-cols-10 gap-1">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <span
-                key={index}
-                className={`h-1.5 rounded-full ${
-                  index < 4 ? "bg-blue-300/35" : "bg-white/[0.065]"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (serviceName === "Placements Boost") {
-    return (
-      <div className={`${base} w-full`} aria-label="Placements preview">
-        <div className="w-full">
-          <p className="font-gaming-value text-[13px] uppercase tracking-[0.12em] text-blue-200/75">
-            Placements
-          </p>
-          <div className="mt-3 flex items-center gap-1.5">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <span
-                key={index}
-                className="size-2 rounded-full border border-white/15 bg-white/[0.025]"
-              />
-            ))}
+            <span className="ml-1 text-[8px] font-medium text-white/30">1–10</span>
           </div>
         </div>
       </div>
@@ -233,11 +290,11 @@ function RocketLeagueServiceMicrovisual({ serviceName }: { serviceName: string }
   return null;
 }
 
-function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
+function ValorantServiceMicrovisual({ service }: { service: ServiceSummary }) {
   const base =
-    "relative mt-6 flex h-[3.9rem] items-center overflow-hidden text-white/70 transition-[opacity,color,border-color,background-color] duration-200 ease-out group-hover:text-white/85 motion-reduce:transition-none";
+    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-rose-300/[0.10] group-hover:bg-rose-300/[0.018] group-hover:text-white/90";
 
-  if (serviceName === "Rank Boost") {
+  if (service.slug === "rank-boost") {
     const ranks = [
       { src: "/ranks/valorant/gold.png", alt: "Gold" },
       { src: "/ranks/valorant/diamond.png", alt: "Diamond" },
@@ -245,20 +302,25 @@ function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
     ];
 
     return (
-      <div className={`${base} gap-2.5`} aria-label="Valorant rank progression preview">
+      <div className={`${base} justify-between gap-2`} aria-label="Valorant rank progression preview">
         {ranks.map((rank, index) => (
           <div key={rank.src} className="contents">
-            <div className="relative grid size-8 shrink-0 place-items-center sm:size-9">
-              <Image
-                src={rank.src}
-                alt={rank.alt}
-                width={36}
-                height={36}
-                className="size-8 object-contain opacity-80 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none sm:size-9"
-              />
-            </div>
+            <span className="group/rank-preview flex min-w-0 flex-col items-center gap-1.5">
+              <span className="grid size-10 place-items-center rounded-xl border border-white/[0.075] bg-black/20 transition-[border-color,background-color] group-hover:border-rose-300/[0.14] group-hover:bg-rose-300/[0.025]">
+                <Image
+                  src={rank.src}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="size-9 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover/rank-preview:scale-[1.045]"
+                />
+              </span>
+              <span className="max-w-14 truncate text-[8px] font-semibold text-white/40">
+                {rank.alt}
+              </span>
+            </span>
             {index < ranks.length - 1 ? (
-              <ArrowRight className="size-3.5 shrink-0 text-white/25" strokeWidth={1.6} />
+              <ArrowRight className="size-3.5 shrink-0 text-rose-200/25" />
             ) : null}
           </div>
         ))}
@@ -266,15 +328,30 @@ function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
     );
   }
 
-  if (serviceName === "Competitive Wins") {
+  if (service.slug === "wins") {
     return (
-      <div className={`${base} gap-4`} aria-label="Valorant competitive wins preview">
-        <span className="font-gaming-value text-[1.75rem] leading-none tracking-[-0.04em] text-rose-200/85">+1</span>
+      <div className={`${base} gap-3.5`} aria-label="Valorant competitive wins preview">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-rose-300/[0.10] bg-rose-300/[0.025]">
+          <Image
+            src="/ranks/valorant/gold.png"
+            alt=""
+            width={44}
+            height={44}
+            className="size-10 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+          />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[10px] uppercase tracking-[0.14em] text-white/35">Win</p>
-          <div className="mt-2 flex items-center gap-1.5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <span key={index} className={`h-1.5 flex-1 rounded-full ${index === 0 ? "bg-rose-300/50" : "bg-white/[0.07]"}`} />
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Win targets
+          </p>
+          <div className="mt-2 flex gap-1.5">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span
+                key={index}
+                className="flex h-6 flex-1 items-center justify-center rounded-lg border border-rose-300/[0.11] bg-rose-300/[0.025] font-gaming-label text-[8px] font-semibold tracking-[0.1em] text-rose-100/55"
+              >
+                WIN
+              </span>
             ))}
           </div>
         </div>
@@ -282,14 +359,23 @@ function ValorantServiceMicrovisual({ serviceName }: { serviceName: string }) {
     );
   }
 
-  if (serviceName === "Placements Boost") {
+  if (service.slug === "placement-matches") {
     return (
-      <div className={`${base} w-full`} aria-label="Valorant placements preview">
-        <div className="w-full">
-          <p className="font-gaming-value text-[13px] uppercase tracking-[0.12em] text-rose-200/75">Placements</p>
-          <div className="mt-3 flex items-center gap-1.5">
+      <div className={`${base} gap-3`} aria-label="Valorant placements preview">
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
+          Unrated
+        </span>
+        <ArrowRight className="size-3.5 shrink-0 text-rose-200/25" />
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Placement matches
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
-              <span key={index} className="size-2 rounded-full border border-white/15 bg-white/[0.025]" />
+              <span
+                key={index}
+                className="size-3 rounded-full border border-rose-200/[0.20] bg-rose-200/[0.018]"
+              />
             ))}
           </div>
         </div>
@@ -313,6 +399,14 @@ function ServiceShowcaseCard({
   isRocketLeague: boolean;
   isValorant: boolean;
 }) {
+  const meta = overviewMeta(service, isRocketLeague, isValorant);
+  const ServiceIcon = meta?.icon;
+  const ctaClass = isRocketLeague
+    ? "group-hover:border-blue-300/25 group-hover:bg-blue-300/[0.07] group-hover:text-blue-200"
+    : isValorant
+      ? "group-hover:border-rose-300/25 group-hover:bg-rose-300/[0.07] group-hover:text-rose-200"
+      : "group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300";
+
   return (
     <Link
       href={`/games/${gameSlug}/${service.slug}`}
@@ -335,19 +429,29 @@ function ServiceShowcaseCard({
       />
       <div className="relative flex items-start justify-between gap-4">
         <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-          {categoryLabel(service.category)}
+          {meta?.badge ?? categoryLabel(service.category)}
         </Badge>
-        {!isRocketLeague && !isValorant ? (
+        {ServiceIcon ? (
+          <span
+            className={`grid size-8 place-items-center rounded-lg border bg-black/20 transition-colors ${
+              isRocketLeague
+                ? "border-blue-300/[0.12] text-blue-200/60 group-hover:border-blue-300/[0.18] group-hover:text-blue-100/85"
+                : "border-rose-300/[0.12] text-rose-200/60 group-hover:border-rose-300/[0.18] group-hover:text-rose-100/85"
+            }`}
+          >
+            <ServiceIcon className="size-3.5" strokeWidth={1.7} />
+          </span>
+        ) : (
           <span className="font-gaming-value rounded-lg border border-white/[0.08] bg-black/20 px-2 py-1 text-[10px] text-white/35">
             {String(index + 1).padStart(2, "0")}
           </span>
-        ) : null}
+        )}
       </div>
 
       {isRocketLeague ? (
-        <RocketLeagueServiceMicrovisual serviceName={service.name} />
+        <RocketLeagueServiceMicrovisual service={service} />
       ) : isValorant ? (
-        <ValorantServiceMicrovisual serviceName={service.name} />
+        <ValorantServiceMicrovisual service={service} />
       ) : null}
 
       <div className={`relative ${isRocketLeague || isValorant ? "mt-3" : "mt-8"}`}>
@@ -366,7 +470,7 @@ function ServiceShowcaseCard({
             value={service.startingPrice}
             context={service.startingPriceContext}
           />
-          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-green-400/25 group-hover:bg-green-400/[0.08] group-hover:text-green-300">
+          <span className={`grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] ${ctaClass}`}>
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>
