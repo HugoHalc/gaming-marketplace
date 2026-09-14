@@ -1,74 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { resolveRocketLeagueRank } from "@/components/orders/game-order-presentation-data";
 
-const RANK_ASSETS: Record<string, string> = {
-  bronze: "/ranks/rocket-league/bronze.png",
-  silver: "/ranks/rocket-league/silver.png",
-  gold: "/ranks/rocket-league/gold.png",
-  platinum: "/ranks/rocket-league/platinum.png",
-  diamond: "/ranks/rocket-league/diamond.png",
-  champion: "/ranks/rocket-league/champion.png",
-  "grand-champion": "/ranks/rocket-league/grand-champion.png",
-  "supersonic-legend": "/ranks/rocket-league/supersonic-legend.png",
-};
-
-function rankFamily(value: string) {
-  if (value === "supersonic-legend") return value;
-  return value.replace(/-\d$/, "");
-}
-
-function rankFamilyLabel(value: string) {
-  return value
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-export function resolveRocketLeagueRank(value: unknown) {
-  if (typeof value !== "string") return null;
-
-  if (value === "unrated") {
-    return { key: value, label: "Unrated", asset: null };
-  }
-
-  if (value === "supersonic-legend") {
-    return {
-      key: value,
-      label: "Supersonic Legend",
-      asset: RANK_ASSETS[value],
-    };
-  }
-
-  const tier = value.match(/-(\d)$/)?.[1];
-  const family = rankFamily(value);
-  const asset = RANK_ASSETS[family];
-
-  if (!asset) return null;
-
-  const familyLabel = rankFamilyLabel(family);
-
-  // Some services (for example Tournament Boost) store the rank family
-  // without a division, e.g. "grand-champion". Keep the family badge visible.
-  if (!tier) {
-    return {
-      key: value,
-      label: familyLabel,
-      asset,
-    };
-  }
-
-  const roman =
-    tier === "1" ? "I" : tier === "2" ? "II" : tier === "3" ? "III" : null;
-
-  if (!roman) return null;
-
-  return {
-    key: value,
-    label: `${familyLabel} ${roman}`,
-    asset,
-  };
-}
+export { resolveRocketLeagueRank } from "@/components/orders/game-order-presentation-data";
 
 export function RocketLeagueRankValue({
   value,
@@ -82,8 +17,7 @@ export function RocketLeagueRankValue({
   const rank = resolveRocketLeagueRank(value);
   if (!rank) return null;
 
-  const dimensions =
-    size === "sm" ? 26 : size === "lg" ? 46 : 34;
+  const dimensions = size === "sm" ? 26 : size === "lg" ? 46 : 34;
 
   return (
     <div className="flex min-w-0 items-center gap-2.5">
