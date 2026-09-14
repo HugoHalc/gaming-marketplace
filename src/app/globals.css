@@ -121,7 +121,7 @@ body {
  *
  * Official BoostingPedia platform artwork supplied by the project owner.
  * Existing platform labels and availability stay unchanged:
- * PC uses the Steam mark, while PlayStation, Xbox and Nintendo Switch use
+ * PC uses the Windows mark, while PlayStation, Xbox and Nintendo Switch use
  * their matching marks. The masks preserve each supplied silhouette and
  * keep the established per-platform accent colors on the dark UI.
  */
@@ -150,8 +150,8 @@ div > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before
 button > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before,
 button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-sky-300::before,
 div > span.grid.size-7.place-items-center.rounded-lg.border.text-sky-300::before {
-  -webkit-mask-image: url("/platform-icons/steam.png");
-  mask-image: url("/platform-icons/steam.png");
+  -webkit-mask-image: url("/platform-icons/windows.png");
+  mask-image: url("/platform-icons/windows.png");
 }
 
 button > span.grid.size-7.place-items-center.rounded-lg.border.text-blue-300::before,
@@ -170,6 +170,36 @@ button > span.grid.size-7.place-items-center.rounded-lg.border.text-red-300::bef
 button > span.grid.size-7.shrink-0.place-items-center.rounded-lg.border.text-red-300::before {
   -webkit-mask-image: url("/platform-icons/nintendo-switch.webp");
   mask-image: url("/platform-icons/nintendo-switch.webp");
+}
+
+/* League of Legends PC-only services use a disabled native Platform select.
+ * Keep the stored value/label unchanged and add the same owner-supplied
+ * Windows mark as a purely visual cue. */
+label:has(> select[aria-label="Platform"][disabled]) {
+  position: relative;
+}
+
+label:has(> select[aria-label="Platform"][disabled]) > select[aria-label="Platform"] {
+  padding-left: 2.5rem;
+}
+
+label:has(> select[aria-label="Platform"][disabled])::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.85rem;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  background-color: #7dd3fc;
+  -webkit-mask-image: url("/platform-icons/windows.png");
+  mask-image: url("/platform-icons/windows.png");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 /* Marvel Rivals shared configurator: existing violet icon containers are
@@ -195,8 +225,8 @@ button:nth-child(3) > span.grid.size-7.place-items-center.rounded-lg.border[clas
 
 button:nth-child(1) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
   background-color: #7dd3fc;
-  -webkit-mask-image: url("/platform-icons/steam.png");
-  mask-image: url("/platform-icons/steam.png");
+  -webkit-mask-image: url("/platform-icons/windows.png");
+  mask-image: url("/platform-icons/windows.png");
 }
 
 button:nth-child(2) > span.grid.size-7.place-items-center.rounded-lg.border[class*="text-violet-200/75"]::before {
@@ -237,8 +267,8 @@ button:nth-child(3) > span.grid.size-7.place-items-center.rounded-lg.border[clas
 
 .space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(1)::before {
   background-color: #7dd3fc;
-  -webkit-mask-image: url("/platform-icons/steam.png");
-  mask-image: url("/platform-icons/steam.png");
+  -webkit-mask-image: url("/platform-icons/windows.png");
+  mask-image: url("/platform-icons/windows.png");
 }
 
 .space-y-5 > .grid.gap-5.lg\:grid-cols-2 + .grid.gap-5.lg\:grid-cols-2 > div:nth-child(2) > .mt-3.grid.grid-cols-2.gap-2 > button:nth-child(2)::before {
