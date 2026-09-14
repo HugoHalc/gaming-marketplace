@@ -22,7 +22,6 @@ import { StartingPriceDisplay } from "@/features/catalog/components/service-card
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 
-
 const storefrontHighlights = [
   {
     icon: ShieldCheck,
@@ -48,33 +47,84 @@ export const metadata: Metadata = {
   alternates: { canonical: "/games/overwatch-2" },
 };
 
+const overviewServiceMeta = {
+  "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
+  wins: { badge: "COMPETITIVE WINS", icon: Trophy },
+  "competitive-drives": { badge: "COMPETITIVE DRIVE", icon: Gauge },
+  "placement-matches": { badge: "PLACEMENTS", icon: Layers3 },
+  "unrated-matches": { badge: "UNRATED", icon: Gamepad2 },
+} as const;
+
+function serviceMeta(slug: string) {
+  return overviewServiceMeta[slug as keyof typeof overviewServiceMeta] ?? {
+    badge: "Overwatch service",
+    icon: Gamepad2,
+  };
+}
+
+function RankPreviewBadge({
+  src,
+  label,
+}: {
+  src: string;
+  label: string;
+}) {
+  return (
+    <span className="group/rank-preview flex min-w-0 flex-col items-center gap-1.5">
+      <span className="grid size-10 place-items-center rounded-xl border border-white/[0.075] bg-black/20 transition-[border-color,background-color,transform] duration-200 group-hover:border-amber-300/[0.14] group-hover:bg-amber-300/[0.025]">
+        <Image
+          src={src}
+          alt=""
+          width={40}
+          height={40}
+          className="size-9 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover/rank-preview:scale-[1.045]"
+        />
+      </span>
+      <span className="max-w-14 truncate text-[8px] font-semibold text-white/40">{label}</span>
+    </span>
+  );
+}
+
 function ServiceVisual({ service }: { service: ServiceSummary }) {
   const base =
-    "mt-6 flex h-[4.1rem] items-center overflow-hidden text-white/70 transition-colors duration-200 group-hover:text-white/90";
+    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color] duration-200 group-hover:border-amber-300/[0.10] group-hover:bg-amber-300/[0.018] group-hover:text-white/90";
 
   if (service.slug === "rank-boost") {
     return (
-      <div className={`${base} gap-3`}>
-        <span className="grid size-9 place-items-center rounded-xl border border-amber-300/[0.16] bg-amber-300/[0.05] text-amber-200/80">
-          <ShieldCheck className="size-4" />
-        </span>
-        <div>
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/35">Rank progression</p>
-          <p className="mt-1 font-gaming-value text-sm text-amber-100/80">Bronze V → Champion I</p>
-        </div>
+      <div className={`${base} justify-between gap-2`}>
+        <RankPreviewBadge src="/ranks/overwatch/bronze.png" label="Bronze" />
+        <ArrowRight className="size-3.5 shrink-0 text-amber-200/25" />
+        <RankPreviewBadge src="/ranks/overwatch/emerald.png" label="Emerald" />
+        <ArrowRight className="size-3.5 shrink-0 text-amber-200/25" />
+        <RankPreviewBadge src="/ranks/overwatch/champion.png" label="Champion" />
       </div>
     );
   }
 
   if (service.slug === "wins") {
     return (
-      <div className={`${base} gap-4`}>
-        <Trophy className="size-7 text-amber-200/65" />
+      <div className={`${base} gap-3.5`}>
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-amber-300/[0.10] bg-amber-300/[0.025]">
+          <Image
+            src="/ranks/overwatch/gold.png"
+            alt=""
+            width={44}
+            height={44}
+            className="size-10 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+          />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/35">Competitive wins</p>
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Win targets
+          </p>
           <div className="mt-2 flex gap-1.5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <span key={index} className={`h-1.5 flex-1 rounded-full ${index === 0 ? "bg-amber-300/55" : "bg-white/[0.07]"}`} />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span
+                key={index}
+                className="flex h-6 flex-1 items-center justify-center rounded-lg border border-amber-300/[0.11] bg-amber-300/[0.025] font-gaming-label text-[8px] font-semibold tracking-[0.1em] text-amber-100/55"
+              >
+                WIN
+              </span>
             ))}
           </div>
         </div>
@@ -84,11 +134,32 @@ function ServiceVisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "competitive-drives") {
     return (
-      <div className={`${base} gap-4`}>
-        <Gauge className="size-7 text-amber-200/65" />
+      <div className={`${base} gap-3.5`}>
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-amber-300/[0.10] bg-amber-300/[0.025]">
+          <Image
+            src="/ranks/overwatch/champion.png"
+            alt=""
+            width={44}
+            height={44}
+            className="size-10 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.5)] transition-transform duration-200 group-hover:scale-[1.04]"
+          />
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/35">Competitive Drive</p>
-          <p className="mt-1 font-gaming-value text-sm text-amber-100/80">0 → 4,000 · 50 point steps</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+              Drive points
+            </p>
+            <span className="text-[8px] font-semibold text-amber-100/45">50 point steps</span>
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="font-gaming-value text-[9px] text-white/50">0</span>
+            <div className="relative h-px flex-1 bg-white/[0.12]">
+              <span className="absolute -left-0.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border border-amber-200/35 bg-[#090B0A]" />
+              <ArrowRight className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 text-amber-200/35" />
+              <span className="absolute -right-0.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full border border-amber-200/35 bg-[#090B0A]" />
+            </div>
+            <span className="font-gaming-value text-[9px] text-white/65">4,000</span>
+          </div>
         </div>
       </div>
     );
@@ -96,13 +167,23 @@ function ServiceVisual({ service }: { service: ServiceSummary }) {
 
   if (service.slug === "placement-matches") {
     return (
-      <div className={`${base} w-full`}>
-        <div className="w-full">
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/35">Placements</p>
-          <div className="mt-3 flex gap-1.5">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <span key={index} className="size-2 rounded-full border border-amber-200/20 bg-amber-200/[0.035]" />
+      <div className={`${base} gap-3`}>
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
+          Unranked
+        </span>
+        <ArrowRight className="size-3.5 shrink-0 text-amber-200/25" />
+        <div className="min-w-0 flex-1">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Placement matches
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span
+                key={index}
+                className="size-3 rounded-full border border-amber-200/[0.20] bg-amber-200/[0.018]"
+              />
             ))}
+            <span className="ml-1 text-[8px] font-medium text-white/30">1–10</span>
           </div>
         </div>
       </div>
@@ -110,11 +191,26 @@ function ServiceVisual({ service }: { service: ServiceSummary }) {
   }
 
   return (
-    <div className={`${base} gap-4`}>
-      <Gamepad2 className="size-7 text-amber-200/65" />
-      <div>
-        <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/35">Unrated Matches</p>
-        <p className="mt-1 font-gaming-value text-sm text-amber-100/80">1–10 matches · no rank required</p>
+    <div className={`${base} gap-3.5`}>
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-amber-100/55">
+        <Gamepad2 className="size-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
+            Unrated sessions
+          </p>
+          <span className="text-[8px] font-medium text-white/35">No rank required</span>
+        </div>
+        <div className="mt-2 flex gap-1.5">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <span
+              key={index}
+              className="h-2 flex-1 rounded-full border border-white/[0.08] bg-white/[0.025]"
+            />
+          ))}
+        </div>
+        <p className="mt-1.5 text-[8px] font-medium text-amber-100/45">1–10 matches</p>
       </div>
     </div>
   );
@@ -204,48 +300,48 @@ export default async function OverwatchPage() {
           </div>
 
           <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
-            {game.services.map((service) => (
-              <Link
-                key={service.id}
-                href={`/games/overwatch-2/${service.slug}`}
-                className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
-              >
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.055] to-transparent" />
-                <div className="relative flex items-start justify-between gap-4">
-                  <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-                    {service.slug === "rank-boost"
-                      ? "Rank progression"
-                      : service.slug === "placement-matches"
-                        ? "Placements"
-                        : service.slug === "unrated-matches"
-                          ? "Unrated"
-                          : "Competitive"}
-                  </Badge>
-                  <span className="grid size-8 place-items-center rounded-lg border border-amber-300/[0.12] bg-amber-300/[0.035] text-amber-200/60">
-                    <Layers3 className="size-3.5" />
-                  </span>
-                </div>
+            {game.services.map((service) => {
+              const meta = serviceMeta(service.slug);
+              const ServiceIcon = meta.icon;
 
-                <ServiceVisual service={service} />
-
-                <div className="relative mt-3">
-                  <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
-                    {service.name}
-                  </h3>
-                  <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
-                </div>
-
-                <div className="relative mt-auto pt-6">
-                  <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                  <div className="flex items-end justify-between gap-4">
-                    <StartingPriceDisplay value={service.startingPrice} context={service.startingPriceContext} />
-                    <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-amber-300/25 group-hover:bg-amber-300/[0.07] group-hover:text-amber-200">
-                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              return (
+                <Link
+                  key={service.id}
+                  href={`/games/overwatch-2/${service.slug}`}
+                  className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
+                >
+                  <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.065] to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-amber-200/15 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="relative flex items-start justify-between gap-4">
+                    <Badge className="border-white/[0.08] bg-black/20 text-white/55 transition-colors group-hover:border-amber-300/[0.12] group-hover:text-white/68">
+                      {meta.badge}
+                    </Badge>
+                    <span className="grid size-8 place-items-center rounded-lg border border-amber-300/[0.12] bg-amber-300/[0.035] text-amber-200/60 transition-[border-color,background-color,color,transform] duration-200 group-hover:scale-[1.03] group-hover:border-amber-300/[0.20] group-hover:bg-amber-300/[0.06] group-hover:text-amber-100/80">
+                      <ServiceIcon className="size-3.5" />
                     </span>
                   </div>
-                </div>
-              </Link>
-            ))}
+
+                  <ServiceVisual service={service} />
+
+                  <div className="relative mt-3">
+                    <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
+                      {service.name}
+                    </h3>
+                    <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
+                  </div>
+
+                  <div className="relative mt-auto pt-6">
+                    <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
+                    <div className="flex items-end justify-between gap-4">
+                      <StartingPriceDisplay value={service.startingPrice} context={service.startingPriceContext} />
+                      <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-amber-300/25 group-hover:bg-amber-300/[0.07] group-hover:text-amber-200">
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </Container>
       </section>
