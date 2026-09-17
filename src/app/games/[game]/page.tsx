@@ -152,9 +152,9 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
 
   if (service.slug === "rank-boost") {
     const ranks = [
-      { src: "/ranks/rocket-league/diamond.svg", alt: "Diamond" },
-      { src: "/ranks/rocket-league/champion.svg", alt: "Champion" },
-      { src: "/ranks/rocket-league/grand-champion.svg", alt: "Grand Champion" },
+      { src: "/ranks/rocket-league/diamond.png", alt: "Diamond" },
+      { src: "/ranks/rocket-league/champion.png", alt: "Champion" },
+      { src: "/ranks/rocket-league/grand-champion.png", alt: "Grand Champion" },
     ];
 
     return (
@@ -189,7 +189,7 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
       <div className={`${base} gap-3.5`} aria-label="Competitive wins preview">
         <span className="relative grid size-11 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025]">
           <Image
-            src="/ranks/rocket-league/champion.svg"
+            src="/ranks/rocket-league/champion.png"
             alt=""
             fill
             sizes="44px"
