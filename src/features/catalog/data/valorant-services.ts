@@ -44,9 +44,31 @@ const valorantServices: ServiceSummary[] = [
 export function withValorantServiceNavigation(game: CatalogGame): CatalogGame {
   if (game.slug !== "valorant") return game;
 
+  const existingBySlug = new Map(game.services.map((service) => [service.slug, service]));
+  const services = valorantServices.map((blueprint) => {
+    const canonical = existingBySlug.get(blueprint.slug);
+
+    if (!canonical) {
+      return {
+        ...blueprint,
+        gameId: game.id,
+      };
+    }
+
+    return {
+      ...blueprint,
+      ...canonical,
+      slug: blueprint.slug,
+      name: blueprint.name,
+      category: blueprint.category,
+      description: blueprint.description,
+      startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
+    };
+  });
+
   return {
     ...game,
-    services: valorantServices,
-    startingPrice: Math.min(...valorantServices.map((service) => service.startingPrice)),
+    services,
+    startingPrice: Math.min(...services.map((service) => service.startingPrice)),
   };
 }

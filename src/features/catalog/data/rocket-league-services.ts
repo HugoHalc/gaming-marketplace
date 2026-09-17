@@ -44,6 +44,28 @@ const rocketLeagueAdditionalServices: ServiceSummary[] = [
 export function withRocketLeagueServiceNavigation(game: CatalogGame): CatalogGame {
   if (game.slug !== "rocket-league") return game;
 
+  const existingBySlug = new Map(game.services.map((service) => [service.slug, service]));
+  const additionalServices = rocketLeagueAdditionalServices.map((blueprint) => {
+    const canonical = existingBySlug.get(blueprint.slug);
+
+    if (!canonical) {
+      return {
+        ...blueprint,
+        gameId: game.id,
+      };
+    }
+
+    return {
+      ...blueprint,
+      ...canonical,
+      slug: blueprint.slug,
+      name: blueprint.name,
+      category: blueprint.category,
+      description: blueprint.description,
+      startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
+    };
+  });
+
   const existingServices = game.services.filter(
     (service) =>
       service.slug !== "coaching" &&
@@ -52,7 +74,7 @@ export function withRocketLeagueServiceNavigation(game: CatalogGame): CatalogGam
 
   return {
     ...game,
-    services: [...existingServices, ...rocketLeagueAdditionalServices],
+    services: [...existingServices, ...additionalServices],
     startingPrice: game.startingPrice,
   };
 }
