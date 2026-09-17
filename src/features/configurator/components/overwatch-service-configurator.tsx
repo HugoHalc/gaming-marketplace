@@ -232,6 +232,114 @@ function QuantityControl({
   );
 }
 
+function OverwatchServiceQuantityControl({
+  value,
+  max,
+  label,
+  panelLabel,
+  selectedLabel,
+  rangeLabel,
+  helper,
+  onChange,
+}: {
+  value: number;
+  max: number;
+  label: string;
+  panelLabel: string;
+  selectedLabel: (value: number) => string;
+  rangeLabel: string;
+  helper?: string;
+  onChange: (value: number) => void;
+}) {
+  const progress = max > 1 ? ((value - 1) / (max - 1)) * 100 : 100;
+
+  function clamp(next: number) {
+    return Math.min(max, Math.max(1, next));
+  }
+
+  return (
+    <div className="min-w-0">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
+            {label}
+          </p>
+          <div className="mt-1 flex items-end gap-2">
+            <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+              {value}
+            </span>
+            <span className="pb-1 text-xs font-medium text-[#A0AAA4]">{selectedLabel(value)}</span>
+          </div>
+        </div>
+
+        <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
+          <input
+            aria-label={label}
+            type="number"
+            min={1}
+            max={max}
+            value={value}
+            onChange={(event) => onChange(clamp(Number(event.target.value) || 1))}
+            className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-amber-200/65">
+            {panelLabel}
+          </p>
+          <span className="text-[10px] font-medium text-white/38">{rangeLabel}</span>
+        </div>
+        <div
+          className="mt-3 grid gap-1.5"
+          style={{ gridTemplateColumns: `repeat(${max}, minmax(0, 1fr))` }}
+        >
+          {Array.from({ length: max }, (_, index) => {
+            const active = index < value;
+            const current = active && index === value - 1;
+            return (
+              <span
+                key={index}
+                className={`h-3.5 w-full rounded-full border transition-[border-color,background-color] duration-200 ${
+                  active
+                    ? current
+                      ? "border-amber-300/60 bg-amber-400/85"
+                      : "border-amber-300/35 bg-amber-400/45"
+                    : "border-white/[0.10] bg-white/[0.03]"
+                }`}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      <input
+        aria-label={`${label} slider`}
+        type="range"
+        min={1}
+        max={max}
+        step={1}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-amber-400"
+        style={{
+          background: `linear-gradient(to right, rgba(251,191,36,.68) 0%, rgba(251,191,36,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)`,
+        }}
+      />
+
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
+        {Array.from({ length: max }, (_, index) => (
+          <span key={index}>{index + 1}</span>
+        ))}
+      </div>
+
+      {helper ? <p className="mt-2 text-[10px] leading-4 text-white/35">{helper}</p> : null}
+    </div>
+  );
+}
+
 function ExtraCard({
   checked,
   onChange,
@@ -669,8 +777,8 @@ export function OverwatchServiceConfigurator({
                 </div>
               ) : null}
 
-              {isWins ? <><RankSelector value={currentRank} onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><QuantityControl value={Number(selection.wins)} min={1} max={5} label="Competitive Wins" helper="Maximum 5 wins per order." onChange={(value) => update("wins", value)} /></> : null}
-              {isPlacements ? <><RankSelector value={currentRank} allowUnranked sourceLabel="Previous rank" onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><QuantityControl value={Number(selection.matches)} min={1} max={10} label="Placement Matches" helper="Maximum 10 placement matches per order." onChange={(value) => update("matches", value)} /></> : null}
+              {isWins ? <><RankSelector value={currentRank} onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><OverwatchServiceQuantityControl value={Number(selection.wins)} max={5} label="Competitive Wins" panelLabel="Wins" selectedLabel={(value) => value === 1 ? "win selected" : "wins selected"} rangeLabel="1–5 wins" helper="Maximum 5 wins per order." onChange={(value) => update("wins", value)} /></> : null}
+              {isPlacements ? <><RankSelector value={currentRank} allowUnranked sourceLabel="Previous rank" onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><OverwatchServiceQuantityControl value={Number(selection.matches)} max={10} label="Placement Matches" panelLabel="Placement matches" selectedLabel={() => "matches selected"} rangeLabel="1–10 matches" onChange={(value) => update("matches", value)} /></> : null}
               {isDrives ? <><DriveRankSelector value={String(selection.driveRank)} onChange={(value) => update("driveRank", value)} /><DriveControl current={Number(selection.currentDrive)} desired={Number(selection.desiredDrive)} onCurrent={updateDriveCurrent} onDesired={(value) => update("desiredDrive", value)} /></> : null}
               {isUnrated ? <QuantityControl value={Number(selection.matches)} min={1} max={10} label="Unrated Matches" helper="No rank selection is required. Maximum 10 matches per order." onChange={(value) => update("matches", value)} /> : null}
 
