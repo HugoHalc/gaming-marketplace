@@ -1,7 +1,8 @@
 import Link from "next/link";
 import {
   Bell,
-  Crosshair,
+  ChevronDown,
+  Gamepad2,
   Grid2X2,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
@@ -45,12 +46,13 @@ export async function SiteHeader() {
             <div className="hidden items-center lg:flex">
               <Link
                 href="/games"
-                className="group inline-flex h-10 items-center gap-2.5 rounded-xl border border-[#FFFFFF14] bg-[#131B17] px-3.5 text-sm font-semibold text-[#F4F7F5] shadow-[inset_0_1px_0_rgba(255,255,255,.025)] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C]"
+                className="group inline-flex h-[2.625rem] items-center gap-2.5 rounded-[11px] border border-white/[0.08] bg-[#0E1411] px-3.5 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.14] hover:bg-[#131B17] active:border-[#39E56F]/25 active:bg-[#39E56F]/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
               >
-                <span className="grid size-7 place-items-center rounded-full border border-white/[0.08] bg-[#090D0B] text-[#A0AAA4] transition-colors duration-200 group-hover:text-[#F4F7F5]">
-                  <Crosshair className="size-3.5" />
+                <span className="grid size-7 place-items-center rounded-lg border border-[#39E56F]/16 bg-[#39E56F]/[0.035] text-[#82F5A4]/70 transition-[background-color,border-color,color] duration-200 group-hover:border-[#39E56F]/24 group-hover:bg-[#39E56F]/[0.05] group-hover:text-[#82F5A4] group-active:border-[#39E56F]/30 group-active:bg-[#39E56F]/[0.065]">
+                  <Gamepad2 className="size-3.5" strokeWidth={1.8} />
                 </span>
                 <span>Select your game</span>
+                <ChevronDown className="ml-0.5 size-3.5 text-[#667069] transition-colors duration-200 group-hover:text-[#A0AAA4] group-active:text-[#82F5A4]/75" strokeWidth={1.8} />
               </Link>
             </div>
           </div>
