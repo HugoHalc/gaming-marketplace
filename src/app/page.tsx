@@ -215,9 +215,9 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_46%,rgba(5,8,7,.72)_68%,transparent_100%)] sm:w-[66%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
-            <Badge className="mb-5 border-[#39E56F]/20 bg-[#39E56F]/[0.06] text-[#82F5A4]">
-              <span className="mr-2 size-1.5 rounded-full bg-[#3DD9EB]" />
-              BoostingPedia gaming marketplace
+            <Badge className="mb-5 rounded-[9px] border-[#39E56F]/20 bg-[#0B100D] px-2.5 py-1 font-semibold text-[#F4F7F5]">
+              <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" />
+              Premium boosting marketplace
             </Badge>
 
             <h1 className="text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-[#F4F7F5] sm:text-6xl lg:text-[4.5rem]">
