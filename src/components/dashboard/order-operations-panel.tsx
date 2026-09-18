@@ -76,6 +76,259 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+type CustomerLifecycleStageStatus = "completed" | "current" | "upcoming";
+
+interface CustomerLifecycleStage {
+  key:
+    | "accepted"
+    | "integrity"
+    | "start_evidence"
+    | "in_progress"
+    | "delivery_evidence"
+    | "customer_confirmation"
+    | "completed";
+  title: string;
+  description: string;
+  timestamp: string | null;
+  status: CustomerLifecycleStageStatus;
+}
+
+function getFirstHistoryEvent(
+  history: HistoryEvent[],
+  toState: OperationalState,
+) {
+  return history.find((event) => event.toState === toState) ?? null;
+}
+
+function getLastHistoryEvent(
+  history: HistoryEvent[],
+  toState: OperationalState,
+) {
+  for (let index = history.length - 1; index >= 0; index -= 1) {
+    if (history[index]?.toState === toState) return history[index];
+  }
+  return null;
+}
+
+function getOperationalStatusPresentation(state: OperationsState) {
+  const operational = state.operationalState;
+
+  if (!operational) {
+    return {
+      title: "Waiting for Booster",
+      description: "Waiting for an eligible booster to accept the order.",
+    };
+  }
+
+  if (operational === "issue") {
+    return {
+      title: "Issue Reported",
+      description: "An operational issue is being reviewed before the order continues.",
+    };
+  }
+
+  if (operational === "completed") {
+    return {
+      title: "Completed",
+      description: "The order has reached its finalized operational state.",
+    };
+  }
+
+  if (operational === "delivered") {
+    return {
+      title: "Awaiting Customer Confirmation",
+      description: "The delivered order is ready for customer review.",
+    };
+  }
+
+  if (!state.currentIntegrity) {
+    return {
+      title: "Validation Required",
+      description: "Customer integrity validation must be recorded before delivery.",
+    };
+  }
+
+  if (!state.startEvidence) {
+    return {
+      title: "Awaiting Start Evidence",
+      description: "Initial order evidence has not been submitted yet.",
+    };
+  }
+
+  if (operational === "accepted") {
+    return {
+      title: "Ready to Start",
+      description: "Required pre-service records are ready and work can begin.",
+    };
+  }
+
+  if (operational === "waiting_customer") {
+    return {
+      title: "Customer Action Required",
+      description: "The booster is waiting for customer input before continuing.",
+    };
+  }
+
+  if (operational === "in_progress" && !state.deliveryEvidence) {
+    return {
+      title: "In Progress",
+      description: "The booster is actively fulfilling the service.",
+    };
+  }
+
+  if (operational === "in_progress" && state.deliveryEvidence) {
+    return {
+      title: "Awaiting Delivery Handoff",
+      description: "Completion evidence is recorded and the order is awaiting delivery.",
+    };
+  }
+
+  return {
+    title: stateLabels[operational],
+    description: "Current operational state for this order.",
+  };
+}
+
+function buildCustomerLifecycleStages(
+  state: OperationsState,
+): CustomerLifecycleStage[] {
+  const acceptedEvent = getFirstHistoryEvent(
+    state.operationalHistory,
+    "accepted",
+  );
+  const inProgressEvent = getFirstHistoryEvent(
+    state.operationalHistory,
+    "in_progress",
+  );
+  const completedEvent = getLastHistoryEvent(
+    state.operationalHistory,
+    "completed",
+  );
+
+  const completionNote = completedEvent?.note?.toLowerCase() ?? "";
+  const customerConfirmed = completionNote.includes("customer confirmed delivery");
+  const autoCompleted = completionNote.includes("automatically completed");
+
+  const confirmationCompletedCopy = customerConfirmed
+    ? "Customer confirmed delivery."
+    : autoCompleted
+      ? "Review window completed automatically."
+      : "Customer review stage resolved by the existing completion flow.";
+
+  const rawStages = [
+    {
+      key: "accepted" as const,
+      title: "Accepted",
+      done: Boolean(acceptedEvent),
+      timestamp: acceptedEvent?.createdAt ?? null,
+      completedCopy: "Your booster accepted the order.",
+      currentCopy: "Waiting for a booster to accept the order.",
+      pendingCopy: "Waiting for booster acceptance.",
+    },
+    {
+      key: "integrity" as const,
+      title: "User Integrity Validation",
+      done: Boolean(state.currentIntegrity),
+      timestamp: state.currentIntegrity?.recordedAt ?? null,
+      completedCopy: "Customer validation completed.",
+      currentCopy: "Customer validation in progress.",
+      pendingCopy: "Waiting for customer validation.",
+    },
+    {
+      key: "start_evidence" as const,
+      title: "Order Started Evidence",
+      done: Boolean(state.startEvidence),
+      timestamp: state.startEvidence?.submittedAt ?? null,
+      completedCopy: "Initial order evidence submitted.",
+      currentCopy: "Waiting for initial evidence.",
+      pendingCopy: "Waiting for initial evidence.",
+    },
+    {
+      key: "in_progress" as const,
+      title: "In Progress",
+      done: Boolean(inProgressEvent),
+      timestamp: inProgressEvent?.createdAt ?? null,
+      completedCopy: "Service fulfillment started.",
+      currentCopy:
+        state.operationalState === "waiting_customer"
+          ? "Service is paused while customer input is required."
+          : state.operationalState === "issue"
+            ? "An issue is being resolved before work continues."
+            : "Your booster is actively fulfilling the service.",
+      pendingCopy: "Waiting for service fulfillment to begin.",
+    },
+    {
+      key: "delivery_evidence" as const,
+      title: "Order Delivered Evidence",
+      done: Boolean(state.deliveryEvidence),
+      timestamp: state.deliveryEvidence?.submittedAt ?? null,
+      completedCopy: "Completion evidence submitted.",
+      currentCopy: "Waiting for delivery evidence.",
+      pendingCopy: "Waiting for delivery evidence.",
+    },
+    {
+      key: "customer_confirmation" as const,
+      title: "Customer Confirmation",
+      done:
+        state.operationalState === "completed" &&
+        Boolean(completedEvent),
+      timestamp: completedEvent?.createdAt ?? null,
+      completedCopy: confirmationCompletedCopy,
+      currentCopy:
+        state.operationalState === "delivered"
+          ? "Please review the delivered order."
+          : state.operationalState === "issue"
+            ? "A delivery issue is under review."
+            : "Waiting for customer approval.",
+      pendingCopy: "Waiting for customer approval.",
+    },
+    {
+      key: "completed" as const,
+      title: "Completed",
+      done:
+        state.operationalState === "completed" &&
+        Boolean(completedEvent),
+      timestamp: completedEvent?.createdAt ?? null,
+      completedCopy: "Order successfully completed.",
+      currentCopy: "Finalizing order completion.",
+      pendingCopy: "Pending final completion.",
+    },
+  ];
+
+  let progressionOpen = true;
+
+  return rawStages.map((stage) => {
+    if (progressionOpen && stage.done) {
+      return {
+        key: stage.key,
+        title: stage.title,
+        description: stage.completedCopy,
+        timestamp: stage.timestamp,
+        status: "completed" as const,
+      };
+    }
+
+    if (progressionOpen) {
+      progressionOpen = false;
+      return {
+        key: stage.key,
+        title: stage.title,
+        description: stage.currentCopy,
+        timestamp: stage.timestamp,
+        status: "current" as const,
+      };
+    }
+
+    return {
+      key: stage.key,
+      title: stage.title,
+      description: stage.pendingCopy,
+      timestamp: null,
+      status: "upcoming" as const,
+    };
+  });
+}
+
 function EvidenceSection({
   title,
   description,
@@ -267,19 +520,32 @@ export function OrderOperationsPanel({
 
   const operational = state?.operationalState;
   const effectiveCanManage = state?.canManage ?? canManage;
+  const operationalStatus = state
+    ? getOperationalStatusPresentation(state)
+    : null;
+  const customerLifecycle = state
+    ? buildCustomerLifecycleStages(state)
+    : [];
 
   return (
     <>
       <section className="p-5">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">Operational Status</p>
-            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-              {operational ? stateLabels[operational] : "Not initialized"}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+              Operational Status
             </p>
+            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
+              {operationalStatus?.title ?? "Not initialized"}
+            </p>
+            {operationalStatus?.description ? (
+              <p className="mt-1 text-[10px] leading-4 text-[#667069]">
+                {operationalStatus.description}
+              </p>
+            ) : null}
           </div>
           {operational === "delivered" && state?.autoCompleteAt ? (
-            <div className="text-right">
+            <div className="shrink-0 text-right">
               <p className="text-[9px] text-[#667069]">Auto-completes</p>
               <p className="mt-1 text-[10px] font-medium text-[#A0AAA4]">{formatDate(state.autoCompleteAt)}</p>
             </div>
@@ -383,7 +649,7 @@ export function OrderOperationsPanel({
         </>
       ) : null}
 
-      {state?.operationalHistory.length ? (
+      {state ? (
         <>
           <div className="h-px bg-white/[0.06]" />
           <section className="p-5">
@@ -393,30 +659,44 @@ export function OrderOperationsPanel({
                   Operational History
                 </p>
                 <p className="mt-1 text-[10px] leading-4 text-[#A0AAA4]">
-                  Live operational timeline
+                  Customer-facing lifecycle
                 </p>
               </div>
               <Clock3 className="size-4 text-[#667069]" aria-hidden="true" />
             </div>
 
             <ol className="mt-4" aria-label="Operational history timeline">
-              {state.operationalHistory.slice(-6).map((event, index, events) => {
-                const isLast = index === events.length - 1;
-                const isCurrent = isLast && operational !== "completed";
-                const isCompleted = !isCurrent;
-                const hasNext = index < events.length - 1;
+              {customerLifecycle.map((stage, index) => {
+                const hasNext = index < customerLifecycle.length - 1;
+                const isCompleted = stage.status === "completed";
+                const isCurrent = stage.status === "current";
+                const timeLabel = stage.timestamp
+                  ? formatDate(stage.timestamp)
+                  : isCurrent &&
+                      (stage.key === "in_progress" ||
+                        stage.key === "customer_confirmation")
+                    ? "Now"
+                    : "Pending";
 
                 return (
                   <li
-                    key={event.id}
+                    key={stage.key}
                     className="relative grid grid-cols-[28px_minmax(0,1fr)] gap-3"
-                    aria-label={`${stateLabels[event.toState]} — ${isCurrent ? "Current" : "Completed"}`}
+                    aria-label={`${stage.title} — ${
+                      isCompleted
+                        ? "Completed"
+                        : isCurrent
+                          ? "Current"
+                          : "Pending"
+                    }`}
                   >
                     <div className="relative flex justify-center">
                       {hasNext ? (
                         <span
                           className={`absolute left-1/2 top-5 bottom-0 w-px -translate-x-1/2 ${
-                            isCompleted ? "bg-[#39E56F]/18" : "bg-white/[0.08]"
+                            isCompleted
+                              ? "bg-[#39E56F]/18"
+                              : "bg-white/[0.08]"
                           }`}
                           aria-hidden="true"
                         />
@@ -426,7 +706,9 @@ export function OrderOperationsPanel({
                         className={`relative z-[1] mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${
                           isCurrent
                             ? "border-[#39E56F] bg-[#39E56F] text-[#050807]"
-                            : "border-[#39E56F]/30 bg-[#0B110E] text-[#82F5A4]"
+                            : isCompleted
+                              ? "border-[#39E56F]/30 bg-[#0B110E] text-[#82F5A4]"
+                              : "border-white/[0.12] bg-[#0B110E] text-[#667069]"
                         }`}
                         aria-hidden="true"
                       >
@@ -435,8 +717,10 @@ export function OrderOperationsPanel({
                             <span className="absolute -inset-1.5 rounded-full border border-[#39E56F]/25 opacity-70 animate-ping [animation-duration:1.8s] [animation-timing-function:ease-in-out] motion-reduce:animate-none" />
                             <span className="relative size-1.5 rounded-full bg-[#050807]" />
                           </>
-                        ) : (
+                        ) : isCompleted ? (
                           <Check className="size-2.5" strokeWidth={2.5} />
+                        ) : (
+                          <span className="size-1.5 rounded-full border border-white/[0.24]" />
                         )}
                       </span>
                     </div>
@@ -445,31 +729,46 @@ export function OrderOperationsPanel({
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
                         <p
                           className={`min-w-0 text-[11px] font-semibold leading-4 ${
-                            isCurrent ? "text-[#82F5A4]" : "text-[#F4F7F5]"
+                            isCurrent
+                              ? "text-[#82F5A4]"
+                              : isCompleted
+                                ? "text-[#F4F7F5]"
+                                : "text-[#7C8780]"
                           }`}
                         >
-                          {stateLabels[event.toState]}
+                          {stage.title}
                         </p>
+
                         <span
                           className={`rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] ${
                             isCurrent
                               ? "border-[#39E56F]/18 bg-[#39E56F]/[0.045] text-[#82F5A4]"
-                              : "border-white/[0.07] bg-white/[0.02] text-[#667069]"
+                              : isCompleted
+                                ? "border-white/[0.07] bg-white/[0.02] text-[#667069]"
+                                : "border-white/[0.05] bg-transparent text-[#56605A]"
                           }`}
                         >
-                          {isCurrent ? "Current" : "Completed"}
+                          {isCompleted
+                            ? "Completed"
+                            : isCurrent
+                              ? "Current"
+                              : "Pending"}
                         </span>
                       </div>
 
-                      <p className="mt-1 text-[9px] text-[#667069]">
-                        {formatDate(event.createdAt)}
+                      <p
+                        className={`mt-1.5 break-words text-[9px] leading-4 ${
+                          stage.status === "upcoming"
+                            ? "text-[#56605A]"
+                            : "text-[#A0AAA4]"
+                        }`}
+                      >
+                        {stage.description}
                       </p>
 
-                      {event.note ? (
-                        <p className="mt-1.5 break-words text-[9px] leading-4 text-[#A0AAA4]">
-                          {event.note}
-                        </p>
-                      ) : null}
+                      <p className="mt-1 text-[9px] text-[#667069]">
+                        {timeLabel}
+                      </p>
                     </div>
                   </li>
                 );
