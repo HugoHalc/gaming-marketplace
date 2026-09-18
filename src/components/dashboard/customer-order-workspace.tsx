@@ -4,8 +4,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
-  Clock3,
   CreditCard,
   MessageSquare,
   ShieldCheck,
@@ -63,79 +61,8 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-function formatLabel(value: string) {
-  return value
-    .replace(/([A-Z])/g, " $1")
-    .replace(/[_-]/g, " ")
-    .replace(/^./, (letter) => letter.toUpperCase());
-}
-
-function ProgressTimeline({
-  history,
-}: {
-  history: OrderStatusEvent[];
-}) {
-  if (!history.length) {
-    return (
-      <p className="mt-3 text-[10px] text-[#667069]">
-        Order progress will appear here as your service moves forward.
-      </p>
-    );
-  }
-
-  const recent = history.slice(-4);
-
-  return (
-    <div className="mt-5 flex min-w-0 items-center overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {recent.map((event, index) => {
-        const current = index === recent.length - 1;
-
-        return (
-          <div key={event.id} className="flex items-center">
-            <div className="flex items-center gap-2">
-              <span
-                className={`grid size-5 shrink-0 place-items-center rounded-full border ${
-                  current
-                    ? "border-[#39D5E6]/25 bg-[#39D5E6]/[0.08]"
-                    : "border-[#39E56F]/22 bg-[#39E56F]/[0.07]"
-                }`}
-              >
-                {current ? (
-                  <span className="size-1.5 rounded-full bg-cyan-300" />
-                ) : (
-                  <Check className="size-2.5 text-[#82F5A4]" />
-                )}
-              </span>
-
-              <div>
-                <p
-                  className={`whitespace-nowrap text-[12px] font-semibold ${
-                    current ? "text-[#BDF5FA]" : "text-[#A4AEA8]"
-                  }`}
-                >
-                  {formatLabel(event.toStatus)}
-                </p>
-                {current ? (
-                  <p className="mt-0.5 whitespace-nowrap text-[11px] text-[#6F7B74]">
-                    Current status
-                  </p>
-                ) : null}
-              </div>
-            </div>
-
-            {index < recent.length - 1 ? (
-              <span className="mx-4 h-px w-10 shrink-0 bg-[#39E56F]/20" />
-            ) : null}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export function CustomerOrderWorkspace({
   order,
-  history,
   checkoutState,
   paymentError,
   currentUserId,
@@ -331,18 +258,7 @@ export function CustomerOrderWorkspace({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
         <main className="min-w-0">
-          <section className="rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
-            <div className="flex items-center gap-2.5">
-              <Clock3 className="size-4 text-[#39D5E6]/75" />
-              <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
-                Progress
-              </h2>
-            </div>
-
-            <ProgressTimeline history={history} />
-          </section>
-
-          <section className="mt-6">
+          <section>
             <div className="mb-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2.5">
                 <MessageSquare className="size-4 text-[#39D5E6]/75" />
