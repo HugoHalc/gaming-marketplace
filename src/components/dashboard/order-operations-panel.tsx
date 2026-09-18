@@ -387,16 +387,94 @@ export function OrderOperationsPanel({
         <>
           <div className="h-px bg-white/[0.06]" />
           <section className="p-5">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">Operational History</p>
-            <div className="mt-3 space-y-3">
-              {state.operationalHistory.slice(-6).reverse().map((event) => (
-                <div key={event.id} className="border-l border-white/[0.08] pl-3">
-                  <p className="text-[10px] font-medium text-[#F4F7F5]">{stateLabels[event.toState]}</p>
-                  <p className="mt-0.5 text-[9px] text-[#667069]">{formatDate(event.createdAt)}</p>
-                  {event.note ? <p className="mt-1 text-[9px] leading-4 text-[#A0AAA4]">{event.note}</p> : null}
-                </div>
-              ))}
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+                  Operational History
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-[#A0AAA4]">
+                  Live operational timeline
+                </p>
+              </div>
+              <Clock3 className="size-4 text-[#667069]" aria-hidden="true" />
             </div>
+
+            <ol className="mt-4" aria-label="Operational history timeline">
+              {state.operationalHistory.slice(-6).map((event, index, events) => {
+                const isLast = index === events.length - 1;
+                const isCurrent = isLast && operational !== "completed";
+                const isCompleted = !isCurrent;
+                const hasNext = index < events.length - 1;
+
+                return (
+                  <li
+                    key={event.id}
+                    className="relative grid grid-cols-[28px_minmax(0,1fr)] gap-3"
+                    aria-label={`${stateLabels[event.toState]} — ${isCurrent ? "Current" : "Completed"}`}
+                  >
+                    <div className="relative flex justify-center">
+                      {hasNext ? (
+                        <span
+                          className={`absolute left-1/2 top-5 bottom-0 w-px -translate-x-1/2 ${
+                            isCompleted ? "bg-[#39E56F]/18" : "bg-white/[0.08]"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      ) : null}
+
+                      <span
+                        className={`relative z-[1] mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${
+                          isCurrent
+                            ? "border-[#39E56F] bg-[#39E56F] text-[#050807]"
+                            : "border-[#39E56F]/30 bg-[#0B110E] text-[#82F5A4]"
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {isCurrent ? (
+                          <>
+                            <span className="absolute -inset-1.5 rounded-full border border-[#39E56F]/25 opacity-70 animate-ping [animation-duration:1.8s] [animation-timing-function:ease-in-out] motion-reduce:animate-none" />
+                            <span className="relative size-1.5 rounded-full bg-[#050807]" />
+                          </>
+                        ) : (
+                          <Check className="size-2.5" strokeWidth={2.5} />
+                        )}
+                      </span>
+                    </div>
+
+                    <div className={hasNext ? "pb-5" : ""}>
+                      <div className="flex min-w-0 flex-wrap items-center gap-2">
+                        <p
+                          className={`min-w-0 text-[11px] font-semibold leading-4 ${
+                            isCurrent ? "text-[#82F5A4]" : "text-[#F4F7F5]"
+                          }`}
+                        >
+                          {stateLabels[event.toState]}
+                        </p>
+                        <span
+                          className={`rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] ${
+                            isCurrent
+                              ? "border-[#39E56F]/18 bg-[#39E56F]/[0.045] text-[#82F5A4]"
+                              : "border-white/[0.07] bg-white/[0.02] text-[#667069]"
+                          }`}
+                        >
+                          {isCurrent ? "Current" : "Completed"}
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-[9px] text-[#667069]">
+                        {formatDate(event.createdAt)}
+                      </p>
+
+                      {event.note ? (
+                        <p className="mt-1.5 break-words text-[9px] leading-4 text-[#A0AAA4]">
+                          {event.note}
+                        </p>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
           </section>
         </>
       ) : null}
