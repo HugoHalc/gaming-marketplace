@@ -14,39 +14,10 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Container } from "@/components/layout/container";
-import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
-
-type BoosterEntry = {
-  slug: string;
-  nickname: string;
-  rank: string;
-  region: string;
-  languages: readonly string[];
-  experience: string;
-  services: string;
-  specialty: string;
-  image: string;
-  gameSlug: string;
-  gameName: string;
-  gameCard: string;
-  profileHref: string;
-};
-
-const boosters: BoosterEntry[] = rocketLeagueBoosters.map((booster) => ({
-  slug: booster.slug,
-  nickname: booster.nickname,
-  rank: booster.rank,
-  region: booster.region,
-  languages: booster.languages,
-  experience: booster.experience,
-  services: booster.services,
-  specialty: booster.specialty,
-  image: booster.image,
-  gameSlug: "rocket-league",
-  gameName: "Rocket League",
-  gameCard: "/game-cards/rocket-league.webp",
-  profileHref: "/boosters/rocket-league",
-}));
+import {
+  publicBoosters,
+  type PublicBooster,
+} from "@/features/boosters/data/boosters";
 
 const boosterPortraitPosition: Record<string, string> = {
   brunspart: "center 18%",
@@ -54,13 +25,26 @@ const boosterPortraitPosition: Record<string, string> = {
 };
 
 const gameOptions = Array.from(
-  new Map(boosters.map((booster) => [booster.gameSlug, booster.gameName])).entries(),
+  new Map(
+    publicBoosters.map((booster) => [booster.gameSlug, booster.gameName]),
+  ).entries(),
 ).map(([slug, name]) => ({ slug, name }));
 
-const regionOptions = Array.from(new Set(boosters.map((booster) => booster.region))).sort();
+function getBoosterRegions(region: string) {
+  return region
+    .split("/")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+const regionOptions = Array.from(
+  new Set(
+    publicBoosters.flatMap((booster) => getBoosterRegions(booster.region)),
+  ),
+).sort();
 
 const languageOptions = Array.from(
-  new Set(boosters.flatMap((booster) => [...booster.languages])),
+  new Set(publicBoosters.flatMap((booster) => [...booster.languages])),
 ).sort();
 
 function SelectShell({
@@ -93,7 +77,9 @@ function SelectShell({
   );
 }
 
-function BoosterCard({ booster }: { booster: BoosterEntry }) {
+function BoosterCard({ booster }: { booster: PublicBooster }) {
+  const profileHref = `/boosters/${booster.gameSlug}/${booster.slug}`;
+
   return (
     <article className="group overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#0B110E] shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-white/[0.14] hover:shadow-[0_10px_28px_rgba(0,0,0,0.20)]">
       <div className="relative h-[142px] overflow-hidden border-b border-white/[0.06] bg-[#080D0A] sm:h-[150px]">
@@ -121,7 +107,10 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
               fill
               sizes="56px"
               className="object-cover"
-              style={{ objectPosition: boosterPortraitPosition[booster.slug] ?? "center 18%" }}
+              style={{
+                objectPosition:
+                  boosterPortraitPosition[booster.slug] ?? "center center",
+              }}
             />
           </div>
 
@@ -132,7 +121,7 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
               </h2>
               <CheckCircle2
                 className="size-4 shrink-0 text-[#82F5A4]/85"
-                aria-label="Verified booster"
+                aria-label="Verified Booster"
               />
             </div>
 
@@ -153,7 +142,7 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
             </p>
           </div>
 
-          <div className="pl-4">
+          <div className="min-w-0 pl-4">
             <p className="font-gaming-label text-[10px] uppercase tracking-[0.11em] text-[#667069]">
               Region
             </p>
@@ -166,7 +155,9 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
         <div className="mt-4">
           <div className="flex items-center gap-2 text-[#667069]">
             <Languages className="size-3.5" />
-            <p className="font-gaming-label text-[10px] uppercase tracking-[0.11em]">Languages</p>
+            <p className="font-gaming-label text-[10px] uppercase tracking-[0.11em]">
+              Languages
+            </p>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {booster.languages.map((language) => (
@@ -190,7 +181,7 @@ function BoosterCard({ booster }: { booster: BoosterEntry }) {
         </div>
 
         <Link
-          href={booster.profileHref}
+          href={profileHref}
           className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[12px] font-semibold text-[#F4F7F5] transition-colors hover:border-[#39E56F]/18 hover:bg-[#39E56F]/[0.045] hover:text-[#82F5A4]"
         >
           View booster details
@@ -209,10 +200,18 @@ export function BoostersDirectory() {
   const filteredBoosters = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return boosters.filter((booster) => {
+    return publicBoosters.filter((booster) => {
       if (game !== "all" && booster.gameSlug !== game) return false;
-      if (region !== "all" && booster.region !== region) return false;
-      if (language !== "all" && !booster.languages.some((item) => item === language)) {
+      if (
+        region !== "all" &&
+        !getBoosterRegions(booster.region).includes(region)
+      ) {
+        return false;
+      }
+      if (
+        language !== "all" &&
+        !booster.languages.some((item) => item === language)
+      ) {
         return false;
       }
 
@@ -228,7 +227,7 @@ export function BoostersDirectory() {
         ...booster.languages,
       ]
         .join(" ")
-        .toLowerCase()
+        .toLocaleLowerCase()
         .includes(normalizedQuery);
     });
   }, [game, language, query, region]);
@@ -240,7 +239,9 @@ export function BoostersDirectory() {
     setLanguage("all");
   }
 
-  const resultLabel = `${filteredBoosters.length} verified ${filteredBoosters.length === 1 ? "booster" : "boosters"} available`;
+  const resultLabel = `${filteredBoosters.length} verified ${
+    filteredBoosters.length === 1 ? "booster" : "boosters"
+  } available`;
 
   return (
     <>
@@ -259,7 +260,8 @@ export function BoostersDirectory() {
                 Meet the players behind the services.
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[#A0AAA4] sm:text-[15px]">
-                Browse the current verified BoostingPedia roster and filter profiles by game, region, language, or name.
+                Browse the current verified BoostingPedia roster and filter
+                profiles by game, region, language, or name.
               </p>
             </div>
           </div>
@@ -272,7 +274,9 @@ export function BoostersDirectory() {
             <aside className="rounded-[17px] border border-white/[0.07] bg-[#0B110E] p-4 lg:sticky lg:top-20">
               <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3.5">
                 <Filter className="size-4 text-[#39D5E6]/65" />
-                <h2 className="text-[15px] font-bold text-[#F4F7F5]">Filters</h2>
+                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
+                  Filters
+                </h2>
               </div>
 
               <div className="mt-4 space-y-4">
@@ -301,7 +305,11 @@ export function BoostersDirectory() {
                   </div>
                 </label>
 
-                <SelectShell label="Region" value={region} onChange={setRegion}>
+                <SelectShell
+                  label="Region"
+                  value={region}
+                  onChange={setRegion}
+                >
                   <option value="all">All regions</option>
                   {regionOptions.map((option) => (
                     <option key={option} value={option}>
@@ -310,7 +318,11 @@ export function BoostersDirectory() {
                   ))}
                 </SelectShell>
 
-                <SelectShell label="Language" value={language} onChange={setLanguage}>
+                <SelectShell
+                  label="Language"
+                  value={language}
+                  onChange={setLanguage}
+                >
                   <option value="all">All languages</option>
                   {languageOptions.map((option) => (
                     <option key={option} value={option}>
@@ -335,13 +347,18 @@ export function BoostersDirectory() {
                 <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
                   Booster directory
                 </p>
-                <p className="mt-1 text-[13px] font-medium text-[#A0AAA4]">{resultLabel}</p>
+                <p className="mt-1 text-[13px] font-medium text-[#A0AAA4]">
+                  {resultLabel}
+                </p>
               </div>
 
               {filteredBoosters.length ? (
                 <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))]">
                   {filteredBoosters.map((booster) => (
-                    <BoosterCard key={`${booster.gameSlug}-${booster.slug}`} booster={booster} />
+                    <BoosterCard
+                      key={`${booster.gameSlug}-${booster.slug}`}
+                      booster={booster}
+                    />
                   ))}
                 </div>
               ) : (

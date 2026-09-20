@@ -3,12 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   Clock3,
   Languages,
   MapPin,
   ShieldCheck,
-  Star,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -35,11 +35,11 @@ export default function RocketLeagueBoostersPage() {
       <section className="border-b border-white/[0.06] py-12 sm:py-14 lg:py-16">
         <Container>
           <Link
-            href="/"
+            href="/boosters"
             className="inline-flex items-center gap-2 text-sm font-medium text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
           >
             <ArrowLeft className="size-4" />
-            Back to home
+            Back to booster directory
           </Link>
 
           <div className="mt-8 max-w-3xl">
@@ -50,7 +50,8 @@ export default function RocketLeagueBoostersPage() {
               Meet our Rocket League specialists.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[#A0AAA4]">
-              High-level players focused on fast, professional service and a premium customer experience.
+              High-level players focused on fast, professional service and a
+              premium customer experience.
             </p>
           </div>
         </Container>
@@ -69,9 +70,9 @@ export default function RocketLeagueBoostersPage() {
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(57,229,111,0.08),_transparent_62%)]" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050807]/18" />
 
-                    <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#39E56F]/25 bg-[#050807]/80 px-3 py-1.5 text-xs font-semibold text-[#F4F7F5] backdrop-blur-sm">
-                      <span className="size-1.5 rounded-full bg-[#39E56F]" />
-                      {booster.status}
+                    <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#39E56F]/20 bg-[#050807]/80 px-3 py-1.5 text-xs font-semibold text-[#F4F7F5] backdrop-blur-sm">
+                      <CheckCircle2 className="size-3.5 text-[#82F5A4]" />
+                      Verified Booster
                     </div>
 
                     <div className="relative size-[156px] overflow-hidden rounded-full border border-white/[0.08] bg-[#050807] shadow-[0_0_0_1px_rgba(255,255,255,0.04)] sm:size-[168px]">
@@ -81,30 +82,29 @@ export default function RocketLeagueBoostersPage() {
                         fill
                         sizes="168px"
                         className="object-cover"
-                        style={{ objectPosition: boosterPortraitPosition[booster.slug] ?? 'center 18%' }}
+                        style={{
+                          objectPosition:
+                            boosterPortraitPosition[booster.slug] ??
+                            "center 18%",
+                        }}
                       />
                     </div>
                   </div>
 
-                  <div className="p-5 sm:p-6">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <h2 className="text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
-                          {booster.nickname}
-                        </h2>
-                        <div className="mt-2 flex items-center gap-2 text-sm text-[#A0AAA4]">
-                          <Trophy className="size-4" />
-                          {booster.rank}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-3 py-1.5 text-sm font-semibold text-[#F4F7F5]">
-                        <Star className="size-4 fill-[#F4F7F5] text-[#F4F7F5]" />
-                        {booster.rating.toFixed(1)}
+                  <div className="flex flex-col p-5 sm:p-6">
+                    <div>
+                      <h2 className="text-2xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+                        {booster.nickname}
+                      </h2>
+                      <div className="mt-2 flex items-center gap-2 text-sm text-[#A0AAA4]">
+                        <Trophy className="size-4" />
+                        {booster.rank}
                       </div>
                     </div>
 
-                    <p className="mt-5 text-sm leading-6 text-[#A0AAA4]">{booster.bio}</p>
+                    <p className="mt-5 text-sm leading-6 text-[#A0AAA4]">
+                      {booster.bio}
+                    </p>
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2">
                       <div className="rounded-xl border border-[#FFFFFF14] bg-[#090D0B] p-3.5">
@@ -122,11 +122,13 @@ export default function RocketLeagueBoostersPage() {
                           <ShieldCheck className="size-3.5" />
                           Services
                         </div>
-                        <p className="mt-2 text-sm font-semibold text-[#F4F7F5]">{booster.services}</p>
+                        <p className="mt-2 text-sm font-semibold text-[#F4F7F5]">
+                          {booster.services}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-[#A0AAA4]">
+                    <div className="mt-5 grid grid-cols-1 gap-x-4 gap-y-3 text-sm text-[#A0AAA4] sm:grid-cols-2">
                       <div className="flex items-center gap-2">
                         <MapPin className="size-4 text-[#667069]" />
                         {booster.region}
@@ -135,15 +137,19 @@ export default function RocketLeagueBoostersPage() {
                         <Clock3 className="size-4 text-[#667069]" />
                         {booster.experience}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 sm:col-span-2">
                         <Languages className="size-4 text-[#667069]" />
                         {booster.languages.join(" / ")}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="size-4 text-[#667069]" />
-                        Verified booster
-                      </div>
                     </div>
+
+                    <Link
+                      href={`/boosters/rocket-league/${booster.slug}`}
+                      className="mt-6 inline-flex h-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[12px] font-semibold text-[#F4F7F5] transition-colors hover:border-[#39E56F]/18 hover:bg-[#39E56F]/[0.045] hover:text-[#82F5A4]"
+                    >
+                      View booster details
+                      <ArrowRight className="ml-2 size-3.5" />
+                    </Link>
                   </div>
                 </div>
               </article>
