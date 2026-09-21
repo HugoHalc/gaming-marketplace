@@ -12,6 +12,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
 import { FaqAccordion } from "@/components/marketing/faq-accordion";
 import { HowItWorksShowcase } from "@/components/marketing/how-it-works-showcase";
+import { trustIconByTitle } from "@/components/marketing/boostingpedia-trust-icons";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -366,7 +367,7 @@ export default async function Home() {
 
                   <div className="flex flex-col p-5">
                     <div>
-                      <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+                      <p className="font-gaming-label text-[10px] uppercase tracking-[0.10em] text-[#7C8780]">
                         Rocket League
                       </p>
                       <h3 className="mt-1.5 text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
@@ -380,7 +381,7 @@ export default async function Home() {
                     </p>
 
                     <div className="mt-auto pt-5">
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#667069]">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#7C8780]">
                         <span>{booster.experience} experience</span>
                         <span>{booster.region}</span>
                         <span>{booster.languages.join(" / ")}</span>
@@ -446,8 +447,8 @@ export default async function Home() {
                     />
                   </div>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/78 via-[#050807]/05 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/38 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/88 via-[#050807]/12 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
 
                   {game.slug === "marvel-rivals" ? (
                     <>
@@ -472,7 +473,7 @@ export default async function Home() {
                         {serviceNames.map((serviceName) => (
                           <span
                             key={serviceName}
-                            className="rounded-md border border-white/[0.09] bg-[#050807]/80 px-2 py-1 text-[9px] font-medium text-[#D7DED9] backdrop-blur-sm"
+                            className="rounded-md border border-white/[0.10] bg-[#050807]/86 px-2.5 py-1 text-[10px] font-medium text-[#D7DED9] backdrop-blur-sm"
                           >
                             {serviceName}
                           </span>
@@ -514,7 +515,7 @@ export default async function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_55px_-38px_rgba(0,0,0,.95)]"
+                  className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#39E56F]/22 hover:shadow-[0_18px_42px_-34px_rgba(57,229,111,.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none"
                 >
                   {cardVisual}
                 </Link>
@@ -522,7 +523,7 @@ export default async function Home() {
                 <div
                   key={game.slug}
                   aria-label={`${game.displayName}: Coming soon, in development`}
-                  className="relative aspect-[2048/1143] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-80"
+                  className="relative aspect-[2048/1143] cursor-default overflow-hidden rounded-[1.4rem] border border-white/[0.09] bg-[#0E1411] opacity-[0.78]"
                 >
                   {cardVisual}
                 </div>
@@ -543,16 +544,20 @@ export default async function Home() {
           />
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {trustFeatures.slice(0, 6).map(({ icon: Icon, title, description }) => (
+            {trustFeatures.slice(0, 6).map(({ title, description }) => {
+              const Icon = trustIconByTitle[title];
+
+              return (
                 <article
                   key={title}
-                  className="group relative overflow-hidden rounded-[1.5rem] border border-[#FFFFFF14] bg-[linear-gradient(180deg,#0E1411_0%,#090D0B_100%)] p-6 transition-[border-color,background-color] duration-200 ease-out hover:border-white/[0.15] hover:bg-[#101713] motion-reduce:transition-none sm:p-7"
+                  className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.085] bg-[linear-gradient(180deg,#0E1411_0%,#090D0B_100%)] p-6 transition-[border-color,background-color] duration-200 ease-out hover:border-[#39E56F]/18 hover:bg-[#101713] motion-reduce:transition-none sm:p-7"
                 >
-                  <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/18 to-transparent" />
+                  <div className="pointer-events-none absolute right-5 top-5 size-5 border-r border-t border-white/[0.05]" />
 
                   <div className="relative">
-                    <div className="grid size-11 place-items-center rounded-xl border border-[#39E56F]/25 bg-[#39E56F]/[0.045] text-[#82F5A4]">
-                      <Icon className="size-4.5" strokeWidth={1.8} />
+                    <div className="grid size-11 place-items-center rounded-[11px] border border-[#39E56F]/20 bg-[#39E56F]/[0.035] text-[#82F5A4]">
+                      <Icon className="size-5" />
                     </div>
 
                     <div className="mt-6">
@@ -566,13 +571,14 @@ export default async function Home() {
 
                     <div className="mt-7 flex items-center gap-3 border-t border-white/[0.06] pt-4">
                       <span className="h-px w-8 bg-[#39E56F]/20" />
-                      <span className="font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#667069]">
+                      <span className="font-gaming-label text-[10px] uppercase tracking-[0.10em] text-[#7C8780]">
                         Supported by the platform
                       </span>
                     </div>
                   </div>
                 </article>
-            ))}
+              );
+            })}
           </div>
         </Container>
       </section>
@@ -663,7 +669,7 @@ export default async function Home() {
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-1 text-xs text-[#667069]">{review.date}</p>
+                    <p className="mt-1 text-xs text-[#7C8780]">{review.date}</p>
                   </div>
 
                   <span className="text-xs font-semibold text-[#A0AAA4] transition-colors group-hover:text-[#F4F7F5]">
@@ -697,7 +703,7 @@ export default async function Home() {
               description="Everything you need to know before placing your order."
               align="left"
             />
-            <p className="mt-5 max-w-md text-xs leading-6 text-[#667069]">
+            <p className="mt-5 max-w-md text-xs leading-6 text-[#7C8780]">
               Need help? Contact support through the site before or after your order.
             </p>
           </div>
@@ -708,15 +714,16 @@ export default async function Home() {
 
       <section className="pb-20 sm:pb-24">
         <Container>
-          <div className="relative overflow-hidden rounded-[2rem] border border-[#FFFFFF14] bg-[linear-gradient(135deg,#090D0B_0%,#0E1411_100%)] p-8 sm:p-10 lg:p-12">
-            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-[#39E56F]/[0.035] blur-3xl" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[linear-gradient(135deg,#090D0B_0%,#0E1411_72%,#0B120E_100%)] p-8 sm:p-10 lg:p-12">
+            <div className="absolute right-[-5rem] top-[-7rem] size-72 rounded-full bg-[#39E56F]/[0.028] blur-3xl" />
+            <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/16 to-transparent" />
 
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-y-0 right-0 hidden w-[38%] lg:block"
             >
               <div className="absolute right-[8%] top-[18%] h-px w-44 -rotate-[28deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
-              <div className="absolute right-[15%] top-[30%] h-24 w-36 -skew-x-[28deg] border-l border-t border-white/[0.055]" />
+              <div className="absolute right-[15%] top-[30%] h-24 w-36 -skew-x-[28deg] border-l border-t border-[#39E56F]/[0.07]" />
               <span className="absolute right-[11%] top-[47%] size-1.5 rounded-full border border-[#FFFFFF14] bg-[#131B17]" />
             </div>
 
@@ -735,7 +742,7 @@ export default async function Home() {
                   Explore available game storefronts, choose a service, and review your configuration before continuing to checkout.
                 </p>
 
-                <div className="mt-6 hidden items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-[#667069] sm:flex">
+                <div className="mt-6 hidden items-center gap-2 text-[11px] uppercase tracking-[0.10em] text-[#7C8780] sm:flex">
                   <span className="h-px w-8 bg-white/[0.08]" />
                   Marketplace entry point
                 </div>
