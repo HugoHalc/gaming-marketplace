@@ -426,7 +426,7 @@ export default async function Home() {
             </div>
 
             <Link
-              href="/boosters"
+              href="/boosters/rocket-league"
               className="hidden rounded-md text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:inline-flex"
             >
               View all Rocket League boosters
@@ -481,7 +481,7 @@ export default async function Home() {
           </div>
 
           <Link
-            href="/boosters"
+            href="/boosters/rocket-league"
             className="mt-5 inline-flex rounded-md text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:hidden"
           >
             View all Rocket League boosters
