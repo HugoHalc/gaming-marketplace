@@ -560,7 +560,7 @@ export default async function Home() {
                         {serviceNames.map((serviceName) => (
                           <span
                             key={serviceName}
-                            className="rounded-md border border-white/[0.10] bg-[#050807]/86 px-2.5 py-1 text-[10px] font-medium text-[#D7DED9] backdrop-blur-sm"
+                            className="max-w-full whitespace-normal break-words rounded-md border border-white/[0.10] bg-[#050807]/86 px-2 py-1 text-[11px] leading-4 font-medium text-[#D7DED9] backdrop-blur-sm sm:px-2.5 sm:text-[10px]"
                           >
                             {serviceName}
                           </span>
@@ -570,7 +570,7 @@ export default async function Home() {
 
                     <div className="flex items-center justify-between gap-3">
                       <span
-                        className={`inline-flex min-w-0 items-center gap-2 text-[11px] font-semibold sm:text-xs ${
+                        className={`inline-flex min-w-0 items-center gap-2 text-xs font-semibold ${
                           game.ready ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
                         }`}
                       >
@@ -585,7 +585,7 @@ export default async function Home() {
                       </span>
 
                       <span
-                        className={`font-gaming-label shrink-0 rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] transition-colors duration-200 ${
+                        className={`font-gaming-label shrink-0 rounded-full border px-2 py-1 text-[10px] uppercase tracking-[0.08em] transition-colors duration-200 sm:px-2.5 sm:text-[9px] sm:tracking-[0.1em] ${
                           game.ready
                             ? "border-[#39E56F]/40 bg-[#39E56F]/[0.08] text-[#82F5A4]"
                             : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]"
