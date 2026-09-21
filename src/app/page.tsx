@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -32,6 +32,24 @@ const gameVisual = {
   amber: "from-amber-500/[0.18] via-amber-500/[0.045] to-transparent border-amber-300/15",
   blue: "from-blue-500/[0.22] via-blue-500/[0.05] to-transparent border-blue-300/15",
 } as const;
+
+const heroPoster = "/brand/boostingpedia-hooded-rogue.png";
+const transparentImage =
+  "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+
+const {
+  props: {
+    srcSet: mobileHeroSrcSet,
+    sizes: mobileHeroSizes,
+    ...mobileHeroImageProps
+  },
+} = getImageProps({
+  src: heroPoster,
+  alt: "",
+  fill: true,
+  sizes: "100vw",
+  priority: true,
+});
 
 const homeGameCardAssets = {
   "rocket-league": "/game-cards/rocket-league.webp",
@@ -254,13 +272,24 @@ export default async function Home() {
           className="pointer-events-none absolute inset-y-0 right-[1%] -z-10 hidden w-[54%] overflow-hidden lg:block xl:right-[3%] xl:w-[52%]"
         >
           <div className="absolute inset-y-[2%] left-[5%] right-[2%] overflow-hidden">
+            <picture>
+              <source
+                media="(min-width: 1024px)"
+                srcSet={heroPoster}
+              />
+              <img
+                src={transparentImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
+              />
+            </picture>
+
             <HeroHoldLoopVideo
               src="/brand/boostingpedia-hooded-rogue-loop.webm"
-              poster="/brand/boostingpedia-hooded-rogue.png"
               holdSeconds={2}
               sourceMedia="(min-width: 1024px) and (prefers-reduced-motion: no-preference)"
-              className="h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
-              sizes="(min-width:1280px) 52vw, 54vw"
+              className="relative z-[1] h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
             />
           </div>
 
@@ -273,14 +302,22 @@ export default async function Home() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 overflow-hidden lg:hidden"
         >
-          <Image
-            src="/brand/boostingpedia-hooded-rogue.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[68%_50%] opacity-[0.58] sm:object-[66%_50%] sm:opacity-[0.62]"
-          />
+          <picture>
+            <source
+              media="(max-width: 1023px)"
+              srcSet={mobileHeroSrcSet}
+              sizes={mobileHeroSizes}
+            />
+            <img
+              {...mobileHeroImageProps}
+              src={transparentImage}
+              srcSet={undefined}
+              sizes={undefined}
+              alt=""
+              aria-hidden="true"
+              className="object-cover object-[68%_50%] opacity-[0.58] sm:object-[66%_50%] sm:opacity-[0.62]"
+            />
+          </picture>
           <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.96)_42%,rgba(5,8,7,.70)_66%,rgba(5,8,7,.30)_100%)]" />
           <div className="absolute inset-x-0 top-0 h-[24%] bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.52)_58%,transparent_100%)]" />
           <div className="absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.58)_54%,transparent_100%)]" />

@@ -1,22 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type HeroHoldLoopVideoProps = {
   src: string;
-  poster: string;
   className?: string;
-  sizes?: string;
   holdSeconds?: number;
   sourceMedia?: string;
 };
 
 export function HeroHoldLoopVideo({
   src,
-  poster,
   className = "",
-  sizes = "100vw",
   holdSeconds = 2,
   sourceMedia,
 }: HeroHoldLoopVideoProps) {
@@ -118,19 +113,6 @@ export function HeroHoldLoopVideo({
     };
   }, [holdSeconds, prefersReducedMotion]);
 
-  if (prefersReducedMotion) {
-    return (
-      <Image
-        src={poster}
-        alt=""
-        fill
-        sizes={sizes}
-        className={className}
-        priority
-      />
-    );
-  }
-
   return (
     <video
       ref={videoRef}
@@ -139,7 +121,6 @@ export function HeroHoldLoopVideo({
       muted
       playsInline
       preload="metadata"
-      poster={poster}
       tabIndex={-1}
       disablePictureInPicture
       aria-hidden="true"
