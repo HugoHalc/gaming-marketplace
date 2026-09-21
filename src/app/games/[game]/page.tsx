@@ -120,6 +120,15 @@ const rocketLeagueOverviewMeta = {
   "rewards-boost": { badge: "SEASON REWARDS", icon: Sparkles },
 } as const;
 
+
+const rocketLeagueBestFor = {
+  "rank-boost": "Reaching a specific competitive rank.",
+  wins: "Securing a fixed number of competitive wins.",
+  "placements-boost": "Completing a selected number of placement matches.",
+  "tournament-boost": "Securing one completed Tournament Win.",
+  "rewards-boost": "Adding a fixed number of eligible Season Reward wins.",
+} as const;
+
 const valorantOverviewMeta = {
   "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
   wins: { badge: "COMPETITIVE WINS", icon: Trophy },
@@ -461,6 +470,14 @@ function ServiceShowcaseCard({
         <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
           {service.description}
         </p>
+        {isRocketLeague ? (
+          <p className="mt-2.5 text-[11px] leading-5 text-blue-100/55">
+            <span className="font-semibold text-blue-100/75">Best for:</span>{" "}
+            {rocketLeagueBestFor[
+              service.slug as keyof typeof rocketLeagueBestFor
+            ] ?? "Choosing a Rocket League service that matches your competitive goal."}
+          </p>
+        ) : null}
       </div>
 
       <div className={`relative mt-auto ${isRocketLeague || isValorant ? "pt-5" : "pt-8"}`}>

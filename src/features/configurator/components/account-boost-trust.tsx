@@ -1,7 +1,9 @@
 "use client";
 
 import { Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useId, useState } from "react";
+import { RocketLeagueConversionTrust } from "./rocket-league-conversion-trust";
 
 const ACCOUNT_BOOST_DESCRIPTION =
   "Our booster completes the service directly on your account. Account access is requested securely after your order is placed.";
@@ -162,6 +164,13 @@ export function AccountBoostCheckoutReassurance({
   selected: boolean;
   accent?: AccountBoostAccent;
 }) {
+  const pathname = usePathname();
+  const isRocketLeagueService = pathname?.startsWith("/games/rocket-league/") ?? false;
+
+  if (isRocketLeagueService) {
+    return <RocketLeagueConversionTrust accountBoost={selected} />;
+  }
+
   if (!selected) return null;
 
   const styles = accentStyles[accent];
