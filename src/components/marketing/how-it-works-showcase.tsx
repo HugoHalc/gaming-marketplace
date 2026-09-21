@@ -17,21 +17,21 @@ const steps = [
     eyebrow: "Choose your game",
     title: "Start with the game and service that match your goal.",
     description:
-      "Open a dedicated storefront, compare the available services, and move straight into the configuration that fits what you want to achieve.",
+      "Open a game storefront and choose the service that matches your goal.",
   },
   {
     number: "02",
     eyebrow: "Customize your order",
     title: "Configure the details before you ever reach checkout.",
     description:
-      "Set the ranks, mode, server, and available extras for the service. Pricing updates around the configuration so the order stays clear before payment.",
+      "Set the available ranks, mode, server, and service options before continuing.",
   },
   {
     number: "03",
     eyebrow: "Checkout & track",
     title: "Pay securely, then manage everything from your dashboard.",
     description:
-      "After checkout, follow the order status, see the assigned booster, keep communication inside the order, and track progress through completion.",
+      "Complete checkout, then follow the order from your dashboard and order workspace.",
   },
 ] as const;
 
@@ -55,7 +55,7 @@ function MockupShell({
 
 function GameSelectionVisual() {
   return (
-    <div className="relative mx-auto h-[300px] w-full max-w-[560px] sm:h-[340px]">
+    <div className="relative mx-auto h-[260px] w-full max-w-[520px] sm:h-[290px]">
       <div className="absolute inset-x-[7%] top-[16%] h-[64%] rounded-[36px] border border-[#39E56F]/12 bg-[#39E56F]/[0.028]" />
       <div className="absolute inset-x-[12%] top-[22%] h-[52%] rounded-[28px] border border-white/[0.055] bg-[#0B100D]" />
 
@@ -102,7 +102,7 @@ function GameSelectionVisual() {
 
 function ConfiguratorVisual() {
   return (
-    <MockupShell className="mx-auto w-full max-w-[560px] p-4 sm:p-5">
+    <MockupShell className="mx-auto w-full max-w-[520px] p-4">
       <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
         <div>
           <p className="font-gaming-label text-[9px] uppercase tracking-[0.10em] text-[#7C8780]">
@@ -164,7 +164,7 @@ function ConfiguratorVisual() {
 
 function DashboardVisual() {
   return (
-    <MockupShell className="mx-auto w-full max-w-[560px] p-4 sm:p-5">
+    <MockupShell className="mx-auto w-full max-w-[520px] p-4">
       <div className="flex items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
         <div>
           <p className="font-gaming-label text-[9px] uppercase tracking-[0.10em] text-[#7C8780]">Order workspace</p>
@@ -229,7 +229,7 @@ export function HowItWorksShowcase() {
   return (
     <section
       id="how-it-works"
-      className="scroll-mt-24 border-y border-white/[0.06] bg-[#050807] py-20 sm:py-24 lg:py-28"
+      className="scroll-mt-24 border-y border-white/[0.06] bg-[#050807] py-14 sm:py-16 lg:py-20"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
@@ -240,18 +240,18 @@ export function HowItWorksShowcase() {
             From game selection to completion.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#A0AAA4] sm:text-base">
-            Choose a service, customize the order, complete secure checkout, and manage the rest from your BoostingPedia dashboard.
+            Three steps from storefront selection to order management.
           </p>
         </div>
 
-        <div className="mt-14 divide-y divide-white/[0.055] border-y border-white/[0.055] sm:mt-16">
+        <div className="mt-10 divide-y divide-white/[0.055] border-y border-white/[0.055] sm:mt-12">
           {steps.map((step, index) => {
             const Visual = visuals[index];
 
             return (
               <article
                 key={step.number}
-                className="group grid gap-10 py-12 sm:py-14 lg:grid-cols-[.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20"
+                className="group grid gap-7 py-9 sm:py-10 lg:grid-cols-[.88fr_1.12fr] lg:items-center lg:gap-10 lg:py-12"
               >
                 <div className="max-w-xl">
                   <div className="flex items-center gap-3">
@@ -262,17 +262,17 @@ export function HowItWorksShowcase() {
                     </span>
                   </div>
 
-                  <h3 className="mt-5 text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#F4F7F5] sm:text-3xl">
+                  <h3 className="mt-4 text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#F4F7F5] sm:text-[1.7rem]">
                     {step.title}
                   </h3>
-                  <p className="mt-4 max-w-[52ch] text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
+                  <p className="mt-3 max-w-[50ch] text-sm leading-6 text-[#A0AAA4] sm:text-[15px]">
                     {step.description}
                   </p>
 
                   {index === 0 ? (
                     <Link
                       href="#games"
-                      className="mt-6 inline-flex items-center text-sm font-semibold text-[#82F5A4] transition-colors hover:text-[#B3FBC8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
+                      className="mt-5 inline-flex items-center text-sm font-semibold text-[#82F5A4] transition-colors hover:text-[#B3FBC8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
                     >
                       Browse available games
                       <ArrowRight className="ml-2 size-4" />

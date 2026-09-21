@@ -21,7 +21,7 @@ import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { launchGames } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
-import { faqs, trustFeatures } from "@/features/marketing/content";
+import { trustFeatures } from "@/features/marketing/content";
 import { siteConfig } from "@/config/site";
 
 const gameVisual = {
@@ -74,6 +74,51 @@ const websiteJsonLd = {
 function serializeJsonLd(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
+
+const homepageFaqs = [
+  {
+    question: "How does the service work?",
+    answer:
+      "Choose a game and service, configure the available options, review the current quote, and continue through checkout. After purchase, manage the order from your BoostingPedia workspace.",
+  },
+  {
+    question: "How is my price calculated?",
+    answer:
+      "Your quote is based on the configuration you select and is validated server-side before the order is created.",
+  },
+  {
+    question: "Can my price change while I configure?",
+    answer:
+      "Yes. Options that affect the service can change the current quote. The configurator shows the updated total for your selections before checkout.",
+  },
+  {
+    question: "What happens after I place an order?",
+    answer:
+      "The order appears in your dashboard. From there, you can follow its status and access the order workspace as fulfillment progresses.",
+  },
+  {
+    question: "Can I track my order and talk to my booster?",
+    answer:
+      "Yes. Order status is available from your dashboard, and when an applicable order has an assigned booster, communication is available through the order workspace.",
+  },
+  {
+    question: "How does Account Boost work?",
+    answer:
+      "For Account Boost, account access is requested only after the order is placed. Relevant login coordination can then happen through the order workspace.",
+  },
+  {
+    question: "How are payments processed?",
+    answer:
+      "Payment is processed through Stripe. Available payment options are shown during Stripe checkout.",
+  },
+  {
+    question: "What if I need help, cancel, or request a refund?",
+    answer:
+      "Use site support if you need help with a service or order. Cancellation and refund eligibility depend on order status and progress.",
+    href: "/refunds",
+    linkLabel: "Read the Refund Policy",
+  },
+] as const;
 
 const trustpilotReviews = [
   {
@@ -305,9 +350,13 @@ export default async function Home() {
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="secondary" size="lg" className="rounded-xl border border-[#FFFFFF14] bg-[#131B17] font-semibold text-[#F4F7F5] shadow-none transition-[background-color,border-color,color] duration-200 hover:border-white/[0.16] hover:bg-[#18211C] hover:text-white disabled:cursor-not-allowed disabled:opacity-45">
-                <Link href="/boosters">Meet our boosters</Link>
-              </Button>
+              <Link
+                href="/boosters"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl px-1 text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:px-3"
+              >
+                Meet our boosters
+                <ArrowRight className="size-4" />
+              </Link>
             </div>
 
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--muted-foreground)] sm:text-sm">
@@ -550,7 +599,7 @@ export default async function Home() {
               return (
                 <article
                   key={title}
-                  className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.085] bg-[linear-gradient(180deg,#0E1411_0%,#090D0B_100%)] p-6 transition-[border-color,background-color] duration-200 ease-out hover:border-[#39E56F]/18 hover:bg-[#101713] motion-reduce:transition-none sm:p-7"
+                  className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.085] bg-[linear-gradient(180deg,#0E1411_0%,#090D0B_100%)] p-6 transition-[border-color,background-color] duration-200 ease-out hover:border-[#39E56F]/18 hover:bg-[#101713] motion-reduce:transition-none sm:p-6"
                 >
                   <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/18 to-transparent" />
                   <div className="pointer-events-none absolute right-5 top-5 size-5 border-r border-t border-white/[0.05]" />
@@ -569,12 +618,6 @@ export default async function Home() {
                       </p>
                     </div>
 
-                    <div className="mt-7 flex items-center gap-3 border-t border-white/[0.06] pt-4">
-                      <span className="h-px w-8 bg-[#39E56F]/20" />
-                      <span className="font-gaming-label text-[10px] uppercase tracking-[0.10em] text-[#7C8780]">
-                        Supported by the platform
-                      </span>
-                    </div>
                   </div>
                 </article>
               );
@@ -655,9 +698,14 @@ export default async function Home() {
                   </span>
                 </div>
 
-                <p className="mt-6 text-[15px] leading-7 text-[#F4F7F5]">
-                  {review.summary}
-                </p>
+                <div className="mt-6">
+                  <p className="font-gaming-label text-[10px] uppercase tracking-[0.10em] text-[#7C8780]">
+                    Review summary
+                  </p>
+                  <p className="mt-2 text-[15px] leading-7 text-[#F4F7F5]">
+                    {review.summary}
+                  </p>
+                </div>
 
                 <div className="mt-7 flex items-end justify-between gap-4 border-t border-white/[0.06] pt-5">
                   <div>
@@ -708,7 +756,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <FaqAccordion items={faqs} />
+          <FaqAccordion items={homepageFaqs} />
         </Container>
       </section>
 
@@ -739,13 +787,9 @@ export default async function Home() {
                 </h2>
 
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-[#A0AAA4] sm:text-base">
-                  Explore available game storefronts, choose a service, and review your configuration before continuing to checkout.
+                  Browse the available storefronts and start with the service that matches your goal.
                 </p>
 
-                <div className="mt-6 hidden items-center gap-2 text-[11px] uppercase tracking-[0.10em] text-[#7C8780] sm:flex">
-                  <span className="h-px w-8 bg-white/[0.08]" />
-                  Marketplace entry point
-                </div>
               </div>
 
               <Button
