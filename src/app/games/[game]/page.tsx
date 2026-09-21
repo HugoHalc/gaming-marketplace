@@ -466,10 +466,12 @@ function ServiceShowcaseCard({
       <div className={`relative mt-auto ${isRocketLeague || isValorant ? "pt-5" : "pt-8"}`}>
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          <StartingPriceDisplay
-            value={service.startingPrice}
-            context={service.startingPriceContext}
-          />
+          {isRocketLeague ? null : (
+            <StartingPriceDisplay
+              value={service.startingPrice}
+              context={service.startingPriceContext}
+            />
+          )}
           <span className={`grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] ${ctaClass}`}>
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
