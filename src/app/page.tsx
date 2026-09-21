@@ -311,7 +311,7 @@ export default function Home() {
             </div>
 
             <Link
-              href="/boosters/rocket-league"
+              href="/boosters"
               className="hidden text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:inline-flex"
             >
               View all
@@ -377,7 +377,7 @@ export default function Home() {
           </div>
 
           <Link
-            href="/boosters/rocket-league"
+            href="/boosters"
             className="mt-5 inline-flex text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:hidden"
           >
             View all Rocket League boosters
