@@ -258,6 +258,7 @@ export default async function Home() {
               src="/brand/boostingpedia-hooded-rogue-loop.webm"
               poster="/brand/boostingpedia-hooded-rogue.png"
               holdSeconds={2}
+              sourceMedia="(min-width: 1024px) and (prefers-reduced-motion: no-preference)"
               className="h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
               sizes="(min-width:1280px) 52vw, 54vw"
             />
@@ -293,7 +294,7 @@ export default async function Home() {
               Premium boosting marketplace
             </Badge>
 
-            <h1 className="text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-[#F4F7F5] sm:text-6xl lg:text-[4.5rem]">
+            <h1 className="text-balance text-[2.65rem] font-bold leading-[0.98] tracking-[-0.055em] text-[#F4F7F5] min-[390px]:text-[2.85rem] sm:text-6xl sm:leading-[0.96] sm:tracking-[-0.065em] lg:text-[4.5rem]">
               Professional boosting built around your game.
             </h1>
 
@@ -306,7 +307,7 @@ export default async function Home() {
               target="_blank"
               rel="noreferrer"
               aria-label={`BoostingPedia on Trustpilot: ${heroTrustpilot.score} out of 5 from ${heroTrustpilot.reviewCount} reviews`}
-              className="mt-5 inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm"
+              className="mt-5 inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 rounded-lg text-xs transition-opacity hover:opacity-95 active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:text-sm"
             >
               <span className="font-semibold text-[#F4F7F5]">{heroTrustpilot.ratingLabel}</span>
 
@@ -389,7 +390,7 @@ export default async function Home() {
 
             <Link
               href="/boosters"
-              className="hidden text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:inline-flex"
+              className="hidden rounded-md text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:inline-flex"
             >
               View all Rocket League boosters
             </Link>
@@ -400,7 +401,7 @@ export default async function Home() {
               <Link
                 key={booster.slug}
                 href="/boosters/rocket-league"
-                className="group overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.14] hover:bg-[#131B17]"
+                className="group overflow-hidden rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.14] hover:bg-[#131B17] active:translate-y-0 active:bg-[#101713] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none"
               >
                 <div className="grid sm:grid-cols-[150px_1fr]">
                   <div className="relative aspect-[4/3] overflow-hidden bg-[#090D0B] sm:aspect-auto sm:min-h-[190px]">
@@ -444,7 +445,7 @@ export default async function Home() {
 
           <Link
             href="/boosters"
-            className="mt-5 inline-flex text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:hidden"
+            className="mt-5 inline-flex rounded-md text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] sm:hidden"
           >
             View all Rocket League boosters
           </Link>
@@ -462,7 +463,7 @@ export default async function Home() {
             </div>
             <Link
               href="/games"
-              className="inline-flex items-center text-sm font-semibold bg-transparent text-[#A0AAA4] shadow-none transition-colors duration-200 hover:bg-transparent hover:text-[#F4F7F5]"
+              className="inline-flex items-center rounded-md bg-transparent text-sm font-semibold text-[#A0AAA4] shadow-none transition-colors duration-200 hover:bg-transparent hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
             >
               View all games
               <ArrowRight className="ml-2 size-4" />
@@ -564,7 +565,7 @@ export default async function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
-                  className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#39E56F]/22 hover:shadow-[0_18px_42px_-34px_rgba(57,229,111,.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none"
+                  className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#39E56F]/22 hover:shadow-[0_18px_42px_-34px_rgba(57,229,111,.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] active:translate-y-0 active:scale-[0.995] motion-reduce:transform-none"
                 >
                   {cardVisual}
                 </Link>
@@ -638,7 +639,7 @@ export default async function Home() {
             href={heroTrustpilot.profileUrl}
             target="_blank"
             rel="noreferrer"
-            className="mx-auto mt-8 flex max-w-fit flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-4 py-2.5 text-xs transition-[border-color,background-color] duration-200 hover:border-white/[0.16] hover:bg-[#0E1411] sm:text-sm"
+            className="mx-auto mt-8 flex max-w-fit flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full border border-[#FFFFFF14] bg-[#090D0B] px-4 py-2.5 text-xs transition-[border-color,background-color,transform] duration-200 hover:border-white/[0.16] hover:bg-[#0E1411] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none sm:text-sm"
             aria-label={`BoostingPedia on Trustpilot: ${heroTrustpilot.score} out of 5 from ${heroTrustpilot.reviewCount} reviews`}
           >
             <span className="inline-flex items-center gap-1.5 font-semibold text-[#F4F7F5]">
@@ -678,7 +679,7 @@ export default async function Home() {
                 href={heroTrustpilot.profileUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="group rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.15] hover:bg-[#131B17] sm:p-7"
+                className="group rounded-[1.35rem] border border-[#FFFFFF14] bg-[#0E1411] p-6 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-white/[0.15] hover:bg-[#131B17] active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none sm:p-7"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex gap-0.5" aria-label={`${review.rating} out of 5 stars`}>
@@ -707,7 +708,7 @@ export default async function Home() {
                   </p>
                 </div>
 
-                <div className="mt-7 flex items-end justify-between gap-4 border-t border-white/[0.06] pt-5">
+                <div className="mt-7 flex flex-col gap-3 border-t border-white/[0.06] pt-5 min-[430px]:flex-row min-[430px]:items-end min-[430px]:justify-between min-[430px]:gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm font-semibold text-[#F4F7F5]">{review.name}</p>
@@ -733,7 +734,7 @@ export default async function Home() {
               href={heroTrustpilot.profileUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#A0AAA4] transition-colors duration-200 hover:text-[#F4F7F5]"
+              className="inline-flex items-center gap-2 rounded-md text-sm font-semibold text-[#A0AAA4] transition-colors duration-200 hover:text-[#F4F7F5] active:text-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
             >
               View all reviews on Trustpilot
               <ArrowRight className="size-4" />
