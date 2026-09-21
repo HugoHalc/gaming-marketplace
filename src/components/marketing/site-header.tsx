@@ -31,7 +31,11 @@ function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCu
   return source.slice(0, 2).toUpperCase();
 }
 
-export async function SiteHeader() {
+export async function SiteHeader({
+  showComingSoonGames = false,
+}: {
+  showComingSoonGames?: boolean;
+} = {}) {
   const identity = await getCurrentIdentity();
   const unread = identity ? await getUnreadNotificationCount() : 0;
   const initials = identity ? getAvatarInitials(identity) : null;
@@ -126,10 +130,20 @@ export async function SiteHeader() {
               ) : (
                 <span
                   key={game.slug}
-                  className="inline-flex h-8 shrink-0 cursor-default items-center rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
-                  title="In development"
+                  aria-label={
+                    showComingSoonGames
+                      ? `${game.displayName}, Coming soon`
+                      : `${game.displayName}, In development`
+                  }
+                  className="inline-flex h-8 shrink-0 cursor-default items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
+                  title={showComingSoonGames ? "Coming soon" : "In development"}
                 >
                   {game.displayName}
+                  {showComingSoonGames ? (
+                    <span className="rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-[#A0AAA4]">
+                      Coming soon
+                    </span>
+                  ) : null}
                 </span>
               ),
             )}
@@ -145,16 +159,31 @@ export async function SiteHeader() {
             Games
           </Link>
 
-          {launchGames.filter((game) => game.ready).map((game) => (
-            <Link
-              key={game.slug}
-              href={`/games/${game.slug}`}
-              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
-            >
-              <span className="size-1.5 rounded-full bg-[#39E56F]" />
-              {game.displayName}
-            </Link>
-          ))}
+          {launchGames
+            .filter((game) => game.ready || showComingSoonGames)
+            .map((game) =>
+              game.ready ? (
+                <Link
+                  key={game.slug}
+                  href={`/games/${game.slug}`}
+                  className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
+                >
+                  <span className="size-1.5 rounded-full bg-[#39E56F]" />
+                  {game.displayName}
+                </Link>
+              ) : (
+                <span
+                  key={game.slug}
+                  aria-label={`${game.displayName}, Coming soon`}
+                  className="inline-flex h-8 shrink-0 cursor-default items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
+                >
+                  {game.displayName}
+                  <span className="rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-[#A0AAA4]">
+                    Coming soon
+                  </span>
+                </span>
+              ),
+            )}
         </div>
       </Container>
     </header>

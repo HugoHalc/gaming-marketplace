@@ -16,6 +16,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { launchGames } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
@@ -135,7 +136,15 @@ function BoosterAvatar({ initials }: { initials: string }) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const catalogGames = await listCatalogGames();
+  const serviceNamesByGame = new Map(
+    catalogGames.map((game) => [
+      game.slug,
+      game.services.slice(0, 2).map((service) => service.name),
+    ]),
+  );
+
   return (
     <main className="min-h-screen overflow-hidden">
       <script
@@ -188,7 +197,7 @@ export default function Home() {
           }
         }
       `}</style>
-      <SiteHeader />
+      <SiteHeader showComingSoonGames />
 
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
@@ -212,6 +221,24 @@ export default function Home() {
           <div className="absolute inset-x-0 top-0 h-[10%] bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.55)_46%,transparent_100%)]" />
           <div className="absolute inset-x-0 bottom-0 h-[13%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.52)_42%,transparent_100%)]" />
         </div>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden lg:hidden"
+        >
+          <Image
+            src="/brand/boostingpedia-hooded-rogue.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[68%_50%] opacity-[0.58] sm:object-[66%_50%] sm:opacity-[0.62]"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.96)_42%,rgba(5,8,7,.70)_66%,rgba(5,8,7,.30)_100%)]" />
+          <div className="absolute inset-x-0 top-0 h-[24%] bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.52)_58%,transparent_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.58)_54%,transparent_100%)]" />
+        </div>
+
         <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_46%,rgba(5,8,7,.72)_68%,transparent_100%)] sm:w-[66%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
@@ -225,7 +252,7 @@ export default function Home() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-[#A0AAA4] sm:text-lg">
-              Choose your title, open its dedicated storefront, and configure the service around your competitive goal.
+              Choose your game, configure the service transparently, and manage your order from checkout to completion in one secure workspace.
             </p>
 
             <a
@@ -306,7 +333,7 @@ export default function Home() {
                 Boosters
               </p>
               <h2 className="mt-2 text-2xl font-bold tracking-[-0.04em] text-[#F4F7F5] sm:text-3xl">
-                Meet the players behind the services.
+                Featured Rocket League boosters.
               </h2>
             </div>
 
@@ -314,7 +341,7 @@ export default function Home() {
               href="/boosters"
               className="hidden text-sm font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5] sm:inline-flex"
             >
-              View all
+              View all Rocket League boosters
             </Link>
           </div>
 
@@ -335,28 +362,17 @@ export default function Home() {
                       className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/40 via-transparent to-transparent" />
-                    <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/25 bg-[#050807]/80 px-2.5 py-1 text-[10px] font-semibold text-[#F4F7F5] backdrop-blur-sm">
-                      <span className="size-1.5 rounded-full bg-[#39E56F]" />
-                      {booster.status}
-                    </div>
                   </div>
 
                   <div className="flex flex-col p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
-                          Rocket League
-                        </p>
-                        <h3 className="mt-1.5 text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
-                          {booster.nickname}
-                        </h3>
-                        <p className="mt-1 text-xs text-[#A0AAA4]">{booster.rank}</p>
-                      </div>
-
-                      <div className="flex items-center gap-1 text-xs font-semibold text-[#F4F7F5]">
-                        <Star className="size-3.5 fill-[#F4F7F5] text-[#F4F7F5]" />
-                        {booster.rating.toFixed(1)}
-                      </div>
+                    <div>
+                      <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+                        Rocket League
+                      </p>
+                      <h3 className="mt-1.5 text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+                        {booster.nickname}
+                      </h3>
+                      <p className="mt-1 text-xs text-[#A0AAA4]">{booster.rank}</p>
                     </div>
 
                     <p className="mt-4 text-sm font-semibold leading-5 text-[#F4F7F5]">
@@ -407,6 +423,9 @@ export default function Home() {
             {launchGames.map((game) => {
               const imageSrc =
                 homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
+              const serviceNames = game.ready
+                ? serviceNamesByGame.get(game.slug) ?? []
+                : [];
 
               const cardVisual = (
                 <>
@@ -447,26 +466,46 @@ export default function Home() {
                     </>
                   ) : null}
 
-                  <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-5">
-                    <span
-                      className={`grid size-10 shrink-0 place-items-center rounded-full border shadow-none transition-[border-color,background-color,color,opacity] duration-200 ${
-                        game.ready
-                          ? "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] group-hover:border-[#39E56F]/35 group-hover:bg-[#39E56F]/[0.09] group-hover:text-[#82F5A4]"
-                          : "border-[#FFFFFF14] bg-[#090D0B] text-[#667069] opacity-45"
-                      }`}
-                    >
-                      <ArrowRight className="size-4" />
-                    </span>
+                  <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5">
+                    {game.ready && serviceNames.length ? (
+                      <div className="mb-3 flex max-w-[88%] flex-wrap gap-1.5">
+                        {serviceNames.map((serviceName) => (
+                          <span
+                            key={serviceName}
+                            className="rounded-md border border-white/[0.09] bg-[#050807]/80 px-2 py-1 text-[9px] font-medium text-[#D7DED9] backdrop-blur-sm"
+                          >
+                            {serviceName}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
 
-                    <span
-                      className={`font-gaming-label rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] transition-colors duration-200 ${
-                        game.ready
-                          ? "border-[#39E56F]/40 bg-[#39E56F]/[0.08] text-[#82F5A4]"
-                          : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] opacity-60"
-                      }`}
-                    >
-                      {game.ready ? "Available" : "In development"}
-                    </span>
+                    <div className="flex items-center justify-between gap-3">
+                      <span
+                        className={`inline-flex min-w-0 items-center gap-2 text-[11px] font-semibold sm:text-xs ${
+                          game.ready ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
+                        }`}
+                      >
+                        {game.ready ? (
+                          <>
+                            Explore services
+                            <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
+                          </>
+                        ) : (
+                          "Coming soon"
+                        )}
+                      </span>
+
+                      <span
+                        className={`font-gaming-label shrink-0 rounded-full border px-2.5 py-1 text-[9px] uppercase tracking-[0.1em] transition-colors duration-200 ${
+                          game.ready
+                            ? "border-[#39E56F]/40 bg-[#39E56F]/[0.08] text-[#82F5A4]"
+                            : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]"
+                        }`}
+                      >
+                        {game.ready ? "Available" : "In development"}
+                      </span>
+                    </div>
                   </div>
                 </>
               );
@@ -482,7 +521,7 @@ export default function Home() {
               ) : (
                 <div
                   key={game.slug}
-                  aria-label={`${game.displayName} is in development`}
+                  aria-label={`${game.displayName}: Coming soon, in development`}
                   className="relative aspect-[2048/1143] cursor-default overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] opacity-80"
                 >
                   {cardVisual}
