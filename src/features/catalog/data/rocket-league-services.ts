@@ -9,7 +9,7 @@ const rocketLeagueAdditionalServices: ServiceSummary[] = [
     slug: "tournament-boost",
     name: "Tournament Boost",
     category: "wins",
-    description: "Tournament progression configured by your current rank, playlist and preferred boost method.",
+    description: "One Tournament Win configured for your current rank, playlist and preferred boost method.",
     startingPrice: 11.19,
     startingPriceContext: VERIFIED_BASE_PRICE_CONTEXT,
     currency: "USD",
