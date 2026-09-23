@@ -133,9 +133,9 @@ const rocketLeagueWinsFaqs = [
 
 const rocketLeagueTournamentFaqs = [
   {
-    question: "What is Rocket League tournament boosting?",
+    question: "What does one Tournament Boost order include?",
     paragraphs: [
-      "Rocket League tournament boosting is a service configured around your current rank family, tournament playlist, platform and preferred boost method. You select the options you need before continuing to checkout.",
+      "One Tournament Boost order includes one completed Tournament Win configured for your selected rank family, playlist, platform and boost method.",
     ],
   },
   {
@@ -340,7 +340,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
         : isRocketLeaguePlacements
           ? "Configure Rocket League placement boosting by previous season rank, number of placement matches, playlist, platform and boost method with server-calculated package discounts."
           : isRocketLeagueTournament
-            ? "Configure Rocket League tournament boosting by rank family, playlist, platform and boost method with transparent server-calculated pricing."
+            ? "Configure one Rocket League Tournament Win by rank family, playlist, platform and boost method with transparent server-calculated pricing."
             : isRocketLeagueRewards
               ? "Configure Rocket League season rewards boosting by current rank, reward wins, playlist, platform and boost method with server-calculated package discounts."
               : isValorantRank
@@ -446,7 +446,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       : isRocketLeaguePlacements
         ? "Complete your placement matches with transparent package pricing."
         : isRocketLeagueTournament
-          ? "Push through tournament progression with clear rank-based pricing."
+          ? "Complete one Tournament Win with clear rank-based pricing."
           : isRocketLeagueRewards
             ? "Build your seasonal rewards progress with flexible win packages."
             : isValorantRank
@@ -464,7 +464,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       : isRocketLeaguePlacements
         ? "Choose your previous season rank, placement matches, playlist and preferred boost method. Larger placement packages automatically unlock real discounts."
         : isRocketLeagueTournament
-          ? "Choose your current rank family, playlist and preferred boost method. Tournament pricing is calculated directly from the selected rank family."
+          ? "Configure one Tournament Win by rank family, playlist, platform and preferred boost method. Pricing is calculated directly from the selected rank family."
           : isRocketLeagueRewards
             ? "Choose your current rank, number of reward wins, playlist and preferred boost method. Larger reward packages automatically unlock real discounts."
             : isValorantRank
@@ -1080,7 +1080,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 </h2>
                 <div className="mt-5 max-w-[44rem] space-y-4 text-[15px] leading-7 text-[#A0AAA4] sm:text-base">
                   <p>
-                    Rocket League tournament boosting is configured around your current rank family, tournament playlist, platform and preferred boost method.
+                    One Tournament Boost order represents one completed Tournament Win configured around your current rank family, tournament playlist, platform and preferred boost method.
                   </p>
                   <p>
                     Start by selecting your current rank family in the configurator. Then choose the playlist and platform you use and decide whether you prefer Account Boost or Play With Booster.
@@ -1126,7 +1126,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                   <div className="rounded-2xl border border-white/[0.07] bg-[#0B100E] p-5 sm:p-6">
                     <h3 className="text-lg font-semibold tracking-[-0.015em] text-[#F4F7F5] sm:text-xl">Account Boost</h3>
                     <div className="mt-3 space-y-3 text-sm leading-7 text-[#A0AAA4] sm:text-[15px]">
-                      <p>With Account Boost, the booster completes the selected tournament service directly on your account.</p>
+                      <p>With Account Boost, the booster completes the configured Tournament Win directly on your account.</p>
                       <p>
                         Account access is not required while configuring your order and is requested only after checkout.
                       </p>

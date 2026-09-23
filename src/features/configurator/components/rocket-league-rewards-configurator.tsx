@@ -17,10 +17,17 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  MINIMUM_ORDER_TOTAL_LABEL,
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
+import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -417,10 +424,16 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
   const [orderError, setOrderError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [lastValidQuantity, setLastValidQuantity] = useState(4);
 
-  const wins = Number(selection.wins);
-  const discountRate = volumeDiscountRate(wins);
-  const nextTier = nextDiscountTier(wins);
+  const quantityResult = parseWholeNumberQuantity(selection.wins, 1, 10);
+  const quantityIsValid = quantityResult.valid;
+  const quantityValue = quantityResult.valid ? quantityResult.value : null;
+  const wins = quantityValue ?? lastValidQuantity;
+  const sliderQuantity = quantityValue ?? lastValidQuantity;
+  const quantityDisplay = selection.wins === "" ? "—" : String(selection.wins);
+  const discountRate = quantityIsValid ? volumeDiscountRate(wins) : 0;
+  const nextTier = quantityIsValid ? nextDiscountTier(wins) : null;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -434,10 +447,18 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
   }, [boostMethod, selection.appearOffline]);
 
   useEffect(() => {
+    if (!quantityIsValid) {
+      setQuote(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
 
       try {
         const response = await fetch("/api/quotes/preview", {
@@ -478,14 +499,25 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [gameSlug, service.slug, selection]);
+  }, [gameSlug, quantityIsValid, service.slug, selection]);
 
   function update(key: string, value: string | number | boolean) {
+    setIsLoading(true);
+    setError(null);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
+  const minimumShortfallCents =
+    quantityIsValid && quote && !isLoading && !error
+      ? minimumOrderShortfallCents(quote.total)
+      : 0;
+  const minimumOrderBlocked = minimumShortfallCents > 0;
+  const minimumOrderSatisfied = Boolean(
+    quantityIsValid && quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total),
+  );
+
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -535,7 +567,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: minimumOrderSatisfied,
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -577,7 +609,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                   </p>
                   <div className="mt-1 flex items-end gap-2">
                     <span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-                      {wins} / 10
+                      {quantityDisplay} / 10
                     </span>
                     <span className="pb-1 text-[11px] font-medium text-[#A0AAA4]">
                       Reward wins selected
@@ -588,25 +620,39 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-[#090D0B] px-3">
                   <input
                     aria-label="Reward Wins"
+                    aria-invalid={!quantityIsValid}
+                    aria-describedby={!quantityIsValid ? "rewards-quantity-error" : undefined}
                     type="number"
+                    inputMode="numeric"
                     min={1}
                     max={10}
-                    value={wins}
+                    step={1}
+                    value={String(selection.wins ?? "")}
                     onChange={(event) => {
-                      const value = Math.max(1, Math.min(10, Number(event.target.value) || 1));
-                      update("wins", value);
+                      const currentQuantity = parseWholeNumberQuantity(selection.wins, 1, 10);
+                      if (currentQuantity.valid) setLastValidQuantity(currentQuantity.value);
+
+                      const nextQuantity = quantitySelectionValue(event.target.value, 1, 10);
+                      if (typeof nextQuantity === "number") setLastValidQuantity(nextQuantity);
+                      update("wins", nextQuantity);
                     }}
                     className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
                   />
                 </div>
               </div>
 
+              {!quantityIsValid ? (
+                <p id="rewards-quantity-error" role="alert" className="mt-2 text-[10px] leading-4 text-amber-100/75">
+                  Enter a whole number between 1 and 10.
+                </p>
+              ) : null}
+
               <div className="mt-5">
                 <div className="grid grid-cols-10 gap-1.5" aria-label={`${wins} of 10 reward wins selected`}>
                   {Array.from({ length: 10 }, (_, index) => {
                     const step = index + 1;
-                    const completed = step <= wins;
-                    const finalStep = step === 10 && wins === 10;
+                    const completed = quantityIsValid && step <= wins;
+                    const finalStep = quantityIsValid && step === 10 && wins === 10;
 
                     return (
                       <span
@@ -635,8 +681,12 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 min={1}
                 max={10}
                 step={1}
-                value={wins}
-                onChange={(event) => update("wins", Number(event.target.value))}
+                value={sliderQuantity}
+                onChange={(event) => {
+                  const value = Number(event.target.value);
+                  setLastValidQuantity(value);
+                  update("wins", value);
+                }}
                 className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-blue-400"
                 style={{
                   background: `linear-gradient(to right, rgba(96,165,250,.55) 0%, rgba(96,165,250,.55) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) 100%)`,
@@ -648,9 +698,9 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                   Rewards package discount
                 </p>
                 <p className="font-gaming-value mt-1.5 text-[1.65rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
-                  {discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
+                  {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
-                {discountRate > 0 ? (
+                {quantityIsValid && discountRate > 0 ? (
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-medium text-[#82F5A4]">
                     <Check className="size-3" strokeWidth={2.7} />
                     Unlocked
@@ -658,9 +708,11 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 ) : null}
 
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
-                  {nextTier
-                    ? `Add ${nextTier.wins - wins} more win${nextTier.wins - wins === 1 ? "" : "s"} to unlock ${nextTier.discount}% OFF.`
-                    : "Maximum rewards discount unlocked."}
+                  {!quantityIsValid
+                    ? "Enter a valid quantity to view package discounts."
+                    : nextTier
+                      ? `Add ${nextTier.wins - wins} more win${nextTier.wins - wins === 1 ? "" : "s"} to unlock ${nextTier.discount}% OFF.`
+                      : "Maximum rewards discount unlocked."}
                 </p>
               </div>
             </div>
@@ -882,7 +934,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
       <aside id="rewards-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-            <RocketLeagueOrderSummaryHeader serviceTitle="Rewards Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
+            <RocketLeagueOrderSummaryHeader serviceTitle="Rewards Boost" isLoading={isLoading} ready={minimumOrderSatisfied} />
 
             <div className="p-4">
               <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
@@ -902,7 +954,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                     <div>
                       <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Season rewards</p>
                       <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">
-                        {wins} / 10 <span className="text-xs font-semibold text-white/45">wins</span>
+                        {quantityDisplay} / 10 <span className="text-xs font-semibold text-white/45">wins</span>
                       </p>
                     </div>
                     {discountRate > 0 ? (
@@ -1001,6 +1053,11 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
               </>
             ) : null}
 
+            <RocketLeagueMinimumOrderNotice
+              id="rewards-minimum-order"
+              shortfallCents={minimumShortfallCents}
+            />
+
             {orderError ? (
               <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
                 {orderError}
@@ -1012,7 +1069,8 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
-              disabled={!quote || isLoading || isCreatingOrder}
+              disabled={!minimumOrderSatisfied || isCreatingOrder}
+              aria-describedby={minimumOrderBlocked ? "rewards-minimum-order" : undefined}
               onClick={createOrder}
             >
               {isCreatingOrder ? (
@@ -1051,6 +1109,11 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 </span>
               ) : null}
             </div>
+            {minimumOrderBlocked ? (
+              <p className="mt-1 text-[9px] leading-3 text-amber-50/65">
+                Minimum order total: {MINIMUM_ORDER_TOTAL_LABEL}
+              </p>
+            ) : null}
           </div>
           <a
             href="#rewards-summary"

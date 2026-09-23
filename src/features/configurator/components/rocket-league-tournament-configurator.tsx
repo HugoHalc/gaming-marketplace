@@ -16,10 +16,16 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  MINIMUM_ORDER_TOTAL_LABEL,
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
+import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -329,10 +335,11 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
   }, [boostMethod, selection.appearOffline]);
 
   useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
 
       try {
         const response = await fetch("/api/quotes/preview", {
@@ -376,11 +383,20 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
   }, [gameSlug, service.slug, selection]);
 
   function update(key: string, value: string | boolean) {
+    setIsLoading(true);
+    setError(null);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
+  const minimumShortfallCents =
+    quote && !isLoading && !error ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumOrderBlocked = minimumShortfallCents > 0;
+  const minimumOrderSatisfied = Boolean(
+    quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total),
+  );
+
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -430,7 +446,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: minimumOrderSatisfied,
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -449,7 +465,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               Rocket League Tournament Boost
             </div>
             <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">
-              Configure your Tournament Boost around your rank family, playlist, and preferred boost method.
+              Configure one Tournament Win around your rank family, playlist, platform and preferred boost method.
             </p>
           </div>
           <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
@@ -458,6 +474,15 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
         </div>
 
         <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
+          <div className="rounded-xl border border-blue-300/[0.12] bg-blue-400/[0.025] px-4 py-3">
+            <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-200/70">
+              What you receive
+            </p>
+            <p className="mt-1.5 text-xs leading-5 text-white/60">
+              One completed Tournament Win configured for your selected rank family, playlist, platform and boost method.
+            </p>
+          </div>
+
           <CurrentRankSelector
             value={String(selection.currentRank)}
             onChange={(value) => update("currentRank", value)}
@@ -669,7 +694,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
       <aside id="tournament-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-            <RocketLeagueOrderSummaryHeader serviceTitle="Tournament Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
+            <RocketLeagueOrderSummaryHeader serviceTitle="Tournament Boost" isLoading={isLoading} ready={minimumOrderSatisfied} />
 
             <div className="p-4">
               <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
@@ -700,7 +725,9 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                 <div className="space-y-2">
                   {quote.breakdown.map((item, index) => (
                     <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
-                      <span className="text-[#A0AAA4]">{item.label}</span>
+                      <span className="text-[#A0AAA4]">
+                        {item.label === "Tournament base price" ? "1 Tournament Win" : item.label}
+                      </span>
                       <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
                         {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
                       </span>
@@ -747,6 +774,11 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               </>
             ) : null}
 
+            <RocketLeagueMinimumOrderNotice
+              id="tournament-minimum-order"
+              shortfallCents={minimumShortfallCents}
+            />
+
             {orderError ? (
               <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
                 {orderError}
@@ -758,7 +790,8 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
-              disabled={!quote || isLoading || isCreatingOrder}
+              disabled={!minimumOrderSatisfied || isCreatingOrder}
+              aria-describedby={minimumOrderBlocked ? "tournament-minimum-order" : undefined}
               onClick={createOrder}
             >
               {isCreatingOrder ? (
@@ -793,6 +826,11 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                 </span>
               ) : null}
             </div>
+            {minimumOrderBlocked ? (
+              <p className="mt-1 text-[9px] leading-3 text-amber-50/65">
+                Minimum order total: {MINIMUM_ORDER_TOTAL_LABEL}
+              </p>
+            ) : null}
           </div>
           <a
             href="#tournament-summary"

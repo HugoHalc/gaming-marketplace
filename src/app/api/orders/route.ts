@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import {
+  MINIMUM_ORDER_ERROR_CODE,
+  MINIMUM_ORDER_TOTAL_LABEL,
+  MINIMUM_ORDER_TOTAL_USD,
+  meetsMinimumOrderTotal,
+} from "@/features/orders/minimum-order";
 import { createServerValidatedOrder } from "@/features/orders/server/order-repository";
 import { calculateQuotePreview } from "@/features/pricing/server/calculate-quote";
 import { hasSecretSupabaseEnv } from "@/lib/supabase/env";
@@ -37,6 +43,17 @@ export async function POST(request: Request) {
 
     if (quote.ruleSetVersion.startsWith("mock-")) {
       return NextResponse.json({ error: "Live pricing is not available for order creation." }, { status: 503 });
+    }
+
+    if (!meetsMinimumOrderTotal(quote.total)) {
+      return NextResponse.json(
+        {
+          error: `Minimum order total: ${MINIMUM_ORDER_TOTAL_LABEL}`,
+          code: MINIMUM_ORDER_ERROR_CODE,
+          minimumTotal: MINIMUM_ORDER_TOTAL_USD,
+        },
+        { status: 400 },
+      );
     }
 
     const order = await createServerValidatedOrder({

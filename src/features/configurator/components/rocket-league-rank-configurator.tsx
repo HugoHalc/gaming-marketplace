@@ -19,10 +19,16 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  MINIMUM_ORDER_TOTAL_LABEL,
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
+import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -458,10 +464,11 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
   }, [boostMethod, selection.appearOffline]);
 
   useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch("/api/quotes/preview", {
           method: "POST",
@@ -488,11 +495,20 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
   }, [gameSlug, service.slug, selection]);
 
   function update(key: string, value: string | boolean) {
+    setIsLoading(true);
+    setError(null);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
+  const minimumShortfallCents =
+    quote && !isLoading && !error ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumOrderBlocked = minimumShortfallCents > 0;
+  const minimumOrderSatisfied = Boolean(
+    quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total),
+  );
+
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -530,7 +546,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: minimumOrderSatisfied,
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -771,7 +787,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
       <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-            <RocketLeagueOrderSummaryHeader serviceTitle="Rocket League Rank Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
+            <RocketLeagueOrderSummaryHeader serviceTitle="Rocket League Rank Boost" isLoading={isLoading} ready={minimumOrderSatisfied} />
 
             <div className="p-4">
               <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
@@ -859,6 +875,11 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               </>
             ) : null}
 
+            <RocketLeagueMinimumOrderNotice
+              id="rank-minimum-order"
+              shortfallCents={minimumShortfallCents}
+            />
+
             {orderError ? (
               <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
                 {orderError}
@@ -870,7 +891,8 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
-              disabled={!quote || isLoading || isCreatingOrder}
+              disabled={!minimumOrderSatisfied || isCreatingOrder}
+              aria-describedby={minimumOrderBlocked ? "rank-minimum-order" : undefined}
               onClick={createOrder}
             >
               {isCreatingOrder ? (
@@ -907,6 +929,11 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                 </span>
               ) : null}
             </div>
+            {minimumOrderBlocked ? (
+              <p className="mt-1 text-[9px] leading-3 text-amber-50/65">
+                Minimum order total: {MINIMUM_ORDER_TOTAL_LABEL}
+              </p>
+            ) : null}
           </div>
           <a
             href="#boost-summary"

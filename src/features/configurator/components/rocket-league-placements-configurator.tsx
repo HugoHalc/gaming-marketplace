@@ -16,10 +16,17 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  MINIMUM_ORDER_TOTAL_LABEL,
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
+import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
 import { RocketLeagueUnratedMark } from "./rocket-league-unrated-mark";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
@@ -385,10 +392,16 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
   const [orderError, setOrderError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [lastValidQuantity, setLastValidQuantity] = useState(4);
 
-  const matches = Number(selection.matches);
-  const discountRate = volumeDiscountRate(matches);
-  const nextTier = nextDiscountTier(matches);
+  const quantityResult = parseWholeNumberQuantity(selection.matches, 1, MAX_PLACEMENT_MATCHES);
+  const quantityIsValid = quantityResult.valid;
+  const quantityValue = quantityResult.valid ? quantityResult.value : null;
+  const matches = quantityValue ?? lastValidQuantity;
+  const sliderQuantity = quantityValue ?? lastValidQuantity;
+  const quantityDisplay = selection.matches === "" ? "—" : String(selection.matches);
+  const discountRate = quantityIsValid ? volumeDiscountRate(matches) : 0;
+  const nextTier = quantityIsValid ? nextDiscountTier(matches) : null;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -403,10 +416,18 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
   }, [boostMethod, selection.appearOffline]);
 
   useEffect(() => {
+    if (!quantityIsValid) {
+      setQuote(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
 
       try {
         const response = await fetch("/api/quotes/preview", {
@@ -447,14 +468,25 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [gameSlug, service.slug, selection]);
+  }, [gameSlug, quantityIsValid, service.slug, selection]);
 
   function update(key: string, value: string | number | boolean) {
+    setIsLoading(true);
+    setError(null);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
+  const minimumShortfallCents =
+    quantityIsValid && quote && !isLoading && !error
+      ? minimumOrderShortfallCents(quote.total)
+      : 0;
+  const minimumOrderBlocked = minimumShortfallCents > 0;
+  const minimumOrderSatisfied = Boolean(
+    quantityIsValid && quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total),
+  );
+
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -504,7 +536,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: minimumOrderSatisfied,
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -543,7 +575,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Placement matches</p>
                   <div className="mt-1 flex items-end gap-2">
-                    <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{matches}</span>
+                    <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{quantityDisplay}</span>
                     <span className="pb-1 text-xs font-medium text-[#A0AAA4]">matches selected</span>
                   </div>
                 </div>
@@ -551,18 +583,32 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
                   <input
                     aria-label="Placement matches"
+                    aria-invalid={!quantityIsValid}
+                    aria-describedby={!quantityIsValid ? "placements-quantity-error" : undefined}
                     type="number"
+                    inputMode="numeric"
                     min={1}
                     max={MAX_PLACEMENT_MATCHES}
-                    value={matches}
+                    step={1}
+                    value={String(selection.matches ?? "")}
                     onChange={(event) => {
-                      const value = Math.max(1, Math.min(MAX_PLACEMENT_MATCHES, Number(event.target.value) || 1));
-                      update("matches", value);
+                      const currentQuantity = parseWholeNumberQuantity(selection.matches, 1, MAX_PLACEMENT_MATCHES);
+                      if (currentQuantity.valid) setLastValidQuantity(currentQuantity.value);
+
+                      const nextQuantity = quantitySelectionValue(event.target.value, 1, MAX_PLACEMENT_MATCHES);
+                      if (typeof nextQuantity === "number") setLastValidQuantity(nextQuantity);
+                      update("matches", nextQuantity);
                     }}
                     className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
                   />
                 </div>
               </div>
+
+              {!quantityIsValid ? (
+                <p id="placements-quantity-error" role="alert" className="mt-2 text-[10px] leading-4 text-amber-100/75">
+                  Enter a whole number between 1 and 10.
+                </p>
+              ) : null}
 
               <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
                 <div className="flex items-center justify-between gap-3">
@@ -571,7 +617,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 </div>
                 <div className="mt-3 grid grid-cols-10 gap-1.5">
                   {Array.from({ length: MAX_PLACEMENT_MATCHES }).map((_, index) => {
-                    const included = index < matches;
+                    const included = quantityIsValid && index < matches;
                     const finalIncluded = included && index === matches - 1;
                     return (
                       <span
@@ -601,8 +647,12 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 min={1}
                 max={MAX_PLACEMENT_MATCHES}
                 step={1}
-                value={matches}
-                onChange={(event) => update("matches", Number(event.target.value))}
+                value={sliderQuantity}
+                onChange={(event) => {
+                  const value = Number(event.target.value);
+                  setLastValidQuantity(value);
+                  update("matches", value);
+                }}
                 className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-blue-400"
                 style={{
                   background: `linear-gradient(to right, rgba(96,165,250,.58) 0%, rgba(96,165,250,.58) ${sliderProgress}%, rgba(255,255,255,.07) ${sliderProgress}%, rgba(255,255,255,.07) 100%)`,
@@ -622,18 +672,20 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Package discount</p>
                 <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
-                  {discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
+                  {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
-                {discountRate > 0 ? (
+                {quantityIsValid && discountRate > 0 ? (
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-medium text-[#82F5A4]">
                     <Check className="size-3" strokeWidth={2.7} />
                     Unlocked
                   </p>
                 ) : null}
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
-                  {nextTier
-                    ? `Add ${nextTier.matches - matches} more match${nextTier.matches - matches === 1 ? "" : "es"} to unlock ${nextTier.discount}% OFF.`
-                    : "Maximum placement discount unlocked."}
+                  {!quantityIsValid
+                    ? "Enter a valid quantity to view package discounts."
+                    : nextTier
+                      ? `Add ${nextTier.matches - matches} more match${nextTier.matches - matches === 1 ? "" : "es"} to unlock ${nextTier.discount}% OFF.`
+                      : "Maximum placement discount unlocked."}
                 </p>
               </div>
             </div>
@@ -852,7 +904,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
       <aside id="placements-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-          <RocketLeagueOrderSummaryHeader serviceTitle="Placements Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
+          <RocketLeagueOrderSummaryHeader serviceTitle="Placements Boost" isLoading={isLoading} ready={minimumOrderSatisfied} />
 
           <div className="p-4">
             <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
@@ -871,7 +923,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div className="flex items-end justify-between gap-3">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Placement matches</p>
-                    <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{matches} <span className="text-xs font-semibold text-white/45">matches</span></p>
+                    <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{quantityDisplay} <span className="text-xs font-semibold text-white/45">matches</span></p>
                   </div>
                   {discountRate > 0 ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#82F5A4]">
@@ -882,7 +934,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 </div>
                 <div className="mt-3 grid grid-cols-10 gap-1">
                   {Array.from({ length: MAX_PLACEMENT_MATCHES }).map((_, index) => {
-                    const included = index < matches;
+                    const included = quantityIsValid && index < matches;
                     return (
                       <span
                         key={index}
@@ -953,6 +1005,11 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               </>
             ) : null}
 
+            <RocketLeagueMinimumOrderNotice
+              id="placements-minimum-order"
+              shortfallCents={minimumShortfallCents}
+            />
+
             {orderError ? (
               <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">
                 {orderError}
@@ -964,7 +1021,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
-              disabled={!quote || isLoading || isCreatingOrder}
+              disabled={!minimumOrderSatisfied || isCreatingOrder}
+              aria-describedby={minimumOrderBlocked ? "placements-minimum-order" : undefined}
               onClick={createOrder}
             >
               {isCreatingOrder ? (
@@ -997,6 +1055,11 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 </span>
               ) : null}
             </div>
+            {minimumOrderBlocked ? (
+              <p className="mt-1 text-[9px] leading-3 text-amber-50/65">
+                Minimum order total: {MINIMUM_ORDER_TOTAL_LABEL}
+              </p>
+            ) : null}
           </div>
           <a
             href="#placements-summary"
