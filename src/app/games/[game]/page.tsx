@@ -45,7 +45,7 @@ const rocketLeagueStorefrontHighlights = [
       "Configure eligible services using your current competitive position, target, playlist, and the options relevant to your goal.",
   },
   {
-    title: "Server-validated pricing",
+    title: "Server-Validated Pricing",
     description:
       "Your configuration updates the current quote, which is validated server-side before the order is created.",
   },
@@ -123,9 +123,9 @@ const rocketLeagueOverviewMeta = {
 
 const rocketLeagueBestFor = {
   "rank-boost": "Reaching a specific competitive rank.",
-  wins: "Securing a fixed number of competitive wins.",
+  wins: "Completing a fixed number of competitive wins.",
   "placements-boost": "Completing a selected number of placement matches.",
-  "tournament-boost": "Securing one completed Tournament Win.",
+  "tournament-boost": "Completing one Tournament Win.",
   "rewards-boost": "Adding a fixed number of eligible Season Reward wins.",
 } as const;
 
@@ -419,7 +419,7 @@ function ServiceShowcaseCard({
   return (
     <Link
       href={`/games/${gameSlug}/${service.slug}`}
-      className={`group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${
+      className={`group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${isRocketLeague ? "outline-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none" : ""} ${
         isRocketLeague
           ? "hover:border-blue-300/[0.18]"
           : isValorant
@@ -490,7 +490,7 @@ function ServiceShowcaseCard({
             />
           )}
           <span className={`grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] ${ctaClass}`}>
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className={`size-4 transition-transform group-hover:translate-x-0.5 ${isRocketLeague ? "motion-reduce:transform-none motion-reduce:transition-none" : ""}`} />
           </span>
         </div>
       </div>
@@ -629,7 +629,7 @@ export default async function GamePage({ params }: GamePageProps) {
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
               {isRocketLeague
-                ? "Choose the service that matches your competitive goal and configure your boost around your rank, playlist, and preferred progression."
+                ? "Choose the service that matches your competitive goal and configure your boost around your rank, playlist, and preferred boost method."
                 : isValorant
                   ? "Choose your service, configure your rank or match goal, and follow order status from your dashboard."
                   : content.heroDescription}

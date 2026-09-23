@@ -927,7 +927,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                     {!isLoading ? (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38 transition-opacity duration-200 motion-reduce:transition-none">
                         <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
-                        Server-validated price
+                        Server-Validated Price
                       </p>
                     ) : (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">

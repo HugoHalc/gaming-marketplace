@@ -831,7 +831,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                     {!isLoading ? (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
                         <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
-                        Server-validated price
+                        Server-Validated Price
                       </p>
                     ) : (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
@@ -886,25 +886,9 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               )}
             </Button>
 
-            <p className="mt-3 text-center text-[10px] leading-4 text-white/35">
-              Final price is server-validated before Stripe payment.
-            </p>
             </div>
           </div>
 
-        <div className="rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5">
-          <div className="flex items-start gap-3">
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-blue-300/[0.14] bg-blue-400/[0.045] text-blue-200/75">
-              <ShieldCheck className="size-4" />
-            </span>
-            <div>
-              <p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p>
-              <p className="mt-1 text-[10px] leading-4 text-white/40">
-                Payment is processed by Stripe after your order is created.
-              </p>
-            </div>
-          </div>
-        </div>
         </div>
       </aside>
 
