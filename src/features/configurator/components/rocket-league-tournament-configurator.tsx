@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
+import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -86,8 +88,11 @@ function ChoicePill({
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      tabIndex={active ? 0 : -1}
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         active
           ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -131,7 +136,7 @@ function CompactExtra({
       aria-pressed={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-black/10 opacity-45"
           : checked
@@ -246,18 +251,21 @@ function CurrentRankSelector({
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 gap-2">
+      <div role="radiogroup" aria-label="Tournament rank family" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-4 grid grid-cols-4 gap-2">
         {rankFamilies.map((item) => {
           const selected = item.key === value;
           return (
             <button
               key={item.key}
               type="button"
+              role="radio"
+              aria-checked={selected}
+              tabIndex={selected ? 0 : -1}
               title={item.label}
               onClick={() => onChange(item.key)}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
+              className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
                 selected
-                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
@@ -458,7 +466,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
 
           <div className="h-px bg-white/[0.07]" />
 
-          <div>
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -513,15 +521,18 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div role="radiogroup" aria-label="Platform" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
                 {platforms.map((platform) => {
                   const active = selection.platform === platform.value;
                   return (
                     <button
                       key={platform.value}
                       type="button"
+                      role="radio"
+                      aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() => update("platform", platform.value)}
-                      className={`flex h-12 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                      className={`flex h-12 items-center justify-between gap-3 rounded-xl border px-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                         active
                           ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
                           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -548,13 +559,16 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost method
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={boostMethod === "account"}
+                  tabIndex={boostMethod === "account" ? 0 : -1}
                   onClick={() => update("boostMethod", "account")}
-                  className={`rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                  className={`rounded-xl border p-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "account"
-                      ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                      ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
@@ -570,10 +584,13 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
 
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={boostMethod === "play-with-booster"}
+                  tabIndex={boostMethod === "play-with-booster" ? 0 : -1}
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                  className={`rounded-xl border p-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "play-with-booster"
-                      ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                      ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
@@ -653,27 +670,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
       <aside id="tournament-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-            <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.05] via-transparent to-transparent px-4 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-                    Order Summary
-                  </p>
-                  <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">Tournament Boost</p>
-                </div>
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]">
-                    <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
-                    Updating
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/18 bg-[#39E56F]/[0.035] px-2.5 py-1 text-[9px] font-medium text-[#82F5A4]">
-                    <Check className="size-3" strokeWidth={2.5} />
-                    Ready
-                  </span>
-                )}
-              </div>
-            </div>
+            <RocketLeagueOrderSummaryHeader serviceTitle="Tournament Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
 
             <div className="p-4">
               <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">

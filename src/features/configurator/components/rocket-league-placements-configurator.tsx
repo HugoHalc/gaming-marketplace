@@ -11,7 +11,6 @@ import {
   Gauge,
   LoaderCircle,
   MonitorPlay,
-  ShieldCheck,
   Trophy,
   Users,
   Zap,
@@ -19,6 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
+import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
+import { RocketLeagueUnratedMark } from "./rocket-league-unrated-mark";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -121,8 +123,11 @@ function ChoicePill({
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      tabIndex={active ? 0 : -1}
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         active
           ? "border-blue-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -166,7 +171,7 @@ function CompactExtra({
       aria-pressed={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-black/10 opacity-45"
           : checked
@@ -273,7 +278,7 @@ function PreviousRankSelector({
           {family.image ? (
             <Image src={family.image} alt="" width={44} height={44} className="h-10 w-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]" />
           ) : (
-            <span className="grid size-9 place-items-center rounded-full border border-white/[0.10] bg-white/[0.025] text-sm font-bold text-white/45">?</span>
+            <RocketLeagueUnratedMark className="size-9" />
           )}
         </div>
         <div className="min-w-0">
@@ -282,18 +287,21 @@ function PreviousRankSelector({
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 gap-2">
+      <div role="radiogroup" aria-label="Previous rank family" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-4 grid grid-cols-3 gap-2 min-[390px]:grid-cols-4">
         {rankFamilies.map((item) => {
           const selected = family.key === item.key;
           return (
             <button
               key={item.key}
               type="button"
+              role="radio"
+              aria-checked={selected}
+              tabIndex={selected ? 0 : -1}
               title={item.label}
               onClick={() => onChange(firstRankForFamily(item.key))}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
+              className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
                 selected
-                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
+                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
               }`}
             >
@@ -308,9 +316,7 @@ function PreviousRankSelector({
                     className={`relative z-[1] h-[2.7rem] w-[2.7rem] object-contain opacity-90 transition-[opacity,transform] duration-200 ease-out drop-shadow-[0_6px_12px_rgba(0,0,0,.45)] group-hover/rank:opacity-100 group-hover/rank:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none ${selected ? "opacity-100" : ""}`}
                   />
                 ) : (
-                  <span className={`grid size-[2.7rem] place-items-center rounded-full border text-sm font-bold ${selected ? "border-white/[0.14] bg-white/[0.04] text-white/75" : "border-white/[0.10] bg-white/[0.025] text-white/40"}`}>
-                    ?
-                  </span>
+                  <RocketLeagueUnratedMark className="size-[2.7rem]" />
                 )}
                 {selected ? (
                   <span className="absolute -right-0.5 -top-0.5 z-[2] grid size-4 place-items-center rounded-full border border-[#39E56F]/35 bg-[#39E56F] text-[#050807]">
@@ -318,7 +324,7 @@ function PreviousRankSelector({
                   </span>
                 ) : null}
               </span>
-              <span className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors duration-200 ${selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"}`}>
+              <span className={`mt-2 line-clamp-2 min-h-8 w-full text-center text-[11px] font-semibold leading-4 transition-colors duration-200 ${selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"}`}>
                 {item.label}
               </span>
             </button>
@@ -327,7 +333,7 @@ function PreviousRankSelector({
       </div>
 
       {family.key !== "supersonic-legend" && family.key !== "unrated" ? (
-        <div className="mt-3 flex items-center gap-2">
+        <div role="radiogroup" aria-label="Tier" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 flex items-center gap-2">
           <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">Tier</span>
           {family.tiers.map((tier) => {
             const candidate = `${family.key}-${tier}`;
@@ -336,10 +342,13 @@ function PreviousRankSelector({
               <button
                 key={tier}
                 type="button"
+                role="radio"
+                aria-checked={active}
+                tabIndex={active ? 0 : -1}
                 onClick={() => onChange(candidate)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                className={`h-9 min-w-11 rounded-lg border px-3 text-xs font-bold outline-none transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                   active
-                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5] ring-1 ring-inset ring-white/[0.12]"
                     : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                 }`}
               >
@@ -632,7 +641,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
           <div className="h-px bg-white/[0.07]" />
 
-          <div>
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -687,15 +696,18 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div role="radiogroup" aria-label="Platform" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
                 {platforms.map((platform) => {
                   const active = selection.platform === platform.value;
                   return (
                     <button
                       key={platform.value}
                       type="button"
+                      role="radio"
+                      aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() => update("platform", platform.value)}
-                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+                      className={`flex h-11 items-center justify-between gap-3 rounded-xl border px-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                         active
                           ? "border-blue-300/[0.18] bg-[#131B17] text-white"
                           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -720,13 +732,16 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost Method
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={boostMethod === "account"}
+                  tabIndex={boostMethod === "account" ? 0 : -1}
                   onClick={() => update("boostMethod", "account")}
-                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "account"
-                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
@@ -746,10 +761,13 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={boostMethod === "play-with-booster"}
+                  tabIndex={boostMethod === "play-with-booster" ? 0 : -1}
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
+                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "play-with-booster"
-                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
+                      ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                   }`}
                 >
@@ -833,33 +851,16 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
       </section>
 
       <aside id="placements-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#070a08] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.045] via-transparent to-transparent p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-green-300">
-                  Your order
-                </p>
-                <p className="mt-1 text-base font-semibold text-white">
-                  Placements Boost
-                </p>
-              </div>
-              {isLoading ? (
-                <span className="inline-flex items-center gap-1.5 text-[10px] text-[#A0AAA4]">
-                  <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
-                  Updating price…
-                </span>
-              ) : null}
-            </div>
-          </div>
+        <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
+          <RocketLeagueOrderSummaryHeader serviceTitle="Placements Boost" isLoading={isLoading} ready={Boolean(quote) && !error} />
 
           <div className="p-4">
-            <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] p-3">
+            <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
               <div className="flex min-w-0 items-center gap-2.5">
                 {familyForRank(String(selection.previousRank)).image ? (
                   <Image src={familyForRank(String(selection.previousRank)).image!} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
                 ) : (
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white/[0.10] bg-white/[0.025] text-[10px] font-bold text-white/45">?</span>
+                  <RocketLeagueUnratedMark className="size-7" />
                 )}
                 <div className="min-w-0">
                   <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Previous rank</p>
@@ -870,12 +871,12 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div className="flex items-end justify-between gap-3">
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Placement matches</p>
-                    <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{matches} <span className="text-xs font-semibold text-white/45">Matches</span></p>
+                    <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{matches} <span className="text-xs font-semibold text-white/45">matches</span></p>
                   </div>
                   {discountRate > 0 ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#82F5A4]">
                       <Check className="size-3" strokeWidth={2.7} />
-                      {discountRate}% OFF applied
+                      {discountRate}% OFF
                     </span>
                   ) : null}
                 </div>
@@ -893,23 +894,10 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               </div>
             </div>
 
-            <div className="mt-3 grid gap-1.5 text-[11px]">
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Playlist</span>
-                <span className="font-medium text-white/70">{selectedPlaylist.label}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Platform</span>
-                <span className="font-medium text-white/70">
-                  {platforms.find((item) => item.value === selection.platform)?.label}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-white/35">Method</span>
-                <span className="font-medium text-white/70">
-                  {boostMethod === "account" ? "Account Boost" : "Play With Booster"}
-                </span>
-              </div>
+            <div className="mt-2 divide-y divide-white/[0.06]">
+              <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Playlist</span><span className="font-medium text-white/78">{selectedPlaylist.label}</span></div>
+              <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Platform</span><span className="font-medium text-white/78">{platforms.find((item) => item.value === selection.platform)?.label}</span></div>
+              <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
             </div>
 
             {error ? (
@@ -920,12 +908,12 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
             {quote ? (
               <>
-                <div className="my-3 h-px bg-white/[0.08]" />
+                <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="space-y-2">
                   {quote.breakdown.map((item, index) => (
                     <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
-                      <span className="text-[var(--muted-foreground)]">{item.label}</span>
-                      <span className={item.amount < 0 ? "font-medium text-emerald-300" : "font-medium text-white"}>
+                      <span className="text-[#A0AAA4]">{item.label}</span>
+                      <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
                         {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
                       </span>
                     </div>
@@ -934,8 +922,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="flex items-end justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
-                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                    <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                    <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
                     {!isLoading ? (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38 transition-opacity duration-200 motion-reduce:transition-none">
                         <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} />
@@ -948,15 +936,15 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                       </p>
                     )}
                   </div>
-                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[9px] font-medium text-white/45">USD</span>
+                  <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span>
                 </div>
               </>
             ) : isLoading ? (
               <>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 <div>
-                  <p className="text-[10px] font-medium text-[#A0AAA4]">Total</p>
-                  <p className="font-gaming-value mt-1 text-[2.25rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">—</p>
+                  <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                  <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
                   <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
                     <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                     Updating price…
@@ -974,7 +962,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             <AccountBoostCheckoutReassurance selected={boostMethod === "account"} accent="blue" />
 
             <Button
-              className="mt-4 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
+              className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
               size="lg"
               disabled={!quote || isLoading || isCreatingOrder}
               onClick={createOrder}
@@ -992,12 +980,6 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               )}
             </Button>
 
-            <div className="mt-3 flex gap-2 text-[10px] leading-4 text-white/35">
-              <ShieldCheck className="mt-0.5 size-3 shrink-0" />
-              <span>
-                Final price is server-validated. Stripe payment follows after order creation.
-              </span>
-            </div>
           </div>
         </div>
       </aside>

@@ -687,7 +687,13 @@ export default async function GamePage({ params }: GamePageProps) {
             </p>
           </div>
 
-          <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
+          {isRocketLeague ? (
+            <p className="mt-7 text-[11px] font-medium tracking-[0.01em] text-white/45 md:hidden">
+              Swipe to explore 5 services
+            </p>
+          ) : null}
+
+          <div className={`-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3 ${isRocketLeague ? "mt-3 md:mt-9" : "mt-9"}`}>
             {game.services.length > 0
               ? game.services.map((service, index) => (
                   <ServiceShowcaseCard
