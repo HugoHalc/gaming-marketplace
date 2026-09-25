@@ -27,6 +27,7 @@ import type {
   ServiceConfiguratorSchema,
 } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 
 const rankFamilies = [
@@ -1003,7 +1004,7 @@ export function ValorantServiceConfigurator({
                   </>
                 ) : (
                   <>
-                    Continue to secure checkout
+                    Checkout
                     <ArrowRight className="ml-2 size-4" />
                   </>
                 )}
@@ -1015,20 +1016,8 @@ export function ValorantServiceConfigurator({
             </div>
           </div>
 
-          <div className="rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5">
-            <div className="flex items-start gap-3">
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-rose-300/[0.14] bg-rose-400/[0.045] text-rose-200/75">
-                <ShieldCheck className="size-4" />
-              </span>
-              <div>
-                <p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p>
-                <p className="mt-1 text-[10px] leading-4 text-white/40">
-                  Payment is processed by Stripe after your order is created.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
+        <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">

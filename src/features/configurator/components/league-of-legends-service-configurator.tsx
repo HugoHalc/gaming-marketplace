@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -868,11 +869,12 @@ export function LeagueOfLegendsServiceConfigurator({
                     disabled={!quote || quote.total < 5 || isLoading || isCreatingOrder}
                     onClick={createOrder}
                   >
-                    {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}
+                    {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}
                   </Button>
                   <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is validated on the server before the order is stored.</p>
                 </div>
               </div>
+              <PaymentMethodsTrustBlock className="mt-3" />
             </aside>
           </div>
         </div>

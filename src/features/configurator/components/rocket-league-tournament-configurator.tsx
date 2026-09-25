@@ -32,6 +32,7 @@ import type {
   QuotePreview,
 } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 const rankFamilies = [
   { key: "bronze", label: "Bronze", image: "/ranks/rocket-league/bronze.png" },
@@ -741,7 +742,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                 </>
               ) : (
                 <>
-                  Continue to secure checkout
+                  Checkout
                   <ArrowRight className="ml-2 size-4" />
                 </>
               )}
@@ -751,6 +752,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
           </div>
 
         </div>
+        <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">

@@ -31,6 +31,7 @@ import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-no
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 const rankFamilies = [
   { key: "bronze", label: "Bronze", short: "B", accent: "from-amber-900/60 to-amber-500/15", image: "/ranks/rocket-league/bronze.png", tiers: ["1", "2", "3"] },
@@ -845,7 +846,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                 </>
               ) : (
                 <>
-                  Continue to secure checkout
+                  Checkout
                   <ArrowRight className="ml-2 size-4" />
                 </>
               )}
@@ -855,6 +856,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
           </div>
 
         </div>
+        <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">

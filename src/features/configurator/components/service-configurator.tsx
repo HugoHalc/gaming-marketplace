@@ -17,6 +17,7 @@ import { LeagueOfLegendsPhaseTwoConfigurator } from "./league-of-legends-phase-t
 import { OverwatchServiceConfigurator } from "./overwatch-service-configurator";
 import { ValorantServiceConfigurator } from "./valorant-service-configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -289,7 +290,7 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
             ) : null}
 
             <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>
-              {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}
+              {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}
             </Button>
             <div className="mt-4 flex gap-2 text-[11px] leading-5 text-white/40">
               <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
@@ -300,6 +301,7 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
             ) : null}
           </div>
         </div>
+        <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
     </div>
   );

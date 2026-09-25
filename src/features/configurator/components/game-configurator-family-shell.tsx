@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 export function GameConfiguratorColumns({ children }: { children: ReactNode }) {
   return (
@@ -141,19 +142,7 @@ export function GameOrderAside({
           </div>
         </div>
 
-        <div className="rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-3.5">
-          <div className="flex items-start gap-3">
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-violet-300/[0.14] bg-violet-400/[0.045] text-violet-200/75">
-              <ShieldCheck className="size-4" />
-            </span>
-            <div>
-              <p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p>
-              <p className="mt-1 text-[10px] leading-4 text-white/40">
-                Encrypted checkout and account protection are built into the BoostingPedia order flow.
-              </p>
-            </div>
-          </div>
-        </div>
+        <PaymentMethodsTrustBlock />
       </div>
     </aside>
   );

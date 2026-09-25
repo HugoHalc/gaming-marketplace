@@ -33,6 +33,7 @@ import type {
   ServiceConfiguratorSchema,
 } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 
 const serviceNavigation = [
@@ -842,11 +843,12 @@ export function OverwatchServiceConfigurator({
                 {error ? <div className="rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">{error}</div> : null}
                 {quote ? <><div className="space-y-3">{quote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-xs"><span className="text-[var(--muted-foreground)]">{item.label}</span><span className="font-medium text-white">{formatPrice(item.amount)}</span></div>)}</div><div className="my-5 h-px bg-white/[0.08]" /><div className="flex items-end justify-between gap-4"><div><p className="text-xs text-[var(--muted-foreground)]">Estimated total</p><p className="mt-1 text-3xl font-bold tracking-[-0.045em] text-white">{formatPrice(quote.total)}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[10px] font-medium text-white/50">USD</span></div></> : <div className="py-6 text-sm text-[var(--muted-foreground)]">Adjust the configuration to generate a valid quote.</div>}
                 {orderError ? <div className="mt-5 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">{orderError}</div> : null}
-                <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
+                <Button className="mt-6 w-full" size="lg" disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <AccountBoostCheckoutReassurance selected={accountBoostSelected} accent="gold" />
                 <div className="mt-4 flex gap-2 text-[11px] leading-5 text-white/40"><ShieldCheck className="mt-0.5 size-3.5 shrink-0" /><span>Pricing is recalculated on the server before the order is stored.</span></div>
               </div>
             </div>
+            <PaymentMethodsTrustBlock className="mt-3" />
           </aside>
         </div>
       </div>
@@ -854,7 +856,7 @@ export function OverwatchServiceConfigurator({
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#080B09]/95 p-3 pb-[calc(.75rem+env(safe-area-inset-bottom))] backdrop-blur-xl xl:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3">
           <div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.12em] text-white/35">Total</p><p className="truncate text-xl font-bold text-white">{quote ? formatPrice(quote.total) : "—"}</p></div>
-          <Button disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder} className="min-w-[12.5rem] text-xs sm:text-sm">{isCreatingOrder ? <LoaderCircle className="size-4 animate-spin" /> : <><span>Continue to secure checkout</span><ArrowRight className="ml-2 size-4" /></>}</Button>
+          <Button disabled={!quote || isLoading || isCreatingOrder} onClick={createOrder} className="min-w-[12.5rem] text-xs sm:text-sm">{isCreatingOrder ? <LoaderCircle className="size-4 animate-spin" /> : <><span>Checkout</span><ArrowRight className="ml-2 size-4" /></>}</Button>
         </div>
       </div>
     </div>

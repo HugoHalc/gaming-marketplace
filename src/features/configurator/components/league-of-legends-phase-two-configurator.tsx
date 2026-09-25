@@ -10,7 +10,6 @@ import {
   EyeOff,
   LoaderCircle,
   MonitorPlay,
-  ShieldCheck,
   Sparkles,
   Swords,
   Users,
@@ -22,6 +21,7 @@ import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-bo
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
+import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 
 
@@ -516,11 +516,11 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
                 <AccountBoostCheckoutReassurance selected={(isArena || isClash) && selection.boostMethod === "account"} accent="gold" />
 
-                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Continue to secure checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
+                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
               </div>
             </div>
-            <div className="mt-3 rounded-[1.25rem] border border-white/[0.08] bg-[#080B09] p-4"><div className="flex items-start gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/20 bg-[#C89B3C]/[0.045] text-[#E7C867]/80"><ShieldCheck className="size-4" /></span><div><p className="text-xs font-semibold text-[#F4F7F5]">Secure payment</p><p className="mt-1 text-[10px] leading-4 text-white/40">Payment is processed by Stripe after your order is created.</p></div></div></div>
+            <PaymentMethodsTrustBlock className="mt-3" />
           </aside>
         </div>
       </div>

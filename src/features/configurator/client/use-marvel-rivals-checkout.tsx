@@ -130,8 +130,7 @@ export function MarvelRivalsCheckoutButton({
         </>
       ) : (
         <>
-          <span className={mobile ? "hidden sm:inline" : undefined}>Continue to secure checkout</span>
-          {mobile ? <span className="sm:hidden">Checkout</span> : null}
+          <span>Checkout</span>
           <ArrowRight className="ml-2 size-4" />
         </>
       )}
