@@ -297,23 +297,30 @@ function ChoicePill({
   onClick,
   label,
   meta,
+  description,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   meta?: string;
+  description?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`flex ${description ? "min-h-[4.75rem] items-start py-3" : "h-10 items-center"} justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
         active
           ? "border-rose-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
-      <span className="truncate text-xs font-semibold">{label}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold">{label}</span>
+        {description ? (
+          <span className="mt-1 block text-[10px] leading-4 text-white/42">{description}</span>
+        ) : null}
+      </span>
       <span className="flex shrink-0 items-center gap-2">
         {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
         {active ? (
@@ -578,7 +585,7 @@ export function ValorantServiceConfigurator({
 
   const summaryRows = useMemo(() => {
     const rows: Array<[string, string]> = [
-      ["Boost type", selection.queue === "duo" ? "Duo — +100%" : "Solo — Base"],
+      ["Boost method", selection.queue === "duo" ? "Duo — Play With Booster" : "Solo — Account Boost"],
       ["Server", servers.find((server) => server.value === selection.server)?.label ?? "North America"],
       ["Platform", "PC"],
     ];
@@ -664,26 +671,42 @@ export function ValorantServiceConfigurator({
           <div className="grid gap-5 lg:grid-cols-2">
             <div>
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                Boost type
+                Boost method
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">Choose Solo or Duo.</p>
+              <p className="mt-1 text-sm font-semibold text-white">Choose your preferred boost method.</p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <ChoicePill
                   active={selection.queue === "solo"}
                   onClick={() => update("queue", "solo")}
-                  label="Solo"
+                  label="Solo — Account Boost"
                   meta="Base"
+                  description="Our booster completes the service directly on your account. Account access is requested securely after your order is placed."
                 />
                 <ChoicePill
                   active={selection.queue === "duo"}
                   onClick={() => update("queue", "duo")}
-                  label="Duo"
+                  label="Duo — Play With Booster"
                   meta="+100%"
+                  description="You play alongside the booster. Account access is not required for this method."
                 />
               </div>
-              <p className="mt-2 text-[10px] leading-4 text-white/35">
-                Solo uses the base service price. Duo applies the existing +100% price modifier.
-              </p>
+              <div className="mt-3 rounded-xl border border-white/[0.07] bg-black/10 px-3 py-3">
+                <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.14em] text-rose-200/60">
+                  Account security
+                </p>
+                {selection.queue === "duo" ? (
+                  <p className="mt-1.5 text-[10px] leading-4 text-white/45">
+                    You play alongside the booster; account access is not required for this method.
+                  </p>
+                ) : (
+                  <div className="mt-1.5 space-y-1 text-[10px] leading-4 text-white/45">
+                    <p>
+                      Our booster completes the service directly on your account. Account access is requested securely after your order is placed.
+                    </p>
+                    <p>Account details are only requested after checkout.</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
