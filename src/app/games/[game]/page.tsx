@@ -135,6 +135,12 @@ const valorantOverviewMeta = {
   "placement-matches": { badge: "PLACEMENTS", icon: Layers3 },
 } as const;
 
+const valorantBestFor = {
+  "rank-boost": "Reaching a specific competitive rank.",
+  wins: "Completing a fixed number of competitive wins.",
+  "placement-matches": "Completing your placement matches.",
+} as const;
+
 function overviewMeta(
   service: ServiceSummary,
   isRocketLeague: boolean,
@@ -477,13 +483,20 @@ function ServiceShowcaseCard({
               service.slug as keyof typeof rocketLeagueBestFor
             ] ?? "Choosing a Rocket League service that matches your competitive goal."}
           </p>
+        ) : isValorant ? (
+          <p className="mt-2.5 text-[11px] leading-5 text-rose-100/55">
+            <span className="font-semibold text-rose-100/75">Best for:</span>{" "}
+            {valorantBestFor[
+              service.slug as keyof typeof valorantBestFor
+            ] ?? "Choosing a Valorant service that matches your competitive goal."}
+          </p>
         ) : null}
       </div>
 
       <div className={`relative mt-auto ${isRocketLeague || isValorant ? "pt-5" : "pt-8"}`}>
         <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          {isRocketLeague ? null : (
+          {isRocketLeague || isValorant ? null : (
             <StartingPriceDisplay
               value={service.startingPrice}
               context={service.startingPriceContext}

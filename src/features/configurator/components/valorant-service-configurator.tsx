@@ -19,7 +19,9 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MinimumOrderNotice } from "./minimum-order-notice";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
   ConfiguratorSelection,
@@ -468,6 +470,11 @@ export function ValorantServiceConfigurator({
 
   const currentRank = String(selection.currentRank);
   const targetRank = String(selection.targetRank ?? "");
+  const hasCurrentQuote = Boolean(quote && !isLoading && !error);
+  const minimumShortfallCents = hasCurrentQuote && quote ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumBlocked = minimumShortfallCents > 0;
+  const canContinue = Boolean(hasCurrentQuote && quote && meetsMinimumOrderTotal(quote.total));
+  const minimumNoticeId = "valorant-minimum-order-notice";
 
   useEffect(() => {
     if (!isRankBoost) return;
@@ -517,7 +524,7 @@ export function ValorantServiceConfigurator({
   }
 
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!quote || isLoading || isCreatingOrder || !meetsMinimumOrderTotal(quote.total)) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -558,7 +565,7 @@ export function ValorantServiceConfigurator({
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: Boolean(quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total)),
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -571,7 +578,7 @@ export function ValorantServiceConfigurator({
 
   const summaryRows = useMemo(() => {
     const rows: Array<[string, string]> = [
-      ["Boost type", selection.queue === "duo" ? "Duo" : "Solo"],
+      ["Boost type", selection.queue === "duo" ? "Duo — +100%" : "Solo — Base"],
       ["Server", servers.find((server) => server.value === selection.server)?.label ?? "North America"],
       ["Platform", "PC"],
     ];
@@ -674,6 +681,9 @@ export function ValorantServiceConfigurator({
                   meta="+100%"
                 />
               </div>
+              <p className="mt-2 text-[10px] leading-4 text-white/35">
+                Solo uses the base service price. Duo applies the existing +100% price modifier.
+              </p>
             </div>
 
             <div>
@@ -855,10 +865,14 @@ export function ValorantServiceConfigurator({
                     <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                     Updating
                   </span>
-                ) : (
+                ) : canContinue ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/18 bg-[#39E56F]/[0.035] px-2.5 py-1 text-[9px] font-medium text-[#82F5A4]">
                     <Check className="size-3" strokeWidth={2.5} />
                     Ready
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/15 bg-amber-200/[0.035] px-2.5 py-1 text-[9px] font-medium text-amber-100/75">
+                    Needs attention
                   </span>
                 )}
               </div>
@@ -976,6 +990,10 @@ export function ValorantServiceConfigurator({
                 </>
               )}
 
+              {minimumBlocked ? (
+                <MinimumOrderNotice id={minimumNoticeId} shortfallCents={minimumShortfallCents} />
+              ) : null}
+
               {orderError ? (
                 <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
               ) : null}
@@ -983,7 +1001,8 @@ export function ValorantServiceConfigurator({
               <Button
                 className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
                 size="lg"
-                disabled={!quote || isLoading || isCreatingOrder}
+                aria-describedby={minimumBlocked ? minimumNoticeId : undefined}
+                disabled={!quote || isLoading || isCreatingOrder || !canContinue}
                 onClick={createOrder}
               >
                 {isCreatingOrder ? (
