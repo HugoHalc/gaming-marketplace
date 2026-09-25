@@ -602,9 +602,6 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
                   meta={playlist.surcharge}
                 />
               ))}
-            </div>
-
-            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-3">
               {visibleExtraModes.map((playlist) => (
                 <ChoicePill
                   key={playlist.value}
@@ -616,6 +613,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               ))}
               <button
                 type="button"
+                aria-expanded={showAllExtras}
                 onClick={() => setShowAllExtras((current) => !current)}
                 className="flex h-10 items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.10] bg-white/[0.015] px-3 text-xs font-semibold text-white/50 transition-colors hover:border-white/[0.18] hover:text-white"
               >

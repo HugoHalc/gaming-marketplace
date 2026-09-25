@@ -479,10 +479,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                  Playlist
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">
-                  
+                  Select Playlist
                 </p>
               </div>
               <span className="text-[10px] text-white/35">
@@ -502,9 +499,6 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                     meta={playlist.surcharge}
                   />
                 ))}
-            </div>
-
-            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-3">
               {visibleExtraModes.map((playlist) => (
                 <ChoicePill
                   key={playlist.value}
@@ -516,6 +510,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               ))}
               <button
                 type="button"
+                aria-expanded={showAllExtras}
                 onClick={() => setShowAllExtras((current) => !current)}
                 className="flex h-10 items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.10] bg-white/[0.015] px-3 text-xs font-semibold text-white/50 transition-colors hover:border-white/[0.18] hover:text-white"
               >
