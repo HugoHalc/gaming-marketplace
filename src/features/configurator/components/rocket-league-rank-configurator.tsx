@@ -572,16 +572,18 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
         </div>
 
         <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-          <div className="relative grid gap-5 lg:grid-cols-2">
+          <div className="relative grid gap-4 lg:grid-cols-2">
             <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-blue-200/45 lg:grid">
               <ArrowRight className="size-3.5" />
             </span>
-            <CompactRankSelector
-              title="Current rank"
-              value={currentRank}
-              onChange={(value) => update("currentRank", value)}
-            />
-            <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <CompactRankSelector
+                title="Current rank"
+                value={currentRank}
+                onChange={(value) => update("currentRank", value)}
+              />
+            </div>
+            <div className="relative rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-blue-300/[0.12] bg-[#0E1411] text-blue-200/45 lg:hidden" aria-hidden="true">
                 <ArrowRight className="size-3 rotate-90" />
               </span>
@@ -595,9 +597,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             </div>
           </div>
 
-          <div className="h-px bg-white/[0.07]" />
-
-          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown}>
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Playlist</p>
@@ -639,8 +639,8 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             </div>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
-            <div>
+          <div className="grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
               <div role="radiogroup" aria-label="Platform" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
                 {platforms.map((platform) => {
@@ -676,7 +676,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               </div>
             </div>
 
-            <div className="lg:border-l lg:border-white/[0.07] lg:pl-5">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost method</p>
               <div role="radiogroup" aria-label="Boost method" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-2">
                 <button
@@ -725,7 +725,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
           <div>
             <div className="flex items-center justify-between gap-4">
-              <div>
+              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p>
                 <p className="mt-1 text-sm font-semibold text-white">Optional upgrades.</p>
               </div>

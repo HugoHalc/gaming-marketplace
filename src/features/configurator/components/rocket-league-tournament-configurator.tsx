@@ -483,14 +483,14 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
             </p>
           </div>
 
-          <CurrentRankSelector
-            value={String(selection.currentRank)}
-            onChange={(value) => update("currentRank", value)}
-          />
+          <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <CurrentRankSelector
+              value={String(selection.currentRank)}
+              onChange={(value) => update("currentRank", value)}
+            />
+          </div>
 
-          <div className="h-px bg-white/[0.07]" />
-
-          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown}>
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -540,8 +540,8 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
             </div>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
-            <div>
+          <div className="grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
@@ -579,7 +579,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               </div>
             </div>
 
-            <div>
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost method
               </p>
@@ -634,7 +634,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
 
           <div>
             <div className="flex items-center justify-between gap-4">
-              <div>
+              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Customize
                 </p>

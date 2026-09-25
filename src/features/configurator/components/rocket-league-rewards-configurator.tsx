@@ -595,15 +595,17 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
         </div>
 
         <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-          <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-            <CurrentRankSelector
-              value={String(selection.currentRank)}
-              onChange={(value) => update("currentRank", value)}
-            />
+          <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <CurrentRankSelector
+                value={String(selection.currentRank)}
+                onChange={(value) => update("currentRank", value)}
+              />
+            </div>
 
             <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <div className="flex items-end justify-between gap-4">
-                <div>
+                <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
                     Season rewards
                   </p>
@@ -718,9 +720,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             </div>
           </div>
 
-          <div className="h-px bg-white/[0.07]" />
-
-          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown}>
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -770,8 +770,8 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             </div>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
-            <div>
+          <div className="grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Platform
               </p>
@@ -809,7 +809,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
               </div>
             </div>
 
-            <div>
+            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost Method
               </p>
@@ -872,7 +872,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
 
           <div>
             <div className="flex items-center justify-between gap-4">
-              <div>
+              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Customize
                 </p>
