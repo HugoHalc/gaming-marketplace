@@ -37,7 +37,7 @@ const rankFamilies = [
   { key: "silver", label: "Silver", image: "/ranks/rocket-league/silver.png" },
   { key: "gold", label: "Gold", image: "/ranks/rocket-league/gold.png" },
   { key: "platinum", label: "Platinum", image: "/ranks/rocket-league/platinum.png" },
-  { key: "diamond", label: "Diamond", image: "/ranks/rocket-league/diamond.svg" },
+  { key: "diamond", label: "Diamond", image: "/ranks/rocket-league/diamond.png" },
   { key: "champion", label: "Champion", image: "/ranks/rocket-league/champion.png" },
   { key: "grand-champion", label: "Grand Champion", image: "/ranks/rocket-league/grand-champion.png" },
   { key: "supersonic-legend", label: "Supersonic Legend", image: "/ranks/rocket-league/supersonic-legend.png" },
