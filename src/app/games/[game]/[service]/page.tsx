@@ -504,7 +504,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
       <SiteHeader />
 
-      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCustomRocketLeagueService ? "min-h-[320px] sm:min-h-[360px] lg:min-h-[380px]" : ""}`}>
+      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCustomRocketLeagueService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
         {isCustomRocketLeagueService ? (
           <>
             <Image
@@ -524,7 +524,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
           </>
         )}
-        <Container className={isCustomRocketLeagueService ? "min-h-[320px] py-5 sm:min-h-[360px] sm:py-10 lg:min-h-[380px] lg:py-10" : "py-5 sm:py-16 lg:py-18"}>
+        <Container className={isCustomRocketLeagueService ? "min-h-[232px] py-3 sm:min-h-[286px] sm:py-6 lg:min-h-[300px] lg:py-7" : "py-5 sm:py-16 lg:py-18"}>
           <div className="sm:hidden">
             <Link
               href={`/games/${game.slug}`}
@@ -533,7 +533,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ArrowLeft className="mr-2 size-3.5" />
               Back to {game.name}
             </Link>
-            {!isRocketLeagueRank && !isRocketLeagueWins && !isRocketLeaguePlacements && !isRocketLeagueTournament && !isRocketLeagueRewards ? (
+            {!isCustomRocketLeagueService ? (
               <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
                 {service.name}
               </h1>
@@ -552,93 +552,63 @@ export default async function ServicePage({ params }: ServicePageProps) {
             </div>
           </div>
 
-          <div
-            className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "mt-2 grid sm:mt-8" : "mt-8 hidden sm:grid"} gap-8 lg:grid-cols-[1fr_auto] lg:items-end`}
-          >
-            <div className="max-w-3xl">
-              <Badge className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : ""} ${theme.border} ${theme.surface} ${theme.text}`}>
-                <Sparkles className="mr-2 size-3.5" />
-                {heroBadge}
-              </Badge>
+          {isCustomRocketLeagueService ? (
+            <div className="mt-1 max-w-[42rem] sm:mt-5 lg:mt-6">
+              <h1 className="max-w-[17rem] text-balance text-[1.75rem] font-bold leading-[1.02] tracking-[-0.045em] text-white sm:max-w-[36rem] sm:text-[2.5rem] lg:max-w-[42rem] lg:text-[2.75rem]">
+                {isRocketLeagueRank
+                  ? "Rocket League Rank Boosting"
+                  : isRocketLeagueWins
+                    ? "Rocket League Win Boosting"
+                    : isRocketLeaguePlacements
+                      ? "Rocket League Placement Boosting"
+                      : isRocketLeagueTournament
+                        ? "Rocket League Tournament Boosting"
+                        : "Rocket League Season Rewards Boosting"}
+              </h1>
+              <p className="mt-3 hidden max-w-[36rem] text-balance text-lg font-medium leading-7 text-white/70 sm:block lg:text-xl">
+                {heroTitle}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-8 hidden gap-8 sm:grid lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="max-w-3xl">
+                <Badge className={`${theme.border} ${theme.surface} ${theme.text}`}>
+                  <Sparkles className="mr-2 size-3.5" />
+                  {heroBadge}
+                </Badge>
 
-              {isRocketLeagueRank ? (
-                <>
-                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
-                    Rocket League Rank Boosting
-                  </h1>
-                  <p className="mt-3 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
-                    {heroTitle}
-                  </p>
-                </>
-              ) : isRocketLeagueWins ? (
-                <>
-                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
-                    Rocket League Win Boosting
-                  </h1>
-                  <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
-                    {heroTitle}
-                  </p>
-                </>
-              ) : isRocketLeaguePlacements ? (
-                <>
-                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
-                    Rocket League Placement Boosting
-                  </h1>
-                  <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
-                    {heroTitle}
-                  </p>
-                </>
-              ) : isRocketLeagueTournament ? (
-                <>
-                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
-                    Rocket League Tournament Boosting
-                  </h1>
-                  <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
-                    {heroTitle}
-                  </p>
-                </>
-              ) : isRocketLeagueRewards ? (
-                <>
-                  <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
-                    Rocket League Season Rewards Boosting
-                  </h1>
-                  <p className="mt-5 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
-                    {heroTitle}
-                  </p>
-                </>
-              ) : (
                 <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:text-5xl">
                   {heroTitle}
                 </h1>
-              )}
 
-              <p className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:block" : ""} mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg`}>
-                {heroDescription}
-              </p>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
+                  {heroDescription}
+                </p>
 
-              {heroPills ? (
-                <div className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:flex" : "flex"} mt-6 flex-wrap gap-2`}>
-                  {heroPills.map((item) => (
-                    <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
+                {heroPills ? (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {heroPills.map((item) => (
+                      <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
+                href={`/games/${game.slug}`}
+                className="inline-flex items-center text-sm font-semibold text-white/65 transition-colors hover:text-white"
+              >
+                <ArrowLeft className="mr-2 size-4" />
+                Back to {game.name}
+              </Link>
             </div>
-
-            <Link
-              href={`/games/${game.slug}`}
-              className={`${isRocketLeagueRank || isRocketLeagueWins || isRocketLeaguePlacements || isRocketLeagueTournament || isRocketLeagueRewards ? "hidden sm:inline-flex" : "inline-flex"} items-center text-sm font-semibold text-white/65 transition-colors hover:text-white`}
-            >
-              <ArrowLeft className="mr-2 size-4" />
-              Back to {game.name}
-            </Link>
-          </div>
+          )}
         </Container>
       </section>
 
-      <section className="py-6 sm:py-12 lg:py-16">
+      <section className={isCustomRocketLeagueService ? "pb-6 pt-3 sm:pb-10 sm:pt-4 lg:pb-12 lg:pt-5" : "py-6 sm:py-12 lg:py-16"}>
         <Container>
           {isCustomRocketLeagueService ? (
             <>
