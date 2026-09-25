@@ -513,7 +513,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               fill
               priority
               sizes="100vw"
-              className="pointer-events-none -z-30 object-cover object-[50%_50%] sm:object-[58%_50%] lg:object-[67%_50%]"
+              className="pointer-events-none -z-30 object-cover object-[42%_42%] sm:object-[58%_42%] lg:object-[67%_42%]"
             />
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(3,5,4,0.93)_0%,rgba(3,5,4,0.82)_46%,rgba(3,5,4,0.50)_72%,rgba(3,5,4,0.30)_100%)] sm:bg-[linear-gradient(90deg,rgba(3,5,4,0.97)_0%,rgba(3,5,4,0.88)_34%,rgba(3,5,4,0.48)_58%,rgba(3,5,4,0.16)_80%,rgba(3,5,4,0.26)_100%)]" />
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,5,4,0.24)_0%,rgba(3,5,4,0.02)_42%,rgba(3,5,4,0.34)_100%)]" />
