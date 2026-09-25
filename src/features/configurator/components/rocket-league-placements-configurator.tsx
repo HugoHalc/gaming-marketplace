@@ -369,7 +369,6 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
     [selection.playlist],
   );
-  const sliderProgress = ((matches - 1) / (MAX_PLACEMENT_MATCHES - 1)) * 100;
 
   useEffect(() => {
     if (boostMethod === "play-with-booster" && selection.appearOffline === true) {
@@ -521,15 +520,15 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
 
             <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <div className="flex items-end justify-between gap-4">
-                <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Placement matches</p>
+                <div>
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Number of matches</p>
                   <div className="mt-1 flex items-end gap-2">
                     <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{quantityDisplay}</span>
-                    <span className="pb-1 text-xs font-medium text-[#A0AAA4]">matches selected</span>
+                    <span className="pb-1 text-xs font-medium text-[#A0AAA4]">Placement Matches</span>
                   </div>
                 </div>
 
-                <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
                   <input
                     aria-label="Placement matches"
                     aria-invalid={!quantityIsValid}
@@ -559,37 +558,6 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 </p>
               ) : null}
 
-              <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-blue-200/65">Placement matches</p>
-                  <span className="text-[10px] font-medium text-white/38">Up to {MAX_PLACEMENT_MATCHES} matches</span>
-                </div>
-                <div className="mt-3 grid grid-cols-10 gap-1.5">
-                  {Array.from({ length: MAX_PLACEMENT_MATCHES }).map((_, index) => {
-                    const included = quantityIsValid && index < matches;
-                    const finalIncluded = included && index === matches - 1;
-                    return (
-                      <span
-                        key={index}
-                        className={`grid h-3.5 w-full place-items-center rounded-full border transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none ${
-                          included
-                            ? finalIncluded
-                              ? "border-blue-300/55 bg-blue-400/80"
-                              : "border-blue-300/35 bg-blue-400/45"
-                            : "border-white/[0.10] bg-white/[0.03]"
-                        }`}
-                      >
-                        {finalIncluded && matches === MAX_PLACEMENT_MATCHES ? (
-                          <span className="grid size-3 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
-                            <Check className="size-2" strokeWidth={3} />
-                          </span>
-                        ) : null}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-
               <input
                 aria-label="Placement matches slider"
                 type="range"
@@ -602,9 +570,9 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                   setLastValidQuantity(value);
                   update("matches", value);
                 }}
-                className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-blue-400"
+                className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#39E56F]"
                 style={{
-                  background: `linear-gradient(to right, rgba(96,165,250,.58) 0%, rgba(96,165,250,.58) ${sliderProgress}%, rgba(255,255,255,.07) ${sliderProgress}%, rgba(255,255,255,.07) 100%)`,
+                  background: `linear-gradient(to right, rgba(57,229,111,.55) 0%, rgba(57,229,111,.55) ${((matches - 1) / (MAX_PLACEMENT_MATCHES - 1)) * 100}%, rgba(255,255,255,.07) ${((matches - 1) / (MAX_PLACEMENT_MATCHES - 1)) * 100}%, rgba(255,255,255,.07) 100%)`,
                 }}
               />
 

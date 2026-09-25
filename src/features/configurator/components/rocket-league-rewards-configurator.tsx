@@ -548,23 +548,17 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
 
             <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <div className="flex items-end justify-between gap-4">
-                <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
-                    Season rewards
-                  </p>
+                <div>
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Number of reward wins</p>
                   <div className="mt-1 flex items-end gap-2">
-                    <span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-                      {quantityDisplay} / 10
-                    </span>
-                    <span className="pb-1 text-[11px] font-medium text-[#A0AAA4]">
-                      Reward wins selected
-                    </span>
+                    <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{quantityDisplay}</span>
+                    <span className="pb-1 text-xs font-medium text-[#A0AAA4]">Reward Wins</span>
                   </div>
                 </div>
 
-                <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-[#090D0B] px-3">
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
                   <input
-                    aria-label="Reward Wins"
+                    aria-label="Reward wins"
                     aria-invalid={!quantityIsValid}
                     aria-describedby={!quantityIsValid ? "rewards-quantity-error" : undefined}
                     type="number"
@@ -592,34 +586,6 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 </p>
               ) : null}
 
-              <div className="mt-5">
-                <div className="grid grid-cols-10 gap-1.5" aria-label={`${wins} of 10 reward wins selected`}>
-                  {Array.from({ length: 10 }, (_, index) => {
-                    const step = index + 1;
-                    const completed = quantityIsValid && step <= wins;
-                    const finalStep = quantityIsValid && step === 10 && wins === 10;
-
-                    return (
-                      <span
-                        key={step}
-                        className={`h-2 rounded-full border transition-[border-color,background-color] duration-200 motion-reduce:transition-none ${
-                          finalStep
-                            ? "border-[#39E56F]/35 bg-[#39E56F]/45"
-                            : completed
-                              ? "border-blue-300/[0.18] bg-blue-400/55"
-                              : "border-white/[0.07] bg-white/[0.08]"
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-
-                <div className="mt-2 flex items-center justify-between text-[9px] font-medium text-white/30">
-                  <span>1 win</span>
-                  <span>10 wins</span>
-                </div>
-              </div>
-
               <input
                 aria-label="Season reward wins slider"
                 type="range"
@@ -632,17 +598,25 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                   setLastValidQuantity(value);
                   update("wins", value);
                 }}
-                className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-blue-400"
+                className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#39E56F]"
                 style={{
-                  background: `linear-gradient(to right, rgba(96,165,250,.55) 0%, rgba(96,165,250,.55) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) 100%)`,
+                  background: `linear-gradient(to right, rgba(57,229,111,.55) 0%, rgba(57,229,111,.55) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / 9) * 100}%, rgba(255,255,255,.07) 100%)`,
                 }}
               />
 
+              <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>6</span>
+                <span>8</span>
+                <span>10</span>
+              </div>
+
               <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">
-                  Rewards package discount
-                </p>
-                <p className="font-gaming-value mt-1.5 text-[1.65rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Rewards package discount</p>
+                <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
                   {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
                 {quantityIsValid && discountRate > 0 ? (
@@ -651,7 +625,6 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                     Unlocked
                   </p>
                 ) : null}
-
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
                   {!quantityIsValid
                     ? "Enter a valid quantity to view package discounts."
