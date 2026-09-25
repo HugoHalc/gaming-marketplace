@@ -32,6 +32,8 @@ import type {
   QuotePreview,
   ServiceConfiguratorSchema,
 } from "../types/configurator";
+import { PlatformIcon } from "./platform-icon";
+
 
 const serviceNavigation = [
   { slug: "rank-boost", label: "Rank Boost", mobile: "Rank" },
@@ -166,12 +168,14 @@ function ChoicePill({
   onClick,
   label,
   meta,
+  icon,
   disabled,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   meta?: string;
+  icon?: ReactNode;
   disabled?: boolean;
 }) {
   return (
@@ -185,7 +189,10 @@ function ChoicePill({
           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
-      <span className="truncate text-xs font-semibold">{label}</span>
+      <span className="flex min-w-0 items-center gap-2.5">
+        {icon ? <span className="grid size-7 shrink-0 place-items-center">{icon}</span> : null}
+        <span className="truncate text-xs font-semibold">{label}</span>
+      </span>
       <span className="flex shrink-0 items-center gap-2">
         {meta ? (
           <span className={`text-[10px] font-bold ${meta === "FREE" ? "text-[#82F5A4]" : "text-amber-200/65"}`}>
@@ -804,7 +811,7 @@ export function OverwatchServiceConfigurator({
 
               <div className="grid gap-5 lg:grid-cols-2">
                 <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</p><div className="mt-3 grid grid-cols-2 gap-2">{servers.map((server) => <ChoicePill key={server.value} active={selection.server === server.value} onClick={() => update("server", server.value)} label={server.label} />)}</div></div>
-                <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p><div className="mt-3 grid grid-cols-2 gap-2">{platforms.map((platform) => <ChoicePill key={platform.value} active={selection.platform === platform.value} onClick={() => update("platform", platform.value)} label={platform.label} />)}</div></div>
+                <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p><div className="mt-3 grid grid-cols-2 gap-2">{platforms.map((platform) => <ChoicePill key={platform.value} active={selection.platform === platform.value} onClick={() => update("platform", platform.value)} label={platform.label} icon={<PlatformIcon platform={platform.value} />} />)}</div></div>
               </div>
 
               <div className="h-px bg-white/[0.07]" />

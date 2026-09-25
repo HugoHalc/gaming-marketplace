@@ -10,7 +10,6 @@ import {
   EyeOff,
   Gauge,
   LoaderCircle,
-  Monitor,
   MonitorPlay,
   ShieldCheck,
   Trophy,
@@ -27,6 +26,8 @@ import type {
   QuotePreview,
   ServiceConfiguratorSchema,
 } from "../types/configurator";
+import { PlatformIcon } from "./platform-icon";
+
 
 const rankFamilies = [
   { key: "iron", label: "Iron", image: "/ranks/valorant/iron.png", tiers: ["1", "2", "3"] },
@@ -688,7 +689,7 @@ export function ValorantServiceConfigurator({
                 <div className="flex h-11 items-center justify-between rounded-xl border border-rose-300/[0.18] bg-[#131B17] px-3">
                   <span className="flex items-center gap-3 text-xs font-semibold text-white">
                     <span className="grid size-7 place-items-center rounded-lg border border-white/[0.10] bg-[#090D0B] text-sky-300">
-                      <Monitor className="size-4" />
+                      <PlatformIcon platform="pc" />
                     </span>
                     PC
                   </span>

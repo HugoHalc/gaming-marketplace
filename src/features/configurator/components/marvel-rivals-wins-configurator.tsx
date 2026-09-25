@@ -35,6 +35,7 @@ import {
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import { PlatformIcon } from "./platform-icon";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
 type Division = (typeof marvelRivalsDivisionOptions)[number];
@@ -331,37 +332,6 @@ function WinsSelector({ wins, onChange }: { wins: number; onChange: (wins: numbe
         ))}
       </div>
     </div>
-  );
-}
-
-function PlatformIcon({ platform }: { platform: string }) {
-  if (platform === "pc") {
-    return (
-      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" opacity="0.95" />
-        <circle cx="9.15" cy="14.2" r="1.85" fill="currentColor" />
-        <path d="M10.7 13.4 14.7 10.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        <circle cx="15.9" cy="10.2" r="2.15" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
-    );
-  }
-
-  if (platform === "playstation") {
-    return (
-      <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
-        <path d="M10 5.2v10.6c0 .9-.34 1.44-1.08 1.62L6.3 18.2v-2.1l1.62-.55c.34-.12.5-.32.5-.68V5.85l1.58-.65Z" fill="currentColor" />
-        <path d="M11.4 7.1c2.2.7 4.22 1.44 5.85 2.15.72.32 1.05.77 1.05 1.35 0 .55-.33.98-1 1.2l-6.52 2.08v-2.13l4.75-1.48c.26-.08.28-.22.05-.32-1.17-.47-2.83-1.02-4.18-1.42V7.1Z" fill="currentColor" opacity=".92" />
-        <path d="m11.18 12.75 5.05-1.6v1.85l-4.02 1.3c-.55.18-.78.4-.78.73 0 .35.25.48.72.38l2.9-.62v1.8l-3.45.78c-1.57.35-2.57-.25-2.57-1.48 0-1.03.65-1.86 2.25-2.34Z" fill="currentColor" opacity=".84" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M8.2 8.05c1.1.48 2.26 1.3 3.78 2.77 1.5-1.46 2.68-2.28 3.82-2.77" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.85 16.25c.9-1.55 1.88-2.83 3.13-4.12 1.23 1.28 2.23 2.56 3.17 4.12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
   );
 }
 

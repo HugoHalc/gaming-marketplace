@@ -16,6 +16,7 @@ import { LeagueOfLegendsServiceConfigurator } from "./league-of-legends-service-
 import { LeagueOfLegendsPhaseTwoConfigurator } from "./league-of-legends-phase-two-configurator";
 import { OverwatchServiceConfigurator } from "./overwatch-service-configurator";
 import { ValorantServiceConfigurator } from "./valorant-service-configurator";
+import { PlatformIcon } from "./platform-icon";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -24,6 +25,7 @@ function formatPrice(value: number) {
     minimumFractionDigits: 2,
   }).format(value);
 }
+
 
 interface ServiceConfiguratorProps {
   gameSlug: string;
@@ -167,15 +169,22 @@ function GenericServiceConfigurator({ gameSlug, service, schema }: ServiceConfig
                   {field.description ? (
                     <span className="mt-1 block text-xs leading-5 text-[var(--muted-foreground)]">{field.description}</span>
                   ) : null}
-                  <select
-                    value={String(selection[field.key])}
-                    onChange={(event) => updateSelection(field.key, event.target.value)}
-                    className="mt-3 h-12 w-full rounded-xl border border-white/[0.09] bg-[#0b0c14] px-3.5 text-sm text-white outline-none transition-colors focus:border-violet-300/35 focus:ring-2 focus:ring-violet-400/15"
-                  >
-                    {field.options?.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
+                  <div className="relative mt-3">
+                    {field.key === "platform" ? (
+                      <span className="pointer-events-none absolute left-3 top-1/2 z-10 grid size-7 -translate-y-1/2 place-items-center text-white/70">
+                        <PlatformIcon platform={String(selection[field.key])} />
+                      </span>
+                    ) : null}
+                    <select
+                      value={String(selection[field.key])}
+                      onChange={(event) => updateSelection(field.key, event.target.value)}
+                      className={`h-12 w-full rounded-xl border border-white/[0.09] bg-[#0b0c14] pr-3.5 text-sm text-white outline-none transition-colors focus:border-violet-300/35 focus:ring-2 focus:ring-violet-400/15 ${field.key === "platform" ? "pl-12" : "pl-3.5"}`}
+                    >
+                      {field.options?.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </label>
               ) : null}
 

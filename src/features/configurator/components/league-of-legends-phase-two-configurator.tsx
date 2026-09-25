@@ -21,6 +21,8 @@ import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
+import { PlatformIcon } from "./platform-icon";
+
 
 
 const serviceNavigation = [
@@ -460,14 +462,19 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                 </label>
                 <label className="block min-w-0">
                   <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</span>
-                  <select
-                    value="pc"
-                    disabled
-                    aria-label="Platform"
-                    className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none disabled:cursor-default disabled:opacity-100"
-                  >
-                    <option value="pc">PC</option>
-                  </select>
+                  <div className="relative mt-3">
+                    <span className="pointer-events-none absolute left-3 top-1/2 z-10 grid size-7 -translate-y-1/2 place-items-center text-sky-300">
+                      <PlatformIcon platform="pc" />
+                    </span>
+                    <select
+                      value="pc"
+                      disabled
+                      aria-label="Platform"
+                      className="h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] pl-12 pr-3 text-xs font-semibold text-white outline-none disabled:cursor-default disabled:opacity-100"
+                    >
+                      <option value="pc">PC</option>
+                    </select>
+                  </div>
                 </label>
               </div>
 

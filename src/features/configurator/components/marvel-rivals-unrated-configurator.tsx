@@ -30,6 +30,8 @@ import {
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import { PlatformIcon } from "./platform-icon";
+
 
 type BoostMethod = "solo" | "duo";
 type ExtraKey = "playOffline" | "specificHeroes" | "streaming" | "expressDelivery";
@@ -442,8 +444,9 @@ export function MarvelRivalsUnratedConfigurator({
                               ? "border-white/[0.12] bg-[#090D0B]"
                               : "border-white/[0.08] bg-white/[0.02]"
                           } ${platform.color}`}
-                          aria-hidden="true"
-                        />
+                        >
+                          <PlatformIcon platform={platform.value} />
+                        </span>
                         <span className="min-w-0 flex-1 truncate text-xs font-semibold">{platform.label}</span>
                         {active ? (
                           <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
