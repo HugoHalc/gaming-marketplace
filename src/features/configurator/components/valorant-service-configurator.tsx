@@ -852,20 +852,15 @@ export function ValorantServiceConfigurator({
                   <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
                 </div>
                 {isLoading ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]" aria-live="polite" role="status">
                     <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                     Updating
                   </span>
-                ) : canContinue ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39E56F]/18 bg-[#39E56F]/[0.035] px-2.5 py-1 text-[9px] font-medium text-[#82F5A4]">
-                    <Check className="size-3" strokeWidth={2.5} />
-                    Ready
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/15 bg-amber-200/[0.035] px-2.5 py-1 text-[9px] font-medium text-amber-100/75">
+                ) : !canContinue ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/15 bg-amber-200/[0.035] px-2.5 py-1 text-[9px] font-medium text-amber-100/75" aria-live="polite" role="status">
                     Needs attention
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
 
