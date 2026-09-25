@@ -425,7 +425,7 @@ function ServiceShowcaseCard({
   return (
     <Link
       href={`/games/${gameSlug}/${service.slug}`}
-      className={`group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${isRocketLeague ? "outline-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none" : ""} ${
+      className={`group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${isRocketLeague ? "outline-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none" : isValorant ? "outline-none focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none" : ""} ${
         isRocketLeague
           ? "hover:border-blue-300/[0.18]"
           : isValorant
@@ -503,7 +503,7 @@ function ServiceShowcaseCard({
             />
           )}
           <span className={`grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] ${ctaClass}`}>
-            <ArrowRight className={`size-4 transition-transform group-hover:translate-x-0.5 ${isRocketLeague ? "motion-reduce:transform-none motion-reduce:transition-none" : ""}`} />
+            <ArrowRight className={`size-4 transition-transform group-hover:translate-x-0.5 ${isRocketLeague || isValorant ? "motion-reduce:transform-none motion-reduce:transition-none" : ""}`} />
           </span>
         </div>
       </div>
@@ -638,7 +638,7 @@ export default async function GamePage({ params }: GamePageProps) {
               {isValorant ? "VALORANT boosting services" : content.eyebrow}
             </Badge>
             <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-7xl">
-              {isRocketLeague ? "Rocket League Boosting Services" : displayName}
+              {isRocketLeague ? "Rocket League Boosting Services" : isValorant ? "VALORANT Boosting Services" : displayName}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
               {isRocketLeague
@@ -650,7 +650,7 @@ export default async function GamePage({ params }: GamePageProps) {
 
             <div className="mt-7 flex flex-wrap gap-2">
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                {isRocketLeague ? "Competitive boosting" : content.categoryLabel}
+                {isRocketLeague || isValorant ? "Competitive boosting" : content.categoryLabel}
               </span>
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                 {isValorant ? "PC competitive services" : content.fulfillmentLabel}
@@ -700,13 +700,13 @@ export default async function GamePage({ params }: GamePageProps) {
             </p>
           </div>
 
-          {isRocketLeague ? (
+          {isRocketLeague || isValorant ? (
             <p className="mt-7 text-[11px] font-medium tracking-[0.01em] text-white/45 md:hidden">
-              Swipe to explore 5 services
+              Swipe to explore {isRocketLeague ? 5 : 3} services
             </p>
           ) : null}
 
-          <div className={`-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3 ${isRocketLeague ? "mt-3 md:mt-9" : "mt-9"}`}>
+          <div className={`-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3 ${isRocketLeague || isValorant ? "mt-3 md:mt-9" : "mt-9"}`}>
             {game.services.length > 0
               ? game.services.map((service, index) => (
                   <ServiceShowcaseCard

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MinimumOrderNotice } from "./minimum-order-notice";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
 import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type {
@@ -77,6 +78,29 @@ const servers = [
   { value: "sea-oce", label: "SEA/OCE" },
   { value: "latin-america", label: "Latin America" },
 ] as const;
+
+const RADIO_NAV_KEYS = new Set(["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"]);
+
+function handleValorantRadioGroupKeyDown(event: KeyboardEvent<HTMLElement>) {
+  if (!RADIO_NAV_KEYS.has(event.key)) return;
+  const current = (event.target as HTMLElement).closest<HTMLButtonElement>('button[role="radio"]');
+  if (!current) return;
+  const radios = Array.from(
+    event.currentTarget.querySelectorAll<HTMLButtonElement>('button[role="radio"]:not(:disabled)'),
+  );
+  const currentIndex = radios.indexOf(current);
+  if (currentIndex < 0 || radios.length < 2) return;
+
+  let nextIndex = currentIndex;
+  if (event.key === "Home") nextIndex = 0;
+  else if (event.key === "End") nextIndex = radios.length - 1;
+  else if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (currentIndex + 1) % radios.length;
+  else nextIndex = (currentIndex - 1 + radios.length) % radios.length;
+
+  event.preventDefault();
+  radios[nextIndex]?.focus();
+  radios[nextIndex]?.click();
+}
 
 function rankIndex(rank: string) {
   return rankOrder.indexOf(rank as RankId);
@@ -200,7 +224,7 @@ function CompactRankSelector({
         </div>
         <div className="min-w-0">
           <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-rose-200/65">
-            {target ? "Target rank" : "Current rank"}
+            {target ? "Target rank" : allowUnrated ? "Previous rank" : "Current rank"}
           </p>
           <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
             {unrated ? "Unrated" : rankLabel(value)}
@@ -208,61 +232,79 @@ function CompactRankSelector({
         </div>
       </div>
 
-      {allowUnrated ? (
-        <button
-          type="button"
-          onClick={() => onChange("unrated")}
-          className={`mt-4 flex h-10 w-full items-center justify-between rounded-xl border px-3 text-left text-xs font-semibold transition-colors ${
-            unrated
-              ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
-              : "border-white/[0.08] bg-[#090D0B] text-white/60 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-          }`}
-        >
-          <span>Unrated</span>
-          {unrated ? (
-            <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
-              <Check className="size-2.5" strokeWidth={3} />
-            </span>
-          ) : null}
-        </button>
-      ) : null}
+      <div
+        role="radiogroup"
+        aria-label={target ? "Target rank family" : allowUnrated ? "Previous rank family" : "Current rank family"}
+        onKeyDown={handleValorantRadioGroupKeyDown}
+        className="mt-4"
+      >
+        {allowUnrated ? (
+          <button
+            type="button"
+            role="radio"
+            aria-checked={unrated}
+            tabIndex={unrated ? 0 : -1}
+            onClick={() => onChange("unrated")}
+            className={`flex h-10 w-full items-center justify-between rounded-xl border px-3 text-left text-xs font-semibold outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
+              unrated
+                ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white ring-1 ring-inset ring-white/[0.12]"
+                : "border-white/[0.08] bg-[#090D0B] text-white/60 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
+            }`}
+          >
+            <span>Unrated</span>
+            {unrated ? (
+              <span className="grid size-4 place-items-center rounded-full bg-[#39E56F] text-[#050807]">
+                <Check className="size-2.5" strokeWidth={3} />
+              </span>
+            ) : null}
+          </button>
+        ) : null}
 
-      <div className="mt-4 grid grid-cols-4 gap-2">
-        {visibleFamilies.map((family) => {
-          const selected = selectedFamily?.key === family.key;
-          return (
-            <button
-              key={family.key}
-              type="button"
-              title={family.label}
-              onClick={() => chooseFamily(family.key)}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
-                selected
-                  ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
-                  : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
-              }`}
-            >
-              <span className={`pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity ${
-                selected ? "opacity-80" : "opacity-35"
-              }`} />
-              {selected ? (
-                <span className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/55 to-transparent" />
-              ) : null}
-              <RankIcon rank={firstRankForFamily(family.key)} selected={selected} />
-              <span
-                className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
-                  selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
+        <div className={`${allowUnrated ? "mt-2" : ""} grid grid-cols-3 gap-2 min-[390px]:grid-cols-4`}>
+          {visibleFamilies.map((family) => {
+            const selected = selectedFamily?.key === family.key;
+            return (
+              <button
+                key={family.key}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                tabIndex={selected ? 0 : -1}
+                title={family.label}
+                onClick={() => chooseFamily(family.key)}
+                className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
+                  selected
+                    ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
+                    : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
                 }`}
               >
-                {family.label}
-              </span>
-            </button>
-          );
-        })}
+                <span className={`pointer-events-none absolute inset-x-2 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity ${
+                  selected ? "opacity-80" : "opacity-35"
+                }`} />
+                {selected ? (
+                  <span className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#39E56F]/55 to-transparent" />
+                ) : null}
+                <RankIcon rank={firstRankForFamily(family.key)} selected={selected} />
+                <span
+                  className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
+                    selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
+                  }`}
+                >
+                  {family.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {!unrated && selectedFamily && selectedFamily.key !== "immortal" ? (
-        <div className="mt-3 flex items-center gap-2">
+        <div
+          role="radiogroup"
+          aria-label={target ? "Target rank tier" : "Rank tier"}
+          onKeyDown={handleValorantRadioGroupKeyDown}
+          className="mt-3 flex items-center gap-2"
+        >
           <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
             Tier
           </span>
@@ -275,11 +317,14 @@ function CompactRankSelector({
               <button
                 key={tier}
                 type="button"
+                role="radio"
+                aria-checked={active}
+                tabIndex={active ? 0 : -1}
                 disabled={!available}
                 onClick={() => onChange(candidate)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color] ${
+                className={`h-9 min-w-11 rounded-lg border px-3 text-xs font-bold outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
                   active
-                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5] ring-1 ring-inset ring-white/[0.12]"
                     : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                 } disabled:cursor-not-allowed disabled:opacity-20`}
               >
@@ -309,11 +354,14 @@ function ChoicePill({
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      tabIndex={active ? 0 : -1}
       aria-label={ariaLabel}
       onClick={onClick}
-      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`flex h-10 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         active
-          ? "border-rose-300/[0.18] bg-[#131B17] text-[#F4F7F5]"
+          ? "border-rose-300/[0.18] bg-[#131B17] text-[#F4F7F5] ring-1 ring-inset ring-white/[0.10]"
           : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
@@ -352,7 +400,7 @@ function CompactExtra({
       type="button"
       aria-pressed={checked}
       onClick={() => onChange(!checked)}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color,color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         checked
           ? "border-rose-300/[0.18] bg-[#131B17]"
           : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -396,42 +444,116 @@ function CompactExtra({
 
 function QuantityControl({
   value,
+  sliderValue,
+  valid,
   min,
   max,
   onChange,
+  onValidValueChange,
   label,
+  descriptor,
+  inputLabel,
+  errorId,
 }: {
-  value: number;
+  value: string | number;
+  sliderValue: number;
+  valid: boolean;
   min: number;
   max: number;
-  onChange: (value: number) => void;
+  onChange: (value: string | number) => void;
+  onValidValueChange: (value: number) => void;
   label: string;
+  descriptor: string;
+  inputLabel: string;
+  errorId: string;
 }) {
+  const displayValue = value === "" ? "—" : String(value);
+  const currentCount = valid ? Number(value) : sliderValue;
+  const descriptorLabel = valid && currentCount !== 1
+    ? descriptor === "Placement Match" ? "Placement Matches" : `${descriptor}s`
+    : descriptor;
+  const milestones = Array.from({ length: max - min + 1 }, (_, index) => min + index);
+  const progress = max === min ? 100 : ((sliderValue - min) / (max - min)) * 100;
+
   return (
     <div>
-      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-        {label}
-      </p>
-      <div className="mt-3 grid grid-cols-[2.75rem_1fr_2.75rem] gap-2">
-        <button
-          type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/55 transition-colors hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-        >
-          −
-        </button>
-        <div className="grid h-11 place-items-center rounded-xl border border-rose-300/[0.18] bg-[#131B17]">
-          <span className="font-gaming-value text-lg font-bold text-white">{value}</span>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
+            {label}
+          </p>
+          <div className="mt-1 flex items-end gap-2">
+            <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+              {displayValue}
+            </span>
+            <span className="pb-1 text-xs font-medium text-[#A0AAA4]">
+              {descriptorLabel}
+            </span>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => onChange(Math.min(max, value + 1))}
-          className="h-11 rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/55 transition-colors hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-        >
-          +
-        </button>
+
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
+          <input
+            aria-label={inputLabel}
+            aria-invalid={!valid}
+            aria-describedby={!valid ? errorId : undefined}
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={max}
+            step={1}
+            value={String(value)}
+            onChange={(event) => {
+              const nextValue = quantitySelectionValue(event.target.value, min, max);
+              if (typeof nextValue === "number") onValidValueChange(nextValue);
+              onChange(nextValue);
+            }}
+            className="font-gaming-value w-12 rounded-md bg-transparent text-center text-base font-bold text-white outline-none focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08]"
+          />
+        </div>
       </div>
-      <p className="mt-2 text-[10px] text-white/30">Maximum {max} per order.</p>
+
+      {!valid ? (
+        <p id={errorId} role="alert" className="mt-2 text-[10px] leading-4 text-amber-100/75">
+          Enter a whole number between {min} and {max}.
+        </p>
+      ) : null}
+
+      <input
+        aria-label={`${descriptor} slider`}
+        type="range"
+        min={min}
+        max={max}
+        step={1}
+        value={sliderValue}
+        onChange={(event) => {
+          const nextValue = Number(event.target.value);
+          onValidValueChange(nextValue);
+          onChange(nextValue);
+        }}
+        className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#39E56F] outline-none focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08]"
+        style={{
+          background: `linear-gradient(to right, rgba(57,229,111,.55) 0%, rgba(57,229,111,.55) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)`,
+        }}
+      />
+
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
+        {milestones.map((milestone) => <span key={milestone}>{milestone}</span>)}
+      </div>
+
+      <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
+        <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">
+          Quantity pricing
+        </p>
+        <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
+          {valid ? "Standard pricing" : "—"}
+        </p>
+        <p className="mt-2 text-[10px] leading-4 text-white/40">
+          {valid
+            ? "No quantity discount applies to this service. Your total updates with the selected quantity."
+            : "Enter a valid quantity to calculate your order."}
+        </p>
+      </div>
     </div>
   );
 }
@@ -471,14 +593,25 @@ export function ValorantServiceConfigurator({
   const [orderError, setOrderError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [lastValidQuantity, setLastValidQuantity] = useState(1);
 
   const currentRank = String(selection.currentRank);
   const targetRank = String(selection.targetRank ?? "");
-  const hasCurrentQuote = Boolean(quote && !isLoading && !error);
+  const quantitySelection = isWins ? selection.wins : isPlacements ? selection.matches : 1;
+  const quantityResult = parseWholeNumberQuantity(quantitySelection, 1, 5);
+  const quantityIsValid = !isWins && !isPlacements ? true : quantityResult.valid;
+  const quantityValue = quantityResult.valid ? quantityResult.value : null;
+  const sliderQuantity = quantityValue ?? lastValidQuantity;
+  const quantityDisplay = quantitySelection === "" ? "—" : String(quantitySelection);
+  const hasCurrentQuote = Boolean(quote && !isLoading && !error && quantityIsValid);
   const minimumShortfallCents = hasCurrentQuote && quote ? minimumOrderShortfallCents(quote.total) : 0;
   const minimumBlocked = minimumShortfallCents > 0;
-  const canContinue = Boolean(hasCurrentQuote && quote && meetsMinimumOrderTotal(quote.total));
+  const canContinue = Boolean(quantityIsValid && hasCurrentQuote && quote && meetsMinimumOrderTotal(quote.total));
   const minimumNoticeId = "valorant-minimum-order-notice";
+
+  useEffect(() => {
+    if (quantityValue !== null) setLastValidQuantity(quantityValue);
+  }, [quantityValue]);
 
   useEffect(() => {
     if (!isRankBoost) return;
@@ -489,6 +622,13 @@ export function ValorantServiceConfigurator({
   }, [currentRank, targetRank, isRankBoost]);
 
   useEffect(() => {
+    if (!quantityIsValid) {
+      setQuote(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setIsLoading(true);
@@ -521,14 +661,14 @@ export function ValorantServiceConfigurator({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [gameSlug, service.slug, selection]);
+  }, [gameSlug, service.slug, selection, quantityIsValid]);
 
   function update(key: string, value: string | number | boolean) {
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder || !meetsMinimumOrderTotal(quote.total)) return;
+    if (!quantityIsValid || !quote || isLoading || isCreatingOrder || !meetsMinimumOrderTotal(quote.total)) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -569,7 +709,7 @@ export function ValorantServiceConfigurator({
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total)),
+    canAutoResume: Boolean(quantityIsValid && quote && !isLoading && !error && meetsMinimumOrderTotal(quote.total)),
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -645,10 +785,16 @@ export function ValorantServiceConfigurator({
           {(isWins || isPlacements) ? (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
               <QuantityControl
-                value={Number(isWins ? selection.wins : selection.matches)}
+                value={quantitySelection as string | number}
+                sliderValue={sliderQuantity}
+                valid={quantityIsValid}
                 min={1}
                 max={5}
-                label={isWins ? "Competitive wins" : "Placement matches"}
+                label={isWins ? "Number of wins" : "Number of matches"}
+                descriptor={isWins ? "Competitive Win" : "Placement Match"}
+                inputLabel={isWins ? "Number of competitive wins" : "Number of placement matches"}
+                errorId={isWins ? "valorant-wins-quantity-error" : "valorant-placements-quantity-error"}
+                onValidValueChange={setLastValidQuantity}
                 onChange={(value) => update(isWins ? "wins" : "matches", value)}
               />
             </div>
@@ -660,7 +806,7 @@ export function ValorantServiceConfigurator({
                 Boost Method
               </p>
               <p className="mt-1 text-sm font-semibold text-white"></p>
-              <div className="mt-2 grid grid-cols-2 gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleValorantRadioGroupKeyDown} className="mt-2 grid grid-cols-2 gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
                 <ChoicePill
                   active={selection.queue === "solo"}
                   onClick={() => update("queue", "solo")}
@@ -686,7 +832,7 @@ export function ValorantServiceConfigurator({
                 Select Platform
               </p>
               <p className="mt-1 text-sm font-semibold text-white"></p>
-              <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
+              <div role="group" aria-label="Platform" className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
                 <div className="flex h-11 items-center justify-between rounded-xl border border-rose-300/[0.18] bg-[#131B17] px-3">
                   <span className="flex items-center gap-3 text-xs font-semibold text-white">
                     <span className="grid size-7 place-items-center rounded-lg border border-white/[0.10] bg-[#090D0B] text-sky-300">
@@ -713,7 +859,7 @@ export function ValorantServiceConfigurator({
                 </div>
                 <Gauge className="size-4 text-rose-200/50" />
               </div>
-              <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <div role="radiogroup" aria-label="RR Gain" onKeyDown={handleValorantRadioGroupKeyDown} className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-4">
                 {rrGainOptions.map((option) => (
                   <ChoicePill
                     key={option.value}
@@ -733,7 +879,7 @@ export function ValorantServiceConfigurator({
                 RR Amount
               </p>
               <p className="mt-1 text-sm font-semibold text-white"></p>
-              <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              <div role="radiogroup" aria-label="RR Amount" onKeyDown={handleValorantRadioGroupKeyDown} className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
                 {rrAmountOptions.map((option) => (
                   <ChoicePill
                     key={option.value}
@@ -752,7 +898,7 @@ export function ValorantServiceConfigurator({
               Server
             </p>
             <p className="mt-1 text-sm font-semibold text-white"></p>
-            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <div role="radiogroup" aria-label="Server" onKeyDown={handleValorantRadioGroupKeyDown} className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {servers.map((server) => (
                 <ChoicePill
                   key={server.value}
@@ -897,13 +1043,13 @@ export function ValorantServiceConfigurator({
                         <Image src={familyForRank(currentRank).image} alt="" width={30} height={30} className="size-7 shrink-0 object-contain" />
                       )}
                       <div className="min-w-0">
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current rank</p>
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">{isPlacements ? "Previous rank" : "Current rank"}</p>
                         <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{currentRank === "unrated" ? "Unrated" : rankLabel(currentRank)}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">{isWins ? "Wins" : "Placements"}</p>
-                      <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{String(isWins ? selection.wins : selection.matches)}</p>
+                      <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{quantityIsValid ? quantityDisplay : "—"}</p>
                     </div>
                   </div>
                 </div>
@@ -939,7 +1085,7 @@ export function ValorantServiceConfigurator({
                   </div>
 
                   <div className="my-4 h-px bg-white/[0.08]" />
-                  <div className="flex items-end justify-between gap-4">
+                  <div className="flex items-end justify-between gap-4" aria-live="polite">
                     <div className="min-w-0">
                       <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                       <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">
@@ -963,7 +1109,7 @@ export function ValorantServiceConfigurator({
               ) : (
                 <>
                   <div className="my-4 h-px bg-white/[0.08]" />
-                  <div>
+                  <div aria-live="polite">
                     <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                     <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
                     {isLoading ? (
@@ -982,6 +1128,12 @@ export function ValorantServiceConfigurator({
                 {selection.queue === "duo" ? "No account access required." : "Account details are requested after checkout."}
               </p>
 
+              {!quantityIsValid ? (
+                <p className="mt-3 text-[10px] leading-4 text-amber-100/75" role="status">
+                  Enter a valid quantity to continue to checkout.
+                </p>
+              ) : null}
+
               {minimumBlocked ? (
                 <MinimumOrderNotice id={minimumNoticeId} shortfallCents={minimumShortfallCents} />
               ) : null}
@@ -993,7 +1145,15 @@ export function ValorantServiceConfigurator({
               <Button
                 className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
                 size="lg"
-                aria-describedby={minimumBlocked ? minimumNoticeId : undefined}
+                aria-describedby={
+                  !quantityIsValid
+                    ? isWins
+                      ? "valorant-wins-quantity-error"
+                      : "valorant-placements-quantity-error"
+                    : minimumBlocked
+                      ? minimumNoticeId
+                      : undefined
+                }
                 disabled={!quote || isLoading || isCreatingOrder || !canContinue}
                 onClick={createOrder}
               >

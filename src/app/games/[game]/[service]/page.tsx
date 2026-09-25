@@ -378,6 +378,15 @@ export default async function ServicePage({ params }: ServicePageProps) {
     game.slug === "rocket-league"
       ? rocketLeagueServiceNavigation.find((item) => item.slug === service.slug)?.label
       : undefined;
+
+  const isValorantRank = game.slug === "valorant" && service.slug === "rank-boost";
+  const isValorantWins = game.slug === "valorant" && service.slug === "wins";
+  const isValorantPlacements = game.slug === "valorant" && service.slug === "placement-matches";
+  const isCustomValorantService = isValorantRank || isValorantWins || isValorantPlacements;
+  const isCompactService = isCustomRocketLeagueService || isCustomValorantService;
+  const valorantBreadcrumbLabel = isCustomValorantService
+    ? valorantServiceNavigation.find((item) => item.slug === service.slug)?.label
+    : undefined;
   const breadcrumbJsonLd = rocketLeagueBreadcrumbLabel
     ? {
         "@context": "https://schema.org",
@@ -409,12 +418,38 @@ export default async function ServicePage({ params }: ServicePageProps) {
           },
         ],
       }
-    : null;
-
-  const isValorantRank = game.slug === "valorant" && service.slug === "rank-boost";
-  const isValorantWins = game.slug === "valorant" && service.slug === "wins";
-  const isValorantPlacements = game.slug === "valorant" && service.slug === "placement-matches";
-  const isCustomValorantService = isValorantRank || isValorantWins || isValorantPlacements;
+    : valorantBreadcrumbLabel
+      ? {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: `${siteConfig.url}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Games",
+              item: `${siteConfig.url}/games`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "VALORANT",
+              item: `${siteConfig.url}/games/valorant`,
+            },
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: valorantBreadcrumbLabel,
+              item: `${siteConfig.url}/games/valorant/${service.slug}`,
+            },
+          ],
+        }
+      : null;
 
   const schema = isCustomRocketLeagueService
     ? null
@@ -504,7 +539,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
       <SiteHeader />
 
-      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCustomRocketLeagueService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
+      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCompactService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
         {isCustomRocketLeagueService ? (
           <>
             <Image
@@ -518,13 +553,26 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(3,5,4,0.93)_0%,rgba(3,5,4,0.82)_46%,rgba(3,5,4,0.50)_72%,rgba(3,5,4,0.30)_100%)] sm:bg-[linear-gradient(90deg,rgba(3,5,4,0.97)_0%,rgba(3,5,4,0.88)_34%,rgba(3,5,4,0.48)_58%,rgba(3,5,4,0.16)_80%,rgba(3,5,4,0.26)_100%)]" />
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,5,4,0.24)_0%,rgba(3,5,4,0.02)_42%,rgba(3,5,4,0.34)_100%)]" />
           </>
+        ) : isCustomValorantService ? (
+          <>
+            <Image
+              src="/game-heroes/valorant-storefront.jpeg"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="pointer-events-none -z-30 object-cover object-[76%_46%] sm:object-[76%_43%] lg:object-[76%_40%]"
+            />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(5,5,7,0.95)_0%,rgba(5,5,7,0.88)_42%,rgba(5,5,7,0.50)_68%,rgba(5,5,7,0.22)_100%)] sm:bg-[linear-gradient(90deg,rgba(5,5,7,0.97)_0%,rgba(5,5,7,0.90)_34%,rgba(5,5,7,0.50)_58%,rgba(5,5,7,0.14)_80%,rgba(5,5,7,0.24)_100%)]" />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(5,5,7,0.18)_0%,rgba(5,5,7,0.01)_45%,rgba(5,5,7,0.30)_100%)]" />
+          </>
         ) : (
           <>
             <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
             <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
           </>
         )}
-        <Container className={isCustomRocketLeagueService ? "min-h-[232px] py-3 sm:min-h-[286px] sm:py-6 lg:min-h-[300px] lg:py-7" : "py-5 sm:py-16 lg:py-18"}>
+        <Container className={isCompactService ? "min-h-[232px] py-3 sm:min-h-[286px] sm:py-6 lg:min-h-[300px] lg:py-7" : "py-5 sm:py-16 lg:py-18"}>
           <div className="sm:hidden">
             <Link
               href={`/games/${game.slug}`}
@@ -533,7 +581,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ArrowLeft className="mr-2 size-3.5" />
               Back to {game.name}
             </Link>
-            {!isCustomRocketLeagueService ? (
+            {!isCompactService ? (
               <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white">
                 {service.name}
               </h1>
@@ -564,6 +612,19 @@ export default async function ServicePage({ params }: ServicePageProps) {
                       : isRocketLeagueTournament
                         ? "Rocket League Tournament Boosting"
                         : "Rocket League Season Rewards Boosting"}
+              </h1>
+              <p className="mt-3 hidden max-w-[36rem] text-balance text-lg font-medium leading-7 text-white/70 sm:block lg:text-xl">
+                {heroTitle}
+              </p>
+            </div>
+          ) : isCustomValorantService ? (
+            <div className="mt-1 max-w-[42rem] sm:mt-5 lg:mt-6">
+              <h1 className="max-w-[17rem] text-balance text-[1.75rem] font-bold leading-[1.02] tracking-[-0.045em] text-white sm:max-w-[36rem] sm:text-[2.5rem] lg:max-w-[42rem] lg:text-[2.75rem]">
+                {isValorantRank
+                  ? "Valorant Rank Boost"
+                  : isValorantWins
+                    ? "Valorant Competitive Wins"
+                    : "Valorant Placements Boost"}
               </h1>
               <p className="mt-3 hidden max-w-[36rem] text-balance text-lg font-medium leading-7 text-white/70 sm:block lg:text-xl">
                 {heroTitle}
@@ -608,7 +669,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </Container>
       </section>
 
-      <section className={isCustomRocketLeagueService ? "pb-6 pt-3 sm:pb-10 sm:pt-4 lg:pb-12 lg:pt-5" : "py-6 sm:py-12 lg:py-16"}>
+      <section className={isCompactService ? "pb-6 pt-3 sm:pb-10 sm:pt-4 lg:pb-12 lg:pt-5" : "py-6 sm:py-12 lg:py-16"}>
         <Container>
           {isCustomRocketLeagueService ? (
             <>
