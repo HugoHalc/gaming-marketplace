@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
@@ -503,10 +504,27 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
       <SiteHeader />
 
-      <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
-        <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
-        <Container className="py-5 sm:py-16 lg:py-18">
+      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCustomRocketLeagueService ? "min-h-[320px] sm:min-h-[360px] lg:min-h-[380px]" : ""}`}>
+        {isCustomRocketLeagueService ? (
+          <>
+            <Image
+              src="/game-heroes/rocket-league-service-hero.webp"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="pointer-events-none -z-30 object-cover object-[50%_50%] sm:object-[58%_50%] lg:object-[67%_50%]"
+            />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(3,5,4,0.93)_0%,rgba(3,5,4,0.82)_46%,rgba(3,5,4,0.50)_72%,rgba(3,5,4,0.30)_100%)] sm:bg-[linear-gradient(90deg,rgba(3,5,4,0.97)_0%,rgba(3,5,4,0.88)_34%,rgba(3,5,4,0.48)_58%,rgba(3,5,4,0.16)_80%,rgba(3,5,4,0.26)_100%)]" />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,5,4,0.24)_0%,rgba(3,5,4,0.02)_42%,rgba(3,5,4,0.34)_100%)]" />
+          </>
+        ) : (
+          <>
+            <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
+            <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
+          </>
+        )}
+        <Container className={isCustomRocketLeagueService ? "min-h-[320px] py-5 sm:min-h-[360px] sm:py-10 lg:min-h-[380px] lg:py-10" : "py-5 sm:py-16 lg:py-18"}>
           <div className="sm:hidden">
             <Link
               href={`/games/${game.slug}`}
