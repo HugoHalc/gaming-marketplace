@@ -23,7 +23,7 @@ import {
 } from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
-import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { AccountBoostCheckoutReassurance } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
 import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
@@ -791,7 +791,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                   aria-checked={boostMethod === "account"}
                   tabIndex={boostMethod === "account" ? 0 : -1}
                   onClick={() => update("boostMethod", "account")}
-                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
+                  className={`min-h-[5.25rem] rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "account"
                       ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -802,13 +802,12 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                       <Gauge className="size-4" />
                     </span>
                     <span className="text-[10px] font-bold text-[#82F5A4]">
-                      Base price
+                      Base
                     </span>
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
+                  <p className="mt-2 text-sm font-semibold text-[#F4F7F5]">
                     Account Boost
                   </p>
-                  <AccountBoostCardDescription />
                 </button>
 
                 <button
@@ -817,7 +816,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                   aria-checked={boostMethod === "play-with-booster"}
                   tabIndex={boostMethod === "play-with-booster" ? 0 : -1}
                   onClick={() => update("boostMethod", "play-with-booster")}
-                  className={`min-h-[8.4rem] rounded-xl border p-4 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
+                  className={`min-h-[5.25rem] rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                     boostMethod === "play-with-booster"
                       ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035] ring-1 ring-inset ring-white/[0.12]"
                       : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -831,17 +830,16 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                       +45%
                     </span>
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-[#F4F7F5]">
+                  <p className="mt-2 text-sm font-semibold text-[#F4F7F5]">
                     Play With Booster
-                  </p>
-                  <p className="mt-1 text-[11px] leading-5 text-[#A0AAA4]">
-                    You play while we boost with you.
                   </p>
                 </button>
               </div>
+              <p className="mt-2 text-[10px] leading-4 text-white/40">
+                {boostMethod === "account" ? "The booster plays on your account." : "You play alongside the booster."}
+              </p>
             </div>
           </div>
-          <AccountBoostTrust selected={boostMethod === "account"} accent="blue" />
 
           <div>
             <div className="flex items-center justify-between gap-4">
@@ -949,7 +947,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
             <div className="mt-2 divide-y divide-white/[0.06]">
               <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Playlist</span><span className="font-medium text-white/78">{selectedPlaylist.label}</span></div>
               <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Platform</span><span className="font-medium text-white/78">{platforms.find((item) => item.value === selection.platform)?.label}</span></div>
-              <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
+              <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Boost method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
             </div>
 
             {error ? (

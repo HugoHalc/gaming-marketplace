@@ -92,8 +92,8 @@ export function RocketLeagueConversionTrust({
           </p>
           <p className="mt-1 text-[10px] leading-4 text-white/45">
             {accountBoost
-              ? "Account details are requested only after checkout."
-              : "You play alongside the booster; account access is not required for this method."}
+              ? "Account details are requested after checkout."
+              : "No account access required."}
           </p>
         </div>
       </div>

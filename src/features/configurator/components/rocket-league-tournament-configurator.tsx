@@ -22,7 +22,7 @@ import {
   minimumOrderShortfallCents,
 } from "@/features/orders/minimum-order";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
-import { AccountBoostCardDescription, AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { AccountBoostCheckoutReassurance } from "./account-boost-trust";
 import { handleRocketLeagueRadioGroupKeyDown } from "./rocket-league-radio-group";
 import { RocketLeagueOrderSummaryHeader } from "./rocket-league-order-summary-header";
 import { RocketLeagueMinimumOrderNotice } from "./rocket-league-minimum-order-notice";
@@ -600,10 +600,9 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                     <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-blue-200/70">
                       <Gauge className="size-4" />
                     </span>
-                    <span className="text-[10px] font-bold text-white/42">Base price</span>
+                    <span className="text-[10px] font-bold text-white/42">Base</span>
                   </div>
                   <p className="mt-2 text-[13px] font-semibold text-white">Account Boost</p>
-                  <AccountBoostCardDescription />
                 </button>
 
                 <button
@@ -625,14 +624,13 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
                     <span className="text-[10px] font-bold text-blue-200/60">+45%</span>
                   </div>
                   <p className="mt-2 text-[13px] font-semibold text-white">Play With Booster</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-white/40">
-                    You play while we boost with you.
-                  </p>
                 </button>
               </div>
+              <p className="mt-2 text-[10px] leading-4 text-white/40">
+                {boostMethod === "account" ? "The booster plays on your account." : "You play alongside the booster."}
+              </p>
             </div>
           </div>
-          <AccountBoostTrust selected={boostMethod === "account"} accent="blue" />
 
           <div>
             <div className="flex items-center justify-between gap-4">
@@ -710,7 +708,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
               <div className="mt-2 divide-y divide-white/[0.06]">
                 <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Playlist</span><span className="font-medium text-white/78">{selectedPlaylist.label}</span></div>
                 <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Platform</span><span className="font-medium text-white/78">{platforms.find((item) => item.value === selection.platform)?.label}</span></div>
-                <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
+                <div className="flex items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">Boost method</span><span className="font-medium text-white/78">{boostMethod === "account" ? "Account Boost" : "Play With Booster"}</span></div>
               </div>
 
               {error ? (
