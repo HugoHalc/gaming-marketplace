@@ -13,7 +13,6 @@ import {
   Monitor,
   MonitorPlay,
   ShieldCheck,
-  Sparkles,
   Trophy,
   Users,
   Zap,
@@ -605,36 +604,21 @@ export function ValorantServiceConfigurator({
 
   return (
     <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
-      <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
-          <div>
-            <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-rose-200/65">
-              <Sparkles className="size-3.5" />
-              {serviceLabel}
-            </div>
-            <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">
-              Configure your full order without leaving this panel.
-            </p>
-          </div>
-          <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
-            Live server pricing
-          </span>
-        </div>
-
-        <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
+      <section className="min-w-0">
+        <div className="space-y-5 sm:space-y-6">
           {isRankBoost ? (
             <div className="relative grid gap-4 lg:grid-cols-2">
               <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-rose-200/45 lg:grid">
                 <ArrowRight className="size-3.5" />
               </span>
-              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
                 <CompactRankSelector
                   value={currentRank}
                   omitImmortalCurrent
                   onChange={(value) => update("currentRank", value)}
                 />
               </div>
-              <div className="relative rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <div className="relative rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
                 <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-rose-300/[0.12] bg-[#0E1411] text-rose-200/45 lg:hidden" aria-hidden="true">
                   <ArrowRight className="size-3 rotate-90" />
                 </span>
@@ -647,7 +631,7 @@ export function ValorantServiceConfigurator({
               </div>
             </div>
           ) : (
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
               <CompactRankSelector
                 value={currentRank}
                 allowUnrated={isPlacements}
@@ -657,7 +641,7 @@ export function ValorantServiceConfigurator({
           )}
 
           {(isWins || isPlacements) ? (
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.012] p-4 sm:p-5">
               <QuantityControl
                 value={Number(isWins ? selection.wins : selection.matches)}
                 min={1}
@@ -669,12 +653,12 @@ export function ValorantServiceConfigurator({
           ) : null}
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="space-y-3">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                Boost method
+                Boost Method
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">Choose your preferred boost method.</p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <p className="mt-1 text-sm font-semibold text-white"></p>
+              <div className="mt-2 grid grid-cols-2 gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
                 <ChoicePill
                   active={selection.queue === "solo"}
                   onClick={() => update("queue", "solo")}
@@ -695,12 +679,12 @@ export function ValorantServiceConfigurator({
               </p>
             </div>
 
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="space-y-3">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                Platform
+                Select Platform
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">Valorant boosting is PC only.</p>
-              <div className="mt-3">
+              <p className="mt-1 text-sm font-semibold text-white"></p>
+              <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
                 <div className="flex h-11 items-center justify-between rounded-xl border border-rose-300/[0.18] bg-[#131B17] px-3">
                   <span className="flex items-center gap-3 text-xs font-semibold text-white">
                     <span className="grid size-7 place-items-center rounded-lg border border-white/[0.10] bg-[#090D0B] text-sky-300">
@@ -719,15 +703,15 @@ export function ValorantServiceConfigurator({
           {(isRankBoost || isWins) ? (
             <div>
               <div className="flex items-center justify-between gap-4">
-                <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+                <div className="space-y-3">
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                     RR Gain
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-white">Select the expected RR gain.</p>
+                  <p className="mt-1 text-sm font-semibold text-white"></p>
                 </div>
                 <Gauge className="size-4 text-rose-200/50" />
               </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-4">
                 {rrGainOptions.map((option) => (
                   <ChoicePill
                     key={option.value}
@@ -742,12 +726,12 @@ export function ValorantServiceConfigurator({
           ) : null}
 
           {isRankBoost ? (
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="space-y-3">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 RR Amount
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">Choose your current RR amount.</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <p className="mt-1 text-sm font-semibold text-white"></p>
+              <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
                 {rrAmountOptions.map((option) => (
                   <ChoicePill
                     key={option.value}
@@ -761,12 +745,12 @@ export function ValorantServiceConfigurator({
             </div>
           ) : null}
 
-          <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+          <div className="space-y-3">
             <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
               Server
             </p>
-            <p className="mt-1 text-sm font-semibold text-white">Select the server for this order.</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <p className="mt-1 text-sm font-semibold text-white"></p>
+            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {servers.map((server) => (
                 <ChoicePill
                   key={server.value}
@@ -780,16 +764,16 @@ export function ValorantServiceConfigurator({
 
           <div>
             <div className="flex items-center justify-between gap-4">
-              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <div className="space-y-3">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                  Customize extras
+                  Extras
                 </p>
-                <p className="mt-1 text-sm font-semibold text-white">Add only the upgrades you want.</p>
+                <p className="mt-1 text-sm font-semibold text-white"></p>
               </div>
               <Zap className="size-4 text-rose-200/50" />
             </div>
 
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2">
               <CompactExtra
                 checked={selection.playOffline === true}
                 onChange={(checked) => update("playOffline", checked)}

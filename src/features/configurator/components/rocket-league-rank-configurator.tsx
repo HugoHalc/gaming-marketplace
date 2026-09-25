@@ -14,7 +14,6 @@ import {
   LoaderCircle,
   MonitorPlay,
   ShieldCheck,
-  Sparkles,
   Users,
   Zap,
 } from "lucide-react";
@@ -557,33 +556,20 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
   return (
     <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
-      <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080b09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-        <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
-          <div>
-            <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-200/65">
-              <Sparkles className="size-3.5" />
-              Rocket League Rank Boost
-            </div>
-            <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Configure your full order without leaving this panel.</p>
-          </div>
-          <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
-            Live server pricing
-          </span>
-        </div>
-
-        <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
+      <section className="min-w-0">
+        <div className="space-y-5 sm:space-y-6">
           <div className="relative grid gap-4 lg:grid-cols-2">
             <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-blue-200/45 lg:grid">
               <ArrowRight className="size-3.5" />
             </span>
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
               <CompactRankSelector
                 title="Current rank"
                 value={currentRank}
                 onChange={(value) => update("currentRank", value)}
               />
             </div>
-            <div className="relative rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="relative rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
               <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-blue-300/[0.12] bg-[#0E1411] text-blue-200/45 lg:hidden" aria-hidden="true">
                 <ArrowRight className="size-3 rotate-90" />
               </span>
@@ -597,16 +583,16 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
             </div>
           </div>
 
-          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+          <div role="radiogroup" aria-label="Playlist" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="space-y-3">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Playlist</p>
-                <p className="mt-1 text-sm font-semibold text-white">Choose your playlist.</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Select Playlist</p>
+                
               </div>
               <span className="text-[10px] text-white/35">Price modifiers shown upfront</span>
             </div>
 
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-3">
               {playlists.filter((playlist) => playlist.group === "Competitive").map((playlist) => (
                 <ChoicePill
                   key={playlist.value}
@@ -618,7 +604,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               ))}
             </div>
 
-            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-3">
               {visibleExtraModes.map((playlist) => (
                 <ChoicePill
                   key={playlist.value}
@@ -640,9 +626,9 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
-              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
-              <div role="radiogroup" aria-label="Platform" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
+            <div className="space-y-3">
+              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Select Platform</p>
+              <div role="radiogroup" aria-label="Platform" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-2 grid grid-cols-2 gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5">
                 {platforms.map((platform) => {
                   const active = selection.platform === platform.value;
                   return (
@@ -676,9 +662,9 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               </div>
             </div>
 
-            <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+            <div className="space-y-3">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost method</p>
-              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleRocketLeagueRadioGroupKeyDown} className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 sm:grid-cols-2">
                 <button
                   type="button"
                   role="radio"
@@ -725,14 +711,14 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
 
           <div>
             <div className="flex items-center justify-between gap-4">
-              <div className="rounded-[1.15rem] border border-white/[0.07] bg-white/[0.018] p-4 sm:p-5">
+              <div className="space-y-3">
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p>
                 <p className="mt-1 text-sm font-semibold text-white">Optional upgrades.</p>
               </div>
               <span className="text-[10px] text-white/35">Nothing preselected</span>
             </div>
 
-            <div className="mt-3 grid gap-2 md:grid-cols-2">
+            <div className="mt-2 grid gap-2 rounded-xl border border-white/[0.06] bg-white/[0.012] p-2.5 md:grid-cols-2">
               <CompactExtra
                 checked={selection.appearOffline === true}
                 disabled={boostMethod === "play-with-booster"}
