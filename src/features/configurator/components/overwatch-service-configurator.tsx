@@ -181,16 +181,6 @@ function SummaryRankBadge({ rank }: { rank: string }) {
   }
 
   const family = familyForRank(rank);
-  if (!family.badge) {
-    return (
-      <span
-        aria-hidden="true"
-        className="grid size-8 shrink-0 place-items-center rounded-lg border border-amber-300/[0.13] bg-amber-300/[0.035] text-[9px] font-black text-amber-100/75"
-      >
-        {family.mark}
-      </span>
-    );
-  }
 
   return (
     <Image
