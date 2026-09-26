@@ -383,7 +383,23 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const isValorantWins = game.slug === "valorant" && service.slug === "wins";
   const isValorantPlacements = game.slug === "valorant" && service.slug === "placement-matches";
   const isCustomValorantService = isValorantRank || isValorantWins || isValorantPlacements;
-  const isCompactService = isCustomRocketLeagueService || isCustomValorantService;
+  const isLeagueOfLegendsService = game.slug === "league-of-legends";
+  const leagueOfLegendsServiceTitle = service.slug === "rank-boost"
+    ? "League of Legends Rank Boost"
+    : service.slug === "wins"
+      ? "League of Legends Ranked Wins"
+      : service.slug === "placement-matches"
+        ? "League of Legends Placements"
+        : service.slug === "unrated-matches"
+          ? "League of Legends Unrated Matches"
+          : service.slug === "arena-boost"
+            ? "League of Legends Arena Boost"
+            : service.slug === "mastery-boost"
+              ? "League of Legends Mastery Boost"
+              : service.slug === "clash-boost"
+                ? "League of Legends Clash Boost"
+                : `League of Legends ${service.name}`;
+  const isCompactService = isCustomRocketLeagueService || isCustomValorantService || isLeagueOfLegendsService;
   const valorantBreadcrumbLabel = isCustomValorantService
     ? valorantServiceNavigation.find((item) => item.slug === service.slug)?.label
     : undefined;
@@ -539,7 +555,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
       <SiteHeader />
 
-      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isCompactService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
+      <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isLeagueOfLegendsService ? "min-h-[180px] sm:min-h-[208px] lg:min-h-[220px]" : isCompactService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
         {isCustomRocketLeagueService ? (
           <>
             <Image
@@ -566,13 +582,15 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(5,5,7,0.95)_0%,rgba(5,5,7,0.88)_42%,rgba(5,5,7,0.50)_68%,rgba(5,5,7,0.22)_100%)] sm:bg-[linear-gradient(90deg,rgba(5,5,7,0.97)_0%,rgba(5,5,7,0.90)_34%,rgba(5,5,7,0.50)_58%,rgba(5,5,7,0.14)_80%,rgba(5,5,7,0.24)_100%)]" />
             <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(5,5,7,0.18)_0%,rgba(5,5,7,0.01)_45%,rgba(5,5,7,0.30)_100%)]" />
           </>
+        ) : isLeagueOfLegendsService ? (
+          <div className="absolute inset-0 -z-20 bg-[#050807]" />
         ) : (
           <>
             <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
             <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
           </>
         )}
-        <Container className={isCompactService ? "min-h-[232px] py-3 sm:min-h-[286px] sm:py-6 lg:min-h-[300px] lg:py-7" : "py-5 sm:py-16 lg:py-18"}>
+        <Container className={isLeagueOfLegendsService ? "min-h-[180px] py-3 sm:min-h-[208px] sm:py-5 lg:min-h-[220px] lg:py-6" : isCompactService ? "min-h-[232px] py-3 sm:min-h-[286px] sm:py-6 lg:min-h-[300px] lg:py-7" : "py-5 sm:py-16 lg:py-18"}>
           <div className="sm:hidden">
             <Link
               href={`/games/${game.slug}`}
@@ -629,6 +647,24 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <p className="mt-3 hidden max-w-[36rem] text-balance text-lg font-medium leading-7 text-white/70 sm:block lg:text-xl">
                 {heroTitle}
               </p>
+            </div>
+          ) : isLeagueOfLegendsService ? (
+            <div className="mt-1 flex min-w-0 flex-col gap-3 sm:mt-4 sm:flex-row sm:items-end sm:justify-between lg:mt-5">
+              <div className="min-w-0 max-w-[46rem]">
+                <h1 className="text-balance text-[1.75rem] font-bold leading-[1.04] tracking-[-0.045em] text-[#F4F7F5] sm:text-[2.125rem] lg:text-[2.35rem]">
+                  {leagueOfLegendsServiceTitle}
+                </h1>
+                <p className="mt-2 max-w-[42rem] text-sm leading-6 text-white/58 sm:text-[15px]">
+                  {service.description}
+                </p>
+              </div>
+              <Link
+                href="/games/league-of-legends"
+                className="hidden min-h-9 shrink-0 items-center text-xs font-semibold text-white/55 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 sm:inline-flex"
+              >
+                <ArrowLeft className="mr-2 size-3.5" aria-hidden="true" />
+                Back to League of Legends
+              </Link>
             </div>
           ) : (
             <div className="mt-8 hidden gap-8 sm:grid lg:grid-cols-[1fr_auto] lg:items-end">

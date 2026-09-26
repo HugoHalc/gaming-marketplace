@@ -24,7 +24,7 @@ import { LeagueOfLegendsOrderGuidance } from "./league-of-legends-order-guidance
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 import { PlatformIcon } from "./platform-icon";
 import { MinimumOrderNotice } from "./minimum-order-notice";
-import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
+import { formatUsdCents, meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -780,7 +780,7 @@ export function LeagueOfLegendsServiceConfigurator({
         </aside>
 
         <div className="min-w-0">
-          <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
+          <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
             <section className="min-w-0">
               <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-[#080B09] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
                 <div>
@@ -926,22 +926,10 @@ export function LeagueOfLegendsServiceConfigurator({
                   </div>
                 </ConfiguratorBlock>
 
-                <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
-                  {[
-                    "Server-calculated pricing.",
-                    "Selected options are included in your quote.",
-                    "Available discounts are applied automatically.",
-                  ].map((note) => (
-                    <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
-                      <Check className="size-3 shrink-0 text-emerald-300" aria-hidden="true" />
-                      <span>{note}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </section>
 
-            <aside id="boost-summary" className="scroll-mt-28 2xl:scroll-mt-24 2xl:sticky 2xl:top-24">
+            <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
               <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
                 <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4">
                   <div className="flex items-start justify-between gap-4">
@@ -1142,11 +1130,16 @@ export function LeagueOfLegendsServiceConfigurator({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 2xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-black/90 px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur-xl sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 xl:hidden">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <div>
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
             <p className="font-gaming-value mt-0.5 text-[1.55rem] font-bold leading-none text-[#F4F7F5]">{quote ? formatPrice(quote.total) : "—"}</p>
+            {belowMinimum ? (
+              <p className="mt-1 text-[9px] font-medium leading-3 text-[#E7C867]/80">
+                Add {formatUsdCents(minimumShortfallCents)} to reach the $5.00 minimum.
+              </p>
+            ) : null}
           </div>
           <a href="#boost-summary" className="inline-flex h-11 items-center justify-center rounded-xl bg-[#39E56F] px-5 text-sm font-bold text-[#050807]">
             View order<ArrowRight className="ml-2 size-4" />
