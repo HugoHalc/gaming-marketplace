@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Check,
+  Clock3,
   EyeOff,
   Gauge,
   LoaderCircle,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   Trophy,
   Users,
+  UsersRound,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -272,7 +274,7 @@ function CompactRankSelector({
                 tabIndex={selected ? 0 : -1}
                 title={family.label}
                 onClick={() => chooseFamily(family.key)}
-                className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
+                className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-rose-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
                   selected
                     ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] ring-1 ring-inset ring-white/[0.12]"
                     : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -286,7 +288,7 @@ function CompactRankSelector({
                 ) : null}
                 <RankIcon rank={firstRankForFamily(family.key)} selected={selected} />
                 <span
-                  className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
+                  className={`mt-1.5 min-h-8 w-full whitespace-normal px-0.5 text-center text-[11px] font-semibold leading-4 transition-colors ${
                     selected ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
                   }`}
                 >
@@ -334,6 +336,83 @@ function CompactRankSelector({
           })}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function ValorantOrderGuidance({
+  items,
+  selectedExtras,
+}: {
+  items: Array<[string, string]>;
+  selectedExtras: string[];
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
+      <section className="px-3 py-3" aria-labelledby="valorant-estimated-timing-heading">
+        <div className="flex items-start gap-2.5">
+          <Clock3 className="mt-0.5 size-3.5 shrink-0 text-rose-200/65" aria-hidden="true" />
+          <div className="min-w-0 flex-1">
+            <h3
+              id="valorant-estimated-timing-heading"
+              className="text-[10px] font-semibold uppercase tracking-[0.12em] text-rose-200/65"
+            >
+              Estimated timing
+            </h3>
+            <div
+              className="mt-1.5 text-[10px] leading-4 text-white/45"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <div className="space-y-1">
+                <p className="flex items-center justify-between gap-3">
+                  <span className="text-white/35">Estimated start</span>
+                  <span className="font-medium text-white/55">Unavailable</span>
+                </p>
+                <p className="flex items-center justify-between gap-3">
+                  <span className="text-white/35">Estimated completion</span>
+                  <span className="font-medium text-white/55">Unavailable</span>
+                </p>
+                <p className="pt-0.5 text-white/32">
+                  No verified timing estimate is available for this configuration.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-t border-white/[0.06] px-3 py-3"
+        aria-labelledby="valorant-verify-order-heading"
+      >
+        <div className="flex items-start gap-2.5">
+          <UsersRound className="mt-0.5 size-3.5 shrink-0 text-rose-200/65" aria-hidden="true" />
+          <div className="min-w-0 flex-1">
+            <h3
+              id="valorant-verify-order-heading"
+              className="text-[10px] font-semibold uppercase tracking-[0.12em] text-rose-200/65"
+            >
+              Verify before you order
+            </h3>
+            <dl className="mt-2 space-y-1.5 text-[10px] leading-4">
+              {items.map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-3">
+                  <dt className="text-white/35">{label}</dt>
+                  <dd className="max-w-[62%] text-right font-medium text-white/65">{value}</dd>
+                </div>
+              ))}
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-white/35">Selected extras</dt>
+                <dd className="max-w-[62%] text-right font-medium text-white/65">
+                  {selectedExtras.length > 0 ? selectedExtras.join(", ") : "None selected"}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -744,6 +823,77 @@ export function ValorantServiceConfigurator({
     return rows;
   }, [selection, isRankBoost, isWins, isPlacements]);
 
+
+  const verificationItems = useMemo<Array<[string, string]>>(() => {
+    const items: Array<[string, string]> = [];
+
+    if (isRankBoost) {
+      items.push(["Current rank", rankLabel(currentRank)]);
+      items.push(["Target rank", rankLabel(targetRank)]);
+    } else {
+      items.push([
+        isPlacements ? "Previous rank" : "Current rank",
+        currentRank === "unrated" ? "Unrated" : rankLabel(currentRank),
+      ]);
+      items.push([
+        isWins ? "Wins" : "Placement matches",
+        quantityDisplay,
+      ]);
+    }
+
+    items.push(["Boost method", selection.queue === "duo" ? "Duo" : "Solo"]);
+
+    if (isRankBoost || isWins) {
+      items.push([
+        "RR gain",
+        rrGainOptions.find((item) => item.value === selection.rrGain)?.label ?? "20+ RR",
+      ]);
+    }
+
+    if (isRankBoost) {
+      items.push([
+        "RR amount",
+        rrAmountOptions.find((item) => item.value === selection.rrAmount)?.label ?? "0–20 RR",
+      ]);
+    }
+
+    items.push(["Server", servers.find((server) => server.value === selection.server)?.label ?? "North America"]);
+    items.push(["Platform", "PC"]);
+
+    return items;
+  }, [
+    currentRank,
+    targetRank,
+    quantityDisplay,
+    selection.queue,
+    selection.rrGain,
+    selection.rrAmount,
+    selection.server,
+    isRankBoost,
+    isWins,
+    isPlacements,
+  ]);
+
+  const selectedExtras = useMemo(() => {
+    const extras = [
+      selection.playOffline === true ? "Play Offline" : null,
+      selection.agentPreferences === true ? "Agents Preferences" : null,
+      selection.liveStream === true ? "Streaming" : null,
+      selection.expressDelivery === true ? "Express Delivery" : null,
+      selection.extraWin === true ? "+1 Extra Win" : null,
+      selection.rankInsurance === true ? "Rank Insurance" : null,
+    ];
+
+    return extras.filter((item): item is string => Boolean(item));
+  }, [
+    selection.playOffline,
+    selection.agentPreferences,
+    selection.liveStream,
+    selection.expressDelivery,
+    selection.extraWin,
+    selection.rankInsurance,
+  ]);
+
   return (
     <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
       <section className="min-w-0">
@@ -1004,10 +1154,6 @@ export function ValorantServiceConfigurator({
                     <LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />
                     Updating
                   </span>
-                ) : !canContinue ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/15 bg-amber-200/[0.035] px-2.5 py-1 text-[9px] font-medium text-amber-100/75" aria-live="polite" role="status">
-                    Needs attention
-                  </span>
                 ) : null}
               </div>
             </div>
@@ -1170,12 +1316,10 @@ export function ValorantServiceConfigurator({
                 )}
               </Button>
 
-              <p className="mt-3 text-center text-[10px] leading-4 text-white/35">
-                Final price is server-validated before Stripe payment.
-              </p>
             </div>
           </div>
 
+          <ValorantOrderGuidance items={verificationItems} selectedExtras={selectedExtras} />
         </div>
         <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
