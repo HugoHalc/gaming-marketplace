@@ -16,9 +16,6 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
-import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
-import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import {
   marvelRivalsRanks,
   marvelRivalsServices,
@@ -224,10 +221,8 @@ function MarvelServiceMicrovisual({
 
 function MarvelServiceCard({
   service,
-  catalogService,
 }: {
   service: MarvelRivalsServiceFoundation;
-  catalogService?: ServiceSummary;
 }) {
   const meta = marvelServiceMeta(service);
   const Icon = meta.icon;
@@ -262,19 +257,12 @@ function MarvelServiceCard({
       <div className="relative mt-auto pt-5">
         <div className="mb-5 h-px bg-gradient-to-r from-[#A38CFF]/16 via-white/[0.08] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          {catalogService ? (
-            <StartingPriceDisplay
-              value={catalogService.startingPrice}
-              context={catalogService.startingPriceContext}
-            />
-          ) : (
-            <div>
-              <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/30">
-                Service
-              </p>
-              <p className="mt-1 text-xs font-semibold text-white/62">Configure service</p>
-            </div>
-          )}
+          <div>
+            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/30">
+              Service
+            </p>
+            <p className="mt-1 text-xs font-semibold text-white/62">Configure service</p>
+          </div>
           <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#A38CFF]/25 group-hover:bg-[#7A63F2]/[0.07] group-hover:text-[#CEC5FF]">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>
@@ -284,12 +272,7 @@ function MarvelServiceCard({
   );
 }
 
-export default async function MarvelRivalsPage() {
-  const catalogGame = await findCatalogGameBySlug("marvel-rivals");
-  const catalogServicesBySlug = new Map(
-    (catalogGame?.services ?? []).map((service) => [service.slug, service]),
-  );
-
+export default function MarvelRivalsPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
       <SiteHeader />
@@ -388,11 +371,7 @@ export default async function MarvelRivalsPage() {
 
           <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {marvelRivalsServices.map((service) => (
-              <MarvelServiceCard
-                key={service.slug}
-                service={service}
-                catalogService={catalogServicesBySlug.get(service.slug)}
-              />
+              <MarvelServiceCard key={service.slug} service={service} />
             ))}
           </div>
         </Container>

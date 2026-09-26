@@ -19,22 +19,25 @@ export function useMarvelRivalsQuote(
   selection: ConfiguratorSelection,
   enabled = true,
 ) {
-  const [quote, setQuote] = useState<QuotePreview | null>(null);
+  const requestKey = JSON.stringify([serviceSlug, selection]);
+  const [quoteState, setQuoteState] = useState<{ key: string; quote: QuotePreview } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(enabled);
+  const quote = enabled && quoteState?.key === requestKey ? quoteState.quote : null;
 
   useEffect(() => {
+    setQuoteState(null);
+    setError(null);
+
     if (!enabled) {
-      setQuote(null);
-      setError(null);
       setIsLoading(false);
       return;
     }
 
     const controller = new AbortController();
+    let active = true;
+    setIsLoading(true);
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch("/api/quotes/preview", {
           method: "POST",
@@ -50,21 +53,23 @@ export function useMarvelRivalsQuote(
         if (!response.ok || !payload.quote) {
           throw new Error(payload.error ?? "Unable to calculate quote.");
         }
-        setQuote(payload.quote);
+        if (!active) return;
+        setQuoteState({ key: requestKey, quote: payload.quote });
       } catch (requestError) {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
-        setQuote(null);
+        if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
+        setQuoteState(null);
         setError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
-        if (!controller.signal.aborted) setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     }, 180);
 
     return () => {
+      active = false;
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [enabled, selection, serviceSlug]);
+  }, [enabled, requestKey, selection, serviceSlug]);
 
   return { quote, error, isLoading };
 }

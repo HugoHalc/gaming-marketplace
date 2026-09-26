@@ -105,17 +105,20 @@ export function MarvelRivalsCheckoutButton({
   disabled,
   loading,
   mobile = false,
+  ariaDescribedBy,
 }: {
   onClick: () => void;
   disabled: boolean;
   loading: boolean;
   mobile?: boolean;
+  ariaDescribedBy?: string;
 }) {
   return (
     <Button
       type="button"
       size={mobile ? "md" : "lg"}
       disabled={disabled || loading}
+      aria-describedby={ariaDescribedBy}
       onClick={onClick}
       className={
         mobile
@@ -126,7 +129,7 @@ export function MarvelRivalsCheckoutButton({
       {loading ? (
         <>
           <span className={mobile ? "sr-only sm:not-sr-only" : undefined}>Preparing checkout</span>
-          <LoaderCircle className={`${mobile ? "sm:ml-2" : "ml-2"} size-4 animate-spin`} />
+          <LoaderCircle className={`${mobile ? "sm:ml-2" : "ml-2"} size-4 animate-spin motion-reduce:animate-none`} />
         </>
       ) : (
         <>

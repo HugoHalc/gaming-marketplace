@@ -35,6 +35,11 @@ import {
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import { MinimumOrderNotice } from "./minimum-order-notice";
+import {
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { PlatformIcon } from "./platform-icon";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
@@ -516,6 +521,23 @@ export function MarvelRivalsRankConfigurator({ service }: {
     [selection.extras],
   );
 
+  const currentRankValid = rankOrder.includes(selection.currentRank);
+  const targetRankValid = rankOrder.includes(selection.targetRank);
+  const currentDivisionValid = currentRankValid && (rankHasDivisions(selection.currentRank)
+    ? marvelRivalsDivisionOptions.includes(selection.currentDivision as Division)
+    : selection.currentDivision === null);
+  const targetDivisionValid = targetRankValid && (rankHasDivisions(selection.targetRank)
+    ? marvelRivalsDivisionOptions.includes(selection.targetDivision as Division)
+    : selection.targetDivision === null);
+  const progressionValid = currentRankValid && targetRankValid && currentDivisionValid && targetDivisionValid &&
+    progressionIndex(selection.targetRank, selection.targetDivision) > progressionIndex(selection.currentRank, selection.currentDivision);
+  const regionValid = regions.some((item) => item.value === selection.region);
+  const platformValid = platforms.some((item) => item.value === selection.platform);
+  const boostMethodValid = selection.boostMethod === "solo" || selection.boostMethod === "duo";
+  const roleValid = roles.some((item) => item.value === selection.role);
+  const playOfflineValid = !(selection.extras.playOffline && selection.boostMethod === "duo");
+  const selectionIsValid = progressionValid && regionValid && platformValid && boostMethodValid && roleValid && playOfflineValid;
+
   const quoteSelection = useMemo<ConfiguratorSelection>(
     () => ({
       currentRank: selection.currentRank,
@@ -536,8 +558,13 @@ export function MarvelRivalsRankConfigurator({ service }: {
   const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
     service.slug,
     quoteSelection,
+    selectionIsValid,
   );
   const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
+  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
+  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumNoticeId = `marvel-${service.slug}-minimum-order`;
+  const canCheckout = Boolean(selectionIsValid && quote && !quoteLoading && !quoteError && !belowMinimum);
   const checkoutContinuitySelection = useMemo<ConfiguratorSelection>(
     () => ({
       currentRank: selection.currentRank,
@@ -559,7 +586,7 @@ export function MarvelRivalsRankConfigurator({ service }: {
     serviceSlug: service.slug,
     orderSelection: quoteSelection,
     continuitySelection: checkoutContinuitySelection,
-    canCheckout: Boolean(quote && !quoteLoading && !quoteError),
+    canCheckout,
     restoreSelection: (restored) =>
       setSelection((current) => ({
         ...current,
@@ -877,7 +904,7 @@ export function MarvelRivalsRankConfigurator({ service }: {
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
           statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
-          statusTone={quote && !quoteError ? "ready" : "pending"}
+          statusTone={canCheckout ? "ready" : "pending"}
           progression={<SummaryRankPair selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
           totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
@@ -886,11 +913,13 @@ export function MarvelRivalsRankConfigurator({ service }: {
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
-              disabled={!quote || quoteLoading || Boolean(quoteError)}
+              disabled={!canCheckout}
               loading={checkout.isCreatingOrder}
+              ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
             />
           }
         >
+          <MinimumOrderNotice id={minimumNoticeId} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
           {quoteError ? (
             <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
               {quoteError}
@@ -906,8 +935,9 @@ export function MarvelRivalsRankConfigurator({ service }: {
           <MarvelRivalsCheckoutButton
             mobile
             onClick={checkout.createOrder}
-            disabled={!quote || quoteLoading || Boolean(quoteError)}
+            disabled={!canCheckout}
             loading={checkout.isCreatingOrder}
+            ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
           />
         }
       />

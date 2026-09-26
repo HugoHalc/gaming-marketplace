@@ -33,6 +33,15 @@ import {
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import {
+  parseWholeNumberQuantity,
+  quantitySelectionValue,
+} from "@/features/configurator/client/whole-number-quantity";
+import { MinimumOrderNotice } from "./minimum-order-notice";
+import {
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { PlatformIcon } from "./platform-icon";
 
 
@@ -41,8 +50,8 @@ type ExtraKey = "playOffline" | "streaming" | "expressDelivery";
 
 type Selection = {
   hero: string;
-  currentProficiency: number;
-  targetProficiency: number;
+  currentProficiency: string | number;
+  targetProficiency: string | number;
   region: string;
   platform: string;
   boostMethod: BoostMethod;
@@ -110,10 +119,6 @@ const extraDefinitions: Array<{
   },
 ];
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
-
 function HeroSelector({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <div className="min-w-0">
@@ -157,65 +162,37 @@ function HeroSelector({ value, onChange }: { value: string; onChange: (value: st
 }
 
 function ProficiencyControl({
+  id,
   label,
-  value,
+  rawValue,
   min,
   max,
+  error,
   onChange,
 }: {
+  id: string;
   label: string;
-  value: number;
+  rawValue: string | number;
   min: number;
   max: number;
-  onChange: (value: number) => void;
+  error: string | null;
+  onChange: (value: string | number) => void;
 }) {
+  const parsed = parseWholeNumberQuantity(rawValue, min, max);
+  const sliderValue = parsed.valid ? parsed.value : min;
   const range = Math.max(1, max - min);
-  const progress = max === min ? 100 : ((value - min) / range) * 100;
+  const progress = max === min ? 100 : ((sliderValue - min) / range) * 100;
+  const errorId = `${id}-error`;
 
   return (
     <div className="min-w-0 rounded-xl border border-white/[0.07] bg-[#090D0B] p-4">
       <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAA4]">
-            {label}
-          </p>
-          <div className="mt-1 flex items-end gap-2">
-            <span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-              {value}
-            </span>
-            <span className="pb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-white/35">
-              proficiency
-            </span>
-          </div>
-        </div>
-        <input
-          aria-label={label}
-          type="number"
-          min={min}
-          max={max}
-          value={value}
-          onChange={(event) => onChange(clamp(Number(event.target.value) || min, min, max))}
-          className="font-gaming-value h-10 w-16 rounded-xl border border-white/[0.09] bg-black/20 px-2 text-center text-base font-bold text-white outline-none focus:border-[#A38CFF]/[0.22]"
-        />
+        <div><label htmlFor={id} className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAA4]">{label}</label><div className="mt-1 flex items-end gap-2"><span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{String(rawValue)}</span><span className="pb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-white/35">proficiency</span></div></div>
+        <input id={id} type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))} className="font-gaming-value h-10 w-16 rounded-xl border border-white/[0.09] bg-black/20 px-2 text-center text-base font-bold text-white outline-none focus:border-[#A38CFF]/[0.22]" />
       </div>
-
-      <input
-        aria-label={`${label} slider`}
-        type="range"
-        min={min}
-        max={max}
-        step={1}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]"
-        style={{
-          background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)`,
-        }}
-      />
-      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
+      <input aria-label={`${label} slider`} type="range" min={min} max={max} step={1} value={sliderValue} onChange={(event) => onChange(Number(event.target.value))} className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]" style={{ background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)` }} />
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30"><span>{min}</span><span>{max}</span></div>
+      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
     </div>
   );
 }
@@ -361,27 +338,21 @@ export function MarvelRivalsHeroConfigurator({
     },
   });
 
-  function setCurrentProficiency(currentProficiency: number) {
-    const nextCurrent = clamp(currentProficiency, 1, MAX_CURRENT_PROFICIENCY);
-    setSelection((current) => ({
-      ...current,
-      currentProficiency: nextCurrent,
-      targetProficiency:
-        current.targetProficiency <= nextCurrent
-          ? Math.min(MAX_PROFICIENCY, nextCurrent + 1)
-          : current.targetProficiency,
-    }));
+  function setCurrentProficiency(currentProficiency: string | number) {
+    setSelection((current) => {
+      const parsedCurrent = parseWholeNumberQuantity(currentProficiency, 1, MAX_CURRENT_PROFICIENCY);
+      if (!parsedCurrent.valid) return { ...current, currentProficiency };
+      const target = parseWholeNumberQuantity(current.targetProficiency, parsedCurrent.value + 1, MAX_PROFICIENCY);
+      return {
+        ...current,
+        currentProficiency: parsedCurrent.value,
+        targetProficiency: target.valid ? target.value : parsedCurrent.value + 1,
+      };
+    });
   }
 
-  function setTargetProficiency(targetProficiency: number) {
-    setSelection((current) => ({
-      ...current,
-      targetProficiency: clamp(
-        targetProficiency,
-        current.currentProficiency + 1,
-        MAX_PROFICIENCY,
-      ),
-    }));
+  function setTargetProficiency(targetProficiency: string | number) {
+    setSelection((current) => ({ ...current, targetProficiency }));
   }
 
   function toggleExtra(key: ExtraKey) {
@@ -400,6 +371,17 @@ export function MarvelRivalsHeroConfigurator({
     [selection.extras],
   );
 
+  const heroValid = heroes.some((hero) => hero === selection.hero);
+  const currentProficiencyResult = parseWholeNumberQuantity(selection.currentProficiency, 1, MAX_CURRENT_PROFICIENCY);
+  const targetProficiencyResult = currentProficiencyResult.valid
+    ? parseWholeNumberQuantity(selection.targetProficiency, currentProficiencyResult.value + 1, MAX_PROFICIENCY)
+    : { valid: false as const, value: null };
+  const regionValid = regions.some((item) => item.value === selection.region);
+  const platformValid = platforms.some((item) => item.value === selection.platform);
+  const boostMethodValid = selection.boostMethod === "solo" || selection.boostMethod === "duo";
+  const playOfflineValid = !(selection.extras.playOffline && selection.boostMethod === "duo");
+  const selectionIsValid = heroValid && currentProficiencyResult.valid && targetProficiencyResult.valid && regionValid && platformValid && boostMethodValid && playOfflineValid;
+
   const quoteSelection = useMemo<ConfiguratorSelection>(
     () => ({
       hero: selection.hero,
@@ -417,20 +399,24 @@ export function MarvelRivalsHeroConfigurator({
   const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
     service.slug,
     quoteSelection,
-    Boolean(selection.hero),
+    selectionIsValid,
   );
   const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
+  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
+  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumNoticeId = `marvel-${service.slug}-minimum-order`;
+  const canCheckout = Boolean(selectionIsValid && quote && !quoteLoading && !quoteError && !belowMinimum);
   const checkout = useMarvelRivalsCheckout({
     serviceSlug: service.slug,
     orderSelection: quoteSelection,
     continuitySelection: quoteSelection,
-    canCheckout: Boolean(quote && !quoteLoading && !quoteError),
+    canCheckout,
     restoreSelection: (restored) =>
       setSelection((current) => ({
         ...current,
         hero: String(restored.hero),
-        currentProficiency: Number(restored.currentProficiency),
-        targetProficiency: Number(restored.targetProficiency),
+        currentProficiency: typeof restored.currentProficiency === "string" || typeof restored.currentProficiency === "number" ? restored.currentProficiency : 1,
+        targetProficiency: typeof restored.targetProficiency === "string" || typeof restored.targetProficiency === "number" ? restored.targetProficiency : 2,
         region: String(restored.region),
         platform: String(restored.platform),
         boostMethod: restored.boostMethod as BoostMethod,
@@ -492,17 +478,21 @@ export function MarvelRivalsHeroConfigurator({
                   <ArrowRight className="size-3.5" />
                 </span>
                 <ProficiencyControl
+                  id="marvel-hero-current-proficiency"
                   label="Current proficiency"
-                  value={selection.currentProficiency}
+                  rawValue={selection.currentProficiency}
                   min={1}
                   max={MAX_CURRENT_PROFICIENCY}
+                  error={currentProficiencyResult.valid ? null : "Enter a whole number between 1 and 69."}
                   onChange={setCurrentProficiency}
                 />
                 <ProficiencyControl
+                  id="marvel-hero-target-proficiency"
                   label="Target proficiency"
-                  value={selection.targetProficiency}
-                  min={selection.currentProficiency + 1}
+                  rawValue={selection.targetProficiency}
+                  min={currentProficiencyResult.valid ? currentProficiencyResult.value + 1 : 2}
                   max={MAX_PROFICIENCY}
+                  error={currentProficiencyResult.valid ? targetProficiencyResult.valid ? null : "Enter a whole number above the current level, up to 70." : "Choose a valid current level first."}
                   onChange={setTargetProficiency}
                 />
               </div>
@@ -706,7 +696,7 @@ export function MarvelRivalsHeroConfigurator({
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
           statusLabel={
-            !selection.hero
+            !heroValid
               ? "Select hero"
               : quoteError
                 ? "Pricing unavailable"
@@ -716,7 +706,7 @@ export function MarvelRivalsHeroConfigurator({
                     ? "Server priced"
                     : "Pricing pending"
           }
-          statusTone={quote && !quoteError ? "ready" : "pending"}
+          statusTone={canCheckout ? "ready" : "pending"}
           progression={<HeroSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
           totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
@@ -725,11 +715,13 @@ export function MarvelRivalsHeroConfigurator({
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
-              disabled={!quote || quoteLoading || Boolean(quoteError)}
+              disabled={!canCheckout}
               loading={checkout.isCreatingOrder}
+              ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
             />
           }
         >
+          <MinimumOrderNotice id={minimumNoticeId} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
           {quoteError ? (
             <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
               {quoteError}
@@ -745,8 +737,9 @@ export function MarvelRivalsHeroConfigurator({
           <MarvelRivalsCheckoutButton
             mobile
             onClick={checkout.createOrder}
-            disabled={!quote || quoteLoading || Boolean(quoteError)}
+            disabled={!canCheckout}
             loading={checkout.isCreatingOrder}
+            ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
           />
         }
       />

@@ -35,6 +35,15 @@ import {
   useMarvelRivalsQuote,
 } from "@/features/configurator/client/use-marvel-rivals-quote";
 import type { ConfiguratorSelection } from "@/features/configurator/types/configurator";
+import {
+  parseWholeNumberQuantity,
+  quantitySelectionValue,
+} from "@/features/configurator/client/whole-number-quantity";
+import { MinimumOrderNotice } from "./minimum-order-notice";
+import {
+  meetsMinimumOrderTotal,
+  minimumOrderShortfallCents,
+} from "@/features/orders/minimum-order";
 import { PlatformIcon } from "./platform-icon";
 
 type RankKey = (typeof marvelRivalsRanks)[number]["key"];
@@ -46,7 +55,7 @@ type ExtraKey = "playOffline" | "specificHeroes" | "streaming" | "expressDeliver
 type Selection = {
   currentRank: RankKey;
   currentDivision: Division | null;
-  wins: number;
+  wins: string | number;
   eternityPoints: number;
   region: string;
   platform: string;
@@ -253,84 +262,29 @@ function CurrentRankSelector({
   );
 }
 
-function WinsSelector({ wins, onChange }: { wins: number; onChange: (wins: number) => void }) {
-  const progress = ((wins - 1) / (MAX_WINS - 1)) * 100;
-
-  function clampWins(value: number) {
-    return Math.min(MAX_WINS, Math.max(1, value));
-  }
-
+function WinsSelector({ rawValue, error, onChange }: { rawValue: string | number; error: string | null; onChange: (wins: string | number) => void }) {
+  const parsed = parseWholeNumberQuantity(rawValue, 1, MAX_WINS);
+  const sliderValue = parsed.valid ? parsed.value : 1;
+  const progress = ((sliderValue - 1) / (MAX_WINS - 1)) * 100;
+  const errorId = "marvel-competitive-wins-error";
   return (
     <div className="min-w-0">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
-            Competitive wins
-          </p>
-          <div className="mt-1 flex items-end gap-2">
-            <span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-              {wins}
-            </span>
-            <span className="pb-1 text-xs font-medium text-[#A0AAA4]">
-              {wins === 1 ? "win selected" : "wins selected"}
-            </span>
-          </div>
+          <label htmlFor="marvel-competitive-wins" className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Competitive wins</label>
+          <div className="mt-1 flex items-end gap-2"><span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{String(rawValue)}</span><span className="pb-1 text-xs font-medium text-[#A0AAA4]">wins selected</span></div>
         </div>
         <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
-          <input
-            aria-label="Competitive wins"
-            type="number"
-            min={1}
-            max={MAX_WINS}
-            value={wins}
-            onChange={(event) => onChange(clampWins(Number(event.target.value) || 1))}
-            className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
-          />
+          <input id="marvel-competitive-wins" type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, 1, MAX_WINS))} className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none" />
         </div>
       </div>
-
       <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#CEC5FF]/65">
-            Wins
-          </p>
-          <span className="text-[10px] font-medium text-white/38">1–5 wins</span>
-        </div>
-        <div className="mt-3 grid grid-cols-5 gap-2">
-          {Array.from({ length: MAX_WINS }, (_, index) => {
-            const active = index < wins;
-            return (
-              <span
-                key={index}
-                className={`grid h-3.5 w-full place-items-center rounded-full border transition-[border-color,background-color] duration-200 ${
-                  active
-                    ? "border-[#A38CFF]/55 bg-[#7A63F2]/80"
-                    : "border-white/[0.10] bg-white/[0.03]"
-                }`}
-              />
-            );
-          })}
-        </div>
+        <div className="flex items-center justify-between gap-3"><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#CEC5FF]/65">Wins</p><span className="text-[10px] font-medium text-white/38">1–5 wins</span></div>
+        <div className="mt-3 grid grid-cols-5 gap-2">{Array.from({ length: MAX_WINS }, (_, index) => <span key={index} className={`grid h-3.5 w-full place-items-center rounded-full border transition-[border-color,background-color] duration-200 ${index < sliderValue ? "border-[#A38CFF]/55 bg-[#7A63F2]/80" : "border-white/[0.10] bg-white/[0.03]"}`} />)}</div>
       </div>
-
-      <input
-        aria-label="Competitive wins slider"
-        type="range"
-        min={1}
-        max={MAX_WINS}
-        step={1}
-        value={wins}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]"
-        style={{
-          background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)`,
-        }}
-      />
-      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">
-        {Array.from({ length: MAX_WINS }, (_, index) => (
-          <span key={index}>{index + 1}</span>
-        ))}
-      </div>
+      <input aria-label="Competitive wins slider" type="range" min={1} max={MAX_WINS} step={1} value={sliderValue} onChange={(event) => onChange(Number(event.target.value))} className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]" style={{ background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)` }} />
+      <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">{Array.from({ length: MAX_WINS }, (_, index) => <span key={index}>{index + 1}</span>)}</div>
+      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
     </div>
   );
 }
@@ -552,6 +506,19 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     [selection.extras],
   );
 
+  const winsResult = parseWholeNumberQuantity(selection.wins, 1, 5);
+  const regionValid = regions.some((item) => item.value === selection.region);
+  const platformValid = platforms.some((item) => item.value === selection.platform);
+  const boostMethodValid = selection.boostMethod === "solo" || selection.boostMethod === "duo";
+  const roleValid = roles.some((item) => item.value === selection.role);
+  const playOfflineValid = !(selection.extras.playOffline && selection.boostMethod === "duo");
+  const serviceSelectionValid = marvelRivalsRanks.some((item) => item.key === selection.currentRank) &&
+    (marvelRivalsRanks.find((item) => item.key === selection.currentRank)?.hasDivisions
+      ? marvelRivalsDivisionOptions.includes(selection.currentDivision as Division)
+      : selection.currentDivision === null) &&
+    (selection.currentRank !== "eternity" || (Number.isInteger(selection.eternityPoints) && selection.eternityPoints >= MIN_ETERNITY_POINTS && selection.eternityPoints <= MAX_ETERNITY_POINTS));
+  const selectionIsValid = winsResult.valid && regionValid && platformValid && boostMethodValid && roleValid && playOfflineValid && serviceSelectionValid;
+
   const quoteSelection = useMemo<ConfiguratorSelection>(
     () => ({
       currentRank: selection.currentRank,
@@ -574,8 +541,13 @@ export function MarvelRivalsWinsConfigurator({ service }: {
   const { quote, error: quoteError, isLoading: quoteLoading } = useMarvelRivalsQuote(
     service.slug,
     quoteSelection,
+    selectionIsValid,
   );
   const totalPrice = quote ? formatMarvelQuoteUsd(quote.total) : undefined;
+  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
+  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
+  const minimumNoticeId = `marvel-${service.slug}-minimum-order`;
+  const canCheckout = Boolean(selectionIsValid && quote && !quoteLoading && !quoteError && !belowMinimum);
   const checkoutContinuitySelection = useMemo<ConfiguratorSelection>(
     () => ({
       currentRank: selection.currentRank,
@@ -597,7 +569,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     serviceSlug: service.slug,
     orderSelection: quoteSelection,
     continuitySelection: checkoutContinuitySelection,
-    canCheckout: Boolean(quote && !quoteLoading && !quoteError),
+    canCheckout,
     restoreSelection: (restored) =>
       setSelection((current) => ({
         ...current,
@@ -606,7 +578,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           ? (restored.currentDivision as Division)
           : null,
         eternityPoints: Number(restored.eternityPoints),
-        wins: Number(restored.wins),
+        wins: typeof restored.wins === "string" || typeof restored.wins === "number" ? restored.wins : 1,
         region: String(restored.region),
         platform: String(restored.platform),
         boostMethod: restored.boostMethod as BoostMethod,
@@ -679,7 +651,8 @@ export function MarvelRivalsWinsConfigurator({ service }: {
 
               <div className="border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
                 <WinsSelector
-                  wins={selection.wins}
+                  rawValue={selection.wins}
+                  error={winsResult.valid ? null : "Enter a whole number between 1 and 5."}
                   onChange={(wins) => setSelection((current) => ({ ...current, wins }))}
                 />
               </div>
@@ -909,7 +882,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
         <GameOrderAside
           gameLabel={`Marvel Rivals ${service.name}`}
           statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
-          statusTone={quote && !quoteError ? "ready" : "pending"}
+          statusTone={canCheckout ? "ready" : "pending"}
           progression={<WinsSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
           totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
@@ -918,11 +891,13 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
-              disabled={!quote || quoteLoading || Boolean(quoteError)}
+              disabled={!canCheckout}
               loading={checkout.isCreatingOrder}
+              ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
             />
           }
         >
+          <MinimumOrderNotice id={minimumNoticeId} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
           {quoteError ? (
             <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
               {quoteError}
@@ -938,8 +913,9 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           <MarvelRivalsCheckoutButton
             mobile
             onClick={checkout.createOrder}
-            disabled={!quote || quoteLoading || Boolean(quoteError)}
+            disabled={!canCheckout}
             loading={checkout.isCreatingOrder}
+            ariaDescribedBy={belowMinimum ? minimumNoticeId : undefined}
           />
         }
       />
