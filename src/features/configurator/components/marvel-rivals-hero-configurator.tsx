@@ -24,6 +24,7 @@ import {
   GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
+import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
 import {
   MarvelRivalsCheckoutButton,
   useMarvelRivalsCheckout,
@@ -581,7 +582,7 @@ export function MarvelRivalsHeroConfigurator({
                     value: "solo" as const,
                     title: "Solo",
                     meta: "Base",
-                    description: "Our booster plays directly on your account.",
+                    description: "Booster plays on your account.",
                     icon: <Target className="size-4" />,
                   },
                   {
@@ -722,6 +723,10 @@ export function MarvelRivalsHeroConfigurator({
           }
         >
           <MinimumOrderNotice id={minimumNoticeId} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
+          <MarvelRivalsOrderGuidance
+            idPrefix={`marvel-${service.slug}`}
+            boostMethod={selection.boostMethod}
+          />
           {quoteError ? (
             <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[0.06] p-3 text-xs leading-5 text-rose-200">
               {quoteError}
