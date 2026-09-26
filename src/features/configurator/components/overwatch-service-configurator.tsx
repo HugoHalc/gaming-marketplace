@@ -13,7 +13,6 @@ import {
   Crosshair,
   EyeOff,
   ExternalLink,
-  Gamepad2,
   LoaderCircle,
   MonitorPlay,
   ShieldCheck,
@@ -165,6 +164,41 @@ function RankBadge({
       width={96}
       height={96}
       className={`${compact ? "size-10" : "size-12"} object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,.42)]`}
+    />
+  );
+}
+
+function SummaryRankBadge({ rank }: { rank: string }) {
+  if (rank === "unranked") {
+    return (
+      <span
+        aria-hidden="true"
+        className="grid size-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.02] text-[9px] font-black text-white/[0.42]"
+      >
+        NR
+      </span>
+    );
+  }
+
+  const family = familyForRank(rank);
+  if (!family.badge) {
+    return (
+      <span
+        aria-hidden="true"
+        className="grid size-8 shrink-0 place-items-center rounded-lg border border-amber-300/[0.13] bg-amber-300/[0.035] text-[9px] font-black text-amber-100/75"
+      >
+        {family.mark}
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={family.badge}
+      alt=""
+      width={36}
+      height={36}
+      className="size-8 shrink-0 object-contain"
     />
   );
 }
@@ -753,21 +787,12 @@ export function OverwatchServiceConfigurator({
     Math.max(0, boosterCount - 1) * OVERWATCH_EXTRA_PRICING.additionalBooster;
   const duoMeta = `+${Math.round(duoModifier * 100)}%`;
 
-  const summaryRows = useMemo(() => {
-    const rows: Array<[string, string]> = [];
-    if (isRank) rows.push(["Progression", `${rankLabel(String(selection.currentRank))} → ${rankLabel(String(selection.targetRank))}`]);
-    if (isWins) rows.push(["Current rank", rankLabel(String(selection.currentRank))], ["Wins", quantityValidation.valid ? String(quantityValidation.value) : "—"]);
-    if (isPlacements) rows.push(["Previous rank", rankLabel(String(selection.currentRank))], ["Placement matches", quantityValidation.valid ? String(quantityValidation.value) : "—"]);
-    if (isDrives) rows.push(["Drive rank", rankFamilies.find((item) => item.key === selection.driveRank)?.label ?? "Bronze"], ["Current Drive points", driveCurrent.toLocaleString("en-US")], ["Target Drive points", driveDesired.toLocaleString("en-US")], ["Total progression", driveIsValid ? `${(driveDesired - driveCurrent).toLocaleString("en-US")} Drive points` : "—"]);
-    if (isUnrated) rows.push(["Unrated matches", quantityValidation.valid ? String(quantityValidation.value) : "—"]);
-    rows.push(
-      ["Boost method", playWithBooster ? `Play With Booster · ${selection.boosters}` : "Account Boost"],
-      ["Role / Queue", roleLabel],
-      ["Server", serverLabel],
-      ["Platform", platformLabel],
-    );
-    return rows;
-  }, [isRank, isWins, isPlacements, isDrives, isUnrated, playWithBooster, platformLabel, roleLabel, selection, serverLabel, quantityValidation.valid, quantityValidation.value, driveCurrent, driveDesired, driveIsValid]);
+  const summaryRows = useMemo(() => [
+    ["Boost method", playWithBooster ? `Play With Booster · ${selection.boosters}` : "Account Boost"],
+    ["Role / Queue", roleLabel],
+    ["Server", serverLabel],
+    ["Platform", platformLabel],
+  ] as Array<[string, string]>, [playWithBooster, platformLabel, roleLabel, selection.boosters, serverLabel]);
 
   const showBonusAndInsurance = !isWins;
 
@@ -912,13 +937,116 @@ export function OverwatchServiceConfigurator({
           </section>
 
           <aside className="xl:sticky xl:top-24">
-            <div id="boost-summary" className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#0B0C0A] shadow-[0_28px_90px_-45px_rgba(0,0,0,.95)]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.07] to-transparent p-5">
-                <div className="flex items-center justify-between gap-4"><div><h2 className="text-sm font-semibold text-white">Order Summary</h2><p className="mt-1 text-xs text-white/45">{service.name}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-amber-300 motion-reduce:animate-none" /> : <Gamepad2 className="size-4 text-amber-200/55" />}</div>
-                {isRank ? <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-white/75"><span>{rankLabel(currentRank)}</span><ArrowRight className="size-3.5 text-white/30" aria-hidden="true" /><span>{rankLabel(targetRank)}</span></div> : null}
+            <div id="boost-summary" className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.07] via-transparent to-transparent px-4 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
+                    <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{service.name}</p>
+                  </div>
+                  {isLoading ? (
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]" aria-live="polite" role="status">
+                      <LoaderCircle className="size-3 animate-spin text-amber-300 motion-reduce:animate-none" aria-hidden="true" />
+                      Updating
+                    </span>
+                  ) : null}
+                </div>
               </div>
-              <div className="p-5">
-                <div className="space-y-2.5">{summaryRows.map(([label, value]) => <div key={label} className="flex items-start justify-between gap-4 text-xs"><span className="text-white/38">{label}</span><span className="max-w-[12rem] text-right font-medium text-white/75">{value}</span></div>)}</div>
+              <div className="p-4">
+                {isRank ? (
+                  <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <SummaryRankBadge rank={currentRank} />
+                        <div className="min-w-0">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
+                          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-tight text-[#F4F7F5]">{rankLabel(currentRank)}</p>
+                        </div>
+                      </div>
+                      <ArrowRight className="size-3.5 shrink-0 text-amber-200/35" aria-hidden="true" />
+                      <div className="flex min-w-0 items-center justify-end gap-2 text-right">
+                        <div className="min-w-0">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target</p>
+                          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-tight text-[#F4F7F5]">{rankLabel(targetRank)}</p>
+                        </div>
+                        <SummaryRankBadge rank={targetRank} />
+                      </div>
+                    </div>
+                  </div>
+                ) : isWins ? (
+                  <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <SummaryRankBadge rank={currentRank} />
+                        <div className="min-w-0">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current Rank</p>
+                          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-tight text-[#F4F7F5]">{rankLabel(currentRank)}</p>
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Wins</p>
+                        <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{quantityValidation.valid ? quantityValidation.value : "—"}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : isPlacements ? (
+                  <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <SummaryRankBadge rank={currentRank} />
+                        <div className="min-w-0">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Previous Rank</p>
+                          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-tight text-[#F4F7F5]">{rankLabel(currentRank)}</p>
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Placements</p>
+                        <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{quantityValidation.valid ? quantityValidation.value : "—"}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : isDrives ? (
+                  <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                    <div className="flex items-center gap-2">
+                      <SummaryRankBadge rank={`${String(selection.driveRank ?? "bronze")}-5`} />
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Drive Rank</p>
+                        <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-tight text-[#F4F7F5]">{rankFamilies.find((item) => item.key === selection.driveRank)?.label ?? "Bronze"}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-t border-white/[0.06] pt-3">
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current Drive</p>
+                        <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">{driveCurrent.toLocaleString("en-US")}</p>
+                      </div>
+                      <ArrowRight className="size-3.5 shrink-0 text-amber-200/35" aria-hidden="true" />
+                      <div className="min-w-0 text-right">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Target Drive</p>
+                        <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">{driveDesired.toLocaleString("en-US")}</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-4 text-[10px]">
+                      <span className="text-white/35">Total progression</span>
+                      <span className="font-medium text-white/70">{driveIsValid ? `${(driveDesired - driveCurrent).toLocaleString("en-US")} Drive points` : "—"}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Unrated Matches</p>
+                      <p className="font-gaming-value text-lg font-bold leading-none text-[#F4F7F5]">{quantityValidation.valid ? quantityValidation.value : "—"}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-2 divide-y divide-white/[0.06]">
+                  {summaryRows.map(([label, value]) => (
+                    <div key={label} className="flex items-start justify-between gap-4 py-2 text-[11px]">
+                      <span className="text-white/40">{label}</span>
+                      <span className="max-w-[12rem] break-words text-right font-medium text-white/78">{value}</span>
+                    </div>
+                  ))}
+                </div>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 {error ? <div className="rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{error}</div> : null}
                 {displayedQuote ? <><div className="space-y-2">{displayedQuote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]"><span className="text-[#A0AAA4]">{item.label}</span><span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>{item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}</span></div>)}</div><div className="my-4 h-px bg-white/[0.08]" /><div className="flex items-end justify-between gap-4" aria-live="polite"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(displayedQuote.total)}</p><p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38"><Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />Server-validated price</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div></> : <><div className="my-4 h-px bg-white/[0.08]" /><div aria-live="polite"><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>{isLoading ? <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35"><LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />Updating price…</p> : <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>}</div></>}
