@@ -19,7 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
-import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
+import { AccountBoostTrust } from "./account-boost-trust";
+import { LeagueOfLegendsOrderGuidance } from "./league-of-legends-order-guidance";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 import { MinimumOrderNotice } from "./minimum-order-notice";
 import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
@@ -930,7 +931,10 @@ export function LeagueOfLegendsServiceConfigurator({
                   <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                   {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
 
-                  <AccountBoostCheckoutReassurance selected={selection.boostMethod === "account"} accent="gold" />
+                  <LeagueOfLegendsOrderGuidance
+                    idPrefix={`lol-${service.slug}`}
+                    accountAccess={selection.boostMethod === "duo" ? "duo" : "account"}
+                  />
 
                   <Button
                     className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]"
