@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whol
 import { AccountBoostTrust } from "./account-boost-trust";
 import { LeagueOfLegendsOrderGuidance } from "./league-of-legends-order-guidance";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
+import { PlatformIcon } from "./platform-icon";
 import { MinimumOrderNotice } from "./minimum-order-notice";
 import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
@@ -139,6 +140,58 @@ function firstRankForFamily(family: string) {
   return `${family} IV`;
 }
 
+
+function handleRadioKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+  const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+  if (!keys.includes(event.key)) return;
+
+  const group = event.currentTarget.closest('[role="radiogroup"]');
+  if (!group) return;
+
+  const radios = Array.from(
+    group.querySelectorAll<HTMLButtonElement>('[role="radio"]:not(:disabled)'),
+  );
+  if (radios.length === 0) return;
+
+  const currentIndex = radios.indexOf(event.currentTarget);
+  if (currentIndex < 0) return;
+
+  event.preventDefault();
+  const nextIndex =
+    event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? radios.length - 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? (currentIndex - 1 + radios.length) % radios.length
+          : (currentIndex + 1) % radios.length;
+
+  radios[nextIndex]?.focus();
+  radios[nextIndex]?.click();
+}
+
+function ConfiguratorBlock({
+  title,
+  helper,
+  children,
+}: {
+  title: string;
+  helper?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+      <div className="mb-4">
+        <h3 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
+          {title}
+        </h3>
+        {helper ? <p className="mt-1 text-[11px] leading-4 text-white/35">{helper}</p> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 function RankSelector({
   label,
   value,
@@ -204,11 +257,16 @@ function RankSelector({
         </span>
       </div>
 
+      <div role="radiogroup" aria-label={`${label} rank`}>
       {allowUnranked ? (
         <button
           type="button"
+          role="radio"
+          aria-checked={unranked}
+          tabIndex={unranked ? 0 : -1}
+          onKeyDown={handleRadioKeyDown}
           onClick={() => onChange("Unranked")}
-          className={`mt-4 flex h-10 w-full items-center justify-between rounded-xl border px-3 text-xs font-semibold transition-colors ${
+          className={`mt-4 flex min-h-11 w-full items-center justify-between rounded-xl border px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 motion-reduce:transition-none ${
             unranked
               ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
               : "border-white/[0.08] bg-[#090D0B] text-white/60 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -219,7 +277,7 @@ function RankSelector({
         </button>
       ) : null}
 
-      <div className="mt-4 grid grid-cols-4 gap-2">
+      <div className="mt-4 grid grid-cols-3 gap-2 min-[390px]:grid-cols-4">
         {rankFamilies.map((family) => {
           const available = target
             ? family.divisions.some((division) => rankIndex(`${family.label} ${division}`) > currentIndex)
@@ -230,9 +288,13 @@ function RankSelector({
             <button
               key={family.label}
               type="button"
+              role="radio"
+              aria-checked={active}
+              tabIndex={active ? 0 : -1}
               disabled={!available}
+              onKeyDown={handleRadioKeyDown}
               onClick={() => selectFamily(family.label)}
-              className={`relative flex h-[5.75rem] min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-center transition-colors ${
+              className={`relative flex min-h-[6rem] min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 motion-reduce:transition-none ${
                 active
                   ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-white"
                   : "border-white/[0.08] bg-[#090D0B] text-white/58 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -252,7 +314,7 @@ function RankSelector({
                   className={`h-11 w-11 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,.42)] ${rankOpticalScale[family.label] ?? ""}`}
                 />
               </span>
-              <span className="mt-1 block h-4 text-[10px] font-bold uppercase leading-4 tracking-[0.05em]">{family.label}</span>
+              <span className="mt-1 block min-h-4 text-[11px] font-bold uppercase leading-4 tracking-[0.035em]">{family.label}</span>
             </button>
           );
         })}
@@ -261,8 +323,12 @@ function RankSelector({
       {allowMaster ? (
         <button
           type="button"
+          role="radio"
+          aria-checked={master}
+          tabIndex={master ? 0 : -1}
+          onKeyDown={handleRadioKeyDown}
           onClick={() => onChange("Master")}
-          className={`mt-2 flex h-10 w-full items-center justify-between rounded-xl border px-3 text-xs font-semibold transition-colors ${
+          className={`mt-2 flex min-h-11 w-full items-center justify-between rounded-xl border px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 motion-reduce:transition-none ${
             master
               ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-white"
               : "border-white/[0.08] bg-[#090D0B] text-white/58 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -275,9 +341,10 @@ function RankSelector({
           {master ? <Check className="size-3.5 text-[#82F5A4]" /> : null}
         </button>
       ) : null}
+      </div>
 
       {!unranked && !master && selected.family ? (
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2" role="radiogroup" aria-label={`${label} division`}>
           <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
             Division
           </span>
@@ -289,9 +356,13 @@ function RankSelector({
               <button
                 key={division}
                 type="button"
+                role="radio"
+                aria-checked={active}
+                tabIndex={active ? 0 : -1}
                 disabled={!available}
+                onKeyDown={handleRadioKeyDown}
                 onClick={() => onChange(candidate)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-colors ${
+                className={`min-h-10 min-w-10 rounded-lg border px-3 text-xs font-bold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 motion-reduce:transition-none ${
                   active
                     ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-white"
                     : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:text-white"
@@ -321,15 +392,22 @@ function Choice({
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      tabIndex={active ? 0 : -1}
+      onKeyDown={handleRadioKeyDown}
       onClick={onClick}
-      className={`flex h-10 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-colors ${
+      className={`flex min-h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0A0E0C] motion-reduce:transition-none ${
         active
-          ? "border-[#C89B3C]/30 bg-[#7A5B22]/15 text-white"
+          ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-white"
           : "border-white/[0.08] bg-[#090D0B] text-white/62 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
-      <span className="truncate text-xs font-semibold">{label}</span>
-      {meta ? <span className="shrink-0 text-[10px] font-bold text-white/42">{meta}</span> : null}
+      <span className="min-w-0 text-xs font-semibold leading-4">{label}</span>
+      <span className="flex shrink-0 items-center gap-2">
+        {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
+        {active ? <Check className="size-3.5 text-[#82F5A4]" aria-hidden="true" /> : null}
+      </span>
     </button>
   );
 }
@@ -372,7 +450,7 @@ function Quantity({
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
         onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))}
-        className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-sm font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10"
+        className={`mt-3 h-11 w-full rounded-xl border bg-[#090D0B] px-3 text-sm font-semibold text-white outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/25 motion-reduce:transition-none ${error ? "border-rose-300/30" : "border-white/[0.08] focus:border-[#C89B3C]/35"}`}
       />
       <input
         type="range"
@@ -382,7 +460,7 @@ function Quantity({
         value={sliderValue}
         aria-label={`${label} slider`}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-4 w-full accent-[#C89B3C]"
+        className="mt-4 h-5 w-full cursor-pointer accent-[#C89B3C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]/25"
       />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28">
         <span>{min}</span>
@@ -413,7 +491,7 @@ function Extra({
       type="button"
       aria-pressed={checked}
       onClick={() => onChange(!checked)}
-      className={`flex min-h-[4.5rem] min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+      className={`flex min-h-[4.5rem] min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/30 motion-reduce:transition-none ${
         checked ? "border-[#C89B3C]/30 bg-[#7A5B22]/15" : "border-white/[0.07] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
       }`}
     >
@@ -422,10 +500,10 @@ function Extra({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="truncate text-xs font-semibold text-[#F4F7F5]">{title}</span>
+          <span className="text-xs font-semibold leading-4 text-[#F4F7F5]">{title}</span>
           <span className={`shrink-0 text-[10px] font-bold ${price === "FREE" ? "text-[#82F5A4]" : "text-[#E7C867]/65"}`}>{price}</span>
         </span>
-        <span className="mt-0.5 block truncate text-[10px] text-[#A0AAA4]">{description}</span>
+        <span className="mt-0.5 block text-[10px] leading-4 text-[#A0AAA4]">{description}</span>
       </span>
       <span className={`grid size-4 shrink-0 place-items-center rounded-full border ${checked ? "border-[#39E56F]/40 bg-[#39E56F] text-[#050807]" : "border-white/[0.12] text-transparent"}`}>
         <Check className="size-2.5" strokeWidth={3} />
@@ -640,7 +718,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   key={item.slug}
                   href={`/games/league-of-legends/${item.slug}`}
                   aria-current={active ? "page" : undefined}
-                  className={`inline-flex h-11 items-center sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-colors ${
+                  className={`inline-flex h-11 items-center sm:h-10 rounded-xl border px-3.5 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 motion-reduce:transition-none ${
                     active
                       ? "border-[#C89B3C]/30 bg-[#7A5B22]/15 text-[#F4F7F5]"
                       : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:text-white"
@@ -693,8 +771,8 @@ export function LeagueOfLegendsServiceConfigurator({
 
         <div className="min-w-0">
           <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] 2xl:grid-cols-[minmax(0,1fr)_23rem] 2xl:items-start 2xl:pb-0">
-            <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-              <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
+            <section className="min-w-0">
+              <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-[#080B09] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
                 <div>
                   <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
                     <Sparkles className="size-3.5" />
@@ -707,33 +785,34 @@ export function LeagueOfLegendsServiceConfigurator({
                 </span>
               </div>
 
-              <div className="space-y-5 p-4 sm:space-y-6 sm:p-5 lg:p-6">
+              <div className="mt-4 space-y-4">
                 {isRank ? (
-                  <div className="relative grid items-stretch gap-5 lg:grid-cols-2">
-                    <span className="pointer-events-none absolute left-1/2 top-1/2 hidden size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#E7C867]/50 lg:grid">
-                      <ArrowRight className="size-3.5" />
-                    </span>
-                    <RankSelector label="Current rank" value={currentRank} maxRank="Diamond II" onChange={(value) => update("currentRank", value)} />
-                    <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-                      <span className="absolute left-1/2 top-0 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#C89B3C]/20 bg-[#0E1411] text-[#E7C867]/55 lg:hidden" aria-hidden="true">
-                        <ArrowRight className="size-3 rotate-90" />
-                      </span>
+                  <ConfiguratorBlock
+                    title="Rank progression"
+                    helper="Choose where the order starts and the rank you want to reach."
+                  >
+                    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_2rem_minmax(0,1fr)] lg:items-center">
+                      <RankSelector label="Current rank" value={currentRank} maxRank="Diamond II" onChange={(value) => update("currentRank", value)} />
+                      <div className="grid h-8 place-items-center text-[#E7C867]/55" aria-hidden="true">
+                        <ArrowRight className="size-4 rotate-90 lg:rotate-0" />
+                      </div>
                       <RankSelector label="Desired rank" value={targetRank} target currentRank={currentRank} onChange={(value) => update("targetRank", value)} />
                     </div>
-                  </div>
+                  </ConfiguratorBlock>
                 ) : isUnrated ? null : (
-                  <RankSelector
-                    label={isPlacements ? "Previous rank" : "Current rank"}
-                    value={currentRank}
-                    allowUnranked={isPlacements}
-                    allowMaster
-                    onChange={(value) => update("currentRank", value)}
-                  />
+                  <ConfiguratorBlock title={isPlacements ? "Previous rank" : "Current rank"}>
+                    <RankSelector
+                      label={isPlacements ? "Previous rank" : "Current rank"}
+                      value={currentRank}
+                      allowUnranked={isPlacements}
+                      allowMaster
+                      onChange={(value) => update("currentRank", value)}
+                    />
+                  </ConfiguratorBlock>
                 )}
 
                 {(isWins || isPlacements || isUnrated) ? (
-                  <>
-                    <div className="h-px bg-white/[0.07]" />
+                  <ConfiguratorBlock title="Order quantity">
                     <Quantity
                       rawValue={quantityRaw}
                       min={quantityMin}
@@ -743,74 +822,86 @@ export function LeagueOfLegendsServiceConfigurator({
                       id={`lol-${service.slug}-quantity`}
                       onChange={(value) => update(quantityKey, value)}
                     />
-                  </>
+                  </ConfiguratorBlock>
                 ) : null}
 
                 {isRank ? (
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <ConfiguratorBlock title="Rank context">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="block min-w-0">
+                        <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current LP</span>
+                        <select value={String(selection.currentLp)} onChange={(event) => update("currentLp", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus-visible:border-[#C89B3C]/35 focus-visible:ring-2 focus-visible:ring-[#C89B3C]/20 motion-reduce:transition-none">
+                          {currentLpOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
+                        </select>
+                      </label>
+                      <label className="block min-w-0">
+                        <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
+                        <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus-visible:border-[#C89B3C]/35 focus-visible:ring-2 focus-visible:ring-[#C89B3C]/20 motion-reduce:transition-none">
+                          {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
+                        </select>
+                      </label>
+                    </div>
+                  </ConfiguratorBlock>
+                ) : isWins ? (
+                  <ConfiguratorBlock title="LP gain">
                     <label className="block min-w-0">
-                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Current LP</span>
-                      <select value={String(selection.currentLp)} onChange={(event) => update("currentLp", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
-                        {currentLpOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
-                      </select>
-                    </label>
-                    <label className="block min-w-0">
-                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
-                      <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
+                      <span className="sr-only">LP Gain</span>
+                      <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} aria-label="LP Gain" className="h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus-visible:border-[#C89B3C]/35 focus-visible:ring-2 focus-visible:ring-[#C89B3C]/20 motion-reduce:transition-none">
                         {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
                       </select>
                     </label>
-                  </div>
-                ) : isWins ? (
-                  <label className="block min-w-0">
-                    <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">LP Gain</span>
-                    <select value={String(selection.lpGain)} onChange={(event) => update("lpGain", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
-                      {lpGainOptions.map(([value, label, meta]) => <option key={value} value={value}>{label} · {meta}</option>)}
-                    </select>
-                  </label>
+                  </ConfiguratorBlock>
                 ) : null}
 
-                <div className="grid gap-5 lg:grid-cols-2">
-                  <div>
-                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost method</p>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <Choice active={selection.boostMethod === "account"} onClick={() => update("boostMethod", "account")} label="Account Boost" meta="Base" />
-                      <Choice
-                        active={selection.boostMethod === "duo"}
-                        onClick={() => update("boostMethod", "duo")}
-                        label="Play with Booster"
-                        meta={isWins ? "+75%" : isUnrated ? "+30%" : "+50%"}
-                      />
-                    </div>
+                <ConfiguratorBlock title="Boost method">
+                  <div role="radiogroup" aria-label="Boost method" className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+                    <Choice active={selection.boostMethod === "account"} onClick={() => update("boostMethod", "account")} label="Account Boost" meta="Base" />
+                    <Choice
+                      active={selection.boostMethod === "duo"}
+                      onClick={() => update("boostMethod", "duo")}
+                      label="Play with Booster"
+                      meta={isWins ? "+75%" : isUnrated ? "+30%" : "+50%"}
+                    />
                   </div>
-                  <div>
-                    <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Queue Type</p>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <Choice active={selection.queue === "solo-duo"} onClick={() => update("queue", "solo-duo")} label="Solo - Duo" meta="FREE" />
-                      <Choice active={selection.queue === "flex"} onClick={() => update("queue", "flex")} label="Flex" meta="FREE" />
-                    </div>
+                  <AccountBoostTrust selected={selection.boostMethod === "account"} accent="gold" showDescription />
+                </ConfiguratorBlock>
+
+                <ConfiguratorBlock title="Queue">
+                  <div role="radiogroup" aria-label="Queue type" className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+                    <Choice active={selection.queue === "solo-duo"} onClick={() => update("queue", "solo-duo")} label="Solo - Duo" meta="FREE" />
+                    <Choice active={selection.queue === "flex"} onClick={() => update("queue", "flex")} label="Flex" meta="FREE" />
                   </div>
-                </div>
-                <AccountBoostTrust selected={selection.boostMethod === "account"} accent="gold" showDescription />
+                </ConfiguratorBlock>
 
-                <label className="block min-w-0">
-                  <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
-                  <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10">
-                    {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
-                  </select>
-                </label>
-
-                <div className="h-px bg-white/[0.07]" />
-
-                <div>
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p>
-                      <p className="mt-1 text-sm font-semibold text-white">Add only the options you want.</p>
-                    </div>
-                    <Zap className="size-4 text-[#E7C867]/60" />
+                <ConfiguratorBlock title="Server and platform">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block min-w-0">
+                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</span>
+                      <select value={String(selection.server)} onChange={(event) => update("server", event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-xs font-semibold text-white outline-none transition-colors focus-visible:border-[#C89B3C]/35 focus-visible:ring-2 focus-visible:ring-[#C89B3C]/20 motion-reduce:transition-none">
+                        {servers.map(([value, label]) => <option key={value} value={value}>{label}{value === "north-america" || value === "oceania" ? " (+10%)" : ""}</option>)}
+                      </select>
+                    </label>
+                    <label className="block min-w-0">
+                      <span className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</span>
+                      <div className="relative mt-3">
+                        <span className="pointer-events-none absolute left-3 top-1/2 z-10 grid size-7 -translate-y-1/2 place-items-center text-sky-300" aria-hidden="true">
+                          <PlatformIcon platform="pc" />
+                        </span>
+                        <select
+                          value="pc"
+                          disabled
+                          aria-label="Platform"
+                          className="h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] pl-12 pr-3 text-xs font-semibold text-white outline-none disabled:cursor-default disabled:opacity-100"
+                        >
+                          <option value="pc">PC</option>
+                        </select>
+                      </div>
+                    </label>
                   </div>
-                  <div className="mt-3 grid auto-rows-fr gap-2 sm:grid-cols-2">
+                </ConfiguratorBlock>
+
+                <ConfiguratorBlock title="Extras" helper="Add only the options you want.">
+                  <div className="grid auto-rows-fr gap-2 sm:grid-cols-2">
                     <Extra checked={selection.playOffline === true} onChange={(value) => update("playOffline", value)} icon={<EyeOff className="size-3.5" />} title="Play Offline" price="FREE" description="Keep your order activity discreet." />
                     <Extra checked={selection.championsPreferences === true} onChange={(value) => update("championsPreferences", value)} icon={<Users className="size-3.5" />} title="Champions Preferences" price="FREE" description="Share preferred champions with your booster." />
                     <Extra checked={selection.streaming === true} onChange={(value) => update("streaming", value)} icon={<MonitorPlay className="size-3.5" />} title="Streaming" price="+$7.00" description="Add streaming to your order." />
@@ -823,7 +914,7 @@ export function LeagueOfLegendsServiceConfigurator({
                       <Extra checked={selection.demotionShield === true} onChange={(value) => update("demotionShield", value)} icon={<ShieldCheck className="size-3.5" />} title="Demotion Shield" price="+20%" description="Add the documented demotion shield option." />
                     ) : null}
                   </div>
-                </div>
+                </ConfiguratorBlock>
 
                 <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
                   {[
@@ -832,7 +923,7 @@ export function LeagueOfLegendsServiceConfigurator({
                     "Available discounts are applied automatically.",
                   ].map((note) => (
                     <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
-                      <Check className="size-3 shrink-0 text-emerald-300" />
+                      <Check className="size-3 shrink-0 text-emerald-300" aria-hidden="true" />
                       <span>{note}</span>
                     </div>
                   ))}
