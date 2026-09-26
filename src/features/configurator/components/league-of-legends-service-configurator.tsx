@@ -18,8 +18,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
+import { MinimumOrderNotice } from "./minimum-order-notice";
+import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 
@@ -331,38 +334,60 @@ function Choice({
 }
 
 function Quantity({
-  value,
+  rawValue,
+  min,
   max,
   label,
+  error,
+  id,
   onChange,
 }: {
-  value: number;
+  rawValue: string | number;
+  min: number;
   max: number;
   label: string;
-  onChange: (value: number) => void;
+  error: string | null;
+  id: string;
+  onChange: (value: string | number) => void;
 }) {
+  const parsed = parseWholeNumberQuantity(rawValue, min, max);
+  const sliderValue = parsed.valid ? parsed.value : min;
+  const errorId = `${id}-error`;
+
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
-          <p className="mt-1 text-[10px] text-white/30">Choose between 1 and {max}.</p>
+          <label htmlFor={id} className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</label>
+          <p className="mt-1 text-[10px] text-white/30">Choose between {min} and {max}.</p>
         </div>
-        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{value}</span>
+        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{String(rawValue)}</span>
       </div>
       <input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        value={String(rawValue)}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
+        onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))}
+        className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-sm font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10"
+      />
+      <input
         type="range"
-        min={1}
+        min={min}
         max={max}
         step={1}
-        value={value}
+        value={sliderValue}
+        aria-label={`${label} slider`}
         onChange={(event) => onChange(Number(event.target.value))}
         className="mt-4 w-full accent-[#C89B3C]"
       />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28">
-        <span>1</span>
+        <span>{min}</span>
         <span>{max}</span>
       </div>
+      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
     </div>
   );
 }
@@ -447,6 +472,37 @@ export function LeagueOfLegendsServiceConfigurator({
 
   const currentRank = String(selection.currentRank);
   const targetRank = String(selection.targetRank ?? "");
+  const quantityKey = isWins ? "wins" : "matches";
+  const quantityMin = 1;
+  const quantityMax = isUnrated ? 10 : 5;
+  const selectedQuantity = isWins || isPlacements || isUnrated ? selection[quantityKey] : 1;
+  const quantityRaw: string | number =
+    typeof selectedQuantity === "string" || typeof selectedQuantity === "number" ? selectedQuantity : 1;
+  const quantityResult = parseWholeNumberQuantity(quantityRaw, quantityMin, quantityMax);
+  const quantityError =
+    isWins || isPlacements || isUnrated
+      ? quantityResult.valid
+        ? null
+        : `Enter a whole number between ${quantityMin} and ${quantityMax}.`
+      : null;
+  const rankProgressionValid =
+    !isRank ||
+    (rankIndex(currentRank) >= 0 && rankIndex(targetRank) > rankIndex(currentRank));
+  const currentRankValid =
+    isUnrated ||
+    (isPlacements && currentRank === "Unranked") ||
+    rankIndex(currentRank) >= 0 ||
+    ((!isRank && !isUnrated) && currentRank === "Master");
+  const sharedSelectionsValid =
+    servers.some(([value]) => value === selection.server) &&
+    (selection.queue === "solo-duo" || selection.queue === "flex") &&
+    (selection.boostMethod === "account" || selection.boostMethod === "duo") &&
+    selection.platform === "pc";
+  const selectionIsValid =
+    sharedSelectionsValid &&
+    currentRankValid &&
+    rankProgressionValid &&
+    (!(isWins || isPlacements || isUnrated) || quantityResult.valid);
 
   useEffect(() => {
     if (!isRank) return;
@@ -457,10 +513,17 @@ export function LeagueOfLegendsServiceConfigurator({
   }, [currentRank, targetRank, isRank]);
 
   useEffect(() => {
+    setQuote(null);
+    setError(null);
+    if (!selectionIsValid) {
+      setIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
+    let active = true;
+    setIsLoading(true);
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch("/api/quotes/preview", {
           method: "POST",
@@ -470,28 +533,32 @@ export function LeagueOfLegendsServiceConfigurator({
         });
         const payload = (await response.json()) as { quote?: QuotePreview; error?: string };
         if (!response.ok || !payload.quote) throw new Error(payload.error ?? "Unable to calculate quote.");
+        if (!active) return;
         setQuote(payload.quote);
       } catch (requestError) {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
+        if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
         setQuote(null);
         setError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     }, 180);
 
     return () => {
+      active = false;
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [gameSlug, service.slug, selection]);
+  }, [gameSlug, service.slug, selection, selectionIsValid]);
 
   function update(key: string, value: string | number | boolean) {
+    setQuote(null);
+    setIsLoading(true);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
   async function createOrder() {
-    if (!quote || isLoading || isCreatingOrder) return;
+    if (!selectionIsValid || !quote || !meetsMinimumOrderTotal(quote.total) || isLoading || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
     try {
@@ -525,7 +592,7 @@ export function LeagueOfLegendsServiceConfigurator({
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: Boolean(selectionIsValid && quote && meetsMinimumOrderTotal(quote.total) && !isLoading),
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -538,8 +605,9 @@ export function LeagueOfLegendsServiceConfigurator({
         ? "League of Legends Placements"
         : "League of Legends Unrated Matches";
 
-  const quantity = Number(isWins ? selection.wins : selection.matches ?? 1);
-  const quantityMax = isUnrated ? 10 : 5;
+  const quantity = quantityResult.valid ? quantityResult.value : quantityRaw;
+  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
+  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
 
   const summaryRows = useMemo(() => {
     const rows: Array<[string, string]> = [
@@ -666,10 +734,13 @@ export function LeagueOfLegendsServiceConfigurator({
                   <>
                     <div className="h-px bg-white/[0.07]" />
                     <Quantity
-                      value={quantity}
+                      rawValue={quantityRaw}
+                      min={quantityMin}
                       max={quantityMax}
                       label={isWins ? "Ranked wins" : isPlacements ? "Placement matches" : "Unrated matches"}
-                      onChange={(value) => update(isWins ? "wins" : "matches", value)}
+                      error={quantityError}
+                      id={`lol-${service.slug}-quantity`}
+                      onChange={(value) => update(quantityKey, value)}
                     />
                   </>
                 ) : null}
@@ -777,10 +848,8 @@ export function LeagueOfLegendsServiceConfigurator({
                       <p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
                     </div>
                     {isLoading ? (
-                      <LoaderCircle className="size-4 animate-spin text-[#82F5A4]" />
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-[9px] font-medium text-[#82F5A4]"><Check className="size-3" />Ready</span>
-                    )}
+                      <LoaderCircle className="size-4 animate-spin text-[#82F5A4] motion-reduce:animate-none" aria-label="Updating price" />
+                    ) : null}
                   </div>
                 </div>
 
@@ -852,13 +921,13 @@ export function LeagueOfLegendsServiceConfigurator({
                         <div>
                           <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                           <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
-                          {quote.total < 5 ? <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-[#E7C867]/80">Minimum purchase: $5.00</p> : null}
                         </div>
                         <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span>
                       </div>
                     </>
                   ) : null}
 
+                  <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                   {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
 
                   <AccountBoostCheckoutReassurance selected={selection.boostMethod === "account"} accent="gold" />
@@ -866,7 +935,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   <Button
                     className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]"
                     size="lg"
-                    disabled={!quote || quote.total < 5 || isLoading || isCreatingOrder}
+                    disabled={!selectionIsValid || !quote || belowMinimum || isLoading || isCreatingOrder}
                     onClick={createOrder}
                   >
                     {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}

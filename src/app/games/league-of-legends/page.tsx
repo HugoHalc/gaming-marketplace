@@ -18,7 +18,6 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
-import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 
 export const metadata: Metadata = {
@@ -285,10 +284,7 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
       <div className="relative mt-auto pt-5">
         <div className="mb-5 h-px bg-gradient-to-r from-[#C89B3C]/20 via-white/[0.08] to-transparent" />
         <div className="flex items-end justify-between gap-4">
-          <StartingPriceDisplay
-            value={service.startingPrice}
-            context={service.startingPriceContext}
-          />
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-white/45">Configure service</span>
           <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#C89B3C]/30 group-hover:bg-[#7A5B22]/15 group-hover:text-[#E7C867]">
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </span>

@@ -17,11 +17,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
+import { parseWholeNumberQuantity, quantitySelectionValue } from "../client/whole-number-quantity";
 import { AccountBoostCheckoutReassurance, AccountBoostTrust } from "./account-boost-trust";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 import { PlatformIcon } from "./platform-icon";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
+import { MinimumOrderNotice } from "./minimum-order-notice";
+import { meetsMinimumOrderTotal, minimumOrderShortfallCents } from "@/features/orders/minimum-order";
 
 
 
@@ -106,33 +109,68 @@ function Choice({ active, label, meta, disabled, onClick }: {
   );
 }
 
-function Quantity({ value, min, max, label, helper, onChange }: {
-  value: number;
+function Quantity({ rawValue, min, max, label, helper, error, id, onChange }: {
+  rawValue: string | number;
   min: number;
   max: number;
   label: string;
   helper: string;
-  onChange: (value: number) => void;
+  error: string | null;
+  id: string;
+  onChange: (value: string | number) => void;
 }) {
+  const parsed = parseWholeNumberQuantity(rawValue, min, max);
+  const sliderValue = parsed.valid ? parsed.value : min;
+  const errorId = `${id}-error`;
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</p>
+          <label htmlFor={id} className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">{label}</label>
           <p className="mt-1 text-[10px] text-white/30">{helper}</p>
         </div>
-        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{value}</span>
+        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{String(rawValue)}</span>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={1}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-4 w-full accent-[#C89B3C]"
-      />
+      <input id={id} type="text" inputMode="numeric" value={String(rawValue)} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-sm font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10" />
+      <input type="range" min={min} max={max} step={1} value={sliderValue} aria-label={`${label} slider`} onChange={(event) => onChange(Number(event.target.value))} className="mt-4 w-full accent-[#C89B3C]" />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/28"><span>{min}</span><span>{max}</span></div>
+      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
+    </div>
+  );
+}
+
+function parseMasteryPoints(value: unknown) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) && Number.isInteger(value) && value >= 10000 && value <= 1000000 && value % 10000 === 0
+      ? { valid: true as const, value }
+      : { valid: false as const, value: null };
+  }
+  if (typeof value !== "string" || !/^\d+$/.test(value)) return { valid: false as const, value: null };
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= 10000 && parsed <= 1000000 && parsed % 10000 === 0
+    ? { valid: true as const, value: parsed }
+    : { valid: false as const, value: null };
+}
+
+function masteryPointsSelectionValue(raw: string) {
+  const parsed = parseMasteryPoints(raw);
+  return parsed.valid ? parsed.value : raw;
+}
+
+function MasteryPointsControl({ rawValue, error, onChange }: { rawValue: string | number; error: string | null; onChange: (value: string | number) => void }) {
+  const parsed = parseMasteryPoints(rawValue);
+  const sliderValue = parsed.valid ? parsed.value : 10000;
+  const id = "lol-mastery-points";
+  const errorId = `${id}-error`;
+  return (
+    <div>
+      <div className="flex items-end justify-between gap-4">
+        <div><label htmlFor={id} className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Mastery points</label><p className="mt-1 text-sm font-semibold text-white">10,000–1,000,000 points</p></div>
+        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{parsed.valid ? parsed.value.toLocaleString("en-US") : String(rawValue)}</span>
+      </div>
+      <input id={id} type="text" inputMode="numeric" value={String(rawValue)} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(masteryPointsSelectionValue(event.target.value))} className="mt-3 h-11 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-sm font-semibold text-white outline-none transition-colors focus:border-[#C89B3C]/35 focus:ring-2 focus:ring-[#C89B3C]/10" />
+      <input type="range" min={10000} max={1000000} step={10000} value={sliderValue} aria-label="Mastery points slider" onChange={(event) => onChange(Number(event.target.value))} className="mt-4 w-full accent-[#C89B3C]" />
+      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
     </div>
   );
 }
@@ -193,63 +231,123 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
+  const arenaGamesRaw = typeof selection.games === "string" || typeof selection.games === "number" ? selection.games : 3;
+  const marksRaw = typeof selection.marks === "string" || typeof selection.marks === "number" ? selection.marks : 1;
+  const clashGamesRaw = typeof selection.games === "string" || typeof selection.games === "number" ? selection.games : 1;
+  const clashBoostersRaw = typeof selection.boosters === "string" || typeof selection.boosters === "number" ? selection.boosters : 1;
+  const masteryPointsRaw = typeof selection.masteryPoints === "string" || typeof selection.masteryPoints === "number" ? selection.masteryPoints : 10000;
+  const masteryCurrentRaw = typeof selection.masteryCurrentLevel === "string" || typeof selection.masteryCurrentLevel === "number" ? selection.masteryCurrentLevel : 1;
+  const masteryTargetRaw = typeof selection.masteryTargetLevel === "string" || typeof selection.masteryTargetLevel === "number" ? selection.masteryTargetLevel : 3;
+
+  const arenaGamesResult = parseWholeNumberQuantity(arenaGamesRaw, 3, 60);
+  const marksResult = parseWholeNumberQuantity(marksRaw, 1, 25);
+  const clashGamesResult = parseWholeNumberQuantity(clashGamesRaw, 1, 10);
+  const clashBoostersResult = parseWholeNumberQuantity(clashBoostersRaw, 1, 5);
+  const masteryPointsResult = parseMasteryPoints(masteryPointsRaw);
+  const masteryCurrentResult = parseWholeNumberQuantity(masteryCurrentRaw, 1, 9);
+  const masteryTargetMinimum = masteryCurrentResult.valid ? (masteryCurrentResult.value === 1 ? 3 : masteryCurrentResult.value + 1) : 2;
+  const masteryTargetResult = parseWholeNumberQuantity(masteryTargetRaw, masteryTargetMinimum, 10);
+  const masteryMode = String(selection.masteryMode ?? "marks");
+  const serverValid = servers.some(([value]) => value === selection.server);
+  const platformValid = selection.platform === "pc";
+  const boostMethodValid = selection.boostMethod === "account" || selection.boostMethod === "duo";
+  const arenaRoleValid = roles.some(([value]) => value === selection.role);
+  const clashTierValid = clashTiers.some(([value]) => value === selection.clashTier);
+  const serviceSelectionsValid = isArena
+    ? arenaGamesResult.valid && arenaRoleValid && boostMethodValid
+    : isClash
+      ? clashGamesResult.valid && clashBoostersResult.valid && clashTierValid && boostMethodValid
+      : masteryMode === "points"
+        ? masteryPointsResult.valid
+        : masteryMode === "marks"
+          ? marksResult.valid
+          : masteryMode === "tier"
+            ? masteryCurrentResult.valid && masteryTargetResult.valid
+            : false;
+  const selectionIsValid = serverValid && platformValid && serviceSelectionsValid;
+
+  const selectionForRequest = useMemo(() => {
+    const next = { ...selection };
+    if (isMastery) {
+      if (masteryMode !== "points") delete next.masteryPoints;
+      if (masteryMode !== "marks") delete next.marks;
+      if (masteryMode !== "tier") {
+        delete next.masteryCurrentLevel;
+        delete next.masteryTargetLevel;
+      }
+    }
+    return next;
+  }, [isMastery, masteryMode, selection]);
+
   useEffect(() => {
+    setQuote(null);
+    setError(null);
+    if (!selectionIsValid) {
+      setIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
+    let active = true;
+    setIsLoading(true);
     const timer = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch("/api/quotes/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection }),
+          body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection: selectionForRequest }),
           signal: controller.signal,
         });
         const payload = (await response.json()) as { quote?: QuotePreview; error?: string };
         if (!response.ok || !payload.quote) throw new Error(payload.error ?? "Unable to calculate quote.");
+        if (!active) return;
         setQuote(payload.quote);
       } catch (requestError) {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
+        if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
         setQuote(null);
         setError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     }, 180);
     return () => {
+      active = false;
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [gameSlug, service.slug, selection]);
+  }, [gameSlug, service.slug, selectionForRequest, selectionIsValid]);
 
   function update(key: string, value: string | number | boolean) {
+    setQuote(null);
+    setIsLoading(true);
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
-  function updateMasteryCurrentLevel(value: number) {
+  function updateMasteryCurrentLevel(value: string | number) {
+    setQuote(null);
+    setIsLoading(true);
     setSelection((current) => {
-      const minimumTarget = value === 1 ? 3 : value + 1;
-      const currentTarget = Number(current.masteryTargetLevel);
+      const parsedCurrent = parseWholeNumberQuantity(value, 1, 9);
+      if (!parsedCurrent.valid) return { ...current, masteryCurrentLevel: value };
+      const minimumTarget = parsedCurrent.value === 1 ? 3 : parsedCurrent.value + 1;
+      const currentTarget = parseWholeNumberQuantity(current.masteryTargetLevel, minimumTarget, 10);
       return {
         ...current,
-        masteryCurrentLevel: value,
-        masteryTargetLevel:
-          Number.isInteger(currentTarget) && currentTarget >= minimumTarget && currentTarget <= 10
-            ? currentTarget
-            : minimumTarget,
+        masteryCurrentLevel: parsedCurrent.value,
+        masteryTargetLevel: currentTarget.valid ? currentTarget.value : minimumTarget,
       };
     });
   }
 
   async function createOrder() {
-    if (!quote || quote.total < 5 || isLoading || isCreatingOrder) return;
+    if (!selectionIsValid || !quote || !meetsMinimumOrderTotal(quote.total) || isLoading || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection }),
+        body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection: selectionForRequest }),
       });
       const payload = (await response.json()) as { order?: { id: string }; error?: string };
       if (response.status === 401) {
@@ -273,7 +371,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     serviceSlug: service.slug,
     selection,
     setSelection,
-    canAutoResume: Boolean(quote && !isLoading),
+    canAutoResume: Boolean(selectionIsValid && quote && meetsMinimumOrderTotal(quote.total) && !isLoading),
     busy: isCreatingOrder,
     onResume: createOrder,
   });
@@ -285,42 +383,10 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
       : "League of Legends Clash Boost";
 
   const serverLabel = servers.find(([value]) => value === selection.server)?.[1] ?? "Europe West";
-  const rawMasteryCurrentLevel = Number(selection.masteryCurrentLevel);
-  const masteryCurrentLevel =
-    Number.isInteger(rawMasteryCurrentLevel) && rawMasteryCurrentLevel >= 1 && rawMasteryCurrentLevel <= 9
-      ? rawMasteryCurrentLevel
-      : 1;
-  const masteryTargetMinimum = masteryCurrentLevel === 1 ? 3 : masteryCurrentLevel + 1;
-  const rawMasteryTargetLevel = Number(selection.masteryTargetLevel);
-  const masteryTargetLevel =
-    Number.isInteger(rawMasteryTargetLevel) && rawMasteryTargetLevel >= masteryTargetMinimum && rawMasteryTargetLevel <= 10
-      ? rawMasteryTargetLevel
-      : masteryTargetMinimum;
-  const summaryRows = useMemo(() => {
-    const rows: Array<[string, string]> = [["Server", serverLabel], ["Platform", "PC"]];
-    if (isArena) {
-      rows.unshift(["Arena games", String(selection.games)], ["Role", roles.find(([value]) => value === selection.role)?.[1] ?? "Top"], ["Boost method", selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"]);
-    }
-    if (isMastery) {
-      if (selection.masteryMode === "points") {
-        rows.unshift(["Boost option", "Mastery Points Farm"], ["Points", Number(selection.masteryPoints).toLocaleString("en-US")]);
-      } else if (selection.masteryMode === "tier") {
-        rows.unshift(
-          ["Boost option", "Tier Boost"],
-          ["Current level", `Level ${masteryCurrentLevel}`],
-          ["Target level", `Level ${masteryTargetLevel}`],
-        );
-      } else {
-        rows.unshift(["Boost option", "Marks of Mastery"], ["Marks", Number(selection.marks).toLocaleString("en-US")]);
-      }
-    }
-    if (isClash) {
-      rows.unshift(["Clash tier", `Tier ${selection.clashTier}`], ["Games", String(selection.games)], ["Boosters", String(selection.boosters)], ["Boost method", selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"]);
-    }
-    return rows;
-  }, [isArena, isMastery, isClash, masteryCurrentLevel, masteryTargetLevel, selection, serverLabel]);
-
-  const belowMinimum = Boolean(quote && quote.total < 5);
+  const masteryCurrentLevel = masteryCurrentResult.valid ? masteryCurrentResult.value : masteryCurrentRaw;
+  const masteryTargetLevel = masteryTargetResult.valid ? masteryTargetResult.value : masteryTargetRaw;
+  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
+  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
 
   return (
     <>
@@ -376,7 +442,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
             <div className="space-y-5 p-4 sm:space-y-6 sm:p-5 lg:p-6">
               {isArena ? (
                 <>
-                  <Quantity value={Number(selection.games)} min={3} max={60} label="Arena games" helper="Verified public range: 3–60 games." onChange={(value) => update("games", value)} />
+                  <Quantity rawValue={arenaGamesRaw} min={3} max={60} label="Arena games" helper="Choose between 3 and 60 games." error={arenaGamesResult.valid ? null : "Enter a whole number between 3 and 60."} id="lol-arena-games" onChange={(value) => update("games", value)} />
                   <div>
                     <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Role</p>
                     <p className="mt-1 text-sm font-semibold text-white">Role selection is price-neutral in the public LoL data.</p>
@@ -397,34 +463,36 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     </div>
                   </div>
                   {selection.masteryMode === "points" ? (
-                    <div>
-                      <div className="flex items-end justify-between gap-4">
-                        <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Mastery points</p><p className="mt-1 text-sm font-semibold text-white">10,000–1,000,000 points</p></div>
-                        <span className="font-gaming-value text-xl font-bold text-[#E7C867]">{Number(selection.masteryPoints).toLocaleString("en-US")}</span>
-                      </div>
-                      <input type="range" min={10000} max={1000000} step={10000} value={Number(selection.masteryPoints)} onChange={(event) => update("masteryPoints", Number(event.target.value))} className="mt-4 w-full accent-[#C89B3C]" />
-                    </div>
+                    <MasteryPointsControl
+                      rawValue={masteryPointsRaw}
+                      error={masteryPointsResult.valid ? null : "Enter a value from 10,000 to 1,000,000 in increments of 10,000."}
+                      onChange={(value) => update("masteryPoints", value)}
+                    />
                   ) : selection.masteryMode === "tier" ? (
                     <div className="grid gap-5 sm:grid-cols-2">
                       <Quantity
-                        value={masteryCurrentLevel}
+                        rawValue={masteryCurrentRaw}
                         min={1}
                         max={9}
                         label="Current Level"
                         helper="Level 1 starts with a minimum target of Level 3."
+                        error={masteryCurrentResult.valid ? null : "Enter a whole number between 1 and 9."}
+                        id="lol-mastery-current-level"
                         onChange={updateMasteryCurrentLevel}
                       />
                       <Quantity
-                        value={masteryTargetLevel}
+                        rawValue={masteryTargetRaw}
                         min={masteryTargetMinimum}
                         max={10}
                         label="Target Level"
                         helper="Choose a target above your current level, up to Level 10."
+                        error={masteryCurrentResult.valid && masteryTargetResult.valid ? null : masteryCurrentResult.valid ? `Enter a whole number between ${masteryTargetMinimum} and 10.` : "Choose a valid current level first."}
+                        id="lol-mastery-target-level"
                         onChange={(value) => update("masteryTargetLevel", value)}
                       />
                     </div>
                   ) : (
-                    <Quantity value={Number(selection.marks)} min={1} max={25} label="Marks of Mastery" helper="Verified public range: 1–25 marks." onChange={(value) => update("marks", value)} />
+                    <Quantity rawValue={marksRaw} min={1} max={25} label="Marks of Mastery" helper="Choose between 1 and 25 marks." error={marksResult.valid ? null : "Enter a whole number between 1 and 25."} id="lol-mastery-marks" onChange={(value) => update("marks", value)} />
                   )}
                 </>
               ) : null}
@@ -436,8 +504,8 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">{clashTiers.map(([value, label]) => <Choice key={value} active={selection.clashTier === value} label={label} onClick={() => update("clashTier", value)} />)}</div>
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Quantity value={Number(selection.games)} min={1} max={10} label="Clash games" helper="Verified matrix: 1–10 games." onChange={(value) => update("games", value)} />
-                    <Quantity value={Number(selection.boosters)} min={1} max={5} label="Boosters" helper="Verified matrix: 1–5 boosters." onChange={(value) => update("boosters", value)} />
+                    <Quantity rawValue={clashGamesRaw} min={1} max={10} label="Clash games" helper="Choose between 1 and 10 games." error={clashGamesResult.valid ? null : "Enter a whole number between 1 and 10."} id="lol-clash-games" onChange={(value) => update("games", value)} />
+                    <Quantity rawValue={clashBoostersRaw} min={1} max={5} label="Boosters" helper="Choose between 1 and 5 boosters." error={clashBoostersResult.valid ? null : "Enter a whole number between 1 and 5."} id="lol-clash-boosters" onChange={(value) => update("boosters", value)} />
                   </div>
                 </>
               ) : null}
@@ -499,7 +567,7 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
           <aside id="boost-summary" className="scroll-mt-28 2xl:scroll-mt-24 2xl:sticky 2xl:top-24">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08]">
               <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-4">
-                <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-[#E7C867]" /> : <Check className="size-4 text-[#82F5A4]" />}</div>
+                <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-label="Updating price" /> : null}</div>
               </div>
               <div className="p-4">
                 <div className="divide-y divide-white/[0.06]">{summaryRows.map(([label, value]) => <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">{label}</span><span className="text-right font-medium text-white/78">{value}</span></div>)}</div>
@@ -512,11 +580,11 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
                     <div className="flex items-end justify-between gap-4"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div>
                   </>
                 ) : <div className="py-6 text-sm text-white/40">Adjust the configuration to generate a quote.</div>}
-                {belowMinimum ? <div className="mt-3 rounded-lg border border-[#C89B3C]/20 bg-[#C89B3C]/[0.05] p-2.5 text-[10px] leading-4 text-[#E7C867]/80">Minimum order total is $5.00. Increase the configuration before creating the order.</div> : null}
+                <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
                 <AccountBoostCheckoutReassurance selected={(isArena || isClash) && selection.boostMethod === "account"} accent="gold" />
 
-                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
+                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!selectionIsValid || !quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
                 <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
               </div>
             </div>
