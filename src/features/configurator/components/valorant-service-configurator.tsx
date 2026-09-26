@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Check,
   Clock3,
+  ExternalLink,
   EyeOff,
   Gauge,
   LoaderCircle,
@@ -340,16 +342,13 @@ function CompactRankSelector({
   );
 }
 
-function ValorantOrderGuidance({
-  items,
-  selectedExtras,
-}: {
-  items: Array<[string, string]>;
-  selectedExtras: string[];
-}) {
+function ValorantOrderGuidance() {
   return (
-    <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
-      <section className="px-3 py-3" aria-labelledby="valorant-estimated-timing-heading">
+    <>
+      <section
+        className="mt-3 border-t border-white/[0.06] pt-3"
+        aria-labelledby="valorant-estimated-timing-heading"
+      >
         <div className="flex items-start gap-2.5">
           <Clock3 className="mt-0.5 size-3.5 shrink-0 text-rose-200/65" aria-hidden="true" />
           <div className="min-w-0 flex-1">
@@ -384,7 +383,7 @@ function ValorantOrderGuidance({
       </section>
 
       <section
-        className="border-t border-white/[0.06] px-3 py-3"
+        className="mt-3 border-t border-white/[0.06] pt-3"
         aria-labelledby="valorant-verify-order-heading"
       >
         <div className="flex items-start gap-2.5">
@@ -396,24 +395,30 @@ function ValorantOrderGuidance({
             >
               Verify before you order
             </h3>
-            <dl className="mt-2 space-y-1.5 text-[10px] leading-4">
-              {items.map(([label, value]) => (
-                <div key={label} className="flex items-start justify-between gap-3">
-                  <dt className="text-white/35">{label}</dt>
-                  <dd className="max-w-[62%] text-right font-medium text-white/65">{value}</dd>
-                </div>
-              ))}
-              <div className="flex items-start justify-between gap-3">
-                <dt className="text-white/35">Selected extras</dt>
-                <dd className="max-w-[62%] text-right font-medium text-white/65">
-                  {selectedExtras.length > 0 ? selectedExtras.join(", ") : "None selected"}
-                </dd>
-              </div>
-            </dl>
+            <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-2 text-[10px] leading-4">
+              <a
+                href="https://www.trustpilot.com/review/boostingpedia.com"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-8 items-center gap-1 text-white/50 underline decoration-white/15 underline-offset-2 transition-colors hover:text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/35"
+              >
+                Public Trustpilot reviews
+                <ExternalLink className="size-2.5" aria-hidden="true" />
+              </a>
+              <Link
+                href="/refunds"
+                className="inline-flex min-h-8 items-center text-white/50 underline decoration-white/15 underline-offset-2 transition-colors hover:text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/35"
+              >
+                Refund policy
+              </Link>
+            </div>
+            <p className="mt-1.5 text-[9px] leading-4 text-white/30">
+              Support is available through BoostingPedia if you need help with your order.
+            </p>
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }
 
@@ -824,76 +829,6 @@ export function ValorantServiceConfigurator({
   }, [selection, isRankBoost, isWins, isPlacements]);
 
 
-  const verificationItems = useMemo<Array<[string, string]>>(() => {
-    const items: Array<[string, string]> = [];
-
-    if (isRankBoost) {
-      items.push(["Current rank", rankLabel(currentRank)]);
-      items.push(["Target rank", rankLabel(targetRank)]);
-    } else {
-      items.push([
-        isPlacements ? "Previous rank" : "Current rank",
-        currentRank === "unrated" ? "Unrated" : rankLabel(currentRank),
-      ]);
-      items.push([
-        isWins ? "Wins" : "Placement matches",
-        quantityDisplay,
-      ]);
-    }
-
-    items.push(["Boost method", selection.queue === "duo" ? "Duo" : "Solo"]);
-
-    if (isRankBoost || isWins) {
-      items.push([
-        "RR gain",
-        rrGainOptions.find((item) => item.value === selection.rrGain)?.label ?? "20+ RR",
-      ]);
-    }
-
-    if (isRankBoost) {
-      items.push([
-        "RR amount",
-        rrAmountOptions.find((item) => item.value === selection.rrAmount)?.label ?? "0–20 RR",
-      ]);
-    }
-
-    items.push(["Server", servers.find((server) => server.value === selection.server)?.label ?? "North America"]);
-    items.push(["Platform", "PC"]);
-
-    return items;
-  }, [
-    currentRank,
-    targetRank,
-    quantityDisplay,
-    selection.queue,
-    selection.rrGain,
-    selection.rrAmount,
-    selection.server,
-    isRankBoost,
-    isWins,
-    isPlacements,
-  ]);
-
-  const selectedExtras = useMemo(() => {
-    const extras = [
-      selection.playOffline === true ? "Play Offline" : null,
-      selection.agentPreferences === true ? "Agents Preferences" : null,
-      selection.liveStream === true ? "Streaming" : null,
-      selection.expressDelivery === true ? "Express Delivery" : null,
-      selection.extraWin === true ? "+1 Extra Win" : null,
-      selection.rankInsurance === true ? "Rank Insurance" : null,
-    ];
-
-    return extras.filter((item): item is string => Boolean(item));
-  }, [
-    selection.playOffline,
-    selection.agentPreferences,
-    selection.liveStream,
-    selection.expressDelivery,
-    selection.extraWin,
-    selection.rankInsurance,
-  ]);
-
   return (
     <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
       <section className="min-w-0">
@@ -1270,6 +1205,10 @@ export function ValorantServiceConfigurator({
                 </>
               )}
 
+              {orderError ? (
+                <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
+              ) : null}
+
               <p className="mt-3 text-[10px] leading-4 text-white/42">
                 {selection.queue === "duo" ? "No account access required." : "Account details are requested after checkout."}
               </p>
@@ -1284,9 +1223,7 @@ export function ValorantServiceConfigurator({
                 <MinimumOrderNotice id={minimumNoticeId} shortfallCents={minimumShortfallCents} />
               ) : null}
 
-              {orderError ? (
-                <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
-              ) : null}
+              <ValorantOrderGuidance />
 
               <Button
                 className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
@@ -1319,7 +1256,6 @@ export function ValorantServiceConfigurator({
             </div>
           </div>
 
-          <ValorantOrderGuidance items={verificationItems} selectedExtras={selectedExtras} />
         </div>
         <PaymentMethodsTrustBlock className="mt-3" />
       </aside>
