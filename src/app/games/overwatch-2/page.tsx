@@ -18,7 +18,6 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 
@@ -299,7 +298,8 @@ export default async function OverwatchPage() {
             </p>
           </div>
 
-          <div className="-mx-4 mt-9 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
+          <p className="mt-5 text-[10px] font-medium uppercase tracking-[0.12em] text-white/35 md:hidden">Swipe to explore 5 services</p>
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:mt-9 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {game.services.map((service) => {
               const meta = serviceMeta(service.slug);
               const ServiceIcon = meta.icon;
@@ -308,7 +308,7 @@ export default async function OverwatchPage() {
                 <Link
                   key={service.id}
                   href={`/games/overwatch-2/${service.slug}`}
-                  className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
+                  className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] focus-visible:border-amber-300/25 focus-visible:ring-2 focus-visible:ring-amber-300/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
                 >
                   <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.065] to-transparent" />
                   <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-amber-200/15 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-100" />
@@ -332,10 +332,10 @@ export default async function OverwatchPage() {
 
                   <div className="relative mt-auto pt-6">
                     <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    <div className="flex items-end justify-between gap-4">
-                      <StartingPriceDisplay value={service.startingPrice} context={service.startingPriceContext} />
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[11px] font-semibold text-white/48">Configure service</span>
                       <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-amber-300/25 group-hover:bg-amber-300/[0.07] group-hover:text-amber-200">
-                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:transform-none" aria-hidden="true" />
                       </span>
                     </div>
                   </div>

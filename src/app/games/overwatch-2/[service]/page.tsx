@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
-import { Badge } from "@/components/ui/badge";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverwatchServiceConfigurator } from "@/features/configurator/components/overwatch-service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
@@ -84,38 +84,30 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
     <main className="min-h-screen overflow-hidden bg-[#050807]">
       <SiteHeader />
 
-      <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-amber-400/[0.07] blur-[120px]" />
-
-        <Container className="py-6 sm:py-12 lg:py-14">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted-foreground)] sm:text-sm">
-            <Link href="/games/overwatch-2" className="inline-flex min-h-10 items-center transition-colors hover:text-white">
-              <ArrowLeft className="mr-2 size-3.5" />
-              Overwatch
+      <section className="relative isolate min-h-[232px] overflow-hidden border-b border-white/[0.06] sm:min-h-[286px] lg:min-h-[300px]">
+        <Image
+          src="/game-heroes/overwatch-hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="pointer-events-none -z-30 object-cover object-[67%_48%] sm:object-[68%_46%] lg:object-[70%_44%]"
+        />
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(5,6,5,0.96)_0%,rgba(5,6,5,0.86)_42%,rgba(5,6,5,0.44)_70%,rgba(5,6,5,0.18)_100%)]" />
+        <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(5,6,5,0.20)_0%,rgba(5,6,5,0.02)_42%,rgba(5,6,5,0.34)_100%)]" />
+        <Container className="flex min-h-[232px] items-center py-5 sm:min-h-[286px] sm:py-8 lg:min-h-[300px] lg:py-9">
+          <div className="max-w-2xl">
+            <Link href="/games/overwatch-2" className="inline-flex items-center gap-1.5 text-[11px] font-medium text-white/48 transition-colors hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/35 sm:hidden">
+              <ArrowLeft className="size-3.5" aria-hidden="true" />
+              Back to Overwatch 2
             </Link>
-            <span>/</span>
-            <span className="text-white">{service.name}</span>
-          </div>
-
-          <div className="mt-5 max-w-4xl sm:mt-7">
-            <Badge className="border-amber-300/20 bg-amber-400/[0.06] text-amber-200">
-              <Sparkles className="mr-2 size-3.5" />
-              Overwatch boosting
-            </Badge>
-            <h1 className="mt-4 text-balance text-3xl font-bold leading-[1.02] tracking-[-0.055em] text-white sm:text-5xl">
-              {copy.title}
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--muted-foreground)] sm:text-base sm:leading-7">
-              {copy.description}
-            </p>
-            <div className="mt-5 hidden flex-wrap gap-2 sm:flex">
-              {copy.pills.map((pill) => (
-                <span key={pill} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                  {pill}
-                </span>
-              ))}
+            <div className="hidden items-center gap-2 text-[11px] text-white/40 sm:flex">
+              <Link href="/games/overwatch-2" className="transition-colors hover:text-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/35">Overwatch 2</Link>
+              <span aria-hidden="true">/</span>
+              <span className="text-white/62">{copy.title}</span>
             </div>
+            <h1 className="mt-4 max-w-[18ch] text-[1.8rem] font-bold tracking-[-0.04em] text-white sm:mt-3 sm:text-[2.5rem] lg:text-[2.75rem]">{copy.title}</h1>
+            <p className="mt-3 hidden max-w-xl text-sm leading-6 text-white/56 sm:block lg:text-[15px]">{copy.description}</p>
           </div>
         </Container>
       </section>
