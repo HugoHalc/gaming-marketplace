@@ -706,6 +706,16 @@ export function LeagueOfLegendsServiceConfigurator({
     return rows;
   }, [selection, isRank, isWins]);
 
+  const selectedExtras = [
+    selection.playOffline === true ? "Play Offline · FREE" : null,
+    selection.championsPreferences === true ? "Champions Preferences · FREE" : null,
+    selection.streaming === true ? "Streaming · +$7.00" : null,
+    selection.expressDelivery === true ? "Express Delivery · +20%" : null,
+    selection.soloQueueOnly === true ? "Solo Queue Only · +40%" : null,
+    isRank && selection.rankInsurance === true ? "Rank Insurance · +50%" : null,
+    isWins && selection.demotionShield === true ? "Demotion Shield · +20%" : null,
+  ].filter((item): item is string => Boolean(item));
+
   return (
     <>
       <nav aria-label="League of Legends services" className="mb-3 sm:mb-4 xl:hidden">
@@ -936,11 +946,18 @@ export function LeagueOfLegendsServiceConfigurator({
                 <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p>
+                      <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
                       <p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
                     </div>
                     {isLoading ? (
-                      <LoaderCircle className="size-4 animate-spin text-[#82F5A4] motion-reduce:animate-none" aria-label="Updating price" />
+                      <span
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <LoaderCircle className="size-3 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-hidden="true" />
+                        Updating
+                      </span>
                     ) : null}
                   </div>
                 </div>
@@ -948,21 +965,37 @@ export function LeagueOfLegendsServiceConfigurator({
                 <div className="p-4">
                   {isRank ? (
                     <div className="min-h-16 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
-                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                         <div className="flex min-w-0 items-center gap-2">
-                          {imageForRank(currentRank) ? <Image src={imageForRank(currentRank)!} alt="" width={30} height={30} className={`size-7 shrink-0 object-contain ${opticalClassForRank(currentRank)}`} /> : null}
+                          {imageForRank(currentRank) ? (
+                            <Image
+                              src={imageForRank(currentRank)!}
+                              alt=""
+                              width={30}
+                              height={30}
+                              className={`size-7 shrink-0 object-contain ${opticalClassForRank(currentRank)}`}
+                            />
+                          ) : null}
                           <div className="min-w-0">
-                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Current</p>
-                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{currentRank}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current</p>
+                            <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-5 text-[#F4F7F5]">{currentRank}</p>
                           </div>
                         </div>
-                        <ArrowRight className="size-3.5 text-amber-200/35" />
+                        <ArrowRight className="size-3.5 shrink-0 text-amber-200/35" aria-hidden="true" />
                         <div className="flex min-w-0 items-center justify-end gap-2 text-right">
                           <div className="min-w-0">
-                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Desired</p>
-                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{targetRank}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Desired</p>
+                            <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-5 text-[#F4F7F5]">{targetRank}</p>
                           </div>
-                          {imageForRank(targetRank) ? <Image src={imageForRank(targetRank)!} alt="" width={30} height={30} className={`size-7 shrink-0 object-contain ${opticalClassForRank(targetRank)}`} /> : null}
+                          {imageForRank(targetRank) ? (
+                            <Image
+                              src={imageForRank(targetRank)!}
+                              alt=""
+                              width={30}
+                              height={30}
+                              className={`size-7 shrink-0 object-contain ${opticalClassForRank(targetRank)}`}
+                            />
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -970,15 +1003,37 @@ export function LeagueOfLegendsServiceConfigurator({
                     <div className="min-h-16 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2">
-                          {!isUnrated && imageForRank(currentRank) ? <Image src={imageForRank(currentRank)!} alt="" width={30} height={30} className={`size-7 shrink-0 object-contain ${opticalClassForRank(currentRank)}`} /> : null}
+                          {isPlacements && currentRank === "Unranked" ? (
+                            <span
+                              className="grid size-7 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-[8px] font-black text-white/45"
+                              role="img"
+                              aria-label="Unranked"
+                            >
+                              NR
+                            </span>
+                          ) : !isUnrated && imageForRank(currentRank) ? (
+                            <Image
+                              src={imageForRank(currentRank)!}
+                              alt=""
+                              width={30}
+                              height={30}
+                              className={`size-7 shrink-0 object-contain ${opticalClassForRank(currentRank)}`}
+                            />
+                          ) : null}
                           <div className="min-w-0">
-                            <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">{isUnrated ? "Service" : isPlacements ? "Previous rank" : "Current rank"}</p>
-                            <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">{isUnrated ? "Unrated" : currentRank}</p>
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
+                              {isUnrated ? "Service" : isPlacements ? "Previous rank" : "Current rank"}
+                            </p>
+                            <p className="font-gaming-value mt-0.5 break-words text-sm font-bold leading-5 text-[#F4F7F5]">
+                              {isUnrated ? "Unrated Matches" : currentRank}
+                            </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[9px] uppercase tracking-[0.13em] text-white/30">{isWins ? "Wins" : "Matches"}</p>
-                          <p className="font-gaming-value mt-0.5 text-lg font-bold text-[#F4F7F5]">{quantity}</p>
+                        <div className="shrink-0 text-right">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
+                            {isWins ? "Ranked wins" : isPlacements ? "Placement matches" : "Matches"}
+                          </p>
+                          <p className="font-gaming-value mt-0.5 text-lg font-bold leading-none text-[#F4F7F5]">{quantity}</p>
                         </div>
                       </div>
                     </div>
@@ -988,10 +1043,23 @@ export function LeagueOfLegendsServiceConfigurator({
                     {summaryRows.map(([label, value]) => (
                       <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]">
                         <span className="text-white/40">{label}</span>
-                        <span className="font-medium text-white/78">{value}</span>
+                        <span className="min-w-0 text-right font-medium text-white/78">{value}</span>
                       </div>
                     ))}
                   </div>
+
+                  {selectedExtras.length > 0 ? (
+                    <div className="mt-3 border-t border-white/[0.06] pt-3">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Selected extras</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {selectedExtras.map((extra) => (
+                          <span key={extra} className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2 py-1 text-[9px] font-medium text-white/58">
+                            {extra}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
 
                   {error ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{error}</div> : null}
 
@@ -1009,15 +1077,35 @@ export function LeagueOfLegendsServiceConfigurator({
                         ))}
                       </div>
                       <div className="my-4 h-px bg-white/[0.08]" />
-                      <div className="flex items-end justify-between gap-4">
-                        <div>
+                      <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true">
+                        <div className="min-w-0">
                           <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                           <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                          <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
+                            <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />
+                            Server-Validated Price
+                          </p>
                         </div>
-                        <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span>
+                        <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span>
                       </div>
                     </>
-                  ) : null}
+                  ) : (
+                    <>
+                      <div className="my-4 h-px bg-white/[0.08]" />
+                      <div role="status" aria-live="polite" aria-atomic="true">
+                        <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                        <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
+                        {isLoading ? (
+                          <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                            <LoaderCircle className="size-3 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-hidden="true" />
+                            Updating price…
+                          </p>
+                        ) : (
+                          <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                   {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
@@ -1028,14 +1116,24 @@ export function LeagueOfLegendsServiceConfigurator({
                   />
 
                   <Button
-                    className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]"
+                    className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
                     size="lg"
+                    aria-describedby={belowMinimum ? `lol-${service.slug}-minimum-order` : undefined}
                     disabled={!selectionIsValid || !quote || belowMinimum || isLoading || isCreatingOrder}
                     onClick={createOrder}
                   >
-                    {isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}
+                    {isCreatingOrder ? (
+                      <>
+                        Preparing checkout
+                        <LoaderCircle className="ml-2 size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                      </>
+                    ) : (
+                      <>
+                        Checkout
+                        <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                      </>
+                    )}
                   </Button>
-                  <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is validated on the server before the order is stored.</p>
                 </div>
               </div>
               <PaymentMethodsTrustBlock className="mt-3" />

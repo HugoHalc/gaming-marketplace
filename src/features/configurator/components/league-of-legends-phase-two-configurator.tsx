@@ -494,6 +494,23 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
     ["Platform", platformValid ? "PC" : String(selection.platform)],
   );
 
+  const primarySummaryRowCount = isArena
+    ? 3
+    : isClash
+      ? 4
+      : masteryMode === "tier"
+        ? 3
+        : 2;
+  const primarySummaryRows = summaryRows.slice(0, primarySummaryRowCount);
+  const secondarySummaryRows = summaryRows.slice(primarySummaryRowCount);
+  const selectedExtras = [
+    selection.playOffline === true ? "Play Offline · FREE" : null,
+    (isArena || isClash) && selection.championsPreferences === true ? "Champions Preferences · FREE" : null,
+    selection.streaming === true ? "Streaming · +$7.00" : null,
+    selection.expressDelivery === true ? "Express Delivery · +20%" : null,
+    selection.soloQueueOnly === true ? "Solo Queue Only · +40%" : null,
+  ].filter((item): item is string => Boolean(item));
+
   const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
   const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
 
@@ -682,30 +699,136 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
           </section>
 
           <aside id="boost-summary" className="scroll-mt-28 2xl:scroll-mt-24 2xl:sticky 2xl:top-24">
-            <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.055] via-transparent to-transparent px-4 py-4">
-                <div className="flex items-start justify-between gap-4"><div><p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p><p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p></div>{isLoading ? <LoaderCircle className="size-4 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-label="Updating price" /> : null}</div>
+            <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
+                    <p className="mt-2 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
+                  </div>
+                  {isLoading ? (
+                    <span
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <LoaderCircle className="size-3 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-hidden="true" />
+                      Updating
+                    </span>
+                  ) : null}
+                </div>
               </div>
+
               <div className="p-4">
-                <div className="divide-y divide-white/[0.06]">{summaryRows.map(([label, value]) => <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">{label}</span><span className="text-right font-medium text-white/78">{value}</span></div>)}</div>
+                <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
+                    {isArena ? "Arena setup" : isMastery ? "Mastery configuration" : "Clash setup"}
+                  </p>
+                  <div className="mt-1.5 divide-y divide-white/[0.06]">
+                    {primarySummaryRows.map(([label, value]) => (
+                      <div key={label} className="flex min-h-8 items-center justify-between gap-4 py-1.5 text-[11px]">
+                        <span className="text-white/40">{label}</span>
+                        <span className="min-w-0 text-right font-medium text-white/78">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-2 divide-y divide-white/[0.06]">
+                  {secondarySummaryRows.map(([label, value]) => (
+                    <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]">
+                      <span className="text-white/40">{label}</span>
+                      <span className="min-w-0 text-right font-medium text-white/78">{value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {selectedExtras.length > 0 ? (
+                  <div className="mt-3 border-t border-white/[0.06] pt-3">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Selected extras</p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {selectedExtras.map((extra) => (
+                        <span key={extra} className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2 py-1 text-[9px] font-medium text-white/58">
+                          {extra}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
                 {error ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{error}</div> : null}
+
                 {quote ? (
                   <>
                     <div className="my-4 h-px bg-white/[0.08]" />
-                    <div className="space-y-2">{quote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex min-h-7 items-center justify-between gap-4 text-[11px]"><span className="text-[#A0AAA4]">{item.label}</span><span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>{item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}</span></div>)}</div>
+                    <div className="space-y-2">
+                      {quote.breakdown.map((item, index) => (
+                        <div key={`${item.label}-${index}`} className="flex min-h-7 items-center justify-between gap-4 text-[11px]">
+                          <span className="text-[#A0AAA4]">{item.label}</span>
+                          <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
+                            {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                     <div className="my-4 h-px bg-white/[0.08]" />
-                    <div className="flex items-end justify-between gap-4"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div>
+                    <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true">
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                        <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                        <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
+                          <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />
+                          Server-Validated Price
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span>
+                    </div>
                   </>
-                ) : <div className="py-6 text-sm text-white/40">Adjust the configuration to generate a quote.</div>}
+                ) : (
+                  <>
+                    <div className="my-4 h-px bg-white/[0.08]" />
+                    <div role="status" aria-live="polite" aria-atomic="true">
+                      <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
+                      <p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>
+                      {isLoading ? (
+                        <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">
+                          <LoaderCircle className="size-3 animate-spin text-[#E7C867] motion-reduce:animate-none" aria-hidden="true" />
+                          Updating price…
+                        </p>
+                      ) : (
+                        <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
+
                 <LeagueOfLegendsOrderGuidance
                   idPrefix={`lol-${service.slug}`}
                   accountAccess={isArena || isClash ? (selection.boostMethod === "duo" ? "duo" : "account") : null}
                 />
 
-                <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none hover:bg-[#20C95A] hover:text-[#050807]" size="lg" disabled={!selectionIsValid || !quote || belowMinimum || isLoading || isCreatingOrder} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
-                <p className="mt-3 text-center text-[10px] leading-4 text-white/35">Final price is recalculated and validated on the server.</p>
+                <Button
+                  className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
+                  size="lg"
+                  aria-describedby={belowMinimum ? `lol-${service.slug}-minimum-order` : undefined}
+                  disabled={!selectionIsValid || !quote || belowMinimum || isLoading || isCreatingOrder}
+                  onClick={createOrder}
+                >
+                  {isCreatingOrder ? (
+                    <>
+                      Preparing checkout
+                      <LoaderCircle className="ml-2 size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                    </>
+                  ) : (
+                    <>
+                      Checkout
+                      <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
             <PaymentMethodsTrustBlock className="mt-3" />
