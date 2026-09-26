@@ -17,7 +17,6 @@ import {
   LoaderCircle,
   MonitorPlay,
   ShieldCheck,
-  Sparkles,
   Trophy,
   UsersRound,
   Zap,
@@ -820,33 +819,55 @@ export function OverwatchServiceConfigurator({
         </aside>
 
         <div className="min-w-0 grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
-          <section className="overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-[#080B09]/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,.98)]">
-            <div className="flex flex-col gap-2 border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.055] via-transparent to-transparent px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
-              <div>
-                <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-200/70"><Sparkles className="size-3.5" />Overwatch · {service.name}</div>
-                
-              </div>
-              
-            </div>
-
-            <div className="space-y-5 p-4 sm:p-5 lg:p-6">
+          <section className="min-w-0">
+            <div className="space-y-5 sm:space-y-6">
               {isRank ? (
-                <div className="relative grid gap-5 lg:grid-cols-2">
-                  <span className="pointer-events-none absolute left-1/2 top-5 hidden size-7 -translate-x-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-amber-200/45 lg:grid"><ArrowRight className="size-3.5" /></span>
-                  <RankSelector value={currentRank} omitChampionOne onChange={(value) => update("currentRank", value)} />
-                  <div className="relative border-t border-white/[0.07] pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0"><RankSelector value={targetRank} currentRank={currentRank} target onChange={(value) => update("targetRank", value)} /></div>
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_2rem_minmax(0,1fr)] lg:gap-3">
+                  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                    <RankSelector value={currentRank} omitChampionOne onChange={(value) => update("currentRank", value)} />
+                  </div>
+                  <span className="pointer-events-none hidden place-items-center text-white/25 lg:grid" aria-hidden="true">
+                    <ArrowRight className="size-4" />
+                  </span>
+                  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                    <RankSelector value={targetRank} currentRank={currentRank} target onChange={(value) => update("targetRank", value)} />
+                  </div>
                 </div>
               ) : null}
 
-              {isWins ? <><RankSelector value={currentRank} onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={5} eyebrow="NUMBER OF WINS" descriptor={(value) => value === 1 ? "Competitive Win" : "Competitive Wins"} errorId="overwatch-wins-quantity-error" errorCopy="Enter a whole number between 1 and 5." onRawChange={(value) => update("wins", quantitySelectionValue(value, 1, 5))} onSliderChange={(value) => update("wins", value)} /></> : null}
-              {isPlacements ? <><RankSelector value={currentRank} allowUnranked sourceLabel="Previous rank" onChange={(value) => update("currentRank", value)} /><div className="h-px bg-white/[0.07]" /><OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={10} eyebrow="NUMBER OF PLACEMENT MATCHES" descriptor={(value) => value === 1 ? "Placement Match" : "Placement Matches"} errorId="overwatch-placements-quantity-error" errorCopy="Enter a whole number between 1 and 10." onRawChange={(value) => update("matches", quantitySelectionValue(value, 1, 10))} onSliderChange={(value) => update("matches", value)} /></> : null}
-              {isDrives ? <><DriveRankSelector value={String(selection.driveRank)} onChange={(value) => update("driveRank", value)} /><DriveControl current={driveCurrent} desired={driveDesired} valid={driveIsValid} onCurrent={updateDriveCurrent} onDesired={(value) => update("desiredDrive", value)} /></> : null}
-              {isUnrated ? <OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={10} eyebrow="NUMBER OF MATCHES" descriptor={(value) => value === 1 ? "Unrated Match" : "Unrated Matches"} errorId="overwatch-unrated-quantity-error" errorCopy="Enter a whole number between 1 and 10." onRawChange={(value) => update("matches", quantitySelectionValue(value, 1, 10))} onSliderChange={(value) => update("matches", value)} /> : null}
+              {isWins ? (
+                <>
+                  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                    <RankSelector value={currentRank} onChange={(value) => update("currentRank", value)} />
+                  </div>
+                  <OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={5} eyebrow="NUMBER OF WINS" descriptor={(value) => value === 1 ? "Competitive Win" : "Competitive Wins"} errorId="overwatch-wins-quantity-error" errorCopy="Enter a whole number between 1 and 5." onRawChange={(value) => update("wins", quantitySelectionValue(value, 1, 5))} onSliderChange={(value) => update("wins", value)} />
+                </>
+              ) : null}
 
-              <div className="h-px bg-white/[0.07]" />
+              {isPlacements ? (
+                <>
+                  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                    <RankSelector value={currentRank} allowUnranked sourceLabel="Previous rank" onChange={(value) => update("currentRank", value)} />
+                  </div>
+                  <OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={10} eyebrow="NUMBER OF PLACEMENT MATCHES" descriptor={(value) => value === 1 ? "Placement Match" : "Placement Matches"} errorId="overwatch-placements-quantity-error" errorCopy="Enter a whole number between 1 and 10." onRawChange={(value) => update("matches", quantitySelectionValue(value, 1, 10))} onSliderChange={(value) => update("matches", value)} />
+                </>
+              ) : null}
 
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div>
+              {isDrives ? (
+                <>
+                  <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                    <DriveRankSelector value={String(selection.driveRank)} onChange={(value) => update("driveRank", value)} />
+                  </div>
+                  <DriveControl current={driveCurrent} desired={driveDesired} valid={driveIsValid} onCurrent={updateDriveCurrent} onDesired={(value) => update("desiredDrive", value)} />
+                </>
+              ) : null}
+
+              {isUnrated ? (
+                <OverwatchServiceQuantityControl rawValue={quantityRaw} sliderValue={quantityValidation.valid ? quantityValidation.value : lastValidQuantity} max={10} eyebrow="NUMBER OF MATCHES" descriptor={(value) => value === 1 ? "Unrated Match" : "Unrated Matches"} errorId="overwatch-unrated-quantity-error" errorCopy="Enter a whole number between 1 and 10." onRawChange={(value) => update("matches", quantitySelectionValue(value, 1, 10))} onSliderChange={(value) => update("matches", value)} />
+              ) : null}
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Boost method</p>
                   <p className="mt-1 text-sm font-semibold text-white">Choose how you want the service completed.</p>
                   <div role="radiogroup" aria-label="Boost method" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">
@@ -856,21 +877,27 @@ export function OverwatchServiceConfigurator({
                   <AccountBoostTrust selected={accountBoostSelected} accent="gold" showDescription />
                   {playWithBooster ? <div className="mt-4 rounded-xl border border-white/[0.07] bg-black/15 p-4"><QuantityControl value={Number(selection.boosters)} min={1} max={5} label="Boosters" helper={`1 booster +${OVERWATCH_EXTRA_PRICING.playWithBooster * 100}%. Each additional booster adds +${OVERWATCH_EXTRA_PRICING.additionalBooster * 100}%.`} onChange={(value) => update("boosters", value)} /></div> : null}
                 </div>
-                <div>
+
+                <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Role / Queue</p>
                   <p className="mt-1 text-sm font-semibold text-white">Select the role or Open Queue.</p>
                   <div role="radiogroup" aria-label="Role or queue" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">{roles.map((role) => <ChoicePill key={role.value} active={selection.role === role.value} onClick={() => update("role", role.value)} label={role.label} meta={role.meta} />)}</div>
                 </div>
               </div>
 
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</p><div role="radiogroup" aria-label="Server" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">{servers.map((server) => <ChoicePill key={server.value} active={selection.server === server.value} onClick={() => update("server", server.value)} label={server.label} />)}</div></div>
-                <div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p><div role="radiogroup" aria-label="Platform" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">{platforms.map((platform) => <ChoicePill key={platform.value} active={selection.platform === platform.value} onClick={() => update("platform", platform.value)} label={platform.label} icon={<PlatformIcon platform={platform.value} />} />)}</div></div>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Server</p>
+                  <div role="radiogroup" aria-label="Server" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">{servers.map((server) => <ChoicePill key={server.value} active={selection.server === server.value} onClick={() => update("server", server.value)} label={server.label} />)}</div>
+                </div>
+
+                <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Platform</p>
+                  <div role="radiogroup" aria-label="Platform" onKeyDown={handleOverwatchRadioGroupKeyDown} className="mt-3 grid grid-cols-2 gap-2">{platforms.map((platform) => <ChoicePill key={platform.value} active={selection.platform === platform.value} onClick={() => update("platform", platform.value)} label={platform.label} icon={<PlatformIcon platform={platform.value} />} />)}</div>
+                </div>
               </div>
 
-              <div className="h-px bg-white/[0.07]" />
-
-              <div>
+              <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
                 <div className="flex items-end justify-between gap-4"><div><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Customize</p><p className="mt-1 text-sm font-semibold text-white">Add only the options you want.</p></div><span className="text-[10px] text-white/30">Optional</span></div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
                   <ExtraCard checked={selection.playOffline === true} onChange={(value) => update("playOffline", value)} icon={<EyeOff className="size-4" />} title="Play Offline" price="FREE" description={playWithBooster ? "Available with Account Boost only." : "Keep the account activity discreet during fulfillment."} disabled={playWithBooster} />
