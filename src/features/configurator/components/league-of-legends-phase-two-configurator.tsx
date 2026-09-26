@@ -385,6 +385,58 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
   const serverLabel = servers.find(([value]) => value === selection.server)?.[1] ?? "Europe West";
   const masteryCurrentLevel = masteryCurrentResult.valid ? masteryCurrentResult.value : masteryCurrentRaw;
   const masteryTargetLevel = masteryTargetResult.valid ? masteryTargetResult.value : masteryTargetRaw;
+
+  const summaryRows: Array<[string, string]> = [];
+  if (isArena) {
+    const roleLabel = arenaRoleValid
+      ? roles.find(([value]) => value === selection.role)?.[1] ?? String(selection.role)
+      : String(selection.role);
+    const boostMethodLabel = boostMethodValid
+      ? selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"
+      : String(selection.boostMethod);
+    summaryRows.push(
+      ["Arena games", arenaGamesResult.valid ? String(arenaGamesResult.value) : String(arenaGamesRaw)],
+      ["Role", roleLabel],
+      ["Boost method", boostMethodLabel],
+    );
+  }
+  if (isMastery) {
+    if (masteryMode === "points") {
+      summaryRows.push(
+        ["Boost option", "Mastery Points Farm"],
+        ["Mastery points", masteryPointsResult.valid ? masteryPointsResult.value.toLocaleString("en-US") : String(masteryPointsRaw)],
+      );
+    } else if (masteryMode === "marks") {
+      summaryRows.push(
+        ["Boost option", "Marks of Mastery"],
+        ["Marks of Mastery", marksResult.valid ? String(marksResult.value) : String(marksRaw)],
+      );
+    } else if (masteryMode === "tier") {
+      summaryRows.push(
+        ["Boost option", "Tier Boost"],
+        ["Current level", masteryCurrentResult.valid ? `Level ${masteryCurrentResult.value}` : String(masteryCurrentRaw)],
+        ["Target level", masteryTargetResult.valid ? `Level ${masteryTargetResult.value}` : String(masteryTargetRaw)],
+      );
+    } else {
+      summaryRows.push(["Boost option", String(selection.masteryMode)]);
+    }
+  }
+  if (isClash) {
+    const boostMethodLabel = boostMethodValid
+      ? selection.boostMethod === "duo" ? "Play with Booster" : "Account Boost"
+      : String(selection.boostMethod);
+    summaryRows.push(
+      ["Clash tier", clashTierValid ? `Tier ${selection.clashTier}` : String(selection.clashTier)],
+      ["Games", clashGamesResult.valid ? String(clashGamesResult.value) : String(clashGamesRaw)],
+      ["Boosters", clashBoostersResult.valid ? String(clashBoostersResult.value) : String(clashBoostersRaw)],
+      ["Boost method", boostMethodLabel],
+    );
+  }
+  summaryRows.push(
+    ["Server", serverValid ? serverLabel : String(selection.server)],
+    ["Platform", platformValid ? "PC" : String(selection.platform)],
+  );
+
   const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
   const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
 
