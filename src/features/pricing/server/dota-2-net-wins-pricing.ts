@@ -26,17 +26,17 @@ import {
   type Dota2NetWinsQuoteMetadata,
 } from "@/features/configurator/data/dota-2-net-wins-options";
 
-const VERSION = "dota-2-net-wins-v1";
+const VERSION = "dota-2-net-wins-v2";
 const IMMORTAL_MMR = 5620;
 
 const pricingBrackets = [
-  { name: "Herald", start: 0, end: 770, rateCentsPerWin: 80 },
-  { name: "Guardian", start: 770, end: 1540, rateCentsPerWin: 80 },
-  { name: "Crusader", start: 1540, end: 2310, rateCentsPerWin: 85 },
-  { name: "Archon", start: 2310, end: 3080, rateCentsPerWin: 103 },
-  { name: "Legend", start: 3080, end: 3850, rateCentsPerWin: 125 },
-  { name: "Ancient", start: 3850, end: 4620, rateCentsPerWin: 169 },
-  { name: "Divine", start: 4620, end: IMMORTAL_MMR, rateCentsPerWin: 225 },
+  { name: "Herald", start: 0, end: 770, rateCentsPerWin: 150 },
+  { name: "Guardian", start: 770, end: 1540, rateCentsPerWin: 150 },
+  { name: "Crusader", start: 1540, end: 2310, rateCentsPerWin: 160 },
+  { name: "Archon", start: 2310, end: 3080, rateCentsPerWin: 175 },
+  { name: "Legend", start: 3080, end: 3850, rateCentsPerWin: 190 },
+  { name: "Ancient", start: 3850, end: 4620, rateCentsPerWin: 210 },
+  { name: "Divine", start: 4620, end: IMMORTAL_MMR, rateCentsPerWin: 240 },
 ] as const;
 
 const ALLOWED_SELECTION_KEYS = new Set([
