@@ -116,6 +116,10 @@ function Choice({ active, label, meta, description, onClick }: { active: boolean
   );
 }
 
+function normalizeMmrInputValue(value: string | number | boolean | undefined): string | number {
+  return typeof value === "string" || typeof value === "number" ? value : "";
+}
+
 function MmrField({ id, label, value, min, max, error, onChange }: { id: string; label: string; value: string | number; min: number; max: number; error: string | null; onChange: (value: string) => void }) {
   const errorId = `${id}-error`;
   return (
@@ -186,8 +190,8 @@ export function Dota2MmrConfigurator() {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  const currentRaw = selection.currentMmr;
-  const targetRaw = selection.targetMmr;
+  const currentRaw = normalizeMmrInputValue(selection.currentMmr);
+  const targetRaw = normalizeMmrInputValue(selection.targetMmr);
   const currentResult = parseWholeNumberQuantity(currentRaw, DOTA2_CURRENT_MMR_MIN, DOTA2_CURRENT_MMR_MAX);
   const targetResult = parseWholeNumberQuantity(targetRaw, DOTA2_TARGET_MMR_MIN, DOTA2_TARGET_MMR_MAX);
   const progressionValid = currentResult.valid && targetResult.valid && targetResult.value > currentResult.value;
