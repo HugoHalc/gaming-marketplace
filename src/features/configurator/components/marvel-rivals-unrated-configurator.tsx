@@ -15,7 +15,6 @@ import {
 import type { MarvelRivalsServiceFoundation } from "@/features/catalog/data/marvel-rivals-foundation";
 import {
   GameConfiguratorColumns,
-  GameConfiguratorPanel,
   GameMobileOrderBar,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
@@ -141,11 +140,11 @@ function GamesSelector({ rawValue, error, onChange }: { rawValue: string | numbe
           </button>
         </div>
       </div>
-      <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
+      <div className="mt-4">
         <div className="flex items-center justify-between gap-3"><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#CEC5FF]/65">Games</p><span className="text-[10px] font-medium text-white/38">1–10 games</span></div>
         <div className="mt-3 grid grid-cols-10 gap-1.5">{Array.from({ length: MAX_GAMES }, (_, index) => <span key={index} className={`grid h-3.5 w-full place-items-center rounded-full border transition-[border-color,background-color] duration-200 ${index < sliderValue ? "border-[#A38CFF]/55 bg-[#7A63F2]/80" : "border-white/[0.10] bg-white/[0.03]"}`} />)}</div>
       </div>
-      <input aria-label="Unrated games slider" type="range" min={1} max={MAX_GAMES} step={1} value={sliderValue} onChange={(event) => onChange(Number(event.target.value))} className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]" style={{ background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)` }} />
+      <input aria-label="Unrated games slider" type="range" min={1} max={MAX_GAMES} step={1} value={sliderValue} onChange={(event) => onChange(Number(event.target.value))} className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.07] accent-[#7A63F2]" style={{ background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)` }} />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30">{Array.from({ length: MAX_GAMES }, (_, index) => <span key={index}>{index + 1}</span>)}</div>
       {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
     </div>
@@ -355,14 +354,7 @@ export function MarvelRivalsUnratedConfigurator({
   return (
     <>
       <GameConfiguratorColumns>
-        <GameConfiguratorPanel
-          eyebrow={`Marvel Rivals ${service.name}`}
-          description="Choose between 1 and 10 unrated games and configure the service around your preferred setup."
-          accentTextClass="text-[#CEC5FF]/65"
-          accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Live pricing"
-        >
-          <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
+        <section className="min-w-0 space-y-4 sm:space-y-5">
             <MarvelRivalsConfiguratorBlock ariaLabel="Games">
               <GamesSelector
                 rawValue={selection.games}
@@ -561,8 +553,7 @@ export function MarvelRivalsUnratedConfigurator({
                 ))}
               </div>
             </MarvelRivalsConfiguratorBlock>
-          </div>
-        </GameConfiguratorPanel>
+        </section>
 
         <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}

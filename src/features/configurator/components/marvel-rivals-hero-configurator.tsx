@@ -19,7 +19,6 @@ import {
 } from "@/features/catalog/data/marvel-rivals-foundation";
 import {
   GameConfiguratorColumns,
-  GameConfiguratorPanel,
   GameMobileOrderBar,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
@@ -442,14 +441,7 @@ export function MarvelRivalsHeroConfigurator({
   return (
     <>
       <GameConfiguratorColumns>
-        <GameConfiguratorPanel
-          eyebrow={`Marvel Rivals ${service.name}`}
-          description="Choose your hero and configure Hero Proficiency from your current level to your target level."
-          accentTextClass="text-[#CEC5FF]/65"
-          accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Live pricing"
-        >
-          <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
+        <section className="min-w-0 space-y-4 sm:space-y-5">
             <MarvelRivalsConfiguratorBlock ariaLabel="Select hero">
               <HeroSelector
                 value={selection.hero}
@@ -457,46 +449,45 @@ export function MarvelRivalsHeroConfigurator({
               />
             </MarvelRivalsConfiguratorBlock>
 
-            <MarvelRivalsConfiguratorBlock ariaLabel="Hero proficiency">
-              <div className="flex items-center justify-between gap-4">
+            <section aria-label="Hero proficiency">
+              <div className="mb-3 flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
-                    Hero proficiency
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-white">
-                    Set your current proficiency and target level from 1 to 70.
-                  </p>
+                  <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Hero proficiency</p>
+                  <p className="mt-1 text-sm font-semibold text-white">Set your current proficiency and target level from 1 to 70.</p>
                 </div>
                 <span className="hidden text-[10px] font-medium text-white/35 sm:inline">1–70</span>
               </div>
-
-              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
-                <ProficiencyControl
-                  id="marvel-hero-current-proficiency"
-                  label="Current proficiency"
-                  rawValue={selection.currentProficiency}
-                  min={1}
-                  max={MAX_CURRENT_PROFICIENCY}
-                  error={currentProficiencyResult.valid ? null : "Enter a whole number between 1 and 69."}
-                  onChange={setCurrentProficiency}
-                />
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
+                <MarvelRivalsConfiguratorBlock ariaLabel="Current proficiency">
+                  <ProficiencyControl
+                    id="marvel-hero-current-proficiency"
+                    label="Current proficiency"
+                    rawValue={selection.currentProficiency}
+                    min={1}
+                    max={MAX_CURRENT_PROFICIENCY}
+                    error={currentProficiencyResult.valid ? null : "Enter a whole number between 1 and 69."}
+                    onChange={setCurrentProficiency}
+                  />
+                </MarvelRivalsConfiguratorBlock>
                 <span
                   className="grid size-7 place-items-center justify-self-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#CEC5FF]/45"
                   aria-hidden="true"
                 >
                   <ArrowRight className="size-3.5 rotate-90 lg:rotate-0" />
                 </span>
-                <ProficiencyControl
-                  id="marvel-hero-target-proficiency"
-                  label="Target proficiency"
-                  rawValue={selection.targetProficiency}
-                  min={currentProficiencyResult.valid ? currentProficiencyResult.value + 1 : 2}
-                  max={MAX_PROFICIENCY}
-                  error={currentProficiencyResult.valid ? targetProficiencyResult.valid ? null : "Enter a whole number above the current level, up to 70." : "Choose a valid current level first."}
-                  onChange={setTargetProficiency}
-                />
+                <MarvelRivalsConfiguratorBlock ariaLabel="Target proficiency">
+                  <ProficiencyControl
+                    id="marvel-hero-target-proficiency"
+                    label="Target proficiency"
+                    rawValue={selection.targetProficiency}
+                    min={currentProficiencyResult.valid ? currentProficiencyResult.value + 1 : 2}
+                    max={MAX_PROFICIENCY}
+                    error={currentProficiencyResult.valid ? targetProficiencyResult.valid ? null : "Enter a whole number above the current level, up to 70." : "Choose a valid current level first."}
+                    onChange={setTargetProficiency}
+                  />
+                </MarvelRivalsConfiguratorBlock>
               </div>
-            </MarvelRivalsConfiguratorBlock>
+            </section>
 
             <MarvelRivalsConfiguratorBlock ariaLabel="Server and platform">
               <div className="grid gap-5 lg:grid-cols-2">
@@ -690,8 +681,7 @@ export function MarvelRivalsHeroConfigurator({
                 ))}
               </div>
             </MarvelRivalsConfiguratorBlock>
-          </div>
-        </GameConfiguratorPanel>
+        </section>
 
         <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}

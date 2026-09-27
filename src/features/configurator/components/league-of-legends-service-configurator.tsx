@@ -12,7 +12,6 @@ import {
   LoaderCircle,
   MonitorPlay,
   ShieldCheck,
-  Sparkles,
   Users,
   Zap,
 } from "lucide-react";
@@ -147,7 +146,6 @@ function handleRadioKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
 
   const group = event.currentTarget.closest('[role="radiogroup"]');
   if (!group) return;
-
   const radios = Array.from(
     group.querySelectorAll<HTMLButtonElement>('[role="radio"]:not(:disabled)'),
   );
@@ -180,13 +178,21 @@ function ConfiguratorBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+    <section className="rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5">
       <div className="mb-4">
         <h3 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
           {title}
         </h3>
         {helper ? <p className="mt-1 text-[11px] leading-4 text-white/35">{helper}</p> : null}
       </div>
+      {children}
+    </section>
+  );
+}
+
+function DecisionPanel({ children }: { children: ReactNode }) {
+  return (
+    <section className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
       {children}
     </section>
   );
@@ -782,58 +788,55 @@ export function LeagueOfLegendsServiceConfigurator({
         <div className="min-w-0">
           <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
             <section className="min-w-0">
-              <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-[#080B09] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
-                <div>
-                  <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
-                    <Sparkles className="size-3.5" />
-                    {serviceLabel}
-                  </div>
-                  <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Configure your order inside the BoostingPedia flow.</p>
-                </div>
-                <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">
-                  Server-validated pricing
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-4">
+              <div className="space-y-4">
                 {isRank ? (
-                  <ConfiguratorBlock
-                    title="Rank progression"
-                    helper="Choose where the order starts and the rank you want to reach."
-                  >
-                    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_2rem_minmax(0,1fr)] lg:items-center">
+                  <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_2rem_minmax(0,1fr)] lg:items-center">
+                    <DecisionPanel>
                       <RankSelector label="Current rank" value={currentRank} maxRank="Diamond II" onChange={(value) => update("currentRank", value)} />
-                      <div className="grid h-8 place-items-center text-[#E7C867]/55" aria-hidden="true">
-                        <ArrowRight className="size-4 rotate-90 lg:rotate-0" />
-                      </div>
-                      <RankSelector label="Desired rank" value={targetRank} target currentRank={currentRank} onChange={(value) => update("targetRank", value)} />
+                    </DecisionPanel>
+                    <div className="grid h-8 place-items-center text-[#E7C867]/55" aria-hidden="true">
+                      <ArrowRight className="size-4 rotate-90 lg:rotate-0" />
                     </div>
-                  </ConfiguratorBlock>
-                ) : isUnrated ? null : (
-                  <ConfiguratorBlock title={isPlacements ? "Previous rank" : "Current rank"}>
-                    <RankSelector
-                      label={isPlacements ? "Previous rank" : "Current rank"}
-                      value={currentRank}
-                      allowUnranked={isPlacements}
-                      allowMaster
-                      onChange={(value) => update("currentRank", value)}
-                    />
-                  </ConfiguratorBlock>
-                )}
-
-                {(isWins || isPlacements || isUnrated) ? (
+                    <DecisionPanel>
+                      <RankSelector label="Desired rank" value={targetRank} target currentRank={currentRank} onChange={(value) => update("targetRank", value)} />
+                    </DecisionPanel>
+                  </div>
+                ) : isUnrated ? (
                   <ConfiguratorBlock title="Order quantity">
                     <Quantity
                       rawValue={quantityRaw}
                       min={quantityMin}
                       max={quantityMax}
-                      label={isWins ? "Ranked wins" : isPlacements ? "Placement matches" : "Unrated matches"}
+                      label="Unrated matches"
                       error={quantityError}
                       id={`lol-${service.slug}-quantity`}
                       onChange={(value) => update(quantityKey, value)}
                     />
                   </ConfiguratorBlock>
-                ) : null}
+                ) : (
+                  <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
+                    <DecisionPanel>
+                      <RankSelector
+                        label={isPlacements ? "Previous rank" : "Current rank"}
+                        value={currentRank}
+                        allowUnranked={isPlacements}
+                        allowMaster
+                        onChange={(value) => update("currentRank", value)}
+                      />
+                    </DecisionPanel>
+                    <DecisionPanel>
+                      <Quantity
+                        rawValue={quantityRaw}
+                        min={quantityMin}
+                        max={quantityMax}
+                        label={isWins ? "Ranked wins" : "Placement matches"}
+                        error={quantityError}
+                        id={`lol-${service.slug}-quantity`}
+                        onChange={(value) => update(quantityKey, value)}
+                      />
+                    </DecisionPanel>
+                  </div>
+                )}
 
                 {isRank ? (
                   <ConfiguratorBlock title="Rank context">

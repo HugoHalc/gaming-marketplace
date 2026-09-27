@@ -10,7 +10,6 @@ import {
   EyeOff,
   LoaderCircle,
   MonitorPlay,
-  Sparkles,
   Swords,
   Users,
   Zap,
@@ -123,7 +122,7 @@ function ConfiguratorBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
+    <section className="rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5">
       <div className="mb-4">
         <h3 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/75">
           {title}
@@ -557,23 +556,15 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
 
         <div className="grid min-w-0 gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
           <section className="min-w-0">
-            <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-[#080B09] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
-              <div>
-                <div className="flex items-center gap-2 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#E7C867]/80"><Sparkles className="size-3.5" />{serviceLabel}</div>
-                <p className="mt-1 hidden text-sm text-[var(--muted-foreground)] sm:block">Verified League of Legends pricing inside the BoostingPedia configurator family.</p>
-              </div>
-              <span className="hidden w-fit items-center rounded-full border border-emerald-300/15 bg-emerald-400/[0.06] px-3 py-1 text-[10px] font-medium text-emerald-300 sm:inline-flex">Server-calculated pricing</span>
-            </div>
-
-            <div className="mt-4 space-y-4">
+            <div className="space-y-4">
               {isArena ? (
                 <ConfiguratorBlock title="Arena setup">
-                  <div className="space-y-5">
+                  <div className="grid gap-5 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:items-start">
                     <Quantity rawValue={arenaGamesRaw} min={3} max={60} label="Arena games" helper="Choose between 3 and 60 games." error={arenaGamesResult.valid ? null : "Enter a whole number between 3 and 60."} id="lol-arena-games" onChange={(value) => update("games", value)} />
                     <div>
                       <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">Role</p>
                       <p className="mt-1 text-[11px] leading-4 text-white/35">Role selection is price-neutral.</p>
-                      <div role="radiogroup" aria-label="Role" className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                      <div role="radiogroup" aria-label="Role" className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                         {roles.map(([value, label]) => <Choice key={value} active={selection.role === value} label={label} onClick={() => update("role", value)} />)}
                       </div>
                     </div>

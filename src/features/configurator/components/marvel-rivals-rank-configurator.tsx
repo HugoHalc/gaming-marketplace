@@ -21,7 +21,6 @@ import {
 } from "@/features/catalog/data/marvel-rivals-foundation";
 import {
   GameConfiguratorColumns,
-  GameConfiguratorPanel,
   GameMobileOrderBar,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
@@ -636,31 +635,25 @@ export function MarvelRivalsRankConfigurator({ service }: {
   return (
     <>
       <GameConfiguratorColumns>
-        <GameConfiguratorPanel
-          eyebrow={`Marvel Rivals ${service.name}`}
-          description="Configure your full order without leaving this panel."
-          accentTextClass="text-[#CEC5FF]/65"
-          accentGradientClass="from-[#7A63F2]/[0.055]"
-          statusLabel="Live pricing"
-        >
-          <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-            <MarvelRivalsConfiguratorBlock ariaLabel="Rank progression">
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start">
+        <section className="min-w-0 space-y-4 sm:space-y-5">
+            <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start">
+              <MarvelRivalsConfiguratorBlock ariaLabel="Current rank">
                 <RankSelector
                   rank={selection.currentRank}
                   division={selection.currentDivision}
                   onFamilyChange={setCurrentFamily}
                   onDivisionChange={setCurrentDivision}
                 />
+              </MarvelRivalsConfiguratorBlock>
 
-                <span
-                  className="grid size-7 place-items-center justify-self-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#CEC5FF]/45 lg:mt-5"
-                  aria-hidden="true"
-                >
-                  <ArrowRight className="size-3.5 rotate-90 lg:rotate-0" />
-                </span>
+              <span
+                className="grid size-7 place-items-center justify-self-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#CEC5FF]/45 lg:mt-5"
+                aria-hidden="true"
+              >
+                <ArrowRight className="size-3.5 rotate-90 lg:rotate-0" />
+              </span>
 
-                <div>
+              <MarvelRivalsConfiguratorBlock ariaLabel="Target rank">
                 <RankSelector
                   rank={selection.targetRank}
                   division={selection.targetDivision}
@@ -672,9 +665,8 @@ export function MarvelRivalsRankConfigurator({ service }: {
                     setSelection((current) => ({ ...current, targetDivision }))
                   }
                 />
-              </div>
-              </div>
-            </MarvelRivalsConfiguratorBlock>
+              </MarvelRivalsConfiguratorBlock>
+            </div>
 
             <MarvelRivalsConfiguratorBlock ariaLabel="Server and platform">
               <div className="grid gap-5 lg:grid-cols-2">
@@ -906,8 +898,7 @@ export function MarvelRivalsRankConfigurator({ service }: {
                 ))}
               </div>
             </MarvelRivalsConfiguratorBlock>
-          </div>
-        </GameConfiguratorPanel>
+        </section>
 
         <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}
