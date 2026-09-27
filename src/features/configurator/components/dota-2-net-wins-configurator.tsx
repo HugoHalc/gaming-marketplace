@@ -1226,7 +1226,7 @@ export function Dota2NetWinsConfigurator() {
                           Verify before you order
                         </p>
                         <p className="mt-1 text-[10px] leading-4 text-white/42">
-                          Verify your selections before checkout.
+                          Your order purchases the selected number of Net Wins. Net Wins are wins minus losses; no win rate or delivery timing is guaranteed.
                         </p>
                         <div className="mt-1 flex flex-wrap gap-x-3">
                           <a

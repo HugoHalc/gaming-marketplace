@@ -123,8 +123,8 @@ function normalizeMmrInputValue(value: string | number | boolean | undefined): s
 function MmrField({ id, label, value, min, max, error, onChange }: { id: string; label: string; value: string | number; min: number; max: number; error: string | null; onChange: (value: string) => void }) {
   const errorId = `${id}-error`;
   return (
-    <ConfiguratorBlock title={label} helper={`Whole number from ${min.toLocaleString("en-US")} to ${max.toLocaleString("en-US")}.`}>
-      <label htmlFor={id} className="sr-only">{label}</label>
+    <div className="min-w-0">
+      <label htmlFor={id} className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">{label}</label>
       <input
         id={id}
         type="text"
@@ -136,8 +136,12 @@ function MmrField({ id, label, value, min, max, error, onChange }: { id: string;
         onChange={(event) => onChange(event.target.value)}
         className={`h-12 w-full rounded-xl border bg-[#090D0B] px-3 font-gaming-value text-xl font-bold text-white outline-none transition-colors focus-visible:ring-2 focus-visible:ring-red-300/25 motion-reduce:transition-none ${error ? "border-rose-300/35" : "border-white/[0.09] focus:border-red-300/30"}`}
       />
-      {error ? <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p> : null}
-    </ConfiguratorBlock>
+      {error ? (
+        <p id={errorId} className="mt-2 text-[10px] leading-4 text-rose-200">{error}</p>
+      ) : (
+        <p className="mt-2 text-[10px] leading-4 text-white/30">Whole number from {min.toLocaleString("en-US")} to {max.toLocaleString("en-US")}.</p>
+      )}
+    </div>
   );
 }
 
@@ -365,10 +369,15 @@ export function Dota2MmrConfigurator() {
     <>
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
         <section className="min-w-0 space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <MmrField id="dota2-current-mmr" label="Current MMR" value={currentRaw} min={DOTA2_CURRENT_MMR_MIN} max={DOTA2_CURRENT_MMR_MAX} error={currentError} onChange={(value) => update("currentMmr", value)} />
-            <MmrField id="dota2-target-mmr" label="Desired MMR" value={targetRaw} min={DOTA2_TARGET_MMR_MIN} max={DOTA2_TARGET_MMR_MAX} error={targetError} onChange={(value) => update("targetMmr", value)} />
-          </div>
+          <ConfiguratorBlock title="MMR Progression" helper="Set a valid progression from Current MMR to Desired MMR.">
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
+              <MmrField id="dota2-current-mmr" label="Current MMR" value={currentRaw} min={DOTA2_CURRENT_MMR_MIN} max={DOTA2_CURRENT_MMR_MAX} error={currentError} onChange={(value) => update("currentMmr", value)} />
+              <span className="grid size-9 place-items-center justify-self-center rounded-full border border-white/[0.07] bg-white/[0.025] text-red-100/45" aria-hidden="true">
+                <ArrowRight className="size-3.5 rotate-90 md:rotate-0" />
+              </span>
+              <MmrField id="dota2-target-mmr" label="Desired MMR" value={targetRaw} min={DOTA2_TARGET_MMR_MIN} max={DOTA2_TARGET_MMR_MAX} error={targetError} onChange={(value) => update("targetMmr", value)} />
+            </div>
+          </ConfiguratorBlock>
 
           <ConfiguratorBlock title="Server" helper="All listed servers use the same base pricing in this release.">
             <div role="radiogroup" aria-label="Dota 2 server" className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 lg:grid-cols-4">
@@ -384,15 +393,15 @@ export function Dota2MmrConfigurator() {
 
           <ConfiguratorBlock title="Boost Method">
             <div role="radiogroup" aria-label="Boost method" className="grid gap-2 min-[360px]:grid-cols-2">
-              {dota2BoostMethodOptions.map((option) => <Choice key={option.value} active={selection.boostMethod === option.value} label={option.label} meta={option.modifierPercent ? `+${option.modifierPercent}%` : "Base"} description={option.description} onClick={() => selectBoostMethod(option.value)} />)}
+              {dota2BoostMethodOptions.map((option) => <Choice key={option.value} active={selection.boostMethod === option.value} label={option.value === "duo" ? "Play With Booster" : option.label} meta={option.modifierPercent ? `+${option.modifierPercent}%` : "Base"} description={option.value === "duo" ? "You play together with the booster." : option.description} onClick={() => selectBoostMethod(option.value)} />)}
             </div>
             <AccountBoostTrust selected={selection.boostMethod === "solo"} accent="gold" showDescription methodLabel="Solo" />
-            {selection.boostMethod === "duo" ? <p className="mt-3 text-[10px] leading-4 text-white/42">You play with the booster. Account credentials are not required for the booster to play on your behalf.</p> : null}
+            {selection.boostMethod === "duo" ? <p className="mt-3 text-[10px] leading-4 text-white/42">You play with the booster; account access is not required for the booster to play on your behalf.</p> : null}
           </ConfiguratorBlock>
 
-          <ConfiguratorBlock title="Hero or Role Preference" helper="Choose one preference type. Paid preferences are never preselected.">
-            <div role="radiogroup" aria-label="Hero or role preference" className="grid gap-2 sm:grid-cols-3">
-              {dota2PreferenceOptions.map((option) => <Choice key={option.value} active={selection.preference === option.value} label={option.label} meta={option.meta} onClick={() => selectPreference(option.value)} />)}
+          <ConfiguratorBlock title="Play Preference" helper="Choose one preference type. Paid preferences are never preselected.">
+            <div role="radiogroup" aria-label="Play preference" className="grid gap-2 sm:grid-cols-3">
+              {dota2PreferenceOptions.map((option) => <Choice key={option.value} active={selection.preference === option.value} label={option.value === "none" ? "Any" : option.label} meta={option.meta} onClick={() => selectPreference(option.value)} />)}
             </div>
 
             {selection.preference === "roles" ? (
@@ -461,8 +470,8 @@ export function Dota2MmrConfigurator() {
                   {[
                     ["Server", serverLabel],
                     ["Behavior Score", behaviorLabel],
-                    ["Boost method", methodLabel],
-                    ["Preference", preferenceLabel],
+                    ["Boost method", methodLabel === "Duo" ? "Play With Booster" : methodLabel],
+                    ["Play preference", selection.preference === "none" ? "Any" : preferenceLabel],
                     ...(selection.preference === "roles" ? [["Roles", roleLabels.join(", ") || "Select roles"]] : []),
                     ...(selection.preference === "hero" ? [["Hero", String(selection.heroName).trim() || "Enter hero"]] : []),
                   ].map(([label, value]) => <div key={label} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[11px]"><span className="text-white/40">{label}</span><span className="min-w-0 text-right font-medium text-white/78">{value}</span></div>)}
@@ -493,7 +502,7 @@ export function Dota2MmrConfigurator() {
                 <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
                   <div className="flex items-start gap-2.5 px-3 py-3"><ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-red-200/70" aria-hidden="true" /><p className="text-[10px] leading-4 text-white/45">{selection.boostMethod === "solo" ? "Account details are requested after checkout through the protected order workflow." : "You play with the booster; account access is not required for the booster to play on your behalf."}</p></div>
                   <div className="flex items-start gap-2.5 border-t border-white/[0.06] px-3 py-3"><Clock3 className="mt-0.5 size-3.5 shrink-0 text-red-200/65" aria-hidden="true" /><div><p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200/65">Estimated timing</p><p className="mt-1 text-[10px] leading-4 text-white/42">Estimated start — Unavailable</p><p className="text-[10px] leading-4 text-white/42">Estimated completion — Unavailable</p><p className="mt-1 text-[9px] leading-4 text-white/30">No verified timing estimate is available for this configuration.</p></div></div>
-                  <div className="border-t border-white/[0.06] px-3 py-3"><div className="flex items-start gap-2.5"><UsersRound className="mt-0.5 size-3.5 shrink-0 text-red-200/65" aria-hidden="true" /><div className="min-w-0"><p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200/65">Verify before you order</p><p className="mt-1 text-[10px] leading-4 text-white/42">Verify your selections before checkout.</p><div className="mt-1 flex flex-wrap gap-x-3"><a href="https://www.trustpilot.com/review/boostingpedia.com" target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Public Trustpilot reviews<ExternalLink className="ml-1 size-2.5" /></a><Link href="/refunds" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Refund policy</Link></div></div></div></div>
+                  <div className="border-t border-white/[0.06] px-3 py-3"><div className="flex items-start gap-2.5"><UsersRound className="mt-0.5 size-3.5 shrink-0 text-red-200/65" aria-hidden="true" /><div className="min-w-0"><p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200/65">Verify before you order</p><p className="mt-1 text-[10px] leading-4 text-white/42">Confirm your MMR progression and boost method before checkout.</p><div className="mt-1 flex flex-wrap gap-x-3"><a href="https://www.trustpilot.com/review/boostingpedia.com" target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Public Trustpilot reviews<ExternalLink className="ml-1 size-2.5" /></a><Link href="/refunds" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Refund policy</Link></div></div></div></div>
                 </div>
 
                 {!customQuote ? <Button type="button" size="lg" onClick={createOrder} disabled={!canCheckout || isCreatingOrder} aria-describedby={belowMinimum ? "dota2-mmr-minimum-order" : undefined} className="mt-4 h-12 w-full rounded-xl font-semibold">{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin motion-reduce:animate-none" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button> : null}
