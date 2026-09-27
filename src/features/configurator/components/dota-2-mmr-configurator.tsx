@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +21,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getDota2RankBadge } from "@/features/catalog/data/dota-2-foundation";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { parseWholeNumberQuantity } from "../client/whole-number-quantity";
 import {
@@ -351,6 +353,8 @@ export function Dota2MmrConfigurator() {
   const methodLabel = dota2BoostMethodOptions.find((option) => option.value === selection.boostMethod)?.label ?? String(selection.boostMethod);
   const preferenceLabel = dota2PreferenceOptions.find((option) => option.value === selection.preference)?.label ?? String(selection.preference);
   const roleLabels = selectedRoles.map((role) => dota2RoleOptions.find((option) => option.value === role)?.label ?? role);
+  const currentRankBadge = getDota2RankBadge(metadata?.currentBracket);
+  const targetRankBadge = getDota2RankBadge(metadata?.targetBracket);
   const selectedExtras: string[] = [];
   if (selection.privacyMode === true) {
     selectedExtras.push(dota2ExtraOptions.privacyMode.label);
@@ -456,13 +460,23 @@ export function Dota2MmrConfigurator() {
                   <div className="min-w-0">
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current MMR</p>
                     <p className="font-gaming-value mt-1 text-base font-bold text-white">{String(currentRaw) || "—"}</p>
-                    <p className="mt-1 text-[9px] text-white/35">{metadata?.currentBracket ?? "—"}</p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {currentRankBadge ? (
+                        <Image src={currentRankBadge} alt="" width={24} height={24} className="size-6 shrink-0 object-contain" />
+                      ) : null}
+                      <p className="text-[9px] text-white/35">{metadata?.currentBracket ?? "—"}</p>
+                    </div>
                   </div>
                   <ArrowRight className="size-3.5 text-red-100/35" aria-hidden="true" />
                   <div className="min-w-0 text-right">
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Desired MMR</p>
                     <p className="font-gaming-value mt-1 text-base font-bold text-white">{String(targetRaw) || "—"}</p>
-                    <p className="mt-1 text-[9px] text-white/35">{metadata?.targetBracket ?? "—"}</p>
+                    <div className="mt-1 flex items-center justify-end gap-1.5">
+                      <p className="text-[9px] text-white/35">{metadata?.targetBracket ?? "—"}</p>
+                      {targetRankBadge ? (
+                        <Image src={targetRankBadge} alt="" width={24} height={24} className="size-6 shrink-0 object-contain" />
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 

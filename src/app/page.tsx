@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { launchGames } from "@/features/catalog/data/launch-games";
+import { dota2AssetFoundation, dota2PublicGameCard } from "@/features/catalog/data/dota-2-foundation";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { trustFeatures } from "@/features/marketing/content";
@@ -57,9 +58,12 @@ const homeGameCardAssets = {
   valorant: "/game-cards/valorant.webp",
   "marvel-rivals": "/game-cards/marvel-rivals.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
+  "dota-2": dota2AssetFoundation.gameCard,
   "battlefield-6": "/game-cards/battlefield-6.webp",
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
+
+const publicGameCards = [...launchGames, dota2PublicGameCard];
 
 const heroTrustpilot = {
   brand: "Trustpilot",
@@ -508,7 +512,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launchGames.map((game) => {
+            {publicGameCards.map((game) => {
               const imageSrc =
                 homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
               const serviceNames = game.ready
@@ -520,7 +524,7 @@ export default async function Home() {
                   <div className="absolute inset-0 bg-[#090D0B]">
                     <Image
                       src={imageSrc}
-                      alt=""
+                      alt={game.slug === "dota-2" ? "Dota 2" : ""}
                       fill
                       priority={game.slug === "rocket-league"}
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"

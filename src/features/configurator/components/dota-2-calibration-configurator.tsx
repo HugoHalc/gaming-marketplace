@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -21,6 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getDota2RankBadge } from "@/features/catalog/data/dota-2-foundation";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { parseWholeNumberQuantity } from "../client/whole-number-quantity";
 import {
@@ -121,12 +123,14 @@ function Choice({
   label,
   meta,
   description,
+  visual,
   onClick,
 }: {
   active: boolean;
   label: string;
   meta?: string;
   description?: string;
+  visual?: ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -143,6 +147,7 @@ function Choice({
           : "border-white/[0.08] bg-[#090D0B] text-white/62 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
       }`}
     >
+      {visual ? <span className="mb-2 flex justify-center">{visual}</span> : null}
       <span className="flex items-center justify-between gap-2">
         <span className="min-w-0 text-xs font-semibold leading-4">{label}</span>
         <span className="flex shrink-0 items-center gap-2">
@@ -783,6 +788,16 @@ export function Dota2CalibrationConfigurator() {
       role,
   );
 
+  const previousRankLabel =
+    metadata?.previousRank ??
+    dota2CalibrationRankOptions.find(
+      (option) => option.value === selection.previousRank,
+    )?.label ??
+    "—";
+  const previousRankBadge = getDota2RankBadge(
+    previousRankLabel === "—" ? undefined : previousRankLabel,
+  );
+
   const selectedExtras: string[] = [];
   if (selection.privacyMode === true) {
     selectedExtras.push(dota2ExtraOptions.privacyMode.label);
@@ -810,15 +825,29 @@ export function Dota2CalibrationConfigurator() {
               aria-label="Previous Dota 2 rank"
               className="grid grid-cols-2 gap-2 sm:grid-cols-4"
             >
-              {dota2CalibrationRankOptions.map((option) => (
-                <Choice
-                  key={option.value}
-                  active={selection.previousRank === option.value}
-                  label={option.label}
-                  meta={option.value === "immortal" ? "Custom quote" : undefined}
-                  onClick={() => selectPreviousRank(option.value)}
-                />
-              ))}
+              {dota2CalibrationRankOptions.map((option) => {
+                const badge = getDota2RankBadge(option.label);
+                return (
+                  <Choice
+                    key={option.value}
+                    active={selection.previousRank === option.value}
+                    label={option.label}
+                    meta={option.value === "immortal" ? "Custom quote" : undefined}
+                    visual={
+                      badge ? (
+                        <Image
+                          src={badge}
+                          alt=""
+                          width={56}
+                          height={56}
+                          className="size-12 object-contain drop-shadow-[0_7px_12px_rgba(0,0,0,.45)] sm:size-14"
+                        />
+                      ) : undefined
+                    }
+                    onClick={() => selectPreviousRank(option.value)}
+                  />
+                );
+              })}
             </div>
           </ConfiguratorBlock>
 
@@ -1118,13 +1147,20 @@ export function Dota2CalibrationConfigurator() {
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
                       Previous Rank
                     </p>
-                    <p className="font-gaming-value mt-1 text-base font-bold text-white">
-                      {metadata?.previousRank ??
-                        dota2CalibrationRankOptions.find(
-                          (option) => option.value === selection.previousRank,
-                        )?.label ??
-                        "—"}
-                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      {previousRankBadge ? (
+                        <Image
+                          src={previousRankBadge}
+                          alt=""
+                          width={30}
+                          height={30}
+                          className="size-7 shrink-0 object-contain"
+                        />
+                      ) : null}
+                      <p className="font-gaming-value text-base font-bold text-white">
+                        {previousRankLabel}
+                      </p>
+                    </div>
                     {!isImmortal ? (
                       <p className="mt-1 text-[9px] text-white/35">
                         Division {metadata?.previousDivision ?? String(selection.previousDivision || "—")}

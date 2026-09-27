@@ -1,5 +1,14 @@
 export const DOTA_2_GAME_SLUG = "dota-2" as const;
 
+export const dota2PublicGameCard = {
+  slug: DOTA_2_GAME_SLUG,
+  name: "Dota 2",
+  displayName: "Dota 2",
+  accent: "rose",
+  category: "MOBA",
+  ready: true,
+} as const;
+
 export const dota2GameFoundation = {
   id: "game_dota_2_foundation",
   slug: DOTA_2_GAME_SLUG,
@@ -9,7 +18,7 @@ export const dota2GameFoundation = {
     "Choose a focused Dota 2 service for MMR progression, net wins, calibration matches, or Dota Plus hero progression.",
   categoryLabel: "MOBA",
   publicAvailability: "foundation-preview",
-  finalAssetStatus: "pending-user-assets",
+  finalAssetStatus: "integrated",
 } as const;
 
 export type Dota2ServiceSlug =
@@ -93,17 +102,40 @@ export function findDota2ServiceFoundation(slug: string) {
 }
 
 export const dota2AssetFoundation = {
-  gameCard: null,
-  landingHero: null,
-  serviceHero: null,
+  gameCard: "/game-cards/dota-2.webp",
+  landingHero: "/game-heroes/dota-2-storefront.webp",
+  serviceHero: "/game-heroes/dota-2-service-hero.webp",
   rankBadges: {
-    herald: null,
-    guardian: null,
-    crusader: null,
-    archon: null,
-    legend: null,
-    ancient: null,
-    divine: null,
-    immortal: null,
+    herald: "/ranks/dota-2/herald.webp",
+    guardian: "/ranks/dota-2/guardian.webp",
+    crusader: "/ranks/dota-2/crusader.webp",
+    archon: "/ranks/dota-2/archon.webp",
+    legend: "/ranks/dota-2/legend.webp",
+    ancient: "/ranks/dota-2/ancient.webp",
+    divine: "/ranks/dota-2/divine.webp",
+    immortal: "/ranks/dota-2/immortal.webp",
   },
 } as const;
+
+export function getDota2RankBadge(rank: string | undefined) {
+  switch (rank) {
+    case "Herald":
+      return dota2AssetFoundation.rankBadges.herald;
+    case "Guardian":
+      return dota2AssetFoundation.rankBadges.guardian;
+    case "Crusader":
+      return dota2AssetFoundation.rankBadges.crusader;
+    case "Archon":
+      return dota2AssetFoundation.rankBadges.archon;
+    case "Legend":
+      return dota2AssetFoundation.rankBadges.legend;
+    case "Ancient":
+      return dota2AssetFoundation.rankBadges.ancient;
+    case "Divine":
+      return dota2AssetFoundation.rankBadges.divine;
+    case "Immortal":
+      return dota2AssetFoundation.rankBadges.immortal;
+    default:
+      return null;
+  }
+}

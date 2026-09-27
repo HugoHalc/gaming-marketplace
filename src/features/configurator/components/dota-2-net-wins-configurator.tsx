@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -21,6 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getDota2RankBadge } from "@/features/catalog/data/dota-2-foundation";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import { parseWholeNumberQuantity } from "../client/whole-number-quantity";
 import {
@@ -736,6 +738,7 @@ export function Dota2NetWinsConfigurator() {
       dota2RoleOptions.find((option) => option.value === role)?.label ??
       role,
   );
+  const currentRankBadge = getDota2RankBadge(metadata?.currentBracket);
 
   const selectedExtras: string[] = [];
   if (selection.privacyMode === true) {
@@ -1032,9 +1035,14 @@ export function Dota2NetWinsConfigurator() {
                     <p className="font-gaming-value mt-1 text-base font-bold text-white">
                       {String(currentRaw) || "—"}
                     </p>
-                    <p className="mt-1 text-[9px] text-white/35">
-                      {metadata?.currentBracket ?? "—"}
-                    </p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {currentRankBadge ? (
+                        <Image src={currentRankBadge} alt="" width={24} height={24} className="size-6 shrink-0 object-contain" />
+                      ) : null}
+                      <p className="text-[9px] text-white/35">
+                        {metadata?.currentBracket ?? "—"}
+                      </p>
+                    </div>
                   </div>
                   <div className="min-w-0 text-right">
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -14,6 +15,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import {
+  dota2AssetFoundation,
   dota2GameFoundation,
   dota2ServiceFoundations,
   type Dota2ServiceCategory,
@@ -49,9 +51,23 @@ export default function Dota2FoundationPage() {
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-        <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.07] blur-[130px]" />
-        <div className="absolute bottom-[-14rem] left-[-8rem] -z-10 size-[32rem] rounded-full bg-amber-500/[0.035] blur-[120px]" />
+        <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-10" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full overflow-hidden sm:w-[84%] md:w-[76%] lg:w-[68%] xl:w-[64%]"
+        >
+          <Image
+            src={dota2AssetFoundation.landingHero}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1280px) 64vw, (min-width: 1024px) 68vw, (min-width: 768px) 76vw, (min-width: 640px) 84vw, 100vw"
+            className="object-cover object-[78%_50%] opacity-38 sm:object-[76%_50%] sm:opacity-56 md:object-[74%_50%] md:opacity-72 lg:object-[72%_50%] lg:opacity-90 xl:opacity-100"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.99)_18%,rgba(5,8,7,.90)_36%,rgba(5,8,7,.56)_56%,rgba(5,8,7,.14)_78%,transparent_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050807] via-[#050807]/35 to-transparent" />
+        </div>
+        <div className="absolute bottom-[-14rem] left-[-8rem] -z-10 size-[32rem] rounded-full bg-red-500/[0.035] blur-[120px]" />
 
         <Container className="relative py-12 sm:py-16 lg:min-h-[31rem] lg:py-20">
           <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">

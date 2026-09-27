@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Crosshair, ShieldCheck, Sparkles, Trophy } from "lucide-react";
@@ -11,6 +12,7 @@ import { Dota2NetWinsConfigurator } from "@/features/configurator/components/dot
 import { Dota2CalibrationConfigurator } from "@/features/configurator/components/dota-2-calibration-configurator";
 import { Dota2HeroLevelConfigurator } from "@/features/configurator/components/dota-2-hero-level-configurator";
 import {
+  dota2AssetFoundation,
   dota2ServiceFoundations,
   findDota2ServiceFoundation,
 } from "@/features/catalog/data/dota-2-foundation";
@@ -59,6 +61,31 @@ export async function generateMetadata({
   };
 }
 
+
+
+function Dota2ServiceHeroBackground() {
+  return (
+    <>
+      <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-10" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full overflow-hidden sm:w-[88%] md:w-[80%] lg:w-[72%] xl:w-[68%]"
+      >
+        <Image
+          src={dota2AssetFoundation.serviceHero}
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 1280px) 68vw, (min-width: 1024px) 72vw, (min-width: 768px) 80vw, (min-width: 640px) 88vw, 100vw"
+          className="object-cover object-[67%_50%] opacity-34 sm:object-[66%_50%] sm:opacity-50 md:object-[65%_50%] md:opacity-64 lg:object-[64%_50%] lg:opacity-78 xl:opacity-88"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.99)_18%,rgba(5,8,7,.91)_37%,rgba(5,8,7,.58)_58%,rgba(5,8,7,.16)_82%,transparent_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#050807] via-[#050807]/32 to-transparent" />
+      </div>
+    </>
+  );
+}
+
 export default async function Dota2ServiceFoundationPage({ params }: Dota2ServiceFoundationPageProps) {
   const { service: slug } = await params;
   const service = findDota2ServiceFoundation(slug);
@@ -76,8 +103,7 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
       {isMmrBoost ? (
         <>
           <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Dota2ServiceHeroBackground />
             <Container className="py-8 sm:py-10 lg:py-12">
               <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <Link href="/" className="transition-colors hover:text-white">Home</Link>
@@ -111,8 +137,7 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
       ) : isNetWins ? (
         <>
           <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Dota2ServiceHeroBackground />
             <Container className="py-8 sm:py-10 lg:py-12">
               <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <Link href="/" className="transition-colors hover:text-white">Home</Link>
@@ -146,8 +171,7 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
       ) : isCalibration ? (
         <>
           <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Dota2ServiceHeroBackground />
             <Container className="py-8 sm:py-10 lg:py-12">
               <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <Link href="/" className="transition-colors hover:text-white">Home</Link>
@@ -184,8 +208,7 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
       ) : isHeroLevel ? (
         <>
           <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
-            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Dota2ServiceHeroBackground />
             <Container className="py-8 sm:py-10 lg:py-12">
               <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
                 <Link href="/" className="transition-colors hover:text-white">Home</Link>
