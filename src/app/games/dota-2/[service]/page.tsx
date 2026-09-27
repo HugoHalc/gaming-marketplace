@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Gamepad2, LockKeyhole, ShieldCheck, Trophy } from "lucide-react";
+import { ArrowLeft, Crosshair, Gamepad2, LockKeyhole, ShieldCheck, Trophy } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Dota2MmrConfigurator } from "@/features/configurator/components/dota-2-mmr-configurator";
 import { Dota2NetWinsConfigurator } from "@/features/configurator/components/dota-2-net-wins-configurator";
+import { Dota2CalibrationConfigurator } from "@/features/configurator/components/dota-2-calibration-configurator";
 import {
   dota2GameFoundation,
   dota2ServiceFoundations,
@@ -32,17 +33,22 @@ export async function generateMetadata({
 
   const isMmrBoost = service.slug === "mmr-boost";
   const isNetWins = service.slug === "net-wins";
+  const isCalibration = service.slug === "calibration-matches";
   return {
     title: isMmrBoost
       ? "Dota 2 MMR Boost | BoostingPedia"
       : isNetWins
         ? "Dota 2 Net Wins | BoostingPedia"
-        : `${service.name} | Dota 2 | BoostingPedia`,
+        : isCalibration
+          ? "Dota 2 Calibration Matches | BoostingPedia"
+          : `${service.name} | Dota 2 | BoostingPedia`,
     description: isMmrBoost
       ? "Configure your current MMR, target MMR and preferred boost options."
       : isNetWins
         ? "Purchase a fixed number of net ranked wins. Net wins are calculated as wins minus losses."
-        : service.description,
+        : isCalibration
+          ? "Purchase a selected number of calibration matches based on your previous rank, Rank Confidence and preferred play settings."
+          : service.description,
     alternates: { canonical: service.route },
     robots: { index: false, follow: false },
   };
@@ -134,6 +140,7 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
 
   const isMmrBoost = service.slug === "mmr-boost";
   const isNetWins = service.slug === "net-wins";
+  const isCalibration = service.slug === "calibration-matches";
 
   return (
     <main className="min-h-screen overflow-hidden">
@@ -206,6 +213,44 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
           <section className="py-7 sm:py-9 lg:py-10">
             <Container>
               <Dota2NetWinsConfigurator />
+            </Container>
+          </section>
+        </>
+      ) : isCalibration ? (
+        <>
+          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
+            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
+            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Container className="py-8 sm:py-10 lg:py-12">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                <Link href="/" className="transition-colors hover:text-white">Home</Link>
+                <span>/</span>
+                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
+                <span>/</span>
+                <span className="text-white">Calibration Matches</span>
+              </div>
+
+              <div className="mt-8 max-w-3xl">
+                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
+                  <Crosshair className="mr-2 size-3.5" />
+                  Dota 2 Calibration Matches
+                </Badge>
+                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+                  Dota 2 Calibration Matches
+                </h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
+                  Purchase a selected number of calibration matches based on your previous rank, Rank Confidence and preferred play settings.
+                </p>
+                <p className="mt-2 max-w-2xl text-xs leading-5 text-white/40">
+                  Final rank, match outcomes and Rank Confidence changes are not guaranteed.
+                </p>
+              </div>
+            </Container>
+          </section>
+
+          <section className="py-7 sm:py-9 lg:py-10">
+            <Container>
+              <Dota2CalibrationConfigurator />
             </Container>
           </section>
         </>

@@ -43,7 +43,7 @@ const serviceMeta: Record<
   },
 };
 
-const implementedServices = new Set(["mmr-boost", "net-wins"]);
+const implementedServices = new Set(["mmr-boost", "net-wins", "calibration-matches"]);
 
 export default function Dota2FoundationPage() {
   return (
@@ -90,7 +90,7 @@ export default function Dota2FoundationPage() {
                 Four planned services
               </span>
               <span className="rounded-full border border-red-300/15 bg-red-400/[0.05] px-3 py-1.5 text-xs font-medium text-red-100/80">
-                MMR Boost and Net Wins available for direct review
+                MMR Boost, Net Wins and Calibration Matches available for direct review
               </span>
             </div>
 
@@ -127,7 +127,7 @@ export default function Dota2FoundationPage() {
               Choose the service path you want to review.
             </h2>
             <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
-              MMR Boost and Net Wins now have complete direct-route configurators. Calibration Matches and Dota Plus Hero Level remain foundation previews and cannot create orders yet.
+              MMR Boost, Net Wins and Calibration Matches now have complete direct-route configurators. Dota Plus Hero Level remains a foundation preview and cannot create orders yet.
             </p>
           </div>
 
@@ -186,7 +186,9 @@ export default function Dota2FoundationPage() {
                         ? "Configure MMR Boost"
                         : service.slug === "net-wins"
                           ? "Configure Net Wins"
-                          : "Review service foundation"}
+                          : service.slug === "calibration-matches"
+                            ? "Configure Calibration Matches"
+                            : "Review service foundation"}
                       <ArrowRight className="ml-2 size-3.5" />
                     </span>
                   </div>
@@ -202,12 +204,12 @@ export default function Dota2FoundationPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {[
               {
-                title: "Two server-validated services",
-                text: "MMR Boost and Net Wins calculate pricing on the server and recalculate the order before creation.",
+                title: "Three server-validated services",
+                text: "MMR Boost, Net Wins and Calibration Matches calculate pricing on the server and recalculate the order before creation.",
               },
               {
-                title: "Two services remain in preview",
-                text: "Calibration Matches and Dota Plus Hero Level still do not expose quote or order creation flows.",
+                title: "One service remains in preview",
+                text: "Dota Plus Hero Level still does not expose quote or order creation flows.",
               },
               {
                 title: "Final assets pending",
