@@ -7,7 +7,6 @@ import {
   ChevronDown,
   Crosshair,
   EyeOff,
-  Gamepad2,
   MonitorPlay,
   Target,
   Users,
@@ -18,10 +17,10 @@ import {
   GameConfiguratorColumns,
   GameConfiguratorPanel,
   GameMobileOrderBar,
-  GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsOrderSummary } from "./marvel-rivals-order-summary";
 import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
 import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
@@ -232,21 +231,12 @@ function ExtraCard({
 function GamesSummary({ games }: { games: string | number }) {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
-      <div className="flex items-center gap-2.5">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/75">
-          <Gamepad2 className="size-4" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
-            Unrated games
-          </p>
-          <p className="font-gaming-value mt-0.5 text-lg font-bold text-[#F4F7F5]">{games}</p>
-        </div>
-        <div className="ml-auto text-right">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Range</p>
-          <p className="font-gaming-value mt-0.5 text-sm font-bold text-[#F4F7F5]">1–10</p>
-        </div>
-      </div>
+      <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
+        Unrated Games
+      </p>
+      <p className="font-gaming-value mt-1 text-base font-bold text-[#F4F7F5]">
+        {String(games)} {String(games) === "1" ? "Unrated Game" : "Unrated Games"}
+      </p>
     </div>
   );
 }
@@ -359,9 +349,8 @@ export function MarvelRivalsUnratedConfigurator({
       ["Boost Method", selection.boostMethod === "solo" ? "Solo" : "Duo"],
     ];
 
-    if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region]);
+  }, [selection.boostMethod, selection.platform, selection.region]);
 
   return (
     <>
@@ -575,15 +564,13 @@ export function MarvelRivalsUnratedConfigurator({
           </div>
         </GameConfiguratorPanel>
 
-        <GameOrderAside
+        <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
-          statusTone={canCheckout ? "ready" : "pending"}
           progression={<GamesSummary games={selection.games} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
-          totalValue={totalPrice}
           checkoutError={checkout.orderError}
+          quote={quote}
+          quoteLoading={quoteLoading}
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
@@ -603,7 +590,7 @@ export function MarvelRivalsUnratedConfigurator({
               {quoteError}
             </div>
           ) : null}
-        </GameOrderAside>
+        </MarvelRivalsOrderSummary>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar

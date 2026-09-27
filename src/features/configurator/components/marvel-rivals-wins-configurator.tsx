@@ -10,7 +10,6 @@ import {
   EyeOff,
   MonitorPlay,
   Target,
-  Trophy,
   Users,
   Zap,
 } from "lucide-react";
@@ -23,10 +22,10 @@ import {
   GameConfiguratorColumns,
   GameConfiguratorPanel,
   GameMobileOrderBar,
-  GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsOrderSummary } from "./marvel-rivals-order-summary";
 import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
 import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
@@ -460,16 +459,15 @@ function WinsSummary({ selection }: { selection: Selection }) {
           <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
             Current rank
           </p>
-          <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">
+          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold text-[#F4F7F5]">
             {rankLabel(selection.currentRank, selection.currentDivision)}
           </p>
         </div>
-        <div className="ml-auto text-right">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Wins</p>
-          <div className="mt-0.5 flex items-center justify-end gap-1.5">
-            <Trophy className="size-3.5 text-[#CEC5FF]/55" aria-hidden="true" />
-            <p className="font-gaming-value text-lg font-bold text-[#F4F7F5]">{selection.wins}</p>
-          </div>
+        <div className="ml-auto max-w-[8rem] text-right">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Competitive Wins</p>
+          <p className="font-gaming-value mt-0.5 text-sm font-bold leading-5 text-[#F4F7F5]">
+            {String(selection.wins)} {String(selection.wins) === "1" ? "Competitive Win" : "Competitive Wins"}
+          </p>
         </div>
       </div>
     </div>
@@ -633,10 +631,8 @@ export function MarvelRivalsWinsConfigurator({ service }: {
     if (selection.currentRank === "eternity") {
       rows.push(["Eternity Points", String(selection.eternityPoints)]);
     }
-    if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
   }, [
-    selectedExtras,
     selection.boostMethod,
     selection.currentRank,
     selection.eternityPoints,
@@ -911,15 +907,13 @@ export function MarvelRivalsWinsConfigurator({ service }: {
           </div>
         </GameConfiguratorPanel>
 
-        <GameOrderAside
+        <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
-          statusTone={canCheckout ? "ready" : "pending"}
           progression={<WinsSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
-          totalValue={totalPrice}
           checkoutError={checkout.orderError}
+          quote={quote}
+          quoteLoading={quoteLoading}
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
@@ -939,7 +933,7 @@ export function MarvelRivalsWinsConfigurator({ service }: {
               {quoteError}
             </div>
           ) : null}
-        </GameOrderAside>
+        </MarvelRivalsOrderSummary>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar

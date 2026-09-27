@@ -21,10 +21,10 @@ import {
   GameConfiguratorColumns,
   GameConfiguratorPanel,
   GameMobileOrderBar,
-  GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsOrderSummary } from "./marvel-rivals-order-summary";
 import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
 import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
@@ -279,16 +279,11 @@ function ExtraCard({
 function HeroSummary({ selection }: { selection: Selection }) {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/75">
-          <Crosshair className="size-4" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Hero</p>
-          <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">
-            {selection.hero || "Not selected"}
-          </p>
-        </div>
+      <div className="min-w-0">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Selected Hero</p>
+        <p className="font-gaming-value mt-1 break-words text-base font-bold text-[#F4F7F5]">
+          {selection.hero || "Not selected"}
+        </p>
       </div>
       <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-t border-white/[0.06] pt-3">
         <div>
@@ -441,9 +436,8 @@ export function MarvelRivalsHeroConfigurator({
       ["Boost Method", selection.boostMethod === "solo" ? "Solo" : "Duo"],
     ];
 
-    if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region]);
+  }, [selection.boostMethod, selection.platform, selection.region]);
 
   return (
     <>
@@ -699,25 +693,13 @@ export function MarvelRivalsHeroConfigurator({
           </div>
         </GameConfiguratorPanel>
 
-        <GameOrderAside
+        <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel={
-            !heroValid
-              ? "Select hero"
-              : quoteError
-                ? "Pricing unavailable"
-                : quoteLoading
-                  ? "Updating"
-                  : quote
-                    ? "Server priced"
-                    : "Pricing pending"
-          }
-          statusTone={canCheckout ? "ready" : "pending"}
           progression={<HeroSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
-          totalValue={totalPrice}
           checkoutError={checkout.orderError}
+          quote={quote}
+          quoteLoading={quoteLoading}
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
@@ -737,7 +719,7 @@ export function MarvelRivalsHeroConfigurator({
               {quoteError}
             </div>
           ) : null}
-        </GameOrderAside>
+        </MarvelRivalsOrderSummary>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar

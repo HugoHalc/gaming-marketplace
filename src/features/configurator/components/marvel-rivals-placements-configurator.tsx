@@ -22,10 +22,10 @@ import {
   GameConfiguratorColumns,
   GameConfiguratorPanel,
   GameMobileOrderBar,
-  GameOrderAside,
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsOrderSummary } from "./marvel-rivals-order-summary";
 import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
 import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
@@ -470,13 +470,15 @@ function PreviousRankSummary({ selection }: { selection: Selection }) {
           <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
             Previous rank
           </p>
-          <p className="font-gaming-value mt-0.5 truncate text-sm font-bold text-[#F4F7F5]">
+          <p className="font-gaming-value mt-0.5 break-words text-sm font-bold text-[#F4F7F5]">
             {previousRankLabel(selection.previousRank, selection.previousDivision)}
           </p>
         </div>
-        <div className="ml-auto text-right">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Matches</p>
-          <p className="font-gaming-value mt-0.5 text-lg font-bold text-[#F4F7F5]">{selection.matches}</p>
+        <div className="ml-auto max-w-[8rem] text-right">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Placement Matches</p>
+          <p className="font-gaming-value mt-0.5 text-sm font-bold leading-5 text-[#F4F7F5]">
+            {String(selection.matches)} {String(selection.matches) === "1" ? "Match" : "Matches"}
+          </p>
         </div>
       </div>
     </div>
@@ -635,9 +637,8 @@ export function MarvelRivalsPlacementsConfigurator({
       ["Role", roleLabel],
     ];
 
-    if (selectedExtras.length) rows.push(["Extras", selectedExtras.join(", ")]);
     return rows;
-  }, [selectedExtras, selection.boostMethod, selection.platform, selection.region, selection.role]);
+  }, [selection.boostMethod, selection.platform, selection.region, selection.role]);
 
   return (
     <>
@@ -893,15 +894,13 @@ export function MarvelRivalsPlacementsConfigurator({
           </div>
         </GameConfiguratorPanel>
 
-        <GameOrderAside
+        <MarvelRivalsOrderSummary
           gameLabel={`Marvel Rivals ${service.name}`}
-          statusLabel={quoteError ? "Pricing unavailable" : quoteLoading ? "Updating" : quote ? "Server priced" : "Pricing pending"}
-          statusTone={canCheckout ? "ready" : "pending"}
           progression={<PreviousRankSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
-          totalLabel={quoteError ? "Server quote unavailable" : quoteLoading ? "Updating server quote" : "Server-authoritative price"}
-          totalValue={totalPrice}
           checkoutError={checkout.orderError}
+          quote={quote}
+          quoteLoading={quoteLoading}
           checkoutAction={
             <MarvelRivalsCheckoutButton
               onClick={checkout.createOrder}
@@ -921,7 +920,7 @@ export function MarvelRivalsPlacementsConfigurator({
               {quoteError}
             </div>
           ) : null}
-        </GameOrderAside>
+        </MarvelRivalsOrderSummary>
       </GameConfiguratorColumns>
 
       <GameMobileOrderBar
