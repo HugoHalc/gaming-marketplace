@@ -347,12 +347,19 @@ export function Dota2MmrConfigurator() {
   const methodLabel = dota2BoostMethodOptions.find((option) => option.value === selection.boostMethod)?.label ?? String(selection.boostMethod);
   const preferenceLabel = dota2PreferenceOptions.find((option) => option.value === selection.preference)?.label ?? String(selection.preference);
   const roleLabels = selectedRoles.map((role) => dota2RoleOptions.find((option) => option.value === role)?.label ?? role);
-  const selectedExtras = [
-    selection.privacyMode === true ? dota2ExtraOptions.privacyMode.label : null,
-    selection.soloQueueOnly === true ? dota2ExtraOptions.soloQueueOnly.label : null,
-    selection.expressDelivery === true ? dota2ExtraOptions.expressDelivery.label : null,
-    selection.streaming === true ? dota2ExtraOptions.streaming.label : null,
-  ].filter((item): item is string => Boolean(item));
+  const selectedExtras: string[] = [];
+  if (selection.privacyMode === true) {
+    selectedExtras.push(dota2ExtraOptions.privacyMode.label);
+  }
+  if (selection.soloQueueOnly === true) {
+    selectedExtras.push(dota2ExtraOptions.soloQueueOnly.label);
+  }
+  if (selection.expressDelivery === true) {
+    selectedExtras.push(dota2ExtraOptions.expressDelivery.label);
+  }
+  if (selection.streaming === true) {
+    selectedExtras.push(dota2ExtraOptions.streaming.label);
+  }
 
   return (
     <>
