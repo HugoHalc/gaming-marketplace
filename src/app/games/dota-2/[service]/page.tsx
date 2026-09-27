@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Gamepad2, LockKeyhole } from "lucide-react";
+import { ArrowLeft, Gamepad2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
+import { Dota2MmrConfigurator } from "@/features/configurator/components/dota-2-mmr-configurator";
 import {
   dota2GameFoundation,
   dota2ServiceFoundations,
@@ -28,26 +29,20 @@ export async function generateMetadata({
 
   if (!service) return { title: "Service not found" };
 
+  const isMmrBoost = service.slug === "mmr-boost";
   return {
-    title: `${service.name} | Dota 2 | BoostingPedia`,
-    description: service.description,
+    title: isMmrBoost ? "Dota 2 MMR Boost | BoostingPedia" : `${service.name} | Dota 2 | BoostingPedia`,
+    description: isMmrBoost
+      ? "Configure your current MMR, target MMR and preferred boost options."
+      : service.description,
     alternates: { canonical: service.route },
     robots: { index: false, follow: false },
   };
 }
 
-export default async function Dota2ServiceFoundationPage({
-  params,
-}: Dota2ServiceFoundationPageProps) {
-  const { service: slug } = await params;
-  const service = findDota2ServiceFoundation(slug);
-
-  if (!service) notFound();
-
+function FoundationPreview({ service }: { service: NonNullable<ReturnType<typeof findDota2ServiceFoundation>> }) {
   return (
-    <main className="min-h-screen overflow-hidden">
-      <SiteHeader />
-
+    <>
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
         <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
@@ -105,24 +100,74 @@ export default async function Dota2ServiceFoundationPage({
                   <Gamepad2 className="size-4" />
                 </span>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Configurator not implemented in PHASE 1</h2>
+                  <h2 className="text-lg font-semibold text-white">Configurator not available yet</h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
-                    Pricing, configuration controls, estimated timing and checkout will be introduced only in later approved phases. This route cannot create an order.
+                    Pricing, configuration controls, estimated timing and checkout for this service will be introduced only in a later approved phase. This route cannot create an order.
                   </p>
                 </div>
               </div>
             </div>
 
-            <Link
-              href="/games/dota-2"
-              className="mt-8 inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.035] px-5 text-sm font-semibold text-white/70 transition-colors hover:border-white/[0.15] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
-            >
+            <Link href="/games/dota-2" className="mt-8 inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.035] px-5 text-sm font-semibold text-white/70 transition-colors hover:border-white/[0.15] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]">
               <ArrowLeft className="mr-2 size-4" />
               Back to Dota 2 services
             </Link>
           </div>
         </Container>
       </section>
+    </>
+  );
+}
+
+export default async function Dota2ServiceFoundationPage({ params }: Dota2ServiceFoundationPageProps) {
+  const { service: slug } = await params;
+  const service = findDota2ServiceFoundation(slug);
+  if (!service) notFound();
+
+  const isMmrBoost = service.slug === "mmr-boost";
+
+  return (
+    <main className="min-h-screen overflow-hidden">
+      <SiteHeader />
+
+      {isMmrBoost ? (
+        <>
+          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
+            <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
+            <div className="absolute right-[-10rem] top-[-12rem] -z-10 size-[38rem] rounded-full bg-red-500/[0.06] blur-[130px]" />
+            <Container className="py-8 sm:py-10 lg:py-12">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                <Link href="/" className="transition-colors hover:text-white">Home</Link>
+                <span>/</span>
+                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
+                <span>/</span>
+                <span className="text-white">MMR Boost</span>
+              </div>
+
+              <div className="mt-8 max-w-3xl">
+                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
+                  <ShieldCheck className="mr-2 size-3.5" />
+                  Dota 2 MMR Boost
+                </Badge>
+                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+                  Dota 2 MMR Boost
+                </h1>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
+                  Configure your current MMR, target MMR and preferred boost options.
+                </p>
+              </div>
+            </Container>
+          </section>
+
+          <section className="py-7 sm:py-9 lg:py-10">
+            <Container>
+              <Dota2MmrConfigurator />
+            </Container>
+          </section>
+        </>
+      ) : (
+        <FoundationPreview service={service} />
+      )}
 
       <SiteFooter />
     </main>
