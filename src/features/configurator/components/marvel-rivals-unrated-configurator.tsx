@@ -22,6 +22,8 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
+import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
   MarvelRivalsCheckoutButton,
   useMarvelRivalsCheckout,
@@ -114,9 +116,31 @@ function GamesSelector({ rawValue, error, onChange }: { rawValue: string | numbe
   const errorId = "marvel-unrated-games-error";
   return (
     <div className="min-w-0">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div><label htmlFor="marvel-unrated-games" className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">Unrated games</label><div className="mt-1 flex items-end gap-2"><span className="font-gaming-value text-[2.5rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{String(rawValue)}</span><span className="pb-1 text-xs font-medium text-[#A0AAA4]">games selected</span></div></div>
-        <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3"><input id="marvel-unrated-games" type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, 1, MAX_GAMES))} className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none" /></div>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label="Decrease unrated games"
+            disabled={!parsed.valid || parsed.value <= 1}
+            onClick={() => onChange(parsed.valid ? Math.max(1, parsed.value - 1) : rawValue)}
+            className="grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/60 outline-none transition-colors hover:border-white/[0.14] hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            −
+          </button>
+          <div className="flex h-11 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
+            <input id="marvel-unrated-games" type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, 1, MAX_GAMES))} className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none" />
+          </div>
+          <button
+            type="button"
+            aria-label="Increase unrated games"
+            disabled={!parsed.valid || parsed.value >= MAX_GAMES}
+            onClick={() => onChange(parsed.valid ? Math.min(MAX_GAMES, parsed.value + 1) : rawValue)}
+            className="grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/60 outline-none transition-colors hover:border-white/[0.14] hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            +
+          </button>
+        </div>
       </div>
       <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
         <div className="flex items-center justify-between gap-3"><p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#CEC5FF]/65">Games</p><span className="text-[10px] font-medium text-white/38">1–10 games</span></div>
@@ -155,7 +179,7 @@ function ExtraCard({
       aria-disabled={disabled}
       disabled={disabled}
       onClick={onChange}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-[#090D0B] opacity-40"
           : checked
@@ -350,15 +374,16 @@ export function MarvelRivalsUnratedConfigurator({
           statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-            <GamesSelector
-              rawValue={selection.games}
-              error={gamesResult.valid ? null : "Enter a whole number between 1 and 10."}
-              onChange={(games) => setSelection((current) => ({ ...current, games }))}
-            />
+            <MarvelRivalsConfiguratorBlock ariaLabel="Games">
+              <GamesSelector
+                rawValue={selection.games}
+                error={gamesResult.valid ? null : "Enter a whole number between 1 and 10."}
+                onChange={(games) => setSelection((current) => ({ ...current, games }))}
+              />
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div className="grid gap-5 lg:grid-cols-2">
+            <MarvelRivalsConfiguratorBlock ariaLabel="Server and platform">
+              <div className="grid gap-5 lg:grid-cols-2">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Server
@@ -369,7 +394,7 @@ export function MarvelRivalsUnratedConfigurator({
                     onChange={(event) =>
                       setSelection((current) => ({ ...current, region: event.target.value }))
                     }
-                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18]"
+                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18] focus:ring-2 focus:ring-[#A38CFF]/15"
                   >
                     {regions.map((region) => (
                       <option key={region.value} value={region.value}>
@@ -385,18 +410,20 @@ export function MarvelRivalsUnratedConfigurator({
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Platform
                 </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div role="radiogroup" aria-label="Platform" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-3">
                   {platforms.map((platform) => {
                     const active = selection.platform === platform.value;
                     return (
                       <button
                         key={platform.value}
                         type="button"
-                        aria-pressed={active}
+                        role="radio"
+                        aria-checked={active}
+                        tabIndex={active ? 0 : -1}
                         onClick={() =>
                           setSelection((current) => ({ ...current, platform: platform.value }))
                         }
-                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-colors ${
+                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                           active
                             ? "border-[#A38CFF]/[0.18] bg-[#131B17] text-white"
                             : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -422,16 +449,15 @@ export function MarvelRivalsUnratedConfigurator({
                   })}
                 </div>
               </div>
-            </div>
+              </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Boost method">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost method
               </p>
               <p className="mt-1 text-sm font-semibold text-white">Choose how you want the service completed.</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-2">
                 {[
                   {
                     value: "solo" as const,
@@ -453,7 +479,9 @@ export function MarvelRivalsUnratedConfigurator({
                     <button
                       key={method.value}
                       type="button"
-                      aria-pressed={active}
+                      role="radio"
+                      aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() =>
                         setSelection((current) => ({
                           ...current,
@@ -464,7 +492,7 @@ export function MarvelRivalsUnratedConfigurator({
                               : current.extras,
                         }))
                       }
-                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                         active
                           ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
                           : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -510,11 +538,9 @@ export function MarvelRivalsUnratedConfigurator({
                 showDescription
                 methodLabel="Solo"
               />
-            </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Extras">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -545,7 +571,7 @@ export function MarvelRivalsUnratedConfigurator({
                   />
                 ))}
               </div>
-            </div>
+            </MarvelRivalsConfiguratorBlock>
           </div>
         </GameConfiguratorPanel>
 

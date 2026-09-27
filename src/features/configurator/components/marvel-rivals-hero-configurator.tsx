@@ -25,6 +25,8 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
+import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
   MarvelRivalsCheckoutButton,
   useMarvelRivalsCheckout,
@@ -147,7 +149,7 @@ function HeroSelector({ value, onChange }: { value: string; onChange: (value: st
           value={value}
           onChange={(event) => onChange(event.target.value)}
           aria-label="Hero"
-          className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.22]"
+          className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.22] focus:ring-2 focus:ring-[#A38CFF]/15"
         >
           <option value="">Select a hero</option>
           {heroes.map((hero) => (
@@ -189,7 +191,7 @@ function ProficiencyControl({
     <div className="min-w-0 rounded-xl border border-white/[0.07] bg-[#090D0B] p-4">
       <div className="flex items-end justify-between gap-4">
         <div><label htmlFor={id} className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A0AAA4]">{label}</label><div className="mt-1 flex items-end gap-2"><span className="font-gaming-value text-[2.35rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">{String(rawValue)}</span><span className="pb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-white/35">proficiency</span></div></div>
-        <input id={id} type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))} className="font-gaming-value h-10 w-16 rounded-xl border border-white/[0.09] bg-black/20 px-2 text-center text-base font-bold text-white outline-none focus:border-[#A38CFF]/[0.22]" />
+        <input id={id} type="text" inputMode="numeric" value={rawValue} aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} onChange={(event) => onChange(quantitySelectionValue(event.target.value, min, max))} className="font-gaming-value h-10 w-16 rounded-xl border border-white/[0.09] bg-black/20 px-2 text-center text-base font-bold text-white outline-none focus:border-[#A38CFF]/[0.22] focus:ring-2 focus:ring-[#A38CFF]/15" />
       </div>
       <input aria-label={`${label} slider`} type="range" min={min} max={max} step={1} value={sliderValue} onChange={(event) => onChange(Number(event.target.value))} className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#7A63F2]" style={{ background: `linear-gradient(to right, rgba(122,99,242,.68) 0%, rgba(122,99,242,.68) ${progress}%, rgba(255,255,255,.07) ${progress}%, rgba(255,255,255,.07) 100%)` }} />
       <div className="mt-2 flex justify-between text-[9px] font-medium text-white/30"><span>{min}</span><span>{max}</span></div>
@@ -224,7 +226,7 @@ function ExtraCard({
       aria-disabled={disabled}
       disabled={disabled}
       onClick={onChange}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-[#090D0B] opacity-40"
           : checked
@@ -454,14 +456,14 @@ export function MarvelRivalsHeroConfigurator({
           statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-            <HeroSelector
-              value={selection.hero}
-              onChange={(hero) => setSelection((current) => ({ ...current, hero }))}
-            />
+            <MarvelRivalsConfiguratorBlock ariaLabel="Select hero">
+              <HeroSelector
+                value={selection.hero}
+                onChange={(hero) => setSelection((current) => ({ ...current, hero }))}
+              />
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Hero proficiency">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -474,10 +476,7 @@ export function MarvelRivalsHeroConfigurator({
                 <span className="hidden text-[10px] font-medium text-white/35 sm:inline">1–70</span>
               </div>
 
-              <div className="relative mt-3 grid gap-3 lg:grid-cols-2">
-                <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#CEC5FF]/45 lg:grid">
-                  <ArrowRight className="size-3.5" />
-                </span>
+              <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
                 <ProficiencyControl
                   id="marvel-hero-current-proficiency"
                   label="Current proficiency"
@@ -487,6 +486,12 @@ export function MarvelRivalsHeroConfigurator({
                   error={currentProficiencyResult.valid ? null : "Enter a whole number between 1 and 69."}
                   onChange={setCurrentProficiency}
                 />
+                <span
+                  className="grid size-7 place-items-center justify-self-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#CEC5FF]/45"
+                  aria-hidden="true"
+                >
+                  <ArrowRight className="size-3.5 rotate-90 lg:rotate-0" />
+                </span>
                 <ProficiencyControl
                   id="marvel-hero-target-proficiency"
                   label="Target proficiency"
@@ -497,11 +502,10 @@ export function MarvelRivalsHeroConfigurator({
                   onChange={setTargetProficiency}
                 />
               </div>
-            </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div className="grid gap-5 lg:grid-cols-2">
+            <MarvelRivalsConfiguratorBlock ariaLabel="Server and platform">
+              <div className="grid gap-5 lg:grid-cols-2">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Server
@@ -512,7 +516,7 @@ export function MarvelRivalsHeroConfigurator({
                     onChange={(event) =>
                       setSelection((current) => ({ ...current, region: event.target.value }))
                     }
-                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18]"
+                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18] focus:ring-2 focus:ring-[#A38CFF]/15"
                   >
                     {regions.map((region) => (
                       <option key={region.value} value={region.value}>
@@ -528,18 +532,20 @@ export function MarvelRivalsHeroConfigurator({
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Platform
                 </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div role="radiogroup" aria-label="Platform" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-3">
                   {platforms.map((platform) => {
                     const active = selection.platform === platform.value;
                     return (
                       <button
                         key={platform.value}
                         type="button"
-                        aria-pressed={active}
+                        role="radio"
+                        aria-checked={active}
+                        tabIndex={active ? 0 : -1}
                         onClick={() =>
                           setSelection((current) => ({ ...current, platform: platform.value }))
                         }
-                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-colors ${
+                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                           active
                             ? "border-[#A38CFF]/[0.18] bg-[#131B17] text-white"
                             : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -565,18 +571,17 @@ export function MarvelRivalsHeroConfigurator({
                   })}
                 </div>
               </div>
-            </div>
+              </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Boost method">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost method
               </p>
               <p className="mt-1 text-sm font-semibold text-white">
                 Choose how you want the service completed.
               </p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-2">
                 {[
                   {
                     value: "solo" as const,
@@ -598,7 +603,9 @@ export function MarvelRivalsHeroConfigurator({
                     <button
                       key={method.value}
                       type="button"
-                      aria-pressed={active}
+                      role="radio"
+                      aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() =>
                         setSelection((current) => ({
                           ...current,
@@ -609,7 +616,7 @@ export function MarvelRivalsHeroConfigurator({
                               : current.extras,
                         }))
                       }
-                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                         active
                           ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
                           : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -655,11 +662,9 @@ export function MarvelRivalsHeroConfigurator({
                 showDescription
                 methodLabel="Solo"
               />
-            </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Extras">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -690,7 +695,7 @@ export function MarvelRivalsHeroConfigurator({
                   />
                 ))}
               </div>
-            </div>
+            </MarvelRivalsConfiguratorBlock>
           </div>
         </GameConfiguratorPanel>
 

@@ -26,6 +26,8 @@ import {
 } from "./game-configurator-family-shell";
 import { AccountBoostTrust } from "./account-boost-trust";
 import { MarvelRivalsOrderGuidance } from "./marvel-rivals-order-guidance";
+import { MarvelRivalsConfiguratorBlock } from "./marvel-rivals-configurator-block";
+import { handleMarvelRivalsRadioGroupKeyDown } from "./marvel-rivals-radio-group";
 import {
   MarvelRivalsCheckoutButton,
   useMarvelRivalsCheckout,
@@ -197,17 +199,20 @@ function PreviousRankSelector({
           <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#CEC5FF]/65">
             Previous rank
           </p>
-          <p className="font-gaming-value mt-0.5 truncate text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
+          <p className="font-gaming-value mt-0.5 break-words text-xl font-bold tracking-[-0.035em] text-[#F4F7F5]">
             {previousRankLabel(rank, division)}
           </p>
         </div>
       </div>
 
+      <div role="radiogroup" aria-label="Previous rank" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-4">
       <button
         type="button"
-        aria-pressed={unranked}
+        role="radio"
+        aria-checked={unranked}
+        tabIndex={unranked ? 0 : -1}
         onClick={() => onRankChange("unranked")}
-        className={`mt-4 flex h-10 w-full items-center justify-between rounded-xl border px-3 text-left text-xs font-semibold transition-colors ${
+        className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 text-left text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
           unranked
             ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04] text-white"
             : "border-white/[0.08] bg-[#090D0B] text-white/60 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -221,7 +226,7 @@ function PreviousRankSelector({
         ) : null}
       </button>
 
-      <div className="mt-2 grid grid-cols-4 gap-2">
+      <div className="mt-2 grid grid-cols-3 gap-2 min-[390px]:grid-cols-4">
         {marvelRivalsRanks.map((item) => {
           const active = rank === item.key;
           return (
@@ -229,9 +234,11 @@ function PreviousRankSelector({
               key={item.key}
               type="button"
               title={item.label}
-              aria-pressed={active}
+              role="radio"
+              aria-checked={active}
+              tabIndex={active ? 0 : -1}
               onClick={() => onRankChange(item.key)}
-              className={`group/rank relative flex min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 transition-[border-color,background-color,transform] duration-200 ease-out motion-reduce:transition-none ${
+              className={`group/rank relative flex min-h-[5.5rem] min-w-0 flex-col items-center overflow-hidden rounded-xl border px-1.5 py-2 outline-none transition-[border-color,background-color] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
                 active
                   ? "border-[#39E56F]/30 bg-[#39E56F]/[0.04]"
                   : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -247,7 +254,7 @@ function PreviousRankSelector({
               ) : null}
               <RankBadge rank={item.key} selected={active} />
               <span
-                className={`mt-1.5 line-clamp-2 min-h-7 w-full text-center text-[10px] font-semibold leading-3.5 transition-colors ${
+                className={`mt-1.5 min-h-7 w-full break-words text-center text-[10px] font-semibold leading-3.5 transition-colors ${
                   active ? "text-white" : "text-white/68 group-hover/rank:text-white/90"
                 }`}
               >
@@ -258,8 +265,10 @@ function PreviousRankSelector({
         })}
       </div>
 
+      </div>
+
       {!unranked && rankHasDivisions(rank) ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div role="radiogroup" aria-label="Previous rank division" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 flex flex-wrap items-center gap-2">
           <span className="mr-1 font-gaming-label text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
             Division
           </span>
@@ -269,11 +278,13 @@ function PreviousRankSelector({
               <button
                 key={item}
                 type="button"
-                aria-pressed={active}
+                role="radio"
+                aria-checked={active}
+                tabIndex={active ? 0 : -1}
                 onClick={() => onDivisionChange(item)}
-                className={`h-8 min-w-10 rounded-lg border px-3 text-xs font-bold transition-[border-color,background-color,color] ${
+                className={`min-h-11 min-w-11 rounded-lg border px-3 text-xs font-bold outline-none transition-[border-color,background-color,color] focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                   active
-                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5]"
+                    ? "border-[#39E56F]/28 bg-[#39E56F]/[0.04] text-[#F4F7F5] ring-1 ring-inset ring-white/[0.12]"
                     : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
                 }`}
               >
@@ -303,7 +314,7 @@ function PlacementMatches({
 
   return (
     <div className="min-w-0">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <label htmlFor="marvel-placement-matches" className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A0AAA4]">
             Placement matches
@@ -313,17 +324,37 @@ function PlacementMatches({
             <span className="pb-1 text-xs font-medium text-[#A0AAA4]">matches selected</span>
           </div>
         </div>
-        <div className="flex h-10 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
-          <input
-            id="marvel-placement-matches"
-            type="text"
-            inputMode="numeric"
-            value={rawValue}
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? errorId : undefined}
-            onChange={(event) => onChange(quantitySelectionValue(event.target.value, 1, MAX_PLACEMENT_MATCHES))}
-            className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
-          />
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label="Decrease placement matches"
+            disabled={!parsed.valid || parsed.value <= 1}
+            onClick={() => onChange(parsed.valid ? Math.max(1, parsed.value - 1) : rawValue)}
+            className="grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/60 outline-none transition-colors hover:border-white/[0.14] hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            −
+          </button>
+          <div className="flex h-11 items-center rounded-xl border border-white/[0.09] bg-black/20 px-3">
+            <input
+              id="marvel-placement-matches"
+              type="text"
+              inputMode="numeric"
+              value={rawValue}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
+              onChange={(event) => onChange(quantitySelectionValue(event.target.value, 1, MAX_PLACEMENT_MATCHES))}
+              className="font-gaming-value w-12 bg-transparent text-center text-base font-bold text-white outline-none"
+            />
+          </div>
+          <button
+            type="button"
+            aria-label="Increase placement matches"
+            disabled={!parsed.valid || parsed.value >= MAX_PLACEMENT_MATCHES}
+            onClick={() => onChange(parsed.valid ? Math.min(MAX_PLACEMENT_MATCHES, parsed.value + 1) : rawValue)}
+            className="grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-[#090D0B] text-lg font-semibold text-white/60 outline-none transition-colors hover:border-white/[0.14] hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            +
+          </button>
         </div>
       </div>
       <div className="mt-4 rounded-xl border border-white/[0.07] bg-[#090D0B] p-3.5">
@@ -372,7 +403,7 @@ function ExtraCard({
       aria-disabled={disabled}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+      className={`group/extra flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-white/[0.05] bg-[#090D0B] opacity-40"
           : checked
@@ -619,7 +650,8 @@ export function MarvelRivalsPlacementsConfigurator({
           statusLabel="Live pricing"
         >
           <div className="space-y-4 p-4 sm:space-y-5 sm:p-5 lg:p-6">
-            <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
+            <MarvelRivalsConfiguratorBlock ariaLabel="Placement setup">
+              <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
               <PreviousRankSelector
                 rank={selection.previousRank}
                 division={selection.previousDivision}
@@ -637,10 +669,10 @@ export function MarvelRivalsPlacementsConfigurator({
                 />
               </div>
             </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div className="grid gap-5 lg:grid-cols-2">
+            <MarvelRivalsConfiguratorBlock ariaLabel="Server and platform">
+              <div className="grid gap-5 lg:grid-cols-2">
               <div>
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Server
@@ -651,7 +683,7 @@ export function MarvelRivalsPlacementsConfigurator({
                     onChange={(event) =>
                       setSelection((current) => ({ ...current, region: event.target.value }))
                     }
-                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18]"
+                    className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 pr-10 text-xs font-semibold text-white outline-none transition-colors hover:border-white/[0.14] focus:border-[#A38CFF]/[0.18] focus:ring-2 focus:ring-[#A38CFF]/15"
                   >
                     {regions.map((region) => (
                       <option key={region.value} value={region.value}>
@@ -667,18 +699,20 @@ export function MarvelRivalsPlacementsConfigurator({
                 <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                   Platform
                 </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div role="radiogroup" aria-label="Platform" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-3">
                   {platforms.map((platform) => {
                     const active = selection.platform === platform.value;
                     return (
                       <button
                         key={platform.value}
                         type="button"
-                        aria-pressed={active}
+                        role="radio"
+                        aria-checked={active}
+                        tabIndex={active ? 0 : -1}
                         onClick={() =>
                           setSelection((current) => ({ ...current, platform: platform.value }))
                         }
-                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left transition-colors ${
+                        className={`flex h-11 min-w-0 items-center justify-between gap-2 rounded-xl border px-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                           active
                             ? "border-[#A38CFF]/[0.18] bg-[#131B17] text-white"
                             : "border-white/[0.08] bg-[#090D0B] text-white/65 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
@@ -705,15 +739,14 @@ export function MarvelRivalsPlacementsConfigurator({
                 </div>
               </div>
             </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Boost method">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Boost method
               </p>
               <p className="mt-1 text-sm font-semibold text-white">Choose how you want the service completed.</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div role="radiogroup" aria-label="Boost method" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="mt-3 grid gap-2 sm:grid-cols-2">
                 {[
                   {
                     value: "solo" as const,
@@ -735,7 +768,9 @@ export function MarvelRivalsPlacementsConfigurator({
                     <button
                       key={method.value}
                       type="button"
-                      aria-pressed={active}
+                      role="radio"
+                      aria-checked={active}
+                      tabIndex={active ? 0 : -1}
                       onClick={() =>
                         setSelection((current) => ({
                           ...current,
@@ -746,7 +781,7 @@ export function MarvelRivalsPlacementsConfigurator({
                               : current.extras,
                         }))
                       }
-                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left transition-[border-color,background-color] duration-200 ${
+                      className={`flex min-h-[4.4rem] items-center gap-3 rounded-xl border p-3 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                         active
                           ? "border-[#39E56F]/28 bg-[#39E56F]/[0.035]"
                           : "border-white/[0.08] bg-[#090D0B] hover:border-white/[0.14] hover:bg-[#0E1411]"
@@ -790,39 +825,40 @@ export function MarvelRivalsPlacementsConfigurator({
                 showDescription
                 methodLabel="Solo"
               />
-            </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div className="h-px bg-white/[0.07]" />
-
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Role">
               <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
                 Role
               </p>
               <div className="mt-3 rounded-xl border border-white/[0.07] bg-black/10 p-3">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div role="radiogroup" aria-label="Role" onKeyDown={handleMarvelRivalsRadioGroupKeyDown} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {roles.map((role) => {
                     const active = selection.role === role.value;
                     return (
                       <button
                         key={role.value}
                         type="button"
-                        aria-pressed={active}
+                        role="radio"
+                        aria-checked={active}
+                        tabIndex={active ? 0 : -1}
                         onClick={() => setSelection((current) => ({ ...current, role: role.value }))}
-                        className={`flex h-10 items-center justify-center rounded-lg border px-3 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ${
+                        className={`flex min-h-11 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold outline-none transition-[border-color,background-color,color] duration-200 focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] ${
                           active
-                            ? "border-[#A38CFF]/40 bg-[#7A63F2]/[0.10] text-white"
+                            ? "border-[#A38CFF]/40 bg-[#7A63F2]/[0.10] text-white ring-1 ring-inset ring-white/[0.12]"
                             : "border-white/[0.06] bg-white/[0.035] text-white/65 hover:border-white/[0.12] hover:bg-white/[0.055] hover:text-white"
                         }`}
                       >
-                        {role.label}
+                        <span>{role.label}</span>
+                        {active ? <Check className="size-3" strokeWidth={3} aria-hidden="true" /> : null}
                       </button>
                     );
                   })}
                 </div>
               </div>
-            </div>
+            </MarvelRivalsConfiguratorBlock>
 
-            <div>
+            <MarvelRivalsConfiguratorBlock ariaLabel="Extras">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A0AAA4]">
@@ -853,7 +889,7 @@ export function MarvelRivalsPlacementsConfigurator({
                   />
                 ))}
               </div>
-            </div>
+            </MarvelRivalsConfiguratorBlock>
           </div>
         </GameConfiguratorPanel>
 
