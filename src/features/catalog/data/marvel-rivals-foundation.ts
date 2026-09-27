@@ -19,40 +19,40 @@ export const marvelRivalsServices: MarvelRivalsServiceFoundation[] = [
     name: "Rank Boost",
     eyebrow: "Competitive progression",
     description:
-      "Choose your current rank and target rank, then configure the service around the way you want to play.",
-    summary: "Current rank → target rank",
+      "Progress from your current rank to a higher target rank with the service options that fit how you want to play.",
+    summary: "Current Rank → Target Rank",
   },
   {
     slug: "placement-matches",
     name: "Placements Boost",
     eyebrow: "Season placement",
     description:
-      "Configure your placement matches from your previous-season rank or an unranked starting point.",
-    summary: "Previous rank + number of games",
+      "Complete your Placement Matches from an Unranked or previous-rank starting point.",
+    summary: "Previous Rank + Placement Matches",
   },
   {
     slug: "wins",
     name: "Competitive Wins",
     eyebrow: "Competitive wins",
     description:
-      "Choose your current competitive rank and the number of wins you want.",
-    summary: "Current rank + number of wins",
+      "Choose your current competitive rank and the exact number of Competitive Wins you want.",
+    summary: "Current Rank + Competitive Wins",
   },
   {
     slug: "hero-boost",
     name: "Hero Boost",
-    eyebrow: "Hero progression",
+    eyebrow: "Hero proficiency",
     description:
-      "Configure progression from your current hero level to the level you want to reach.",
-    summary: "Current level → desired level",
+      "Progress a selected hero from your Current Proficiency to a higher Target Proficiency.",
+    summary: "Current Proficiency → Target Proficiency",
   },
   {
     slug: "unrated-games",
     name: "Unrated Games",
     eyebrow: "Unrated play",
     description:
-      "Choose the number of unrated games you want and configure the service around your preferred setup.",
-    summary: "Number of games",
+      "Choose the number of Unrated Games you want and configure the service around your preferred setup.",
+    summary: "Unrated Games",
   },
 ];
 

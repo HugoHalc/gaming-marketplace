@@ -58,12 +58,12 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
     service.slug === "rank-boost"
       ? ["Bronze → Eternity", "Solo or Duo", "Flexible extras"]
       : service.slug === "placement-matches"
-        ? ["Previous rank + games", "Solo or Duo", "Flexible extras"]
+        ? ["Previous Rank + Placement Matches", "Solo or Duo", "Flexible extras"]
         : service.slug === "wins"
-          ? ["Rank + win quantity", "Solo or Duo", "Flexible extras"]
+          ? ["Current Rank + Competitive Wins", "Solo or Duo", "Flexible extras"]
           : service.slug === "hero-boost"
             ? ["Hero Proficiency 1 → 70", "Choose your hero", "Solo or Duo"]
-            : ["1–10 games", "Solo or Duo", "Flexible extras"];
+            : ["1–10 Unrated Games", "Solo or Duo", "Flexible extras"];
 
   const serviceNavigation = marvelRivalsServices.map((item) => ({
     slug: item.slug,
@@ -83,55 +83,55 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
-        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-[#7A63F2]/[0.08] blur-[120px]" />
+        <div className="hero-grid absolute inset-0 -z-20 opacity-20" />
+        <div className="absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full bg-[#7A63F2]/[0.07] blur-[120px]" />
 
-        <Container className="py-5 sm:py-16 lg:py-18">
+        <Container className="py-3 sm:py-6 lg:py-7">
           <div className="sm:hidden">
             <Link
               href="/games/marvel-rivals"
-              className="inline-flex min-h-11 items-center text-xs font-semibold text-white/60 transition-colors hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-md text-xs font-semibold text-white/60 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transition-none"
             >
-              <ArrowLeft className="mr-2 size-3.5" />
+              <ArrowLeft className="mr-2 size-3.5" aria-hidden="true" />
               Back to Marvel Rivals
             </Link>
           </div>
 
           <div className="hidden sm:block">
             <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-              <Link href="/" className="transition-colors hover:text-white">Home</Link>
+              <Link href="/" className="rounded-sm outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 motion-reduce:transition-none">Home</Link>
               <span aria-hidden="true">/</span>
-              <Link href="/games" className="transition-colors hover:text-white">Games</Link>
+              <Link href="/games" className="rounded-sm outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 motion-reduce:transition-none">Games</Link>
               <span aria-hidden="true">/</span>
-              <Link href="/games/marvel-rivals" className="transition-colors hover:text-white">Marvel Rivals</Link>
+              <Link href="/games/marvel-rivals" className="rounded-sm outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 motion-reduce:transition-none">Marvel Rivals</Link>
               <span aria-hidden="true">/</span>
               <span className="text-white">{service.name}</span>
             </div>
           </div>
 
-          <div className="mt-2 grid gap-8 sm:mt-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="mt-1 grid gap-4 sm:mt-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div className="max-w-3xl">
               <Badge className="hidden border-[#A38CFF]/20 bg-[#7A63F2]/[0.06] text-[#CEC5FF] sm:inline-flex">
-                <Sparkles className="mr-2 size-3.5" />
+                <Sparkles className="mr-2 size-3.5" aria-hidden="true" />
                 Marvel Rivals {service.name}
               </Badge>
 
-              <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-5">
+              <h1 className="text-balance text-3xl font-bold leading-[1.02] tracking-[-0.05em] text-white sm:mt-3 sm:text-4xl">
                 Marvel Rivals {service.name}
               </h1>
-              <p className="mt-3 hidden text-balance text-4xl font-bold leading-[1.03] tracking-[-0.055em] text-white sm:block sm:text-5xl">
+              <p className="mt-2 hidden text-balance text-xl font-semibold leading-tight tracking-[-0.025em] text-white/88 sm:block sm:text-2xl">
                 {heroTitle}
               </p>
 
-              <p className="mt-4 hidden max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:block sm:text-lg">
+              <p className="mt-2.5 hidden max-w-2xl text-sm leading-6 text-[var(--muted-foreground)] sm:block sm:text-base">
                 {service.description}
               </p>
 
-              <div className="mt-5 hidden flex-wrap gap-2 sm:flex">
+              <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
                 {heroPills.map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-xs font-medium text-white/58"
+                    className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1 text-[11px] font-medium text-white/58"
                   >
                     {pill}
                   </span>
@@ -141,16 +141,16 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
             <Link
               href="/games/marvel-rivals"
-              className="hidden items-center text-sm font-semibold text-white/65 transition-colors hover:text-white sm:inline-flex"
+              className="hidden min-h-11 items-center rounded-md px-1 text-sm font-semibold text-white/65 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-[#A38CFF]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transition-none sm:inline-flex"
             >
-              <ArrowLeft className="mr-2 size-4" />
+              <ArrowLeft className="mr-2 size-4" aria-hidden="true" />
               Back to Marvel Rivals
             </Link>
           </div>
         </Container>
       </section>
 
-      <section className="py-6 sm:py-12 lg:py-16">
+      <section className="py-5 sm:py-8 lg:py-10">
         <Container>
           <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
             <GameServiceNavigation
