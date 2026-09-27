@@ -43,8 +43,6 @@ const serviceMeta: Record<
   },
 };
 
-const implementedServices = new Set(["mmr-boost", "net-wins", "calibration-matches"]);
-
 export default function Dota2FoundationPage() {
   return (
     <main className="min-h-screen overflow-hidden">
@@ -71,7 +69,7 @@ export default function Dota2FoundationPage() {
           <div className="mt-12 max-w-3xl">
             <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
               <Gamepad2 className="mr-2 size-3.5" />
-              Dota 2 rollout preview
+              Dota 2 Boosting Services
             </Badge>
 
             <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.96] tracking-[-0.065em] text-white sm:text-6xl lg:text-7xl">
@@ -87,10 +85,10 @@ export default function Dota2FoundationPage() {
                 MOBA
               </span>
               <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
-                Four planned services
+                Four available services
               </span>
               <span className="rounded-full border border-red-300/15 bg-red-400/[0.05] px-3 py-1.5 text-xs font-medium text-red-100/80">
-                MMR Boost, Net Wins and Calibration Matches available for direct review
+                Server-validated service pricing
               </span>
             </div>
 
@@ -124,10 +122,10 @@ export default function Dota2FoundationPage() {
               Dota 2 services
             </p>
             <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-              Choose the service path you want to review.
+              Choose the Dota 2 service that fits your goal.
             </h2>
             <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
-              MMR Boost, Net Wins and Calibration Matches now have complete direct-route configurators. Dota Plus Hero Level remains a foundation preview and cannot create orders yet.
+              Configure MMR Boost, Net Wins, Calibration Matches or Dota Plus Hero Level with server-validated pricing and order checks.
             </p>
           </div>
 
@@ -135,7 +133,6 @@ export default function Dota2FoundationPage() {
             {dota2ServiceFoundations.map((service, index) => {
               const meta = serviceMeta[service.category];
               const Icon = meta.icon;
-              const implemented = implementedServices.has(service.slug);
 
               return (
                 <Link
@@ -149,15 +146,9 @@ export default function Dota2FoundationPage() {
                     </span>
 
                     <span
-                      className={`font-gaming-label rounded-full border px-2 py-1 text-[9px] uppercase tracking-[0.09em] ${
-                        implemented
-                          ? "border-[#39E56F]/25 bg-[#39E56F]/[0.05] text-[#82F5A4]"
-                          : "border-white/[0.08] bg-black/20 text-white/35"
-                      }`}
+                      className={`font-gaming-label rounded-full border px-2 py-1 text-[9px] uppercase tracking-[0.09em] border-[#39E56F]/25 bg-[#39E56F]/[0.05] text-[#82F5A4]`}
                     >
-                      {implemented
-                        ? "Direct review"
-                        : String(index + 1).padStart(2, "0")}
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
 
@@ -176,11 +167,7 @@ export default function Dota2FoundationPage() {
                   <div className="mt-auto pt-7">
                     <div className="mb-4 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
                     <span
-                      className={`inline-flex items-center text-xs font-semibold transition-colors ${
-                        implemented
-                          ? "text-[#82F5A4]"
-                          : "text-white/55 group-hover:text-red-100/80"
-                      }`}
+                      className="inline-flex items-center text-xs font-semibold text-[#82F5A4] transition-colors"
                     >
                       {service.slug === "mmr-boost"
                         ? "Configure MMR Boost"
@@ -188,7 +175,7 @@ export default function Dota2FoundationPage() {
                           ? "Configure Net Wins"
                           : service.slug === "calibration-matches"
                             ? "Configure Calibration Matches"
-                            : "Review service foundation"}
+                            : "Configure Hero Level"}
                       <ArrowRight className="ml-2 size-3.5" />
                     </span>
                   </div>
@@ -204,16 +191,16 @@ export default function Dota2FoundationPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {[
               {
-                title: "Three server-validated services",
-                text: "MMR Boost, Net Wins and Calibration Matches calculate pricing on the server and recalculate the order before creation.",
+                title: "Server-validated pricing",
+                text: "All four Dota 2 services calculate pricing on the server and recalculate before order creation.",
               },
               {
-                title: "One service remains in preview",
-                text: "Dota Plus Hero Level still does not expose quote or order creation flows.",
+                title: "Four focused services",
+                text: "Choose MMR progression, net wins, calibration matches or Dota Plus Hero Level progression.",
               },
               {
-                title: "Final assets pending",
-                text: "Dota 2 imagery and rank badges will be integrated later from the final assets you provide.",
+                title: "Clear order requirements",
+                text: "Each service validates its required configuration before Checkout becomes available.",
               },
             ].map((item) => (
               <article
