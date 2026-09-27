@@ -7,7 +7,10 @@ import {
   DOTA2_CURRENT_MMR_MAX,
   DOTA2_CURRENT_MMR_MIN,
   DOTA2_MAX_ROLE_PREFERENCES,
+  DOTA2_IMMORTAL_MMR,
   dota2BehaviorScoreOptions,
+  dota2MmrRankBands,
+  getDota2MmrBracketName,
   dota2BoostMethodOptions,
   dota2ExtraOptions,
   dota2PreferenceOptions,
@@ -27,17 +30,20 @@ import {
 } from "@/features/configurator/data/dota-2-net-wins-options";
 
 const VERSION = "dota-2-net-wins-v2";
-const IMMORTAL_MMR = 5620;
+const rateCentsPerWinByBracket = {
+  Herald: 150,
+  Guardian: 150,
+  Crusader: 160,
+  Archon: 175,
+  Legend: 190,
+  Ancient: 210,
+  Divine: 240,
+} as const;
 
-const pricingBrackets = [
-  { name: "Herald", start: 0, end: 770, rateCentsPerWin: 150 },
-  { name: "Guardian", start: 770, end: 1540, rateCentsPerWin: 150 },
-  { name: "Crusader", start: 1540, end: 2310, rateCentsPerWin: 160 },
-  { name: "Archon", start: 2310, end: 3080, rateCentsPerWin: 175 },
-  { name: "Legend", start: 3080, end: 3850, rateCentsPerWin: 190 },
-  { name: "Ancient", start: 3850, end: 4620, rateCentsPerWin: 210 },
-  { name: "Divine", start: 4620, end: IMMORTAL_MMR, rateCentsPerWin: 240 },
-] as const;
+const pricingBrackets = dota2MmrRankBands.map((band) => ({
+  ...band,
+  rateCentsPerWin: rateCentsPerWinByBracket[band.name],
+}));
 
 const ALLOWED_SELECTION_KEYS = new Set([
   "currentMmr",
@@ -113,12 +119,12 @@ function validateSelectionKeys(selection: ConfiguratorSelection) {
 }
 
 function bracketForMmr(mmr: number) {
-  if (mmr >= IMMORTAL_MMR) {
+  const name = getDota2MmrBracketName(mmr);
+  if (!name) throw new Error("Unable to determine Current MMR bracket.");
+  if (mmr >= DOTA2_IMMORTAL_MMR || name === "Immortal") {
     return { name: "Immortal", rateCentsPerWin: 0, customQuote: true } as const;
   }
-  const bracket = pricingBrackets.find(
-    (item) => mmr >= item.start && mmr < item.end,
-  );
+  const bracket = pricingBrackets.find((item) => item.name === name);
   if (!bracket) throw new Error("Unable to determine Current MMR bracket.");
   return { ...bracket, customQuote: false } as const;
 }

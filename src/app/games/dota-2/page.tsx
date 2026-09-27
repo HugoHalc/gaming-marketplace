@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Crosshair,
-  Gamepad2,
-  ShieldCheck,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Gamepad2 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
@@ -18,6 +10,7 @@ import {
   dota2AssetFoundation,
   dota2GameFoundation,
   dota2ServiceFoundations,
+  getDota2RankBadge,
   type Dota2ServiceCategory,
 } from "@/features/catalog/data/dota-2-foundation";
 
@@ -29,21 +22,77 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const serviceMeta: Record<
-  Dota2ServiceCategory,
-  { label: string; icon: typeof Gamepad2 }
-> = {
-  "mmr-progression": {
-    label: "MMR progression",
-    icon: ShieldCheck,
-  },
-  "net-wins": { label: "Ranked wins", icon: Trophy },
-  calibration: { label: "Calibration", icon: Crosshair },
-  "hero-progression": {
-    label: "Hero progression",
-    icon: Sparkles,
-  },
+const serviceMeta: Record<Dota2ServiceCategory, { label: string }> = {
+  "mmr-progression": { label: "MMR progression" },
+  "net-wins": { label: "Ranked wins" },
+  calibration: { label: "Calibration" },
+  "hero-progression": { label: "Hero progression" },
 };
+
+function Dota2ServicePreview({ slug }: { slug: string }) {
+  if (slug === "mmr-boost") {
+    const fromBadge = getDota2RankBadge("Guardian");
+    const toBadge = getDota2RankBadge("Divine");
+    return (
+      <div className="mt-5 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative MMR progression preview">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            {fromBadge ? <Image src={fromBadge} alt="" width={52} height={52} className="size-12 shrink-0 object-contain" /> : null}
+            <div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Illustrative start</p><p className="mt-1 text-xs font-semibold text-white/70">Guardian</p></div>
+          </div>
+          <ArrowRight className="size-4 shrink-0 text-red-200/45" aria-hidden="true" />
+          <div className="flex min-w-0 items-center gap-2.5 text-right">
+            <div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Illustrative target</p><p className="mt-1 text-xs font-semibold text-white/70">Divine</p></div>
+            {toBadge ? <Image src={toBadge} alt="" width={52} height={52} className="size-12 shrink-0 object-contain" /> : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (slug === "net-wins") {
+    const badge = getDota2RankBadge("Archon");
+    return (
+      <div className="mt-5 flex min-h-[5.8rem] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative Net Wins progress preview">
+        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain" /> : null}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-3"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Competitive context</p><span className="font-gaming-label text-[9px] text-red-200/55">NET WINS</span></div>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-red-400/30 to-red-200/65" /></div>
+          <p className="mt-2 text-[10px] text-white/35">Wins minus losses · visual service preview</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (slug === "calibration-matches") {
+    const badge = getDota2RankBadge("Ancient");
+    return (
+      <div className="mt-5 flex min-h-[5.8rem] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative calibration preview">
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Calibration context</p>
+          <div className="mt-3 flex items-center gap-1.5" aria-hidden="true">
+            <span className="h-1.5 flex-1 rounded-full bg-red-200/55" /><span className="h-1.5 flex-1 rounded-full bg-red-200/38" /><span className="h-1.5 flex-1 rounded-full bg-white/[0.10]" /><span className="h-1.5 flex-1 rounded-full bg-white/[0.08]" />
+          </div>
+          <p className="mt-2 text-[10px] text-white/35">Placement context without a guaranteed outcome</p>
+        </div>
+        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain" /> : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 min-h-[5.8rem] rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative Dota Plus Hero Level progression preview">
+      <div className="flex items-center justify-between gap-3">
+        <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/35">Current level</span>
+        <ArrowRight className="size-4 text-red-200/40" aria-hidden="true" />
+        <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/55">Target level</span>
+      </div>
+      <div className="mt-3 flex items-center gap-2" aria-hidden="true"><span className="size-2 rounded-full border border-red-200/35 bg-[#090D0B]" /><span className="h-px flex-1 bg-gradient-to-r from-red-300/20 via-red-200/55 to-red-300/20" /><span className="size-3 rounded-full border border-red-200/55 bg-red-300/10" /></div>
+      <p className="mt-2 text-[10px] text-white/35">One hero · Dota Plus level progression</p>
+    </div>
+  );
+}
+
 
 export default function Dota2FoundationPage() {
   return (
@@ -145,46 +194,26 @@ export default function Dota2FoundationPage() {
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {dota2ServiceFoundations.map((service, index) => {
+          <div className="mt-9 grid gap-4 md:grid-cols-2">
+            {dota2ServiceFoundations.map((service) => {
               const meta = serviceMeta[service.category];
-              const Icon = meta.icon;
-
               return (
                 <Link
                   key={service.id}
                   href={service.route}
-                  className="group flex min-h-[19rem] flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,background-color] hover:-translate-y-0.5 hover:border-red-300/[0.16] hover:bg-[#0E1411] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none sm:p-6"
+                  className="group flex min-h-[21rem] flex-col rounded-[1.45rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,background-color] hover:-translate-y-0.5 hover:border-red-300/[0.16] hover:bg-[#0E1411] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none sm:p-6"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <span className="grid size-10 place-items-center rounded-xl border border-red-300/[0.13] bg-red-400/[0.035] text-red-200/80">
-                      <Icon className="size-4" strokeWidth={1.8} />
-                    </span>
-
-                    <span
-                      className={`font-gaming-label rounded-full border px-2 py-1 text-[9px] uppercase tracking-[0.09em] border-[#39E56F]/25 bg-[#39E56F]/[0.05] text-[#82F5A4]`}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
+                  <div>
+                    <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-red-200/55">{meta.label}</p>
+                    <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{service.name}</h3>
+                    <p className="mt-3 max-w-[48rem] text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
                   </div>
 
-                  <div className="mt-7">
-                    <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-red-200/55">
-                      {meta.label}
-                    </p>
-                    <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
-                      {service.name}
-                    </h3>
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
-                      {service.description}
-                    </p>
-                  </div>
+                  <Dota2ServicePreview slug={service.slug} />
 
-                  <div className="mt-auto pt-7">
+                  <div className="mt-auto pt-5">
                     <div className="mb-4 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    <span
-                      className="inline-flex items-center text-xs font-semibold text-[#82F5A4] transition-colors"
-                    >
+                    <span className="inline-flex items-center text-xs font-semibold text-[#82F5A4]">
                       {service.slug === "mmr-boost"
                         ? "Configure MMR Boost"
                         : service.slug === "net-wins"
@@ -192,7 +221,7 @@ export default function Dota2FoundationPage() {
                           : service.slug === "calibration-matches"
                             ? "Configure Calibration Matches"
                             : "Configure Hero Level"}
-                      <ArrowRight className="ml-2 size-3.5" />
+                      <ArrowRight className="ml-2 size-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
                     </span>
                   </div>
                 </Link>

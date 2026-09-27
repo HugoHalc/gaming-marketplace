@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { launchGames } from "@/features/catalog/data/launch-games";
-import { dota2AssetFoundation, dota2PublicGameCard } from "@/features/catalog/data/dota-2-foundation";
+import { dota2AssetFoundation } from "@/features/catalog/data/dota-2-foundation";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { trustFeatures } from "@/features/marketing/content";
@@ -63,7 +63,6 @@ const homeGameCardAssets = {
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
-const publicGameCards = [...launchGames, dota2PublicGameCard];
 
 const heroTrustpilot = {
   brand: "Trustpilot",
@@ -512,7 +511,7 @@ export default async function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {publicGameCards.map((game) => {
+            {launchGames.map((game) => {
               const imageSrc =
                 homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
               const serviceNames = game.ready

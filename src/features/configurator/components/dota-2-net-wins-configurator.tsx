@@ -33,6 +33,7 @@ import {
   dota2BoostMethodOptions,
   dota2ExtraOptions,
   dota2PreferenceOptions,
+  getDota2MmrBracketName,
   dota2RoleOptions,
   dota2ServerOptions,
 } from "../data/dota-2-mmr-options";
@@ -426,6 +427,8 @@ export function Dota2NetWinsConfigurator() {
     DOTA2_NET_WINS_MIN,
     DOTA2_NET_WINS_MAX,
   );
+  const currentInputBracket = currentResult.valid ? getDota2MmrBracketName(currentResult.value) : null;
+  const currentInputRankBadge = getDota2RankBadge(currentInputBracket ?? undefined);
 
   const currentError = currentResult.valid
     ? null
@@ -759,11 +762,25 @@ export function Dota2NetWinsConfigurator() {
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
         <section className="min-w-0 space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <CurrentMmrField
-              value={currentRaw}
-              error={currentError}
-              onChange={(value) => update("currentMmr", value)}
-            />
+            <div className="space-y-3">
+              <CurrentMmrField
+                value={currentRaw}
+                error={currentError}
+                onChange={(value) => update("currentMmr", value)}
+              />
+              <div aria-live="polite" className="flex min-h-[5rem] items-center gap-3 rounded-2xl border border-white/[0.07] bg-black/10 px-4 py-3 sm:px-5">
+                {currentInputRankBadge ? (
+                  <Image src={currentInputRankBadge} alt="" width={64} height={64} className="size-16 shrink-0 object-contain transition-opacity motion-reduce:transition-none" />
+                ) : (
+                  <span className="size-16 shrink-0 rounded-xl border border-dashed border-white/[0.08] bg-white/[0.015]" aria-hidden="true" />
+                )}
+                <div className="min-w-0">
+                  <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.13em] text-red-200/55">Current rank context</p>
+                  <p className="mt-1 text-base font-semibold text-white/85">{currentInputBracket ?? "Enter valid MMR"}</p>
+                  <p className="mt-1 text-[10px] leading-4 text-white/32">Derived from Current MMR. Rank is not selected separately.</p>
+                </div>
+              </div>
+            </div>
             <NetWinsField
               value={netWinsRaw}
               error={netWinsError}

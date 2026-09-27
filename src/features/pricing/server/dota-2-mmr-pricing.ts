@@ -3,9 +3,12 @@ import {
   DOTA2_CURRENT_MMR_MAX,
   DOTA2_CURRENT_MMR_MIN,
   DOTA2_MAX_ROLE_PREFERENCES,
+  DOTA2_IMMORTAL_MMR,
   DOTA2_TARGET_MMR_MAX,
   DOTA2_TARGET_MMR_MIN,
   dota2BehaviorScoreOptions,
+  dota2MmrRankBands,
+  getDota2MmrBracketName,
   dota2BoostMethodOptions,
   dota2ExtraOptions,
   dota2PreferenceOptions,
@@ -21,17 +24,20 @@ import {
 } from "@/features/configurator/data/dota-2-mmr-options";
 
 const VERSION = "dota-2-mmr-v1";
-const IMMORTAL_MMR = 5620;
+const rateCentsPer100ByBracket = {
+  Herald: 320,
+  Guardian: 320,
+  Crusader: 340,
+  Archon: 410,
+  Legend: 500,
+  Ancient: 675,
+  Divine: 900,
+} as const;
 
-const pricingBrackets = [
-  { name: "Herald", start: 0, end: 770, rateCentsPer100: 320 },
-  { name: "Guardian", start: 770, end: 1540, rateCentsPer100: 320 },
-  { name: "Crusader", start: 1540, end: 2310, rateCentsPer100: 340 },
-  { name: "Archon", start: 2310, end: 3080, rateCentsPer100: 410 },
-  { name: "Legend", start: 3080, end: 3850, rateCentsPer100: 500 },
-  { name: "Ancient", start: 3850, end: 4620, rateCentsPer100: 675 },
-  { name: "Divine", start: 4620, end: IMMORTAL_MMR, rateCentsPer100: 900 },
-] as const;
+const pricingBrackets = dota2MmrRankBands.map((band) => ({
+  ...band,
+  rateCentsPer100: rateCentsPer100ByBracket[band.name],
+}));
 
 const ALLOWED_SELECTION_KEYS = new Set([
   "currentMmr",
@@ -77,11 +83,6 @@ function optionValue<T extends { value: string }>(options: readonly T[], value: 
   const option = options.find((item) => item.value === value);
   if (!option) throw new Error(message);
   return option;
-}
-
-function bracketNameForMmr(mmr: number) {
-  if (mmr >= IMMORTAL_MMR) return "Immortal";
-  return pricingBrackets.find((bracket) => mmr >= bracket.start && mmr < bracket.end)?.name ?? "Herald";
 }
 
 function calculateSegmentedBase(currentMmr: number, targetMmr: number) {
@@ -184,11 +185,11 @@ export function calculateDota2MmrPricing(selection: ConfiguratorSelection): Dota
   }
 
   const metadata: Dota2MmrQuoteMetadata = {
-    currentBracket: bracketNameForMmr(currentMmr),
-    targetBracket: bracketNameForMmr(targetMmr),
+    currentBracket: getDota2MmrBracketName(currentMmr) ?? "Herald",
+    targetBracket: getDota2MmrBracketName(targetMmr) ?? "Herald",
   };
 
-  if (currentMmr >= IMMORTAL_MMR || targetMmr >= IMMORTAL_MMR) {
+  if (currentMmr >= DOTA2_IMMORTAL_MMR || targetMmr >= DOTA2_IMMORTAL_MMR) {
     return {
       kind: "custom",
       customQuote: {

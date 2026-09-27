@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
+import { Dota2ServiceNavigation } from "@/features/catalog/components/dota-2-service-navigation";
 import { Dota2MmrConfigurator } from "@/features/configurator/components/dota-2-mmr-configurator";
 import { Dota2NetWinsConfigurator } from "@/features/configurator/components/dota-2-net-wins-configurator";
 import { Dota2CalibrationConfigurator } from "@/features/configurator/components/dota-2-calibration-configurator";
@@ -130,7 +131,9 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
 
           <section className="py-7 sm:py-9 lg:py-10">
             <Container>
-              <Dota2MmrConfigurator />
+              <Dota2ServiceNavigation currentSlug="mmr-boost">
+                <Dota2MmrConfigurator />
+              </Dota2ServiceNavigation>
             </Container>
           </section>
         </>
@@ -164,7 +167,9 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
 
           <section className="py-7 sm:py-9 lg:py-10">
             <Container>
-              <Dota2NetWinsConfigurator />
+              <Dota2ServiceNavigation currentSlug="net-wins">
+                <Dota2NetWinsConfigurator />
+              </Dota2ServiceNavigation>
             </Container>
           </section>
         </>
@@ -201,7 +206,9 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
 
           <section className="py-7 sm:py-9 lg:py-10">
             <Container>
-              <Dota2CalibrationConfigurator />
+              <Dota2ServiceNavigation currentSlug="calibration-matches">
+                <Dota2CalibrationConfigurator />
+              </Dota2ServiceNavigation>
             </Container>
           </section>
         </>
@@ -238,7 +245,9 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
 
           <section className="py-7 sm:py-9 lg:py-10">
             <Container>
-              <Dota2HeroLevelConfigurator />
+              <Dota2ServiceNavigation currentSlug="hero-level-boost">
+                <Dota2HeroLevelConfigurator />
+              </Dota2ServiceNavigation>
             </Container>
           </section>
         </>

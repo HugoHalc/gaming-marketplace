@@ -7,6 +7,29 @@ export const DOTA2_CURRENT_MMR_MAX = 11999;
 export const DOTA2_TARGET_MMR_MIN = 1;
 export const DOTA2_TARGET_MMR_MAX = 12000;
 export const DOTA2_MAX_ROLE_PREFERENCES = 2;
+export const DOTA2_IMMORTAL_MMR = 5620;
+
+export const dota2MmrRankBands = [
+  { name: "Herald", start: 0, end: 770 },
+  { name: "Guardian", start: 770, end: 1540 },
+  { name: "Crusader", start: 1540, end: 2310 },
+  { name: "Archon", start: 2310, end: 3080 },
+  { name: "Legend", start: 3080, end: 3850 },
+  { name: "Ancient", start: 3850, end: 4620 },
+  { name: "Divine", start: 4620, end: DOTA2_IMMORTAL_MMR },
+] as const;
+
+export type Dota2MmrBracketName =
+  | (typeof dota2MmrRankBands)[number]["name"]
+  | "Immortal";
+
+export function getDota2MmrBracketName(mmr: number): Dota2MmrBracketName | null {
+  if (!Number.isFinite(mmr) || !Number.isInteger(mmr) || mmr < DOTA2_CURRENT_MMR_MIN || mmr > DOTA2_TARGET_MMR_MAX) {
+    return null;
+  }
+  if (mmr >= DOTA2_IMMORTAL_MMR) return "Immortal";
+  return dota2MmrRankBands.find((band) => mmr >= band.start && mmr < band.end)?.name ?? null;
+}
 
 export const dota2ServerOptions = [
   { value: "us-east", label: "US East" },

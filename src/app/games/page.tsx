@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { launchGames } from "@/features/catalog/data/launch-games";
-import { dota2AssetFoundation, dota2PublicGameCard } from "@/features/catalog/data/dota-2-foundation";
+import { dota2AssetFoundation } from "@/features/catalog/data/dota-2-foundation";
 
 export const metadata: Metadata = {
   title: "Games",
@@ -25,7 +25,6 @@ const gameCardAssets = {
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
-const publicGameCards = [...launchGames, dota2PublicGameCard];
 
 export default function GamesPage() {
   return (
@@ -65,7 +64,7 @@ export default function GamesPage() {
       <section className="py-14 sm:py-18 lg:py-20">
         <Container>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {publicGameCards.map((game) => {
+            {launchGames.map((game) => {
               const imageSrc =
                 gameCardAssets[game.slug as keyof typeof gameCardAssets];
 

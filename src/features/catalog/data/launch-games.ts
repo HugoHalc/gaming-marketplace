@@ -1,4 +1,5 @@
 import type { CatalogGame, GameAccent } from "../types/catalog";
+import { dota2PublicGameCard } from "./dota-2-foundation";
 
 export type LaunchGameCard = {
   slug: string;
@@ -50,6 +51,7 @@ export const launchGames: LaunchGameCard[] = [
     category: "Hero shooter",
     ready: true,
   },
+  dota2PublicGameCard,
   {
     slug: "battlefield-6",
     name: "Battlefield 6",

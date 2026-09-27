@@ -35,6 +35,7 @@ import {
   dota2BoostMethodOptions,
   dota2ExtraOptions,
   dota2PreferenceOptions,
+  getDota2MmrBracketName,
   dota2RoleOptions,
   dota2ServerOptions,
   type Dota2MmrQuoteApiResponse,
@@ -201,6 +202,10 @@ export function Dota2MmrConfigurator() {
   const currentResult = parseWholeNumberQuantity(currentRaw, DOTA2_CURRENT_MMR_MIN, DOTA2_CURRENT_MMR_MAX);
   const targetResult = parseWholeNumberQuantity(targetRaw, DOTA2_TARGET_MMR_MIN, DOTA2_TARGET_MMR_MAX);
   const progressionValid = currentResult.valid && targetResult.valid && targetResult.value > currentResult.value;
+  const currentInputBracket = currentResult.valid ? getDota2MmrBracketName(currentResult.value) : null;
+  const targetInputBracket = targetResult.valid ? getDota2MmrBracketName(targetResult.value) : null;
+  const currentInputRankBadge = getDota2RankBadge(currentInputBracket ?? undefined);
+  const targetInputRankBadge = getDota2RankBadge(targetInputBracket ?? undefined);
   const currentError = currentResult.valid ? null : `Enter a whole number between ${DOTA2_CURRENT_MMR_MIN} and ${DOTA2_CURRENT_MMR_MAX}.`;
   const targetError = !targetResult.valid
     ? `Enter a whole number between ${DOTA2_TARGET_MMR_MIN} and ${DOTA2_TARGET_MMR_MAX}.`
@@ -375,11 +380,37 @@ export function Dota2MmrConfigurator() {
         <section className="min-w-0 space-y-4">
           <ConfiguratorBlock title="MMR Progression" helper="Set a valid progression from Current MMR to Desired MMR.">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
-              <MmrField id="dota2-current-mmr" label="Current MMR" value={currentRaw} min={DOTA2_CURRENT_MMR_MIN} max={DOTA2_CURRENT_MMR_MAX} error={currentError} onChange={(value) => update("currentMmr", value)} />
+              <div className="space-y-3">
+                <MmrField id="dota2-current-mmr" label="Current MMR" value={currentRaw} min={DOTA2_CURRENT_MMR_MIN} max={DOTA2_CURRENT_MMR_MAX} error={currentError} onChange={(value) => update("currentMmr", value)} />
+                <div aria-live="polite" className="flex min-h-[4.75rem] items-center gap-3 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-2.5">
+                  {currentInputRankBadge ? (
+                    <Image src={currentInputRankBadge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain transition-opacity motion-reduce:transition-none" />
+                  ) : (
+                    <span className="size-14 shrink-0 rounded-xl border border-dashed border-white/[0.08] bg-white/[0.015]" aria-hidden="true" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current bracket</p>
+                    <p className="mt-1 text-sm font-semibold text-white/80">{currentInputBracket ?? "Enter valid MMR"}</p>
+                  </div>
+                </div>
+              </div>
               <span className="grid size-9 place-items-center justify-self-center rounded-full border border-white/[0.07] bg-white/[0.025] text-red-100/45" aria-hidden="true">
                 <ArrowRight className="size-3.5 rotate-90 md:rotate-0" />
               </span>
-              <MmrField id="dota2-target-mmr" label="Desired MMR" value={targetRaw} min={DOTA2_TARGET_MMR_MIN} max={DOTA2_TARGET_MMR_MAX} error={targetError} onChange={(value) => update("targetMmr", value)} />
+              <div className="space-y-3">
+                <MmrField id="dota2-target-mmr" label="Desired MMR" value={targetRaw} min={DOTA2_TARGET_MMR_MIN} max={DOTA2_TARGET_MMR_MAX} error={targetError} onChange={(value) => update("targetMmr", value)} />
+                <div aria-live="polite" className="flex min-h-[4.75rem] items-center gap-3 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-2.5">
+                  {targetInputRankBadge ? (
+                    <Image src={targetInputRankBadge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain transition-opacity motion-reduce:transition-none" />
+                  ) : (
+                    <span className="size-14 shrink-0 rounded-xl border border-dashed border-white/[0.08] bg-white/[0.015]" aria-hidden="true" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Desired bracket</p>
+                    <p className="mt-1 text-sm font-semibold text-white/80">{targetInputBracket ?? "Enter valid MMR"}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </ConfiguratorBlock>
 
