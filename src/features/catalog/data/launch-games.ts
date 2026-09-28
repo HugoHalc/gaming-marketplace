@@ -53,14 +53,6 @@ export const launchGames: LaunchGameCard[] = [
   },
   dota2PublicGameCard,
   {
-    slug: "battlefield-6",
-    name: "Battlefield 6",
-    displayName: "Battlefield 6",
-    accent: "cyan",
-    category: "FPS",
-    ready: false,
-  },
-  {
     slug: "rainbow-six-siege",
     name: "Rainbow Six Siege",
     displayName: "Rainbow Six Siege",
@@ -71,17 +63,6 @@ export const launchGames: LaunchGameCard[] = [
 ];
 
 const launchShells: Record<string, CatalogGame> = {
-  "battlefield-6": {
-    id: "game_battlefield_6_shell",
-    slug: "battlefield-6",
-    name: "Battlefield 6",
-    shortDescription: "Marketplace structure prepared for Battlefield 6 services.",
-    accent: "cyan",
-    status: "active",
-    featured: true,
-    services: [],
-    startingPrice: null,
-  },
   "rainbow-six-siege": {
     id: "game_rainbow_six_siege_shell",
     slug: "rainbow-six-siege",

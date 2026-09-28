@@ -59,7 +59,6 @@ const homeGameCardAssets = {
   "marvel-rivals": "/game-cards/marvel-rivals.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
   "dota-2": dota2AssetFoundation.gameCard,
-  "battlefield-6": "/game-cards/battlefield-6.webp",
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
@@ -529,7 +528,6 @@ export default async function Home() {
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className={`object-cover object-center ${
                         game.slug === "rocket-league" ||
-                        game.slug === "battlefield-6" ||
                         game.slug === "rainbow-six-siege"
                           ? "scale-[1.004]"
                           : ""

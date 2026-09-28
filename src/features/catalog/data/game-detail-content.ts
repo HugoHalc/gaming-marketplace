@@ -106,21 +106,6 @@ export const gameDetailContent: Record<string, GameDetailContent> = {
     serviceIntro: "Available services.",
     accent: "cyan",
   },
-  "battlefield-6": {
-    slug: "battlefield-6",
-    eyebrow: "Battlefield 6",
-    heroDescription: "Marketplace structure prepared for Battlefield 6. Game-specific services and artwork can be added in a later phase.",
-    categoryLabel: "FPS",
-    fulfillmentLabel: "Structure ready",
-    trustPoints: ["Dedicated game storefront", "Service rail prepared", "Responsive layout ready"],
-    highlights: [
-      { title: "Storefront ready", description: "The game page structure is ready for future service configuration." },
-      { title: "Visual system ready", description: "Final Battlefield artwork can be introduced without changing the layout." },
-      { title: "Catalog-ready architecture", description: "Service cards will populate from the catalog when the game is implemented." },
-    ],
-    serviceIntro: "Battlefield 6 service structure is ready for implementation.",
-    accent: "cyan",
-  },
   "rainbow-six-siege": {
     slug: "rainbow-six-siege",
     eyebrow: "Rainbow Six Siege",

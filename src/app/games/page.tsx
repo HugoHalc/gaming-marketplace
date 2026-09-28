@@ -21,7 +21,6 @@ const gameCardAssets = {
   "marvel-rivals": "/game-cards/marvel-rivals.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
   "dota-2": dota2AssetFoundation.gameCard,
-  "battlefield-6": "/game-cards/battlefield-6.webp",
   "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
 } as const;
 
@@ -51,7 +50,7 @@ export default function GamesPage() {
             </Badge>
 
             <h1 className="mt-5 text-balance text-4xl font-bold leading-[1] tracking-[-0.06em] text-white sm:text-5xl lg:text-6xl">
-              Eight games. One consistent marketplace structure.
+              Seven games. One consistent marketplace structure.
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
@@ -79,7 +78,6 @@ export default function GamesPage() {
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className={`object-cover object-center ${
                         game.slug === "rocket-league" ||
-                        game.slug === "battlefield-6" ||
                         game.slug === "rainbow-six-siege"
                           ? "scale-[1.004]"
                           : ""
