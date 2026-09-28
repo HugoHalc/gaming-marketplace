@@ -6,12 +6,13 @@ export type RainbowSixSiegeServiceSlug =
   | "placements-boost"
   | "unrated-matches";
 
-export type RainbowSixSiegeServiceStatus = "coming-soon";
+export type RainbowSixSiegeServiceStatus = "active" | "coming-soon";
 
 export interface RainbowSixSiegeServiceFoundation {
   id: string;
   gameSlug: typeof RAINBOW_SIX_SIEGE_GAME_SLUG;
   slug: RainbowSixSiegeServiceSlug;
+  route: `/games/${typeof RAINBOW_SIX_SIEGE_GAME_SLUG}/${RainbowSixSiegeServiceSlug}`;
   name: string;
   description: string;
   status: RainbowSixSiegeServiceStatus;
@@ -22,15 +23,17 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     id: "service_rainbow_six_siege_rank_boost_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
     slug: "rank-boost",
+    route: "/games/rainbow-six-siege/rank-boost",
     name: "Rank Boost",
     description:
       "Progress through the competitive ladder with a service tailored to your target rank.",
-    status: "coming-soon",
+    status: "active",
   },
   {
     id: "service_rainbow_six_siege_competitive_wins_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
     slug: "competitive-wins",
+    route: "/games/rainbow-six-siege/competitive-wins",
     name: "Competitive Wins",
     description:
       "Complete the number of competitive victories you need with clear order tracking.",
@@ -40,6 +43,7 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     id: "service_rainbow_six_siege_placements_boost_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
     slug: "placements-boost",
+    route: "/games/rainbow-six-siege/placements-boost",
     name: "Placements Boost",
     description:
       "Complete your seasonal placement matches with an experienced Siege player.",
@@ -49,6 +53,7 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     id: "service_rainbow_six_siege_unrated_matches_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
     slug: "unrated-matches",
+    route: "/games/rainbow-six-siege/unrated-matches",
     name: "Unrated Matches",
     description:
       "Complete unrated matches with a service built around your selected match total.",
@@ -64,10 +69,14 @@ export function findRainbowSixSiegeServiceFoundation(slug: string) {
   return rainbowSixSiegeServiceFoundations.find((service) => service.slug === slug);
 }
 
+export function isRainbowSixSiegeServiceActive(slug: string) {
+  return findRainbowSixSiegeServiceFoundation(slug)?.status === "active";
+}
+
 export const rainbowSixSiegeAssetFoundation = {
   gameCard: "/game-cards/rainbow-six-siege.webp",
   overviewHero: "/game-cards/rainbow-six-siege.webp",
-  serviceHero: null,
+  serviceHero: "/game-cards/rainbow-six-siege.webp",
   rankBadges: null,
 } as const;
 
@@ -80,8 +89,8 @@ export const rainbowSixSiegeGameFoundation = {
   shortDescription: "Tactical boosting services built for competitive Siege players.",
   categoryLabel: "Tactical FPS",
   rankedSystemLabel: "Ranked 3.0",
-  publicAvailability: "overview-preview",
-  serviceAvailability: "coming-soon",
+  publicAvailability: "available",
+  serviceAvailability: "partial",
   finalAssetStatus: "provisional",
   assets: rainbowSixSiegeAssetFoundation,
   services: rainbowSixSiegeServiceFoundations,
@@ -93,7 +102,7 @@ export const rainbowSixSiegePublicGameCard = {
   displayName: rainbowSixSiegeGameFoundation.displayName,
   accent: "emerald",
   category: rainbowSixSiegeGameFoundation.categoryLabel,
-  ready: false,
+  ready: true,
   overviewReady: true,
 } as const;
 
@@ -102,29 +111,29 @@ export const rainbowSixSiegeGameDetailContent = {
   eyebrow: "Rainbow Six Siege services",
   heroDescription: rainbowSixSiegeGameFoundation.shortDescription,
   categoryLabel: rainbowSixSiegeGameFoundation.categoryLabel,
-  fulfillmentLabel: "Ranked 3.0 foundation",
+  fulfillmentLabel: "Ranked 3.0",
   trustPoints: [
-    "Four planned service paths",
-    "Purchasing remains disabled",
-    "Service configuration coming later",
+    "Rank Boost available",
+    "Server-validated pricing",
+    "Three more services coming soon",
   ],
   highlights: [
     {
       title: "Ranked 3.0 foundation",
       description:
-        "The catalog is structured around the current competitive system without locking in rank or pricing rules yet.",
+        "Rank Boost uses the ordered competitive ladder while keeping future service rules isolated until they are implemented.",
     },
     {
       title: "Four service paths",
       description:
-        "Rank Boost, Competitive Wins, Placements Boost, and Unrated Matches are registered in one ordered foundation.",
+        "Rank Boost is available now; Competitive Wins, Placements Boost, and Unrated Matches remain staged as Coming soon.",
     },
     {
-      title: "Safe staged rollout",
+      title: "Server-authoritative checkout",
       description:
-        "Each service remains unavailable for purchase until its configurator and server-authoritative pricing are implemented.",
+        "Rank Boost pricing is recalculated on the server before an order can be created.",
     },
   ],
-  serviceIntro: "Planned Rainbow Six Siege services.",
+  serviceIntro: "Choose your Rainbow Six Siege service.",
   accent: "emerald" as const,
 };

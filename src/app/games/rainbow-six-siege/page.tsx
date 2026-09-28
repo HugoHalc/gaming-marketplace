@@ -41,19 +41,19 @@ const overviewHighlights = [
   {
     title: "Ranked 3.0 foundation",
     description:
-      "The catalog is prepared around the current competitive structure without locking in rank or pricing rules before they are validated.",
+      "Rank Boost now uses the ordered competitive ladder while future service rules remain isolated until they are implemented.",
     icon: ShieldCheck,
   },
   {
     title: "Four focused services",
     description:
-      "Rank Boost, Competitive Wins, Placements Boost, and Unrated Matches are defined in one ordered game foundation.",
+      "Rank Boost is available now; Competitive Wins, Placements Boost, and Unrated Matches remain Coming soon.",
     icon: Layers3,
   },
   {
-    title: "Safe staged rollout",
+    title: "Server-authoritative checkout",
     description:
-      "Service configuration, pricing, quote, checkout, and order creation remain intentionally unavailable in this phase.",
+      "Rank Boost pricing is recalculated on the server before an order can be created.",
     icon: Sparkles,
   },
 ] as const;
@@ -137,7 +137,7 @@ export default function RainbowSixSiegeOverviewPage() {
                 {rainbowSixSiegeGameFoundation.rankedSystemLabel}
               </span>
               <span className="rounded-full border border-emerald-300/[0.14] bg-emerald-400/[0.035] px-3 py-1.5 text-xs font-medium text-emerald-100/75">
-                4 services · Coming soon
+                Rank Boost available · 3 Coming soon
               </span>
             </div>
 
@@ -165,11 +165,11 @@ export default function RainbowSixSiegeOverviewPage() {
             <div className="max-w-3xl">
               <p className="text-sm font-semibold text-emerald-200/75">Boosting services</p>
               <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-                Planned Rainbow Six Siege services.
+                Rainbow Six Siege services.
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              These services are registered for the upcoming rollout. Configuration and purchasing remain disabled until each service is implemented.
+              Rank Boost is available to configure now. The remaining services stay disabled until their pricing and configurators are implemented.
             </p>
           </div>
 
@@ -178,12 +178,8 @@ export default function RainbowSixSiegeOverviewPage() {
               const presentation = servicePresentation[service.slug];
               const Icon = presentation.icon;
 
-              return (
-                <article
-                  key={service.id}
-                  aria-labelledby={`siege-service-${service.slug}`}
-                  className="relative flex min-h-[20rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 sm:p-6"
-                >
+              const card = (
+                <>
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-emerald-400/[0.045] to-transparent" />
                   <div className="relative flex items-start justify-between gap-4">
                     <Badge className="border-white/[0.08] bg-black/20 text-white/55">
@@ -208,13 +204,39 @@ export default function RainbowSixSiegeOverviewPage() {
 
                   <div className="relative mt-auto pt-7">
                     <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    <span
-                      className="inline-flex min-h-9 items-center rounded-full border border-white/[0.09] bg-white/[0.025] px-3 text-xs font-semibold text-[#A0AAA4]"
-                      aria-label={`${service.name}, Coming soon`}
-                    >
-                      Coming soon
-                    </span>
+                    {service.status === "active" ? (
+                      <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-emerald-300/[0.18] bg-emerald-400/[0.05] px-3 text-xs font-semibold text-emerald-100/80">
+                        Configure service
+                        <ArrowRight className="size-3.5" aria-hidden="true" />
+                      </span>
+                    ) : (
+                      <span
+                        className="inline-flex min-h-9 items-center rounded-full border border-white/[0.09] bg-white/[0.025] px-3 text-xs font-semibold text-[#A0AAA4]"
+                        aria-label={`${service.name}, Coming soon`}
+                      >
+                        Coming soon
+                      </span>
+                    )}
                   </div>
+                </>
+              );
+
+              return service.status === "active" ? (
+                <Link
+                  key={service.id}
+                  href={service.route}
+                  aria-labelledby={`siege-service-${service.slug}`}
+                  className="group relative flex min-h-[20rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-emerald-300/[0.18] hover:shadow-[0_20px_60px_-40px_rgba(57,229,111,.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/35 motion-reduce:transform-none motion-reduce:transition-none sm:p-6"
+                >
+                  {card}
+                </Link>
+              ) : (
+                <article
+                  key={service.id}
+                  aria-labelledby={`siege-service-${service.slug}`}
+                  className="relative flex min-h-[20rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 opacity-[0.78] sm:p-6"
+                >
+                  {card}
                 </article>
               );
             })}
@@ -231,7 +253,7 @@ export default function RainbowSixSiegeOverviewPage() {
                 Built for a safe, progressive Siege rollout.
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
-                This overview establishes the catalog and routing foundation only. No Siege service can calculate a quote, enter checkout, or create an order yet.
+                Rank Boost now uses the shared quote, verification, checkout, and order flow. The remaining Siege services stay unavailable until their own implementations are complete.
               </p>
             </div>
 
