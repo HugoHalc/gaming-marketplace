@@ -1,4 +1,4 @@
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
-import { HeroHoldLoopVideo } from "@/components/marketing/hero-hold-loop-video";
 import { FaqAccordion } from "@/components/marketing/faq-accordion";
 import { HowItWorksShowcase } from "@/components/marketing/how-it-works-showcase";
 import { trustIconByTitle } from "@/components/marketing/boostingpedia-trust-icons";
@@ -33,24 +32,6 @@ const gameVisual = {
   amber: "from-amber-500/[0.18] via-amber-500/[0.045] to-transparent border-amber-300/15",
   blue: "from-blue-500/[0.22] via-blue-500/[0.05] to-transparent border-blue-300/15",
 } as const;
-
-const heroPoster = "/brand/boostingpedia-hooded-rogue.png";
-const transparentImage =
-  "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-
-const {
-  props: {
-    srcSet: mobileHeroSrcSet,
-    sizes: mobileHeroSizes,
-    ...mobileHeroImageProps
-  },
-} = getImageProps({
-  src: heroPoster,
-  alt: "",
-  fill: true,
-  sizes: "100vw",
-  priority: true,
-});
 
 const homeGameCardAssets = {
   "rocket-league": "/game-cards/rocket-league.webp",
@@ -221,111 +202,31 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }}
       />
-      <style>{`
-
-        @keyframes boostingpediaHeroFloat {
-          0%, 100% { transform: translate3d(0, 0, 0); }
-          50% { transform: translate3d(-7px, -5px, 0); }
-        }
-
-        @keyframes boostingpediaHeroBreathe {
-          0%, 100% { filter: brightness(1) saturate(1); }
-          50% { filter: brightness(1.025) saturate(1.02); }
-        }
-
-        @keyframes boostingpediaHeroGlow {
-          0%, 100% { opacity: .38; transform: scale(.97); }
-          50% { opacity: .64; transform: scale(1.03); }
-        }
-
-        .hero-art-float {
-          animation: boostingpediaHeroFloat 10s ease-in-out infinite;
-          will-change: transform;
-        }
-
-        .hero-art-breathe {
-          animation: boostingpediaHeroBreathe 7.5s ease-in-out infinite;
-          will-change: filter;
-        }
-
-        .hero-art-glow {
-          animation: boostingpediaHeroGlow 7s ease-in-out infinite;
-          will-change: opacity, transform;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .hero-art-float,
-          .hero-art-breathe,
-          .hero-art-glow {
-            animation: none !important;
-            transform: none !important;
-            filter: none !important;
-          }
-        }
-      `}</style>
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
-        <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
-        <div className="absolute right-[6%] top-[-12rem] -z-10 h-[31rem] w-[42rem] rounded-full bg-[#39E56F]/[0.07] blur-[115px]" />
-
+        <Image
+          src="/brand/boostingpedia-home-hero.webp"
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          className="pointer-events-none -z-20 object-cover object-[74%_center] sm:object-[72%_center] md:object-[68%_center] lg:object-[66%_center] xl:object-[66%_center] 2xl:object-[68%_center]"
+          aria-hidden="true"
+        />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-[1%] -z-10 hidden w-[54%] overflow-hidden lg:block xl:right-[3%] xl:w-[52%]"
-        >
-          <div className="absolute inset-y-[2%] left-[5%] right-[2%] overflow-hidden">
-            <picture>
-              <source
-                media="(min-width: 1024px)"
-                srcSet={heroPoster}
-              />
-              <img
-                src={transparentImage}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
-              />
-            </picture>
-
-            <HeroHoldLoopVideo
-              src="/brand/boostingpedia-hooded-rogue-loop.webm"
-              holdSeconds={2}
-              sourceMedia="(min-width: 1024px) and (prefers-reduced-motion: no-preference)"
-              className="relative z-[1] h-full w-full object-cover object-[58%_50%] xl:object-[60%_50%]"
-            />
-          </div>
-
-          <div className="absolute inset-y-0 left-0 w-[24%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.88)_35%,rgba(5,8,7,.38)_68%,transparent_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-[10%] bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.55)_46%,transparent_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-[13%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.52)_42%,transparent_100%)]" />
-        </div>
-
+          className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.985)_28%,rgba(5,8,7,.90)_46%,rgba(5,8,7,.55)_65%,rgba(5,8,7,.16)_84%,rgba(5,8,7,.04)_100%)] sm:bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_30%,rgba(5,8,7,.86)_48%,rgba(5,8,7,.43)_68%,rgba(5,8,7,.08)_88%,transparent_100%)] lg:bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.97)_27%,rgba(5,8,7,.78)_45%,rgba(5,8,7,.30)_61%,rgba(5,8,7,.05)_76%,transparent_88%)]"
+        />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden lg:hidden"
-        >
-          <picture>
-            <source
-              media="(max-width: 1023px)"
-              srcSet={mobileHeroSrcSet}
-              sizes={mobileHeroSizes}
-            />
-            <img
-              {...mobileHeroImageProps}
-              src={transparentImage}
-              srcSet={undefined}
-              sizes={undefined}
-              alt=""
-              aria-hidden="true"
-              className="object-cover object-[68%_50%] opacity-[0.58] sm:object-[66%_50%] sm:opacity-[0.62]"
-            />
-          </picture>
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.96)_42%,rgba(5,8,7,.70)_66%,rgba(5,8,7,.30)_100%)]" />
-          <div className="absolute inset-x-0 top-0 h-[24%] bg-[linear-gradient(180deg,#050807_0%,rgba(5,8,7,.52)_58%,transparent_100%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-[28%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.58)_54%,transparent_100%)]" />
-        </div>
+          className="pointer-events-none absolute inset-x-0 top-0 -z-[9] h-[18%] bg-[linear-gradient(180deg,rgba(5,8,7,.46)_0%,transparent_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-[9] h-[24%] bg-[linear-gradient(0deg,#050807_0%,rgba(5,8,7,.52)_44%,transparent_100%)]"
+        />
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_46%,rgba(5,8,7,.72)_68%,transparent_100%)] sm:w-[66%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
             <h1 className="text-balance text-[2.65rem] font-bold leading-[0.98] tracking-[-0.055em] text-[#F4F7F5] min-[390px]:text-[2.85rem] sm:text-6xl sm:leading-[0.96] sm:tracking-[-0.065em] lg:text-[4.5rem]">
