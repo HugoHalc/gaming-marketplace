@@ -110,7 +110,7 @@ export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
                 </span>
               );
 
-              if (!game.ready) {
+              if (!game.ready && !game.overviewReady) {
                 return (
                   <div
                     key={game.slug}
@@ -143,7 +143,7 @@ export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
                       {game.displayName}
                     </span>
                     <span className="mt-1 block text-[10px] text-[#667069]">
-                      {game.category}
+                      {game.ready ? game.category : "Coming soon"}
                     </span>
                   </span>
                   <ArrowRight

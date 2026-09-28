@@ -1,5 +1,9 @@
 import type { CatalogGame, GameAccent } from "../types/catalog";
 import { dota2PublicGameCard } from "./dota-2-foundation";
+import {
+  rainbowSixSiegeGameFoundation,
+  rainbowSixSiegePublicGameCard,
+} from "./rainbow-six-siege-foundation";
 
 export type LaunchGameCard = {
   slug: string;
@@ -8,6 +12,7 @@ export type LaunchGameCard = {
   accent: GameAccent;
   category: string;
   ready: boolean;
+  overviewReady?: boolean;
 };
 
 export const launchGames: LaunchGameCard[] = [
@@ -52,22 +57,19 @@ export const launchGames: LaunchGameCard[] = [
     ready: true,
   },
   dota2PublicGameCard,
-  {
-    slug: "rainbow-six-siege",
-    name: "Rainbow Six Siege",
-    displayName: "Rainbow Six Siege",
-    accent: "emerald",
-    category: "Tactical FPS",
-    ready: false,
-  },
+];
+
+export const publicGameNavigation: LaunchGameCard[] = [
+  ...launchGames,
+  rainbowSixSiegePublicGameCard,
 ];
 
 const launchShells: Record<string, CatalogGame> = {
-  "rainbow-six-siege": {
-    id: "game_rainbow_six_siege_shell",
-    slug: "rainbow-six-siege",
-    name: "Rainbow Six Siege",
-    shortDescription: "Marketplace structure prepared for Rainbow Six Siege services.",
+  [rainbowSixSiegeGameFoundation.slug]: {
+    id: rainbowSixSiegeGameFoundation.id,
+    slug: rainbowSixSiegeGameFoundation.slug,
+    name: rainbowSixSiegeGameFoundation.name,
+    shortDescription: rainbowSixSiegeGameFoundation.shortDescription,
     accent: "emerald",
     status: "active",
     featured: true,
@@ -81,5 +83,5 @@ export function getLaunchGameShell(slug: string) {
 }
 
 export function getLaunchGameDisplayName(slug: string, fallback: string) {
-  return launchGames.find((game) => game.slug === slug)?.displayName ?? fallback;
+  return publicGameNavigation.find((game) => game.slug === slug)?.displayName ?? fallback;
 }

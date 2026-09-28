@@ -208,14 +208,21 @@ export function MobileSiteMenu({ signedIn, games }: MobileSiteMenuProps) {
 
                   <div className="mt-2">
                     {games.map((game) =>
-                      game.ready ? (
+                      game.ready || game.overviewReady ? (
                         <Link
                           key={game.slug}
                           href={`/games/${game.slug}`}
                           onClick={close}
                           className="group flex min-h-[52px] items-center justify-between gap-3 border-b border-white/[0.045] text-[#D7DDD9] transition-colors hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/35"
                         >
-                          <span className="text-sm font-medium">{game.displayName}</span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-medium">{game.displayName}</span>
+                            {!game.ready ? (
+                              <span className="mt-0.5 block text-[9px] font-semibold uppercase tracking-[0.08em] text-[#7C8780]">
+                                Coming soon
+                              </span>
+                            ) : null}
+                          </span>
                           <ChevronRight className="size-4 shrink-0 text-[#4E5651] transition-colors group-hover:text-[#82F5A4]" />
                         </Link>
                       ) : (

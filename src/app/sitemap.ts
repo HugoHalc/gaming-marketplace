@@ -10,6 +10,7 @@ const publicRoutes = [
   "/games/rocket-league/tournament-boost",
   "/games/rocket-league/rewards-boost",
   "/games/rocket-league/placements-boost",
+  "/games/rainbow-six-siege",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

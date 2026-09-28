@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
-import { launchGames } from "@/features/catalog/data/launch-games";
+import { publicGameNavigation } from "@/features/catalog/data/launch-games";
 import { dota2AssetFoundation } from "@/features/catalog/data/dota-2-foundation";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
@@ -406,7 +406,8 @@ export default async function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launchGames.map((game) => {
+            {publicGameNavigation.map((game) => {
+              const canOpenOverview = game.ready || game.overviewReady;
               const imageSrc =
                 homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
               const serviceNames = game.ready
@@ -468,12 +469,17 @@ export default async function Home() {
                     <div className="flex items-center justify-between gap-3">
                       <span
                         className={`inline-flex min-w-0 items-center gap-2 text-xs font-semibold ${
-                          game.ready ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
+                          canOpenOverview ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
                         }`}
                       >
                         {game.ready ? (
                           <>
                             Explore services
+                            <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
+                          </>
+                        ) : game.overviewReady ? (
+                          <>
+                            View overview
                             <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
                           </>
                         ) : (
@@ -488,14 +494,14 @@ export default async function Home() {
                             : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]"
                         }`}
                       >
-                        {game.ready ? "Available" : "In development"}
+                        {game.ready ? "Available" : "Coming soon"}
                       </span>
                     </div>
                   </div>
                 </>
               );
 
-              return game.ready ? (
+              return canOpenOverview ? (
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}

@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { launchGames } from "@/features/catalog/data/launch-games";
+import { publicGameNavigation } from "@/features/catalog/data/launch-games";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 import { AccountDrawer } from "./account-drawer";
@@ -49,7 +49,7 @@ export async function SiteHeader() {
             className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 xl:flex"
             aria-label="Primary navigation"
           >
-            <DesktopGamesMenu games={launchGames} />
+            <DesktopGamesMenu games={publicGameNavigation} />
 
             {primaryLinks.map((item) => (
               <Link
@@ -103,7 +103,7 @@ export async function SiteHeader() {
               </Button>
             )}
 
-            <MobileSiteMenu signedIn={Boolean(identity)} games={launchGames} />
+            <MobileSiteMenu signedIn={Boolean(identity)} games={publicGameNavigation} />
           </div>
         </div>
       </Container>

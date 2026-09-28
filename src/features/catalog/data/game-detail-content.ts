@@ -1,4 +1,5 @@
 import type { GameAccent } from "../types/catalog";
+import { rainbowSixSiegeGameDetailContent } from "./rainbow-six-siege-foundation";
 
 export interface GameDetailContent {
   slug: string;
@@ -106,19 +107,5 @@ export const gameDetailContent: Record<string, GameDetailContent> = {
     serviceIntro: "Available services.",
     accent: "cyan",
   },
-  "rainbow-six-siege": {
-    slug: "rainbow-six-siege",
-    eyebrow: "Rainbow Six Siege",
-    heroDescription: "Marketplace structure prepared for Rainbow Six Siege. Game-specific services and artwork can be added in a later phase.",
-    categoryLabel: "Tactical FPS",
-    fulfillmentLabel: "Structure ready",
-    trustPoints: ["Dedicated game storefront", "Service rail prepared", "Responsive layout ready"],
-    highlights: [
-      { title: "Storefront ready", description: "The game page structure is ready for future service configuration." },
-      { title: "Visual system ready", description: "Final Rainbow Six Siege artwork can be introduced without changing the layout." },
-      { title: "Catalog-ready architecture", description: "Service cards will populate from the catalog when the game is implemented." },
-    ],
-    serviceIntro: "Rainbow Six Siege service structure is ready for implementation.",
-    accent: "emerald",
-  },
+  "rainbow-six-siege": rainbowSixSiegeGameDetailContent,
 };

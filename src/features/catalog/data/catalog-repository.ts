@@ -4,6 +4,7 @@ import type { CatalogGame, GameAccent, GameStatus, ServiceCategory, ServiceStatu
 import { getCatalogGameBySlug as getMockGameBySlug, getCatalogGames as getMockGames } from "./catalog-selectors";
 import { withLeagueOfLegendsServiceNavigation } from "./league-of-legends-services";
 import { withOverwatchServiceNavigation } from "./overwatch-services";
+import { RAINBOW_SIX_SIEGE_GAME_SLUG } from "./rainbow-six-siege-foundation";
 import { withRocketLeagueServiceNavigation } from "./rocket-league-services";
 import { withValorantServiceNavigation } from "./valorant-services";
 
@@ -69,9 +70,15 @@ function mapGame(row: DbGame): CatalogGame {
   });
 }
 
+function isPurchasableCatalogGame(game: CatalogGame) {
+  return game.slug !== RAINBOW_SIX_SIEGE_GAME_SLUG;
+}
+
 export async function listCatalogGames(): Promise<CatalogGame[]> {
   if (!hasPublicSupabaseEnv()) {
-    return getMockGames().map(withGameSpecificServiceNavigation);
+    return getMockGames()
+      .map(withGameSpecificServiceNavigation)
+      .filter(isPurchasableCatalogGame);
   }
 
   const supabase = createPublicServerClient();
@@ -83,13 +90,17 @@ export async function listCatalogGames(): Promise<CatalogGame[]> {
 
   if (error) {
     console.error("Catalog database read failed; using mock fallback.", error.message);
-    return getMockGames().map(withGameSpecificServiceNavigation);
+    return getMockGames()
+      .map(withGameSpecificServiceNavigation)
+      .filter(isPurchasableCatalogGame);
   }
 
-  return (data as unknown as DbGame[]).map(mapGame);
+  return (data as unknown as DbGame[]).map(mapGame).filter(isPurchasableCatalogGame);
 }
 
 export async function findCatalogGameBySlug(slug: string): Promise<CatalogGame | undefined> {
+  if (slug === RAINBOW_SIX_SIEGE_GAME_SLUG) return undefined;
+
   if (!hasPublicSupabaseEnv()) {
     const game = getMockGameBySlug(slug);
     return game ? withGameSpecificServiceNavigation(game) : undefined;

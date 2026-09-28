@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
-import { launchGames } from "@/features/catalog/data/launch-games";
+import { publicGameNavigation } from "@/features/catalog/data/launch-games";
 import { dota2AssetFoundation } from "@/features/catalog/data/dota-2-foundation";
 
 export const metadata: Metadata = {
@@ -63,7 +63,8 @@ export default function GamesPage() {
       <section className="py-14 sm:py-18 lg:py-20">
         <Container>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launchGames.map((game) => {
+            {publicGameNavigation.map((game) => {
+              const canOpenOverview = game.ready || game.overviewReady;
               const imageSrc =
                 gameCardAssets[game.slug as keyof typeof gameCardAssets];
 
@@ -109,7 +110,7 @@ export default function GamesPage() {
                   <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-5">
                     <span
                       className={`grid size-10 shrink-0 place-items-center rounded-full border shadow-none transition-[border-color,background-color,color,opacity] duration-200 ${
-                        game.ready
+                        canOpenOverview
                           ? "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] group-hover:border-[#39E56F]/35 group-hover:bg-[#39E56F]/[0.09] group-hover:text-[#82F5A4]"
                           : "border-[#FFFFFF14] bg-[#090D0B] text-[#667069] opacity-45"
                       }`}
@@ -124,13 +125,13 @@ export default function GamesPage() {
                           : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4] opacity-60"
                       }`}
                     >
-                      {game.ready ? "Available" : "In development"}
+                      {game.ready ? "Available" : "Coming soon"}
                     </span>
                   </div>
                 </>
               );
 
-              return game.ready ? (
+              return canOpenOverview ? (
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
