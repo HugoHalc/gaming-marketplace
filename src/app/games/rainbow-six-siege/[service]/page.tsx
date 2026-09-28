@@ -13,6 +13,7 @@ import {
   rainbowSixSiegeGameFoundation,
   rainbowSixSiegeServiceFoundations,
 } from "@/features/catalog/data/rainbow-six-siege-foundation";
+import { RainbowSixSiegeWinsConfigurator } from "@/features/configurator/components/rainbow-six-siege-wins-configurator";
 import { RainbowSixSiegeRankConfigurator } from "@/features/configurator/components/rainbow-six-siege-rank-configurator";
 
 interface RainbowSixSiegeServicePageProps {
@@ -33,7 +34,7 @@ export async function generateMetadata({
   if (!service || service.status !== "active") return { title: "Service not found" };
 
   return {
-    title: "Rainbow Six Siege Rank Boost",
+    title: `Rainbow Six Siege ${service.name}`,
     description: service.description,
     alternates: { canonical: service.route },
   };
@@ -44,7 +45,7 @@ export default async function RainbowSixSiegeServicePage({
 }: RainbowSixSiegeServicePageProps) {
   const { service: slug } = await params;
   const service = findRainbowSixSiegeServiceFoundation(slug);
-  if (!service || service.status !== "active" || service.slug !== "rank-boost") notFound();
+  if (!service || service.status !== "active") notFound();
 
   return (
     <main className="min-h-screen overflow-hidden">
@@ -76,16 +77,16 @@ export default async function RainbowSixSiegeServicePage({
               Rainbow Six Siege
             </Link>
             <span>/</span>
-            <span className="text-white">Rank Boost</span>
+            <span className="text-white">{service.name}</span>
           </div>
 
           <div className="mt-8 max-w-3xl">
             <Badge className="border-emerald-300/15 bg-emerald-400/[0.055] text-emerald-100/80">
               <ShieldCheck className="mr-2 size-3.5" aria-hidden="true" />
-              Rainbow Six Siege Rank Boost
+              Rainbow Six Siege {service.name}
             </Badge>
             <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-              Rainbow Six Siege Rank Boost
+              Rainbow Six Siege {service.name}
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
               {service.description}
@@ -96,8 +97,8 @@ export default async function RainbowSixSiegeServicePage({
 
       <section className="py-7 sm:py-9 lg:py-10">
         <Container>
-          <RainbowSixSiegeServiceNavigation currentSlug="rank-boost">
-            <RainbowSixSiegeRankConfigurator />
+          <RainbowSixSiegeServiceNavigation currentSlug={service.slug}>
+            {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : <RainbowSixSiegeWinsConfigurator />}
           </RainbowSixSiegeServiceNavigation>
         </Container>
       </section>

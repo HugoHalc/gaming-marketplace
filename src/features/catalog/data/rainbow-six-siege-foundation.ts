@@ -36,8 +36,8 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     route: "/games/rainbow-six-siege/competitive-wins",
     name: "Competitive Wins",
     description:
-      "Complete the number of competitive victories you need with clear order tracking.",
-    status: "coming-soon",
+      "Choose one to five competitive wins for your current rank, platform, and region.",
+    status: "active",
   },
   {
     id: "service_rainbow_six_siege_placements_boost_foundation",
@@ -113,25 +113,25 @@ export const rainbowSixSiegeGameDetailContent = {
   categoryLabel: rainbowSixSiegeGameFoundation.categoryLabel,
   fulfillmentLabel: "Ranked 3.0",
   trustPoints: [
-    "Rank Boost available",
+    "Rank Boost and Competitive Wins available",
     "Server-validated pricing",
-    "Three more services coming soon",
+    "Placements Boost and Unrated Matches coming soon",
   ],
   highlights: [
     {
       title: "Ranked 3.0 foundation",
       description:
-        "Rank Boost uses the ordered competitive ladder while keeping future service rules isolated until they are implemented.",
+        "Choose the rank progression that matches your current position and goal.",
     },
     {
       title: "Four service paths",
       description:
-        "Rank Boost is available now; Competitive Wins, Placements Boost, and Unrated Matches remain staged as Coming soon.",
+        "Choose Rank Boost or Competitive Wins. Placements Boost and Unrated Matches are coming soon.",
     },
     {
       title: "Server-authoritative checkout",
       description:
-        "Rank Boost pricing is recalculated on the server before an order can be created.",
+        "Review your selections and price before checkout.",
     },
   ],
   serviceIntro: "Choose your Rainbow Six Siege service.",
