@@ -1,18 +1,13 @@
 import Link from "next/link";
-import {
-  Bell,
-  ChevronDown,
-  Gamepad2,
-  Grid2X2,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
 import { launchGames } from "@/features/catalog/data/launch-games";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { getUnreadNotificationCount } from "@/features/notifications/server/notification-repository";
 import { AccountDrawer } from "./account-drawer";
+import { DesktopGamesMenu } from "./desktop-games-menu";
 import { MobileSiteMenu } from "./mobile-site-menu";
 
 function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCurrentIdentity>>>) {
@@ -31,11 +26,13 @@ function getAvatarInitials(identity: NonNullable<Awaited<ReturnType<typeof getCu
   return source.slice(0, 2).toUpperCase();
 }
 
-export async function SiteHeader({
-  showComingSoonGames = false,
-}: {
-  showComingSoonGames?: boolean;
-} = {}) {
+const primaryLinks = [
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Boosters", href: "/boosters" },
+  { label: "FAQ", href: "/#faq" },
+] as const;
+
+export async function SiteHeader() {
   const identity = await getCurrentIdentity();
   const unread = identity ? await getUnreadNotificationCount() : 0;
   const initials = identity ? getAvatarInitials(identity) : null;
@@ -44,35 +41,25 @@ export async function SiteHeader({
     <header className="sticky top-0 z-50 border-b border-[#FFFFFF14] bg-[#050807]/94 backdrop-blur-xl supports-[backdrop-filter]:bg-[#050807]/88">
       <Container>
         <div className="relative flex h-[3.9rem] items-center justify-between gap-3 sm:h-16 sm:gap-4">
-          <div className="flex min-w-0 items-center gap-7">
+          <div className="flex min-w-0 items-center">
             <Logo />
-
-            <div className="hidden items-center lg:flex">
-              <Link
-                href="/games"
-                className="group inline-flex h-[2.625rem] items-center gap-2.5 rounded-[11px] border border-white/[0.08] bg-[#0E1411] px-3.5 text-sm font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-white/[0.14] hover:bg-[#131B17] active:border-[#39E56F]/25 active:bg-[#39E56F]/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
-              >
-                <span className="grid size-7 place-items-center rounded-lg border border-[#39E56F]/16 bg-[#39E56F]/[0.035] text-[#82F5A4]/70 transition-[background-color,border-color,color] duration-200 group-hover:border-[#39E56F]/24 group-hover:bg-[#39E56F]/[0.05] group-hover:text-[#82F5A4] group-active:border-[#39E56F]/30 group-active:bg-[#39E56F]/[0.065]">
-                  <Gamepad2 className="size-3.5" strokeWidth={1.8} />
-                </span>
-                <span>Select your game</span>
-                <ChevronDown className="ml-0.5 size-3.5 text-[#667069] transition-colors duration-200 group-hover:text-[#A0AAA4] group-active:text-[#82F5A4]/75" strokeWidth={1.8} />
-              </Link>
-            </div>
           </div>
 
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 xl:flex" aria-label="Primary navigation">
-            {siteConfig.navigation
-              .filter((item) => item.label === "How it works" || item.label === "FAQ")
-              .map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-sm font-medium text-[#A0AAA4] transition-colors duration-200 hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:text-[#F4F7F5]"
-                >
-                  {item.label}
-                </Link>
-              ))}
+          <nav
+            className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 xl:flex"
+            aria-label="Primary navigation"
+          >
+            <DesktopGamesMenu games={launchGames} />
+
+            {primaryLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-lg px-2.5 py-2 text-sm font-medium text-[#A0AAA4] transition-[background-color,color] duration-150 hover:bg-white/[0.035] hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807]"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
@@ -106,84 +93,18 @@ export async function SiteHeader({
                 </div>
               </>
             ) : (
-              <Button asChild variant="ghost" size="sm" className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="hidden rounded-xl bg-transparent text-[#A0AAA4] hover:bg-[#131B17] hover:text-[#F4F7F5] sm:inline-flex"
+              >
                 <Link href="/login">Sign in</Link>
               </Button>
             )}
 
-            <MobileSiteMenu signedIn={Boolean(identity)} />
+            <MobileSiteMenu signedIn={Boolean(identity)} games={launchGames} />
           </div>
-        </div>
-
-        <div className="hidden border-t border-white/[0.05] lg:block">
-          <div className="flex h-[2.7rem] items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {launchGames.map((game) =>
-              game.ready ? (
-                <Link
-                  key={game.slug}
-                  href={`/games/${game.slug}`}
-                  className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5] transition-[background-color,border-color,color] duration-200 hover:border-[#39E56F]/30 hover:bg-[#39E56F]/[0.06]"
-                >
-                  <span className="size-1.5 rounded-full bg-[#39E56F]" />
-                  {game.displayName}
-                </Link>
-              ) : (
-                <span
-                  key={game.slug}
-                  aria-label={
-                    showComingSoonGames
-                      ? `${game.displayName}, Coming soon`
-                      : `${game.displayName}, In development`
-                  }
-                  className="inline-flex h-8 shrink-0 cursor-default items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
-                  title={showComingSoonGames ? "Coming soon" : "In development"}
-                >
-                  {game.displayName}
-                  {showComingSoonGames ? (
-                    <span className="rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-[#A0AAA4]">
-                      Coming soon
-                    </span>
-                  ) : null}
-                </span>
-              ),
-            )}
-          </div>
-        </div>
-
-        <div className="flex h-10 items-center gap-2 overflow-x-auto border-t border-white/[0.05] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <Link
-            href="/games"
-            className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#131B17] px-3 text-xs font-semibold text-[#F4F7F5]"
-          >
-            <Grid2X2 className="size-3.5 text-[#A0AAA4]" />
-            Games
-          </Link>
-
-          {launchGames
-            .filter((game) => game.ready || showComingSoonGames)
-            .map((game) =>
-              game.ready ? (
-                <Link
-                  key={game.slug}
-                  href={`/games/${game.slug}`}
-                  className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-[#39E56F]/25 bg-[#39E56F]/[0.045] px-3 text-xs font-semibold text-[#F4F7F5]"
-                >
-                  <span className="size-1.5 rounded-full bg-[#39E56F]" />
-                  {game.displayName}
-                </Link>
-              ) : (
-                <span
-                  key={game.slug}
-                  aria-label={`${game.displayName}, Coming soon`}
-                  className="inline-flex h-8 shrink-0 cursor-default items-center gap-2 rounded-lg border border-[#FFFFFF14] bg-[#090D0B] px-3 text-xs font-medium text-[#667069]"
-                >
-                  {game.displayName}
-                  <span className="rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] text-[#A0AAA4]">
-                    Coming soon
-                  </span>
-                </span>
-              ),
-            )}
         </div>
       </Container>
     </header>

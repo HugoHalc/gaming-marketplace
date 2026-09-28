@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import {
   ChevronRight,
   CircleHelp,
-  Gamepad2,
   Home,
   LayoutDashboard,
   ListOrdered,
@@ -17,23 +16,26 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { LaunchGameCard } from "@/features/catalog/data/launch-games";
 
 interface MobileSiteMenuProps {
   signedIn: boolean;
+  games: LaunchGameCard[];
 }
 
 const publicLinks = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Games", href: "/games", icon: Gamepad2 },
   { label: "How it works", href: "/#how-it-works", icon: ShieldCheck },
-  { label: "Meet our boosters", href: "/boosters/rocket-league", icon: Swords },
+  { label: "Boosters", href: "/boosters", icon: Swords },
   { label: "FAQ", href: "/#faq", icon: CircleHelp },
 ];
 
-export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
+export function MobileSiteMenu({ signedIn, games }: MobileSiteMenuProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -53,7 +55,33 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
     });
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        window.requestAnimationFrame(() => triggerRef.current?.focus());
+        return;
+      }
+
+      if (event.key !== "Tab" || !drawerRef.current) return;
+
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -87,7 +115,8 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
             />
 
             <aside
-              className={`absolute right-0 top-0 flex h-[100dvh] w-full max-w-[430px] flex-col border-l border-white/[0.07] bg-[#050807] transition-transform duration-[260ms] ${
+              ref={drawerRef}
+              className={`absolute right-0 top-0 flex h-[100dvh] w-full max-w-[430px] flex-col border-l border-white/[0.07] bg-[#050807] transition-transform duration-[260ms] motion-reduce:transition-none ${
                 open ? "translate-x-0" : "translate-x-full"
               }`}
               role="dialog"
@@ -112,7 +141,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
                   ref={closeRef}
                   type="button"
                   onClick={close}
-                  className="grid size-10 shrink-0 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4]"
+                  className="grid size-10 shrink-0 place-items-center rounded-full border border-white/[0.08] bg-[#0E1411] text-[#A0AAA4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35"
                   aria-label="Close menu"
                 >
                   <X className="size-[19px]" strokeWidth={1.8} />
@@ -158,7 +187,54 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
                   </div>
                 )}
 
-                <nav className="mt-6" aria-label="Mobile menu">
+                <section className="mt-7" aria-labelledby="mobile-games-heading">
+                  <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] pb-3">
+                    <div>
+                      <p className="font-gaming-label text-[9px] uppercase tracking-[0.15em] text-[#7C8780]">
+                        GAME LIBRARY
+                      </p>
+                      <h2 id="mobile-games-heading" className="mt-1 text-base font-semibold text-[#F4F7F5]">
+                        Games
+                      </h2>
+                    </div>
+                    <Link
+                      href="/games"
+                      onClick={close}
+                      className="rounded-md px-1 py-1 text-xs font-semibold text-[#A0AAA4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35"
+                    >
+                      View all
+                    </Link>
+                  </div>
+
+                  <div className="mt-2">
+                    {games.map((game) =>
+                      game.ready ? (
+                        <Link
+                          key={game.slug}
+                          href={`/games/${game.slug}`}
+                          onClick={close}
+                          className="group flex min-h-[52px] items-center justify-between gap-3 border-b border-white/[0.045] text-[#D7DDD9] transition-colors hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/35"
+                        >
+                          <span className="text-sm font-medium">{game.displayName}</span>
+                          <ChevronRight className="size-4 shrink-0 text-[#4E5651] transition-colors group-hover:text-[#82F5A4]" />
+                        </Link>
+                      ) : (
+                        <div
+                          key={game.slug}
+                          aria-label={`${game.displayName}, Coming soon`}
+                          className="flex min-h-[52px] items-center justify-between gap-3 border-b border-white/[0.045] text-[#667069]"
+                        >
+                          <span className="text-sm font-medium">{game.displayName}</span>
+                          <span className="rounded-full border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#A0AAA4]">
+                            Coming soon
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </section>
+
+                <nav className="mt-6 border-t border-white/[0.06]" aria-label="Mobile menu">
                   {publicLinks.map((item) => {
                     const Icon = item.icon;
 
@@ -167,7 +243,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
                         key={item.href}
                         href={item.href}
                         onClick={close}
-                        className="group flex min-h-[58px] items-center gap-4 border-b border-white/[0.05] text-[#D7DDD9] transition-colors hover:text-[#F4F7F5]"
+                        className="group flex min-h-[58px] items-center gap-4 border-b border-white/[0.05] text-[#D7DDD9] transition-colors hover:text-[#F4F7F5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/35"
                       >
                         <span className="grid size-9 shrink-0 place-items-center rounded-lg text-[#667069] transition-colors group-hover:text-[#82F5A4]">
                           <Icon className="size-[19px]" strokeWidth={1.7} />
@@ -188,7 +264,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
                     <Link
                       href="/dashboard/profile"
                       onClick={close}
-                      className="group flex min-h-[56px] items-center gap-4 text-[#D7DDD9]"
+                      className="group flex min-h-[56px] items-center gap-4 text-[#D7DDD9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/35"
                     >
                       <span className="grid size-9 place-items-center text-[#667069]">
                         <Settings className="size-[19px]" strokeWidth={1.7} />
@@ -202,7 +278,7 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
                     <form action="/auth/signout" method="post">
                       <button
                         type="submit"
-                        className="flex min-h-[56px] w-full items-center gap-4 text-left text-[#A0AAA4]"
+                        className="flex min-h-[56px] w-full items-center gap-4 text-left text-[#A0AAA4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/35"
                       >
                         <span className="grid size-9 place-items-center text-[#667069]">
                           <LogOut className="size-[19px]" strokeWidth={1.7} />
@@ -231,9 +307,10 @@ export function MobileSiteMenu({ signedIn }: MobileSiteMenuProps) {
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
-        className="grid size-10 place-items-center rounded-xl border border-[#FFFFFF14] bg-[#090D0B] text-[#F4F7F5] transition-colors hover:bg-[#131B17] xl:hidden"
+        className="grid size-10 place-items-center rounded-xl border border-[#FFFFFF14] bg-[#090D0B] text-[#F4F7F5] transition-colors hover:bg-[#131B17] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 xl:hidden"
         aria-label="Open menu"
         aria-expanded={open}
       >

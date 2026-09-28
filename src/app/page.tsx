@@ -263,7 +263,7 @@ export default async function Home() {
           }
         }
       `}</style>
-      <SiteHeader showComingSoonGames />
+      <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">
         <div className="hero-grid absolute inset-0 -z-20 opacity-30" />
@@ -328,11 +328,6 @@ export default async function Home() {
         <div className="pointer-events-none absolute inset-y-0 left-0 -z-[5] w-[72%] bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_46%,rgba(5,8,7,.72)_68%,transparent_100%)] sm:w-[66%] lg:w-[55%]" />
         <Container className="grid min-h-[470px] items-center gap-10 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-16">
           <div className="max-w-3xl">
-            <Badge className="mb-5 rounded-[9px] border-[#39E56F]/20 bg-[#0B100D] px-2.5 py-1 font-semibold text-[#F4F7F5]">
-              <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" />
-              Premium boosting marketplace
-            </Badge>
-
             <h1 className="text-balance text-[2.65rem] font-bold leading-[0.98] tracking-[-0.055em] text-[#F4F7F5] min-[390px]:text-[2.85rem] sm:text-6xl sm:leading-[0.96] sm:tracking-[-0.065em] lg:text-[4.5rem]">
               Professional boosting built around your game.
             </h1>
