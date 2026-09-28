@@ -33,7 +33,7 @@ export async function generateMetadata({
   if (!service || service.status !== "active") return { title: "Service not found" };
 
   return {
-    title: "Rainbow Six Siege Rank Boost | BoostingPedia",
+    title: "Rainbow Six Siege Rank Boost",
     description: service.description,
     alternates: { canonical: service.route },
   };

@@ -9,6 +9,11 @@ import {
   findRainbowSixSiegeServiceFoundation,
   isRainbowSixSiegeServiceActive,
 } from "../src/features/catalog/data/rainbow-six-siege-foundation.ts";
+import {
+  estimateRainbowSixSiegeStartingTime,
+  R6_STARTING_TIME_DISCLAIMER,
+  R6_STARTING_TIME_RANGES,
+} from "../src/features/configurator/data/rainbow-six-siege-starting-time.ts";
 
 function selection(overrides = {}) {
   return {
@@ -78,6 +83,15 @@ test("Xbox applies exactly +20%", () => {
 test("Oceania applies exactly +10%", () => {
   const result = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", server: "oceania" }));
   assert.equal(result.metadata.totalModifierBps, 1000);
+});
+
+test("Copper V to Bronze V with PlayStation and Oceania is $21.35", () => {
+  const result = calculateRainbowSixSiegeRankPricing(
+    selection({ desiredRank: "bronze-v", platform: "playstation", server: "oceania" }),
+  );
+  assert.equal(result.metadata.basePriceCents, 1642);
+  assert.equal(result.metadata.totalModifierBps, 3000);
+  assert.equal(result.metadata.finalTotalCents, 2135);
 });
 
 test("11–20 RP applies exactly +36%", () => {
@@ -243,4 +257,179 @@ test("order route never accepts a client quote or final total", () => {
   assert.doesNotMatch(orderRouteSource, /body\.quote/);
   assert.doesNotMatch(orderRouteSource, /body\.total/);
   assert.match(orderRouteSource, /quote: result\.quote/);
+});
+
+
+test("default Siege configuration estimates 1–3 hours", () => {
+  const result = estimateRainbowSixSiegeStartingTime(
+    selection({ desiredRank: "bronze-v" }),
+  );
+  assert.equal(result.category, "standard");
+  assert.equal(result.range, "1–3 hours");
+});
+
+test("Express Delivery reduces standard to priority", () => {
+  const result = estimateRainbowSixSiegeStartingTime(
+    selection({ desiredRank: "bronze-v", expressDelivery: true }),
+  );
+  assert.equal(result.category, "priority");
+  assert.equal(result.range, "30–90 minutes");
+});
+
+test("desired Platinum estimates 3–6 hours", () => {
+  assert.equal(
+    estimateRainbowSixSiegeStartingTime(selection({ desiredRank: "platinum-v" })).range,
+    "3–6 hours",
+  );
+});
+
+test("desired Diamond estimates 3–6 hours", () => {
+  assert.equal(
+    estimateRainbowSixSiegeStartingTime(selection({ desiredRank: "diamond-v" })).range,
+    "3–6 hours",
+  );
+});
+
+test("desired Champion estimates 6–12 hours", () => {
+  assert.equal(
+    estimateRainbowSixSiegeStartingTime(selection({ desiredRank: "champion-v" })).range,
+    "6–12 hours",
+  );
+});
+
+test("Champion plus Duo plus 1–10 RP caps at 12–24 hours", () => {
+  const result = estimateRainbowSixSiegeStartingTime(
+    selection({ desiredRank: "champion-v", gameMode: "duo", rpGain: "1-10" }),
+  );
+  assert.equal(result.complexityScore, 6);
+  assert.equal(result.range, "12–24 hours");
+});
+
+test("PlayStation plus Oceania estimates 3–6 hours", () => {
+  assert.equal(
+    estimateRainbowSixSiegeStartingTime(
+      selection({ desiredRank: "bronze-v", platform: "playstation", server: "oceania" }),
+    ).range,
+    "3–6 hours",
+  );
+});
+
+test("Streaming plus High Kill Count plus Elite Booster Tier estimates 6–12 hours", () => {
+  assert.equal(
+    estimateRainbowSixSiegeStartingTime(
+      selection({
+        desiredRank: "bronze-v",
+        streaming: true,
+        highKillCount: true,
+        eliteBoosterTier: true,
+      }),
+    ).range,
+    "6–12 hours",
+  );
+});
+
+test("starting-time estimate caps at 12–24 hours above five complexity points", () => {
+  const result = estimateRainbowSixSiegeStartingTime(
+    selection({
+      desiredRank: "champion-i",
+      platform: "playstation",
+      gameMode: "duo",
+      rpGain: "1-10",
+      server: "oceania",
+      streaming: true,
+      highKillCount: true,
+      oneTrickPony: true,
+      eliteBoosterTier: true,
+    }),
+  );
+  assert.ok(result.complexityScore > 5);
+  assert.equal(result.category, "limited");
+  assert.equal(result.range, R6_STARTING_TIME_RANGES.limited);
+});
+
+test("Express Delivery reduces limited to specialist", () => {
+  const result = estimateRainbowSixSiegeStartingTime(
+    selection({
+      desiredRank: "champion-v",
+      gameMode: "duo",
+      rpGain: "1-10",
+      expressDelivery: true,
+    }),
+  );
+  assert.equal(result.complexityScore, 6);
+  assert.equal(result.category, "specialist");
+  assert.equal(result.range, "6–12 hours");
+});
+
+test("rank distance alone does not change starting-time category", () => {
+  const shortDistance = estimateRainbowSixSiegeStartingTime(
+    selection({ currentRank: "gold-iv", desiredRank: "gold-i" }),
+  );
+  const longDistance = estimateRainbowSixSiegeStartingTime(
+    selection({ currentRank: "copper-v", desiredRank: "gold-i" }),
+  );
+  assert.equal(shortDistance.complexityScore, 0);
+  assert.equal(longDistance.complexityScore, 0);
+  assert.equal(shortDistance.range, longDistance.range);
+});
+
+test("unknown normalized starting-time values are rejected", () => {
+  assert.throws(
+    () => estimateRainbowSixSiegeStartingTime(selection({ platform: "switch" })),
+    /valid platform/,
+  );
+  assert.throws(
+    () => estimateRainbowSixSiegeStartingTime(selection({ desiredRank: "legend-i" })),
+    /valid Rainbow Six Siege rank progression/,
+  );
+});
+
+test("starting-time disclaimer uses the approved public copy", () => {
+  assert.equal(
+    R6_STARTING_TIME_DISCLAIMER,
+    "Estimate based on your configuration and current booster availability. Actual start time may vary.",
+  );
+});
+
+const rootLayoutSource = readFileSync(
+  new URL("../src/app/layout.tsx", import.meta.url),
+  "utf8",
+);
+const siegeOverviewSource = readFileSync(
+  new URL("../src/app/games/rainbow-six-siege/page.tsx", import.meta.url),
+  "utf8",
+);
+
+test("Rank Boost metadata relies on the root title template exactly once", () => {
+  assert.match(rootLayoutSource, /template: `%s \| \$\{siteConfig\.name\}`/);
+  assert.match(servicePageSource, /title: "Rainbow Six Siege Rank Boost"/);
+  assert.doesNotMatch(servicePageSource, /Rainbow Six Siege Rank Boost \| BoostingPedia/);
+});
+
+test("Siege overview keeps its absolute title and customer-facing copy", () => {
+  assert.match(
+    siegeOverviewSource,
+    /absolute: "Rainbow Six Siege Boosting Services \| BoostingPedia"/,
+  );
+  for (const copy of [
+    "Choose the Siege service that matches your goal. Configure Rank Boost now, with more options arriving soon.",
+    "Built for competitive progression",
+    "A clearer way to configure your Siege service.",
+    "Review your goal, customize the service, and see your updated price before continuing to checkout.",
+    "Ranked progression",
+    "Focused service options",
+    "Transparent configuration",
+  ]) {
+    assert.ok(siegeOverviewSource.includes(copy), copy);
+  }
+  for (const internalCopy of [
+    "implemented",
+    "rollout",
+    "server-authoritative",
+    "pricing and configurators",
+    "future service rules",
+    "rules remain isolated",
+  ]) {
+    assert.equal(siegeOverviewSource.toLowerCase().includes(internalCopy), false, internalCopy);
+  }
 });

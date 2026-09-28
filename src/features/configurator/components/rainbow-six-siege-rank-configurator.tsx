@@ -26,6 +26,10 @@ import {
   type RainbowSixSiegeRankQuoteApiResponse,
   type RainbowSixSiegeRankQuoteMetadata,
 } from "../data/rainbow-six-siege-rank-options";
+import {
+  estimateRainbowSixSiegeStartingTime,
+  R6_STARTING_TIME_DISCLAIMER,
+} from "../data/rainbow-six-siege-starting-time";
 import type { ConfiguratorSelection, QuotePreview } from "../types/configurator";
 import { MinimumOrderNotice } from "./minimum-order-notice";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
@@ -296,6 +300,14 @@ export function RainbowSixSiegeRankConfigurator() {
   const requestKey = JSON.stringify(orderSelection);
   const quote = selectionIsValid && quoteState?.key === requestKey ? quoteState.quote : null;
   const metadata = selectionIsValid && quoteState?.key === requestKey ? quoteState.metadata : null;
+  const startingTimeEstimate = useMemo(() => {
+    if (!selectionIsValid) return null;
+    try {
+      return estimateRainbowSixSiegeStartingTime(orderSelection);
+    } catch {
+      return null;
+    }
+  }, [orderSelection, selectionIsValid]);
 
   useEffect(() => {
     setQuoteState(null);
@@ -652,13 +664,22 @@ export function RainbowSixSiegeRankConfigurator() {
               <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
                 <div className="flex items-start gap-2.5 px-3 py-3">
                   <Clock3 className="mt-0.5 size-3.5 shrink-0 text-emerald-200/65" aria-hidden="true" />
-                  <div>
+                  <div
+                    className="min-w-0"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
                     <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200/65">
                       Estimated starting time
                     </p>
-                    <p className="mt-1 text-[10px] leading-4 text-white/42">Unavailable</p>
+                    <p className="mt-1 text-sm font-semibold leading-5 text-white/72">
+                      {startingTimeEstimate?.range ?? "Unavailable"}
+                    </p>
                     <p className="mt-1 text-[9px] leading-4 text-white/30">
-                      No verified timing estimate is available for this configuration.
+                      {startingTimeEstimate
+                        ? R6_STARTING_TIME_DISCLAIMER
+                        : "Select a valid configuration to view an estimate."}
                     </p>
                   </div>
                 </div>

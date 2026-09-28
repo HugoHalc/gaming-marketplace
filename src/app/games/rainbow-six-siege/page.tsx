@@ -39,21 +39,21 @@ const servicePresentation: Record<
 
 const overviewHighlights = [
   {
-    title: "Ranked 3.0 foundation",
+    title: "Ranked progression",
     description:
-      "Rank Boost now uses the ordered competitive ladder while future service rules remain isolated until they are implemented.",
+      "Choose your current rank and target rank across the competitive Siege ladder.",
     icon: ShieldCheck,
   },
   {
-    title: "Four focused services",
+    title: "Focused service options",
     description:
-      "Rank Boost is available now; Competitive Wins, Placements Boost, and Unrated Matches remain Coming soon.",
+      "Start with Rank Boost today, with additional Siege services arriving progressively.",
     icon: Layers3,
   },
   {
-    title: "Server-authoritative checkout",
+    title: "Transparent configuration",
     description:
-      "Rank Boost pricing is recalculated on the server before an order can be created.",
+      "See how your platform, mode, region, RP gain, and selected options affect the final price.",
     icon: Sparkles,
   },
 ] as const;
@@ -169,7 +169,7 @@ export default function RainbowSixSiegeOverviewPage() {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              Rank Boost is available to configure now. The remaining services stay disabled until their pricing and configurators are implemented.
+              Choose the Siege service that matches your goal. Configure Rank Boost now, with more options arriving soon.
             </p>
           </div>
 
@@ -248,12 +248,12 @@ export default function RainbowSixSiegeOverviewPage() {
         <Container>
           <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
             <div className="max-w-xl">
-              <p className="text-sm font-semibold text-emerald-200/75">Game foundation</p>
+              <p className="text-sm font-semibold text-emerald-200/75">Built for competitive progression</p>
               <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-                Built for a safe, progressive Siege rollout.
+                A clearer way to configure your Siege service.
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
-                Rank Boost now uses the shared quote, verification, checkout, and order flow. The remaining Siege services stay unavailable until their own implementations are complete.
+                Review your goal, customize the service, and see your updated price before continuing to checkout.
               </p>
             </div>
 
