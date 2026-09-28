@@ -40,7 +40,9 @@ export type RainbowSixSiegeRankPricingResult = {
   metadata: RainbowSixSiegeRankQuoteMetadata;
 };
 
-export const R6_RANK_RULE_SET_VERSION = "rainbow-six-siege-rank-v1";
+export const R6_RANK_RULE_SET_VERSION = "rainbow-six-siege-rank-v2";
+export const BOOSTING_MARKET_DISPLAY_DISCOUNT_BPS = 5000;
+export const BOOSTINGPEDIA_REFERENCE_SHARE_BPS = 7000;
 export const STREAMING_FIXED_CENTS = 1000;
 
 export const R6_RANK_BENCHMARK_CENTS = {
@@ -217,6 +219,27 @@ function percentDisplay(bps: number) {
   return `+${bps / 100}%`;
 }
 
+export function calculateDiscountedReferenceBaseCents(normalBenchmarkCents: number) {
+  if (!Number.isSafeInteger(normalBenchmarkCents) || normalBenchmarkCents <= 0) {
+    throw new Error("Invalid normal benchmark price.");
+  }
+
+  const discountedReferenceCents = roundHalfUp(
+    normalBenchmarkCents * BOOSTING_MARKET_DISPLAY_DISCOUNT_BPS,
+    10000,
+  );
+  const boostingPediaBaseCents = roundHalfUp(
+    discountedReferenceCents * BOOSTINGPEDIA_REFERENCE_SHARE_BPS,
+    10000,
+  );
+
+  return {
+    normalBenchmarkCents,
+    discountedReferenceCents,
+    boostingPediaBaseCents,
+  };
+}
+
 export function calculateRainbowSixSiegeRankPricing(
   selection: RainbowSixSiegeRankSelection,
 ): RainbowSixSiegeRankPricingResult {
@@ -244,11 +267,12 @@ export function calculateRainbowSixSiegeRankPricing(
     .filter((key) => parseBoolean(selection, key))
     .map((key) => ({ key, ...EXTRAS[key] }));
 
-  const benchmarkBaseCents =
+  const normalBenchmarkCents =
     R6_RANK_BENCHMARK_CENTS[desiredRank] - R6_RANK_BENCHMARK_CENTS[currentRank];
-  if (benchmarkBaseCents <= 0) throw new Error("Invalid rank progression.");
+  if (normalBenchmarkCents <= 0) throw new Error("Invalid rank progression.");
 
-  const basePriceCents = roundHalfUp(benchmarkBaseCents * 70, 100);
+  const { boostingPediaBaseCents: basePriceCents } =
+    calculateDiscountedReferenceBaseCents(normalBenchmarkCents);
 
   const percentageSources = [
     { label: platform.label, bps: platform.bps },

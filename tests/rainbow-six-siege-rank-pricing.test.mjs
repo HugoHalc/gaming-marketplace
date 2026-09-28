@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  BOOSTING_MARKET_DISPLAY_DISCOUNT_BPS,
+  BOOSTINGPEDIA_REFERENCE_SHARE_BPS,
+  calculateDiscountedReferenceBaseCents,
   calculateRainbowSixSiegeRankPricing,
   R6_RANK_BENCHMARK_CENTS,
+  R6_RANK_RULE_SET_VERSION,
   STREAMING_FIXED_CENTS,
 } from "../src/features/pricing/server/rainbow-six-siege-rank-pricing.ts";
 import {
@@ -43,31 +47,50 @@ test("frozen benchmark table keeps the approved endpoints", () => {
   assert.equal(Object.keys(R6_RANK_BENCHMARK_CENTS).length, 40);
 });
 
-test("Copper V to Copper IV is $3.28 and below the $5 minimum", () => {
+test("Copper V to Copper IV uses two-stage discounted reference pricing and is below minimum", () => {
+  const reference = calculateDiscountedReferenceBaseCents(469);
   const result = calculateRainbowSixSiegeRankPricing(selection());
-  assert.equal(result.metadata.basePriceCents, 328);
-  assert.equal(result.metadata.finalTotalCents, 328);
-  assert.equal(500 - result.metadata.finalTotalCents, 172);
+  assert.equal(reference.normalBenchmarkCents, 469);
+  assert.equal(reference.discountedReferenceCents, 235);
+  assert.equal(reference.boostingPediaBaseCents, 165);
+  assert.equal(result.metadata.basePriceCents, 165);
+  assert.equal(result.metadata.finalTotalCents, 165);
+  assert.equal(500 - result.metadata.finalTotalCents, 335);
 });
 
-test("Copper V to Bronze V base is $16.42", () => {
+test("Copper V to Bronze V base is $8.21", () => {
+  const reference = calculateDiscountedReferenceBaseCents(2345);
   const result = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v" }));
-  assert.equal(result.metadata.basePriceCents, 1642);
-  assert.equal(result.metadata.finalTotalCents, 1642);
+  assert.equal(reference.discountedReferenceCents, 1173);
+  assert.equal(reference.boostingPediaBaseCents, 821);
+  assert.equal(result.metadata.basePriceCents, 821);
+  assert.equal(result.metadata.finalTotalCents, 821);
 });
 
-test("Copper V to Diamond V receives the 12% progressive discount", () => {
+test("Copper V to Diamond V uses a 6% progressive discount", () => {
+  const reference = calculateDiscountedReferenceBaseCents(32621);
   const result = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "diamond-v" }));
-  assert.equal(result.metadata.basePriceCents, 22835);
-  assert.equal(result.metadata.discountBps, 1200);
-  assert.equal(result.metadata.finalTotalCents, 20095);
+  assert.equal(reference.discountedReferenceCents, 16311);
+  assert.equal(reference.boostingPediaBaseCents, 11418);
+  assert.equal(result.metadata.basePriceCents, 11418);
+  assert.equal(result.metadata.discountBps, 600);
+  assert.equal(result.metadata.finalTotalCents, 10733);
 });
 
-test("Copper V to Champion I receives the 12% progressive discount", () => {
+test("Copper V to Champion I keeps the 12% progressive discount", () => {
+  const reference = calculateDiscountedReferenceBaseCents(135920);
   const result = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "champion-i" }));
-  assert.equal(result.metadata.basePriceCents, 95144);
+  assert.equal(reference.discountedReferenceCents, 67960);
+  assert.equal(reference.boostingPediaBaseCents, 47572);
+  assert.equal(result.metadata.basePriceCents, 47572);
   assert.equal(result.metadata.discountBps, 1200);
-  assert.equal(result.metadata.finalTotalCents, 83727);
+  assert.equal(result.metadata.finalTotalCents, 41863);
+});
+
+test("reference pricing constants are the approved integer basis points", () => {
+  assert.equal(BOOSTING_MARKET_DISPLAY_DISCOUNT_BPS, 5000);
+  assert.equal(BOOSTINGPEDIA_REFERENCE_SHARE_BPS, 7000);
+  assert.equal(R6_RANK_RULE_SET_VERSION, "rainbow-six-siege-rank-v2");
 });
 
 test("PlayStation applies exactly +20%", () => {
@@ -85,13 +108,14 @@ test("Oceania applies exactly +10%", () => {
   assert.equal(result.metadata.totalModifierBps, 1000);
 });
 
-test("Copper V to Bronze V with PlayStation and Oceania is $21.35", () => {
+test("Copper V to Bronze V with PlayStation and Oceania is $10.67", () => {
   const result = calculateRainbowSixSiegeRankPricing(
     selection({ desiredRank: "bronze-v", platform: "playstation", server: "oceania" }),
   );
-  assert.equal(result.metadata.basePriceCents, 1642);
+  assert.equal(result.metadata.basePriceCents, 821);
   assert.equal(result.metadata.totalModifierBps, 3000);
-  assert.equal(result.metadata.finalTotalCents, 2135);
+  assert.equal(result.metadata.percentageAdjustedCents, 1067);
+  assert.equal(result.metadata.finalTotalCents, 1067);
 });
 
 test("11–20 RP applies exactly +36%", () => {
@@ -127,17 +151,33 @@ test("percentage modifiers are additive rather than compounded", () => {
     }),
   );
   assert.equal(result.metadata.totalModifierBps, 14300);
-  assert.equal(result.metadata.percentageAdjustedCents, 3990);
+  assert.equal(result.metadata.percentageAdjustedCents, 1995);
 });
 
-test("progressive discount uses subtotal after percentage and fixed charges", () => {
+test("progressive discount still uses subtotal after percentage and fixed charges", () => {
   const result = calculateRainbowSixSiegeRankPricing(
     selection({ desiredRank: "gold-v", platform: "xbox", streaming: true }),
   );
-  assert.equal(result.metadata.preDiscountSubtotalCents, 7683);
-  assert.equal(result.metadata.discountBps, 300);
-  assert.equal(result.metadata.discountCents, 230);
-  assert.equal(result.metadata.finalTotalCents, 7453);
+  assert.equal(result.metadata.preDiscountSubtotalCents, 4342);
+  assert.equal(result.metadata.discountBps, 0);
+  assert.equal(result.metadata.discountCents, 0);
+  assert.equal(result.metadata.finalTotalCents, 4342);
+});
+
+test("PlayStation plus Oceania plus Streaming is $20.67", () => {
+  const result = calculateRainbowSixSiegeRankPricing(
+    selection({
+      desiredRank: "bronze-v",
+      platform: "playstation",
+      server: "oceania",
+      streaming: true,
+    }),
+  );
+  assert.equal(result.metadata.basePriceCents, 821);
+  assert.equal(result.metadata.percentageAdjustedCents, 1067);
+  assert.equal(result.metadata.fixedChargesCents, 1000);
+  assert.equal(result.metadata.preDiscountSubtotalCents, 2067);
+  assert.equal(result.metadata.finalTotalCents, 2067);
 });
 
 test("desired rank equal to current rank is rejected", () => {
@@ -206,6 +246,15 @@ test("legacy provisional service slugs are rejected", () => {
 
 import { existsSync, readFileSync } from "node:fs";
 
+
+const pricingSource = readFileSync(
+  new URL("../src/features/pricing/server/rainbow-six-siege-rank-pricing.ts", import.meta.url),
+  "utf8",
+);
+const configuratorSource = readFileSync(
+  new URL("../src/features/configurator/components/rainbow-six-siege-rank-configurator.tsx", import.meta.url),
+  "utf8",
+);
 const quoteRouteSource = readFileSync(
   new URL("../src/app/api/rainbow-six-siege/rank-boost-quote/route.ts", import.meta.url),
   "utf8",
@@ -257,6 +306,29 @@ test("order route never accepts a client quote or final total", () => {
   assert.doesNotMatch(orderRouteSource, /body\.quote/);
   assert.doesNotMatch(orderRouteSource, /body\.total/);
   assert.match(orderRouteSource, /quote: result\.quote/);
+});
+
+
+test("pricing uses mandatory two-stage rounding and not a direct 35 percent multiplier", () => {
+  assert.match(pricingSource, /normalBenchmarkCents \* BOOSTING_MARKET_DISPLAY_DISCOUNT_BPS/);
+  assert.match(pricingSource, /discountedReferenceCents \* BOOSTINGPEDIA_REFERENCE_SHARE_BPS/);
+  assert.doesNotMatch(pricingSource, /0\.35|\*\s*35\s*[,/)]|3500/);
+});
+
+test("quote and order creation both use the centralized v2 pricing result", () => {
+  assert.match(quoteRouteSource, /calculateRainbowSixSiegeRankPricing\(selection\)/);
+  assert.match(orderRouteSource, /calculateRainbowSixSiegeRankPricing\(selection\)/);
+  assert.match(pricingSource, /rainbow-six-siege-rank-v2/);
+});
+
+test("Verify your order renders the server quote total", () => {
+  assert.match(configuratorSource, /Verify your order/);
+  assert.match(configuratorSource, /formatUsd\(quote\.total\)/);
+});
+
+test("below-minimum checkout remains guarded by the existing global minimum helper", () => {
+  assert.match(configuratorSource, /!meetsMinimumOrderTotal\(quote\.total\)/);
+  assert.match(configuratorSource, /disabled=\{!canCheckout \|\| isCreatingOrder\}/);
 });
 
 
