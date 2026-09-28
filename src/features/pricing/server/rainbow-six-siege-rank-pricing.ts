@@ -207,7 +207,7 @@ function rankLabel(rank: RainbowSixSiegeRankId) {
   return RANK_LABELS[rank];
 }
 
-function progressiveDiscountBps(preDiscountSubtotalCents: number) {
+export function progressiveDiscountBps(preDiscountSubtotalCents: number) {
   if (preDiscountSubtotalCents >= 20000) return 1200;
   if (preDiscountSubtotalCents >= 15000) return 900;
   if (preDiscountSubtotalCents >= 10000) return 600;
