@@ -47,7 +47,7 @@ const overviewHighlights = [
   {
     title: "Focused service options",
     description:
-      "Choose Rank Boost or Competitive Wins to match your goal.",
+      "Choose Rank Boost, Competitive Wins or Placements Boost to match your goal.",
     icon: Layers3,
   },
   {
@@ -137,7 +137,7 @@ export default function RainbowSixSiegeOverviewPage() {
                 {rainbowSixSiegeGameFoundation.rankedSystemLabel}
               </span>
               <span className="rounded-full border border-emerald-300/[0.14] bg-emerald-400/[0.035] px-3 py-1.5 text-xs font-medium text-emerald-100/75">
-                2 services available · 2 coming soon
+                3 services available · 1 coming soon
               </span>
             </div>
 
@@ -169,7 +169,7 @@ export default function RainbowSixSiegeOverviewPage() {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              Choose the Siege service that matches your goal. Configure Rank Boost or Competitive Wins now. Placements and Unrated Matches are coming soon.
+              Choose the Siege service that matches your goal. Configure Rank Boost, Competitive Wins or Placements Boost now. Unrated Matches is coming soon.
             </p>
           </div>
 

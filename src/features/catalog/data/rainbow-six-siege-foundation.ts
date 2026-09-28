@@ -46,8 +46,8 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     route: "/games/rainbow-six-siege/placements-boost",
     name: "Placements Boost",
     description:
-      "Complete your seasonal placement matches with an experienced Siege player.",
-    status: "coming-soon",
+      "Complete your Rainbow Six Siege placement matches with experienced boosters, flexible service options, secure checkout, and transparent pricing.",
+    status: "active",
   },
   {
     id: "service_rainbow_six_siege_unrated_matches_foundation",
@@ -113,9 +113,9 @@ export const rainbowSixSiegeGameDetailContent = {
   categoryLabel: rainbowSixSiegeGameFoundation.categoryLabel,
   fulfillmentLabel: "Ranked 3.0",
   trustPoints: [
-    "Rank Boost and Competitive Wins available",
+    "Rank Boost, Competitive Wins and Placements Boost available",
     "Server-validated pricing",
-    "Placements Boost and Unrated Matches coming soon",
+    "Unrated Matches coming soon",
   ],
   highlights: [
     {
@@ -126,7 +126,7 @@ export const rainbowSixSiegeGameDetailContent = {
     {
       title: "Four service paths",
       description:
-        "Choose Rank Boost or Competitive Wins. Placements Boost and Unrated Matches are coming soon.",
+      "Choose Rank Boost, Competitive Wins or Placements Boost. Unrated Matches is coming soon.",
     },
     {
       title: "Server-authoritative checkout",

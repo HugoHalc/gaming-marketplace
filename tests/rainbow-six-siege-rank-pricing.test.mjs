@@ -231,10 +231,10 @@ test("all customization values must be booleans", () => {
   );
 });
 
-test("Rank Boost is the only active Siege service", () => {
+test("Rank Boost, Competitive Wins and Placements Boost are active Siege services", () => {
   assert.equal(isRainbowSixSiegeServiceActive("rank-boost"), true);
-  assert.equal(isRainbowSixSiegeServiceActive("competitive-wins"), false);
-  assert.equal(isRainbowSixSiegeServiceActive("placements-boost"), false);
+  assert.equal(isRainbowSixSiegeServiceActive("competitive-wins"), true);
+  assert.equal(isRainbowSixSiegeServiceActive("placements-boost"), true);
   assert.equal(isRainbowSixSiegeServiceActive("unrated-matches"), false);
 });
 
@@ -283,8 +283,8 @@ test("order route recalculates pricing and enforces the global minimum before cr
   assert.match(orderRouteSource, /key !== "selection"/);
 });
 
-test("unfinished Siege services do not have quote or order endpoints", () => {
-  for (const slug of ["competitive-wins", "placements-boost", "unrated-matches"]) {
+test("Unrated Matches does not have quote or order endpoints", () => {
+  for (const slug of ["unrated-matches"]) {
     assert.equal(
       existsSync(new URL(`../src/app/api/rainbow-six-siege/${slug}-quote`, import.meta.url)),
       false,
@@ -298,7 +298,9 @@ test("unfinished Siege services do not have quote or order endpoints", () => {
 
 test("service route rejects inactive and unknown Siege services", () => {
   assert.match(servicePageSource, /service\.status !== "active"/);
-  assert.match(servicePageSource, /service\.slug !== "rank-boost"/);
+  assert.match(servicePageSource, /service\.slug === "rank-boost"/);
+  assert.match(servicePageSource, /service\.slug === "competitive-wins"/);
+  assert.match(servicePageSource, /RainbowSixSiegePlacementsConfigurator/);
   assert.match(servicePageSource, /notFound\(\)/);
 });
 
@@ -474,7 +476,7 @@ const siegeOverviewSource = readFileSync(
 
 test("Rank Boost metadata relies on the root title template exactly once", () => {
   assert.match(rootLayoutSource, /template: `%s \| \$\{siteConfig\.name\}`/);
-  assert.match(servicePageSource, /title: "Rainbow Six Siege Rank Boost"/);
+  assert.match(servicePageSource, /title: `Rainbow Six Siege \$\{service\.name\}`/);
   assert.doesNotMatch(servicePageSource, /Rainbow Six Siege Rank Boost \| BoostingPedia/);
 });
 
@@ -484,7 +486,7 @@ test("Siege overview keeps its absolute title and customer-facing copy", () => {
     /absolute: "Rainbow Six Siege Boosting Services \| BoostingPedia"/,
   );
   for (const copy of [
-    "Choose the Siege service that matches your goal. Configure Rank Boost now, with more options arriving soon.",
+    "Choose the Siege service that matches your goal. Configure Rank Boost, Competitive Wins or Placements Boost now. Unrated Matches is coming soon.",
     "Built for competitive progression",
     "A clearer way to configure your Siege service.",
     "Review your goal, customize the service, and see your updated price before continuing to checkout.",

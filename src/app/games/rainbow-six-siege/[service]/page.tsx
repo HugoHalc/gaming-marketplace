@@ -14,6 +14,7 @@ import {
   rainbowSixSiegeServiceFoundations,
 } from "@/features/catalog/data/rainbow-six-siege-foundation";
 import { RainbowSixSiegeWinsConfigurator } from "@/features/configurator/components/rainbow-six-siege-wins-configurator";
+import { RainbowSixSiegePlacementsConfigurator } from "@/features/configurator/components/rainbow-six-siege-placements-configurator";
 import { RainbowSixSiegeRankConfigurator } from "@/features/configurator/components/rainbow-six-siege-rank-configurator";
 
 interface RainbowSixSiegeServicePageProps {
@@ -98,8 +99,24 @@ export default async function RainbowSixSiegeServicePage({
       <section className="py-7 sm:py-9 lg:py-10">
         <Container>
           <RainbowSixSiegeServiceNavigation currentSlug={service.slug}>
-            {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : <RainbowSixSiegeWinsConfigurator />}
+            {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : service.slug === "competitive-wins" ? <RainbowSixSiegeWinsConfigurator /> : <RainbowSixSiegePlacementsConfigurator />}
           </RainbowSixSiegeServiceNavigation>
+          {service.slug === "placements-boost" ? (
+            <section className="mt-10 max-w-3xl space-y-4" aria-labelledby="placements-faq-title">
+              <h2 id="placements-faq-title" className="text-2xl font-semibold text-white">Placements Boost FAQ</h2>
+              <p className="text-sm leading-6 text-white/65">
+                Placement matches establish the start of a ranked season. Previous performance, hidden MMR and the game’s ranking system can affect your result. An exact resulting rank is not guaranteed.
+              </p>
+              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
+                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">How are my games completed?</summary>
+                <p className="mt-2 leading-6">Games are completed manually. Choose Solo for account-based play or Duo to play alongside a booster.</p>
+              </details>
+              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
+                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What do I need before ordering?</summary>
+                <p className="mt-2 leading-6">Your account must already meet Rainbow Six Siege ranked-access requirements.</p>
+              </details>
+            </section>
+          ) : null}
         </Container>
       </section>
 
