@@ -2,9 +2,9 @@ export const RAINBOW_SIX_SIEGE_GAME_SLUG = "rainbow-six-siege" as const;
 
 export type RainbowSixSiegeServiceSlug =
   | "rank-boost"
-  | "ranked-wins"
-  | "placement-matches"
-  | "competitive-rewards";
+  | "competitive-wins"
+  | "placements-boost"
+  | "unrated-matches";
 
 export type RainbowSixSiegeServiceStatus = "coming-soon";
 
@@ -28,30 +28,30 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     status: "coming-soon",
   },
   {
-    id: "service_rainbow_six_siege_ranked_wins_foundation",
+    id: "service_rainbow_six_siege_competitive_wins_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
-    slug: "ranked-wins",
-    name: "Ranked Wins",
+    slug: "competitive-wins",
+    name: "Competitive Wins",
     description:
-      "Secure the number of Ranked victories you need with clear order tracking.",
+      "Complete the number of competitive victories you need with clear order tracking.",
     status: "coming-soon",
   },
   {
-    id: "service_rainbow_six_siege_placement_matches_foundation",
+    id: "service_rainbow_six_siege_placements_boost_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
-    slug: "placement-matches",
-    name: "Placement Matches",
+    slug: "placements-boost",
+    name: "Placements Boost",
     description:
       "Complete your seasonal placement matches with an experienced Siege player.",
     status: "coming-soon",
   },
   {
-    id: "service_rainbow_six_siege_competitive_rewards_foundation",
+    id: "service_rainbow_six_siege_unrated_matches_foundation",
     gameSlug: RAINBOW_SIX_SIEGE_GAME_SLUG,
-    slug: "competitive-rewards",
-    name: "Competitive Rewards",
+    slug: "unrated-matches",
+    name: "Unrated Matches",
     description:
-      "Build progress through the seasonal Competitive Rewards track.",
+      "Complete unrated matches with a service built around your selected match total.",
     status: "coming-soon",
   },
 ] as const;
@@ -117,7 +117,7 @@ export const rainbowSixSiegeGameDetailContent = {
     {
       title: "Four service paths",
       description:
-        "Rank Boost, Ranked Wins, Placement Matches, and Competitive Rewards are registered in one ordered foundation.",
+        "Rank Boost, Competitive Wins, Placements Boost, and Unrated Matches are registered in one ordered foundation.",
     },
     {
       title: "Safe staged rollout",

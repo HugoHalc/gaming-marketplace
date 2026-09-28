@@ -32,9 +32,9 @@ const servicePresentation: Record<
   { eyebrow: string; icon: typeof ShieldCheck }
 > = {
   "rank-boost": { eyebrow: "RANK PROGRESSION", icon: ShieldCheck },
-  "ranked-wins": { eyebrow: "RANKED WINS", icon: Trophy },
-  "placement-matches": { eyebrow: "PLACEMENTS", icon: Layers3 },
-  "competitive-rewards": { eyebrow: "COMPETITIVE REWARDS", icon: Sparkles },
+  "competitive-wins": { eyebrow: "COMPETITIVE WINS", icon: Trophy },
+  "placements-boost": { eyebrow: "PLACEMENTS", icon: Layers3 },
+  "unrated-matches": { eyebrow: "UNRATED MATCHES", icon: Sparkles },
 };
 
 const overviewHighlights = [
@@ -47,7 +47,7 @@ const overviewHighlights = [
   {
     title: "Four focused services",
     description:
-      "Rank Boost, Ranked Wins, Placement Matches, and Competitive Rewards are defined in one ordered game foundation.",
+      "Rank Boost, Competitive Wins, Placements Boost, and Unrated Matches are defined in one ordered game foundation.",
     icon: Layers3,
   },
   {
