@@ -506,7 +506,7 @@ export function Dota2CalibrationConfigurator() {
     selection.boostMethod !== "duo" ||
     (selection.soloQueueOnly === false && selection.streaming === false);
 
-  const selectionIsValid =
+  const quoteSelectionIsValid =
     rankValid &&
     divisionValid &&
     rankConfidenceResult.valid &&
@@ -515,11 +515,10 @@ export function Dota2CalibrationConfigurator() {
     behaviorValid &&
     methodValid &&
     preferenceValid &&
-    rolesValid &&
-    heroValid &&
     hiddenPreferenceStateValid &&
     booleansValid &&
     methodCompatibilityValid;
+  const configurationIsComplete = quoteSelectionIsValid && rolesValid && heroValid;
 
   const orderSelection = useMemo<ConfiguratorSelection>(
     () => ({
@@ -554,27 +553,16 @@ export function Dota2CalibrationConfigurator() {
   );
 
   const requestKey = JSON.stringify(orderSelection);
-  const quote =
-    selectionIsValid && quoteState?.key === requestKey
-      ? quoteState.quote
-      : null;
-  const customQuote =
-    selectionIsValid && customState?.key === requestKey
-      ? customState.state
-      : null;
-  const metadata =
-    selectionIsValid && quoteState?.key === requestKey
-      ? quoteState.metadata
-      : customState?.key === requestKey
-        ? customState.state
-        : null;
+  const quoteIsCurrent = quoteSelectionIsValid && quoteState?.key === requestKey;
+  const quote = quoteState?.quote ?? null;
+  const currentQuote = quoteIsCurrent ? quote : null;
+  const customQuote = quoteSelectionIsValid && customState?.key === requestKey ? customState.state : null;
+  const metadata = quoteState?.metadata ?? (customState?.key === requestKey ? customState.state : null);
 
   useEffect(() => {
-    setQuoteState(null);
-    setCustomState(null);
     setQuoteError(null);
 
-    if (!selectionIsValid) {
+    if (!quoteSelectionIsValid) {
       setIsLoading(false);
       return;
     }
@@ -622,8 +610,6 @@ export function Dota2CalibrationConfigurator() {
           return;
         }
 
-        setQuoteState(null);
-        setCustomState(null);
         setQuoteError(
           requestError instanceof Error
             ? requestError.message
@@ -639,7 +625,7 @@ export function Dota2CalibrationConfigurator() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [orderSelection, requestKey, selectionIsValid]);
+  }, [orderSelection, quoteSelectionIsValid, requestKey]);
 
   function update(key: string, value: string | number | boolean) {
     setSelection((current) => ({ ...current, [key]: value }));
@@ -693,17 +679,18 @@ export function Dota2CalibrationConfigurator() {
   }
 
   const belowMinimum = Boolean(
-    quote && !meetsMinimumOrderTotal(quote.total),
+    currentQuote && !meetsMinimumOrderTotal(currentQuote.total),
   );
-  const minimumShortfallCents = quote
-    ? minimumOrderShortfallCents(quote.total)
+  const minimumShortfallCents = currentQuote
+    ? minimumOrderShortfallCents(currentQuote.total)
     : 0;
   const canCheckout = Boolean(
-    selectionIsValid &&
-      quote &&
+    configurationIsComplete &&
+      currentQuote &&
       !customQuote &&
       !belowMinimum &&
-      !isLoading,
+      !isLoading &&
+      !quoteError,
   );
 
   async function createOrder() {
@@ -797,7 +784,6 @@ export function Dota2CalibrationConfigurator() {
   const previousRankBadge = getDota2RankBadge(
     previousRankLabel === "—" ? undefined : previousRankLabel,
   );
-
   const selectedExtras: string[] = [];
   if (selection.privacyMode === true) {
     selectedExtras.push(dota2ExtraOptions.privacyMode.label);
@@ -1071,7 +1057,7 @@ export function Dota2CalibrationConfigurator() {
                     id="dota2-calibration-hero-error"
                     className="mt-2 text-[10px] text-rose-200"
                   >
-                    Enter a hero name.
+                    Select a hero to continue.
                   </p>
                 ) : null}
               </div>
@@ -1141,7 +1127,7 @@ export function Dota2CalibrationConfigurator() {
                 </p>
               </div>
 
-              <div className="p-4">
+              <div className="p-4" aria-busy={isLoading || (quoteSelectionIsValid && !quoteIsCurrent)}>
                 <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                   <div className="min-w-0">
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
@@ -1292,7 +1278,9 @@ export function Dota2CalibrationConfigurator() {
                       <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
                         {isLoading
                           ? "Updating price…"
-                          : "Server-Validated Price"}
+                          : quote && !quoteIsCurrent
+                            ? "Previous price"
+                            : "Server-Validated Price"}
                       </p>
                     </div>
                     <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">

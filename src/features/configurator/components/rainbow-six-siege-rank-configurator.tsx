@@ -298,8 +298,10 @@ export function RainbowSixSiegeRankConfigurator() {
 
   const orderSelection = useMemo<ConfiguratorSelection>(() => ({ ...selection }), [selection]);
   const requestKey = JSON.stringify(orderSelection);
-  const quote = selectionIsValid && quoteState?.key === requestKey ? quoteState.quote : null;
-  const metadata = selectionIsValid && quoteState?.key === requestKey ? quoteState.metadata : null;
+  const quoteIsCurrent = selectionIsValid && quoteState?.key === requestKey;
+  const quote = quoteState?.quote ?? null;
+  const currentQuote = quoteIsCurrent ? quote : null;
+  const metadata = quoteState?.metadata ?? null;
   const startingTimeEstimate = useMemo(() => {
     if (!selectionIsValid) return null;
     try {
@@ -310,7 +312,6 @@ export function RainbowSixSiegeRankConfigurator() {
   }, [orderSelection, selectionIsValid]);
 
   useEffect(() => {
-    setQuoteState(null);
     setQuoteError(null);
     setOrderError(null);
     setVerifyOpen(false);
@@ -339,7 +340,6 @@ export function RainbowSixSiegeRankConfigurator() {
         setQuoteState({ key: requestKey, quote: payload.quote, metadata: payload.metadata });
       } catch (requestError) {
         if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
-        setQuoteState(null);
         setQuoteError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
         if (active) setIsLoading(false);
@@ -388,9 +388,9 @@ export function RainbowSixSiegeRankConfigurator() {
     setSelection((current) => ({ ...current, currentRank: value, desiredRank: nextDesired }));
   }
 
-  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
-  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
-  const canCheckout = Boolean(selectionIsValid && quote && metadata && !belowMinimum && !isLoading && !quoteError);
+  const belowMinimum = Boolean(currentQuote && !meetsMinimumOrderTotal(currentQuote.total));
+  const minimumShortfallCents = currentQuote ? minimumOrderShortfallCents(currentQuote.total) : 0;
+  const canCheckout = Boolean(selectionIsValid && currentQuote && metadata && !belowMinimum && !isLoading && !quoteError && quoteIsCurrent);
 
   async function createOrder() {
     if (!canCheckout || isCreatingOrder) return;
@@ -585,7 +585,7 @@ export function RainbowSixSiegeRankConfigurator() {
               </div>
             </div>
 
-            <div className="space-y-4 p-4">
+            <div className="space-y-4 p-4" aria-busy={isLoading || (selectionIsValid && !quoteIsCurrent)}>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px]">
                 {[
                   ["Current rank", currentRankLabel],
@@ -840,7 +840,7 @@ export function RainbowSixSiegeRankConfigurator() {
       ) : null}
 
       <div className="sr-only" aria-live="polite">
-        {selectionIsValid && quote ? `Quote updated to ${formatUsd(quote.total)}.` : quoteStatus}
+        {quoteIsCurrent && currentQuote ? `Quote updated to ${formatUsd(currentQuote.total)}.` : quoteStatus}
       </div>
     </>
   );

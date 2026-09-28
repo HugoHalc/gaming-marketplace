@@ -327,7 +327,7 @@ test("Verify your order renders the server quote total", () => {
 });
 
 test("below-minimum checkout remains guarded by the existing global minimum helper", () => {
-  assert.match(configuratorSource, /!meetsMinimumOrderTotal\(quote\.total\)/);
+  assert.match(configuratorSource, /!meetsMinimumOrderTotal\(currentQuote\.total\)/);
   assert.match(configuratorSource, /disabled=\{!canCheckout \|\| isCreatingOrder\}/);
 });
 
@@ -504,4 +504,50 @@ test("Siege overview keeps its absolute title and customer-facing copy", () => {
   ]) {
     assert.equal(siegeOverviewSource.toLowerCase().includes(internalCopy), false, internalCopy);
   }
+});
+
+test("all Rainbow Six Siege modifiers remain priceable and reversible after discounted-reference pricing", () => {
+  const base = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v" }));
+  assert.equal(base.metadata.finalTotalCents, 821);
+
+  const cases = [
+    ["Xbox", { platform: "xbox" }, 985, "Xbox (+20%)"],
+    ["PlayStation", { platform: "playstation" }, 985, "PlayStation (+20%)"],
+    ["Duo", { gameMode: "duo" }, 1289, "Duo (+57%)"],
+    ["11–20 RP", { rpGain: "11-20" }, 1117, "11–20 RP (+36%)"],
+    ["1–10 RP", { rpGain: "1-10" }, 1232, "1–10 RP (+50%)"],
+    ["Oceania", { server: "oceania" }, 903, "Oceania (+10%)"],
+    ["Streaming", { streaming: true }, 1821, "Streaming (+$10.00)"],
+    ["Express Delivery", { expressDelivery: true }, 985, "Express Delivery (+20%)"],
+    ["High Kill Count", { highKillCount: true }, 1149, "High Kill Count (+40%)"],
+    ["One Trick Pony", { oneTrickPony: true }, 1067, "One Trick Pony (+30%)"],
+    ["Rank Insurance", { rankInsurance: true }, 1232, "Rank Insurance (+50%)"],
+    ["VIP Priority", { vipPriority: true }, 1232, "VIP Priority (+50%)"],
+    ["Insane Clip Drop", { insaneClipDrop: true }, 944, "Insane Clip Drop (+15%)"],
+    ["Elite Booster Tier", { eliteBoosterTier: true }, 1232, "Elite Booster Tier (+50%)"],
+  ];
+
+  for (const [label, override, expectedCents, breakdownLabel] of cases) {
+    const modified = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", ...override }));
+    assert.equal(modified.metadata.finalTotalCents, expectedCents, label);
+    assert.ok(modified.quote.breakdown.some((item) => item.label === breakdownLabel), label);
+    const restored = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v" }));
+    assert.equal(restored.metadata.finalTotalCents, 821, `${label} removal`);
+  }
+});
+
+test("Rainbow Six Siege verified modifier sequence remains stable", () => {
+  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v" })).metadata.finalTotalCents, 821);
+  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true })).metadata.finalTotalCents, 985);
+  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true })).metadata.finalTotalCents, 1985);
+  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true, highKillCount: true })).metadata.finalTotalCents, 2314);
+  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true, highKillCount: true, oneTrickPony: true })).metadata.finalTotalCents, 2560);
+});
+
+test("Rainbow Six Siege free options do not change the price", () => {
+  const base = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v" }));
+  const free = calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", playOffline: true, specificOperators: true }));
+  assert.equal(free.metadata.finalTotalCents, base.metadata.finalTotalCents);
+  assert.ok(free.quote.breakdown.some((item) => item.label === "Play Offline" && item.amount === 0));
+  assert.ok(free.quote.breakdown.some((item) => item.label === "Specific Operators" && item.amount === 0));
 });

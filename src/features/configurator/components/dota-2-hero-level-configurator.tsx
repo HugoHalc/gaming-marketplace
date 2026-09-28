@@ -263,13 +263,13 @@ export function Dota2HeroLevelConfigurator() {
   }), [currentResult.valid, currentResult.value, desiredResult.valid, desiredResult.value, selection, trimmedHero]);
 
   const requestKey = JSON.stringify(orderSelection);
-  const quote = selectionIsValid && quoteState?.key === requestKey ? quoteState.quote : null;
+  const quoteIsCurrent = selectionIsValid && quoteState?.key === requestKey;
+  const quote = quoteState?.quote ?? null;
+  const currentQuote = quoteIsCurrent ? quote : null;
   const customQuote = selectionIsValid && customState?.key === requestKey ? customState.state : null;
-  const metadata = selectionIsValid && quoteState?.key === requestKey ? quoteState.metadata : customState?.key === requestKey ? customState.state : null;
+  const metadata = quoteState?.metadata ?? (customState?.key === requestKey ? customState.state : null);
 
   useEffect(() => {
-    setQuoteState(null);
-    setCustomState(null);
     setQuoteError(null);
     if (!selectionIsValid) {
       setIsLoading(false);
@@ -298,8 +298,6 @@ export function Dota2HeroLevelConfigurator() {
         setQuoteState({ key: requestKey, quote: payload.quote, metadata: payload.metadata });
       } catch (requestError) {
         if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
-        setQuoteState(null);
-        setCustomState(null);
         setQuoteError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
         if (active) setIsLoading(false);
@@ -317,10 +315,10 @@ export function Dota2HeroLevelConfigurator() {
     setSelection((current) => ({ ...current, [key]: value }));
   }
 
-  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
-  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
+  const belowMinimum = Boolean(currentQuote && !meetsMinimumOrderTotal(currentQuote.total));
+  const minimumShortfallCents = currentQuote ? minimumOrderShortfallCents(currentQuote.total) : 0;
   const requirementConfirmed = selection.dotaPlusConfirmed === true;
-  const canCheckout = Boolean(selectionIsValid && requirementConfirmed && quote && !customQuote && !belowMinimum && !isLoading);
+  const canCheckout = Boolean(selectionIsValid && requirementConfirmed && currentQuote && !customQuote && !belowMinimum && !isLoading && !quoteError);
 
   async function createOrder() {
     if (!canCheckout || isCreatingOrder) return;
@@ -447,7 +445,7 @@ export function Dota2HeroLevelConfigurator() {
                 <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-white">Order Summary</h2>
                 <p className="mt-1.5 text-[11px] text-[#A0AAA4]">Dota Plus Hero Level</p>
               </div>
-              <div className="p-4">
+              <div className="p-4" aria-busy={isLoading || (selectionIsValid && !quoteIsCurrent)}>
                 <div className="rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                   <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Hero</p>
                   <p className="mt-1 truncate text-sm font-semibold text-white">{(metadata?.heroName ?? trimmedHero) || "—"}</p>
@@ -471,7 +469,7 @@ export function Dota2HeroLevelConfigurator() {
                 {customQuote ? (
                   <div className="rounded-xl border border-amber-200/15 bg-amber-200/[0.035] p-3"><p className="text-sm font-semibold text-amber-50/85">{customQuote.message}</p><p className="mt-1 text-[10px] leading-4 text-amber-50/55">{customQuote.supportingCopy}</p><button type="button" onClick={openSupport} className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-amber-200/20 bg-amber-200/[0.05] px-3 text-xs font-semibold text-amber-50/80 outline-none focus-visible:ring-2 focus-visible:ring-amber-200/30"><MessageCircle className="mr-2 size-3.5" />Contact Support</button></div>
                 ) : (
-                  <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true"><div className="min-w-0"><p className="text-[11px] text-[#A0AAA4]">Total</p><p className={`font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] ${quote ? "text-white" : "text-white/30"}`}>{quote ? formatUsd(quote.total) : "—"}</p><p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">{isLoading ? "Updating price…" : "Server-Validated Price"}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span></div>
+                  <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true"><div className="min-w-0"><p className="text-[11px] text-[#A0AAA4]">Total</p><p className={`font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] ${quote ? "text-white" : "text-white/30"}`}>{quote ? formatUsd(quote.total) : "—"}</p><p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">{isLoading ? "Updating price…" : quote && !quoteIsCurrent ? "Previous price" : "Server-Validated Price"}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span></div>
                 )}
 
                 <MinimumOrderNotice id="dota2-hero-level-minimum-order" shortfallCents={belowMinimum ? minimumShortfallCents : 0} />

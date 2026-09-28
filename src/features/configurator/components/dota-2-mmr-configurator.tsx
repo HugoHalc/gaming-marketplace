@@ -222,7 +222,8 @@ export function Dota2MmrConfigurator() {
   const heroValid = selection.preference !== "hero" || (typeof selection.heroName === "string" && selection.heroName.trim().length > 0);
   const booleansValid = [selection.privacyMode, selection.soloQueueOnly, selection.expressDelivery, selection.streaming].every((value) => typeof value === "boolean");
   const methodCompatibilityValid = selection.boostMethod !== "duo" || (selection.soloQueueOnly === false && selection.streaming === false);
-  const selectionIsValid = progressionValid && serverValid && behaviorValid && methodValid && preferenceValid && rolesValid && heroValid && booleansValid && methodCompatibilityValid;
+  const quoteSelectionIsValid = progressionValid && serverValid && behaviorValid && methodValid && preferenceValid && booleansValid && methodCompatibilityValid;
+  const configurationIsComplete = quoteSelectionIsValid && rolesValid && heroValid;
 
   const orderSelection = useMemo<ConfiguratorSelection>(() => ({
     ...selection,
@@ -230,15 +231,15 @@ export function Dota2MmrConfigurator() {
     targetMmr: targetResult.valid ? targetResult.value : String(selection.targetMmr),
   }), [currentResult.valid, currentResult.value, selection, targetResult.valid, targetResult.value]);
   const requestKey = JSON.stringify(orderSelection);
-  const quote = selectionIsValid && quoteState?.key === requestKey ? quoteState.quote : null;
-  const metadata = selectionIsValid && quoteState?.key === requestKey ? quoteState.metadata : customState?.key === requestKey ? customState.state : null;
-  const customQuote = selectionIsValid && customState?.key === requestKey ? customState.state : null;
+  const quoteIsCurrent = quoteSelectionIsValid && quoteState?.key === requestKey;
+  const quote = quoteState?.quote ?? null;
+  const currentQuote = quoteIsCurrent ? quote : null;
+  const metadata = quoteState?.metadata ?? (customState?.key === requestKey ? customState.state : null);
+  const customQuote = quoteSelectionIsValid && customState?.key === requestKey ? customState.state : null;
 
   useEffect(() => {
-    setQuoteState(null);
-    setCustomState(null);
     setQuoteError(null);
-    if (!selectionIsValid) {
+    if (!quoteSelectionIsValid) {
       setIsLoading(false);
       return;
     }
@@ -265,8 +266,6 @@ export function Dota2MmrConfigurator() {
         setQuoteState({ key: requestKey, quote: payload.quote, metadata: payload.metadata });
       } catch (requestError) {
         if (!active || (requestError instanceof DOMException && requestError.name === "AbortError")) return;
-        setQuoteState(null);
-        setCustomState(null);
         setQuoteError(requestError instanceof Error ? requestError.message : "Unable to calculate quote.");
       } finally {
         if (active) setIsLoading(false);
@@ -278,7 +277,7 @@ export function Dota2MmrConfigurator() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [orderSelection, requestKey, selectionIsValid]);
+  }, [orderSelection, quoteSelectionIsValid, requestKey]);
 
   function update(key: string, value: string | number | boolean) {
     setSelection((current) => ({ ...current, [key]: value }));
@@ -308,9 +307,9 @@ export function Dota2MmrConfigurator() {
     update("roles", next.join(","));
   }
 
-  const belowMinimum = Boolean(quote && !meetsMinimumOrderTotal(quote.total));
-  const minimumShortfallCents = quote ? minimumOrderShortfallCents(quote.total) : 0;
-  const canCheckout = Boolean(selectionIsValid && quote && !customQuote && !belowMinimum && !isLoading);
+  const belowMinimum = Boolean(currentQuote && !meetsMinimumOrderTotal(currentQuote.total));
+  const minimumShortfallCents = currentQuote ? minimumOrderShortfallCents(currentQuote.total) : 0;
+  const canCheckout = Boolean(configurationIsComplete && currentQuote && !customQuote && !belowMinimum && !isLoading && !quoteError);
 
   async function createOrder() {
     if (!canCheckout || isCreatingOrder) return;
@@ -464,7 +463,7 @@ export function Dota2MmrConfigurator() {
               <div className="mt-4 border-t border-white/[0.06] pt-4">
                 <label htmlFor="dota2-specific-hero" className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">Hero name</label>
                 <input id="dota2-specific-hero" type="text" value={String(selection.heroName)} aria-invalid={!heroValid} aria-describedby={!heroValid ? "dota2-hero-error" : undefined} onChange={(event) => update("heroName", event.target.value)} placeholder="Enter your preferred hero" className={`mt-2 h-11 w-full rounded-xl border bg-[#090D0B] px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-red-300/25 ${heroValid ? "border-white/[0.08]" : "border-rose-300/35"}`} />
-                {!heroValid ? <p id="dota2-hero-error" className="mt-2 text-[10px] text-rose-200">Enter a hero name.</p> : null}
+                {!heroValid ? <p id="dota2-hero-error" className="mt-2 text-[10px] text-rose-200">Select a hero to continue.</p> : null}
               </div>
             ) : null}
           </ConfiguratorBlock>
@@ -486,7 +485,7 @@ export function Dota2MmrConfigurator() {
                 <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-white">Order Summary</h2>
                 <p className="mt-1.5 text-[11px] text-[#A0AAA4]">Dota 2 MMR Boost</p>
               </div>
-              <div className="p-4">
+              <div className="p-4" aria-busy={isLoading || (quoteSelectionIsValid && !quoteIsCurrent)}>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 py-3">
                   <div className="min-w-0">
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Current MMR</p>
@@ -537,7 +536,7 @@ export function Dota2MmrConfigurator() {
                   </div>
                 ) : (
                   <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true">
-                    <div className="min-w-0"><p className="text-[11px] text-[#A0AAA4]">Total</p><p className={`font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] ${quote ? "text-white" : "text-white/30"}`}>{quote ? formatUsd(quote.total) : "—"}</p><p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">{isLoading ? "Updating price…" : "Server-Validated Price"}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span>
+                    <div className="min-w-0"><p className="text-[11px] text-[#A0AAA4]">Total</p><p className={`font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] ${quote ? "text-white" : "text-white/30"}`}>{quote ? formatUsd(quote.total) : "—"}</p><p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">{isLoading ? "Updating price…" : quote && !quoteIsCurrent ? "Previous price" : "Server-Validated Price"}</p></div><span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] text-white/45">USD</span>
                   </div>
                 )}
 
