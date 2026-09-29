@@ -65,9 +65,9 @@ export default async function RainbowSixSiegeServicePage({
             fill
             priority
             sizes="(min-width: 1280px) 68vw, (min-width: 1024px) 72vw, (min-width: 768px) 80vw, (min-width: 640px) 88vw, 100vw"
-            className="object-cover object-center opacity-28 sm:opacity-42 md:opacity-54 lg:opacity-65"
+            className="object-cover object-[76%_12%] opacity-38 sm:object-[74%_12%] sm:opacity-55 md:object-[72%_12%] md:opacity-68 lg:object-[70%_12%] lg:opacity-82 xl:opacity-90"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.99)_18%,rgba(5,8,7,.92)_38%,rgba(5,8,7,.62)_60%,rgba(5,8,7,.25)_82%,rgba(5,8,7,.08)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.97)_18%,rgba(5,8,7,.82)_38%,rgba(5,8,7,.42)_60%,rgba(5,8,7,.10)_82%,transparent_100%)]" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#050807] via-[#050807]/32 to-transparent" />
         </div>
 

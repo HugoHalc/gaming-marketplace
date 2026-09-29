@@ -76,7 +76,7 @@ export function isRainbowSixSiegeServiceActive(slug: string) {
 export const rainbowSixSiegeAssetFoundation = {
   gameCard: "/game-cards/rainbow-six-siege.webp",
   overviewHero: "/game-heroes/rainbow-six-siege-overview-hero.webp",
-  serviceHero: "/game-cards/rainbow-six-siege.webp",
+  serviceHero: "/game-heroes/rainbow-six-siege-services-hero.webp",
   rankBadges: {
     copper: "/ranks/rainbow-six-siege/copper.webp",
     bronze: "/ranks/rainbow-six-siege/bronze.webp",
