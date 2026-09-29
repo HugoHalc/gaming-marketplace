@@ -40,7 +40,7 @@ const homeGameCardAssets = {
   "marvel-rivals": "/game-cards/marvel-rivals.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
   "dota-2": dota2AssetFoundation.gameCard,
-  "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
+  "rainbow-six-siege": "/game-cards/rainbow-six-siege-home.webp",
 } as const;
 
 
@@ -452,6 +452,18 @@ export default async function Home() {
                     </>
                   ) : null}
 
+                  {game.slug === "rainbow-six-siege" ? (
+                    <div className="pointer-events-none absolute left-4 top-4 z-10 h-12 w-[45%] sm:left-5 sm:top-5 sm:h-14 sm:w-[46%]">
+                      <Image
+                        src="/game-cards/rainbow-six-siege-logo.png"
+                        alt=""
+                        fill
+                        sizes="(min-width: 1280px) 15vw, (min-width: 768px) 23vw, 45vw"
+                        className="object-contain object-left object-top"
+                      />
+                    </div>
+                  ) : null}
+
                   <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5">
                     {game.ready && serviceNames.length ? (
                       <div className="mb-3 flex max-w-[88%] flex-wrap gap-1.5">
@@ -505,6 +517,7 @@ export default async function Home() {
                 <Link
                   key={game.slug}
                   href={`/games/${game.slug}`}
+                  aria-label={game.slug === "rainbow-six-siege" ? "Rainbow Six Siege — explore services" : undefined}
                   className="group relative aspect-[2048/1143] overflow-hidden rounded-[1.4rem] border border-[#FFFFFF14] bg-[#0E1411] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#39E56F]/22 hover:shadow-[0_18px_42px_-34px_rgba(57,229,111,.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] active:translate-y-0 active:scale-[0.995] motion-reduce:transform-none"
                 >
                   {cardVisual}
