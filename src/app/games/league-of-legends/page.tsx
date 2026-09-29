@@ -135,13 +135,13 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   if (service.slug === "placement-matches") {
     return (
       <div className={`${base} gap-3`} aria-label="Placement matches preview">
-        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
-          Unranked
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025]">
+          <Image src="/ranks/league-of-legends/gold.png" alt="" width={40} height={40} className="size-9 object-contain" />
         </span>
         <ArrowRight className="size-3.5 shrink-0 text-[#E7C867]/25" />
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Placement matches
+            Gold example · placements
           </p>
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -159,8 +159,8 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   if (service.slug === "unrated-matches") {
     return (
       <div className={`${base} gap-3.5`} aria-label="Unrated matches preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[#E7C867]/60">
-          <Gamepad2 className="size-4" strokeWidth={1.7} />
+        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2 font-gaming-label text-[8px] font-semibold text-[#E7C867]/70">
+          UNRATED
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
@@ -185,19 +185,19 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   if (service.slug === "arena-boost") {
     return (
       <div className={`${base} gap-3.5`} aria-label="Arena boost preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
-          <Trophy className="size-4" strokeWidth={1.7} />
+        <span className="flex h-10 shrink-0 items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] px-2 font-gaming-value text-[11px] font-semibold text-[#E7C867]/75">
+          ARENA
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Arena stages
+            Arena games · 3–60
           </p>
           <div className="mt-2 grid grid-cols-4 gap-1.5">
             {Array.from({ length: 4 }).map((_, index) => (
               <span
                 key={index}
-                className="h-7 rounded-lg border border-[#C89B3C]/[0.11] bg-[#7A5B22]/[0.045]"
-              />
+                className="grid h-7 place-items-center rounded-lg border border-[#C89B3C]/[0.11] bg-[#7A5B22]/[0.045] font-gaming-label text-[8px] text-[#E7C867]/60"
+              >GAME</span>
             ))}
           </div>
         </div>
@@ -208,12 +208,12 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   if (service.slug === "mastery-boost") {
     return (
       <div className={`${base} gap-3.5`} aria-label="Mastery boost preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
-          <Sparkles className="size-4" />
+        <span className="flex h-10 shrink-0 items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] px-2 font-gaming-value text-[10px] font-semibold text-[#E7C867]/75">
+          LVL 1
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Mastery progression
+            Mastery level 1 → level 3
           </p>
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 4 }).map((_, index) => (
@@ -230,12 +230,12 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
   return (
     <div className={`${base} gap-3.5`} aria-label="Clash boost preview">
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] text-[#E7C867]/70">
-        <ShieldCheck className="size-4" strokeWidth={1.7} />
+        <span className="flex h-10 shrink-0 items-center rounded-xl border border-[#C89B3C]/[0.12] bg-[#7A5B22]/[0.08] px-2 font-gaming-value text-[10px] font-semibold text-[#E7C867]/75">
+          TIER IV
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-          Clash path
+          Clash tier IV → tier I
         </p>
         <div className="mt-2 flex items-center gap-2">
           {Array.from({ length: 3 }).map((_, index) => (

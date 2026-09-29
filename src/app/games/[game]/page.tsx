@@ -233,12 +233,12 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
   if (service.slug === "tournament-boost") {
     return (
       <div className={`${base} gap-4`} aria-label="Tournament bracket preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025] text-blue-100/60">
-          <Trophy className="size-4" strokeWidth={1.7} />
+        <span className="relative grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025]">
+          <Image src="/ranks/rocket-league/champion.png" alt="" fill sizes="40px" className="object-contain p-0.5" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Bracket path
+            Tournament bracket · Champion rank example
           </p>
           <div className="relative mt-2 h-8 max-w-40">
             <span className="absolute left-0 top-0.5 size-2 rounded-full border border-white/20 bg-[#090B0A]" />
@@ -257,19 +257,19 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
   if (service.slug === "rewards-boost") {
     return (
       <div className={`${base} gap-3.5`} aria-label="Season rewards preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025] text-blue-100/60">
-          <Sparkles className="size-4" />
+        <span className="relative grid size-10 shrink-0 place-items-center rounded-xl border border-blue-300/[0.10] bg-blue-300/[0.025]">
+          <Image src="/ranks/rocket-league/gold.png" alt="" fill sizes="40px" className="object-contain p-0.5" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Season rewards
+            Season rewards · Gold example
           </p>
           <div className="mt-2 grid grid-cols-5 gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
               <span
                 key={index}
-                className="h-6 rounded-lg border border-blue-300/[0.10] bg-blue-300/[0.018]"
-              />
+                className="grid h-6 place-items-center rounded-lg border border-blue-300/[0.10] bg-blue-300/[0.018] font-gaming-label text-[8px] text-blue-100/55"
+              >WIN</span>
             ))}
           </div>
         </div>
@@ -280,13 +280,13 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
   if (service.slug === "placements-boost") {
     return (
       <div className={`${base} gap-3`} aria-label="Placements preview">
-        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
-          Unranked
+        <span className="relative grid size-10 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025]">
+          <Image src="/ranks/rocket-league/diamond.png" alt="" fill sizes="40px" className="object-contain p-0.5" />
         </span>
         <ArrowRight className="size-3.5 shrink-0 text-blue-200/25" />
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Placement matches
+            Diamond example · placements
           </p>
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (

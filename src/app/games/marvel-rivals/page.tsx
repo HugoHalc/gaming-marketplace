@@ -114,13 +114,13 @@ function MarvelServiceMicrovisual({
   if (service.slug === "placement-matches") {
     return (
       <div className={`${base} gap-3`} aria-label="Marvel Rivals placements preview">
-        <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 font-gaming-label text-[8px] font-semibold uppercase tracking-[0.1em] text-white/45">
-          Unranked
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025]">
+          <Image src="/ranks/marvel-rivals/gold.png" alt="" width={40} height={40} className="size-9 object-contain" />
         </span>
         <ArrowRight className="size-3.5 shrink-0 text-[#CEC5FF]/25" />
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
-            Placement matches
+            Gold example · placements
           </p>
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -174,8 +174,8 @@ function MarvelServiceMicrovisual({
   if (service.slug === "hero-boost") {
     return (
       <div className={`${base} gap-3.5`} aria-label="Marvel Rivals hero progression preview">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04] text-[#CEC5FF]/70">
-          <Crosshair className="size-4" strokeWidth={1.7} />
+        <span className="flex h-10 shrink-0 items-center rounded-xl border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.04] px-2 font-gaming-value text-[10px] font-semibold text-[#CEC5FF]/75">
+          LVL 1
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-white/30">
@@ -197,8 +197,8 @@ function MarvelServiceMicrovisual({
 
   return (
     <div className={`${base} gap-3.5`} aria-label="Marvel Rivals unrated games preview">
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[#CEC5FF]/60">
-        <Gamepad2 className="size-4" strokeWidth={1.7} />
+      <span className="flex h-9 shrink-0 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-2 font-gaming-label text-[8px] font-semibold text-[#CEC5FF]/70">
+        UNRATED
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-3">
