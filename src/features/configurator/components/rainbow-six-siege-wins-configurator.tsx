@@ -14,6 +14,8 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RainbowSixSiegeRankBadge } from "@/features/catalog/components/rainbow-six-siege-rank-badge";
+import { RainbowSixSiegeRankSelector } from "./rainbow-six-siege-rank-selector";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import {
   R6_WINS_SERVICE_SLUG,
@@ -134,60 +136,6 @@ function Choice({
       </span>
       {description ? <span className="mt-1 block text-[10px] leading-4 text-white/35">{description}</span> : null}
     </button>
-  );
-}
-
-function RankSelector({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const options = rainbowSixSiegeRankOptions;
-
-  return (
-    <fieldset className="min-w-0">
-      <legend className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">
-        {label}
-      </legend>
-      <div
-        role="radiogroup"
-        aria-label={label}
-        className="max-h-[22rem] space-y-2 overflow-y-auto rounded-xl border border-white/[0.07] bg-[#070A08] p-2 [scrollbar-color:rgba(255,255,255,.12)_transparent]"
-      >
-        {options.map((option) => {
-
-          const active = option.value === value;
-          return (
-            <button
-              key={option.value}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              tabIndex={active ? 0 : -1}
-              onKeyDown={handleRadioKeyDown}
-              onClick={() => onChange(option.value)}
-              className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-emerald-300/30 motion-reduce:transition-none ${
-                active
-                  ? "border-emerald-300/28 bg-emerald-400/[0.065] text-white"
-                  : "border-transparent bg-transparent text-white/58 hover:border-white/[0.08] hover:bg-white/[0.025] hover:text-white"
-              }`}
-            >
-              <span>
-                <span className="block text-xs font-semibold">{option.label}</span>
-                <span className="mt-0.5 block text-[9px] uppercase tracking-[0.08em] text-white/28">
-                  {option.tier} · Division {option.division}
-                </span>
-              </span>
-              {active ? <Check className="size-3.5 shrink-0 text-[#82F5A4]" aria-hidden="true" /> : null}
-            </button>
-          );
-        })}
-      </div>
-    </fieldset>
   );
 }
 
@@ -433,8 +381,7 @@ export function RainbowSixSiegeWinsConfigurator() {
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
         <section className="min-w-0 space-y-4">
           <ConfiguratorBlock title="Current rank" helper="Choose your current competitive rank and division.">
-            <div className="rounded-xl border border-emerald-300/15 bg-emerald-400/[0.035] p-4 text-xl font-semibold text-white" aria-live="polite">{currentRankLabel}</div>
-            <div className="mt-3"><RankSelector label="Current rank and division" value={String(selection.currentRank)} onChange={(value) => update("currentRank", value)} /></div>
+            <RainbowSixSiegeRankSelector label="Current rank" value={String(selection.currentRank)} options={rainbowSixSiegeRankOptions} onChange={(value) => update("currentRank", value)} />
           </ConfiguratorBlock>
           <ConfiguratorBlock title="Number of wins" helper="Choose between one and five competitive wins.">
             <div role="radiogroup" aria-label="Number of wins" className="grid grid-cols-5 gap-2">
@@ -522,10 +469,16 @@ export function RainbowSixSiegeWinsConfigurator() {
             </div>
 
             <div className="space-y-4 p-4" aria-busy={isLoading || (selectionIsValid && !quoteIsCurrent)}>
+              <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.018] p-2.5">
+                <RainbowSixSiegeRankBadge rank={String(selection.currentRank)} size={48} />
+                <div className="min-w-0">
+                  <p className="text-[9px] text-white/35">Competitive context</p>
+                  <p className="truncate text-xs font-semibold text-white/80">{currentRankLabel}</p>
+                  <p className="text-[10px] text-emerald-100/65">{String(selection.wins)} {Number(selection.wins) === 1 ? "win" : "wins"} selected</p>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px]">
                 {[
-                  ["Current rank", currentRankLabel],
-                  ["Number of wins", String(selection.wins)],
                   ["Platform", platformLabel],
                   ["Mode", modeLabel],
                   ["Server", serverLabel],
