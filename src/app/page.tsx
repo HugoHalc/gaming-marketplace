@@ -465,12 +465,12 @@ export default async function Home() {
                   ) : null}
 
                   {game.slug === "rocket-league" ? (
-                    <div className="pointer-events-none absolute left-4 top-4 z-10 h-12 w-[50%] sm:left-5 sm:top-5 sm:h-14 sm:w-[50%]">
+                    <div className="pointer-events-none absolute left-3 top-4 z-10 h-10 w-[42%] sm:left-4 sm:top-5 sm:h-[2.875rem]">
                       <Image
                         src="/game-cards/rocket-league-logo-transparent.png"
                         alt=""
                         fill
-                        sizes="(min-width: 1280px) 17vw, (min-width: 768px) 25vw, 50vw"
+                        sizes="(min-width: 640px) 128px, 111px"
                         className="object-contain object-left object-top"
                       />
                     </div>
