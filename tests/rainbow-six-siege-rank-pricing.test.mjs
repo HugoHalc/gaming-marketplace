@@ -231,11 +231,11 @@ test("all customization values must be booleans", () => {
   );
 });
 
-test("Rank Boost, Competitive Wins and Placements Boost are active Siege services", () => {
+test("all four Siege services are active", () => {
   assert.equal(isRainbowSixSiegeServiceActive("rank-boost"), true);
   assert.equal(isRainbowSixSiegeServiceActive("competitive-wins"), true);
   assert.equal(isRainbowSixSiegeServiceActive("placements-boost"), true);
-  assert.equal(isRainbowSixSiegeServiceActive("unrated-matches"), false);
+  assert.equal(isRainbowSixSiegeServiceActive("unrated-matches"), true);
 });
 
 test("legacy provisional service slugs are rejected", () => {
@@ -283,15 +283,15 @@ test("order route recalculates pricing and enforces the global minimum before cr
   assert.match(orderRouteSource, /key !== "selection"/);
 });
 
-test("Unrated Matches does not have quote or order endpoints", () => {
+test("Unrated Matches has quote and order endpoints", () => {
   for (const slug of ["unrated-matches"]) {
     assert.equal(
       existsSync(new URL(`../src/app/api/rainbow-six-siege/${slug}-quote`, import.meta.url)),
-      false,
+      true,
     );
     assert.equal(
       existsSync(new URL(`../src/app/api/rainbow-six-siege/${slug}-order`, import.meta.url)),
-      false,
+      true,
     );
   }
 });
@@ -486,7 +486,7 @@ test("Siege overview keeps its absolute title and customer-facing copy", () => {
     /absolute: "Rainbow Six Siege Boosting Services \| BoostingPedia"/,
   );
   for (const copy of [
-    "Choose the Siege service that matches your goal. Configure Rank Boost, Competitive Wins or Placements Boost now. Unrated Matches is coming soon.",
+    "Choose the Siege service that matches your goal. Configure ranked progression or unrated matches with a clear price before checkout.",
     "Built for competitive progression",
     "A clearer way to configure your Siege service.",
     "Review your goal, customize the service, and see your updated price before continuing to checkout.",

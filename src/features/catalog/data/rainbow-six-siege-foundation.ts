@@ -56,8 +56,8 @@ export const rainbowSixSiegeServiceFoundations: readonly RainbowSixSiegeServiceF
     route: "/games/rainbow-six-siege/unrated-matches",
     name: "Unrated Matches",
     description:
-      "Complete unrated matches with a service built around your selected match total.",
-    status: "coming-soon",
+      "Play Rainbow Six Siege unrated matches with experienced boosters, flexible service options, secure checkout, and transparent pricing.",
+    status: "active",
   },
 ] as const;
 
@@ -90,7 +90,7 @@ export const rainbowSixSiegeGameFoundation = {
   categoryLabel: "Tactical FPS",
   rankedSystemLabel: "Ranked 3.0",
   publicAvailability: "available",
-  serviceAvailability: "partial",
+  serviceAvailability: "available",
   finalAssetStatus: "provisional",
   assets: rainbowSixSiegeAssetFoundation,
   services: rainbowSixSiegeServiceFoundations,
@@ -113,9 +113,9 @@ export const rainbowSixSiegeGameDetailContent = {
   categoryLabel: rainbowSixSiegeGameFoundation.categoryLabel,
   fulfillmentLabel: "Ranked 3.0",
   trustPoints: [
-    "Rank Boost, Competitive Wins and Placements Boost available",
-    "Server-validated pricing",
-    "Unrated Matches coming soon",
+    "Four ways to play Siege",
+    "Review the price for your selections",
+    "Choose the service that fits your goal",
   ],
   highlights: [
     {
@@ -126,10 +126,10 @@ export const rainbowSixSiegeGameDetailContent = {
     {
       title: "Four service paths",
       description:
-      "Choose Rank Boost, Competitive Wins or Placements Boost. Unrated Matches is coming soon.",
+      "Choose Rank Boost, Competitive Wins, Placements Boost or Unrated Matches.",
     },
     {
-      title: "Server-authoritative checkout",
+      title: "Clear checkout",
       description:
         "Review your selections and price before checkout.",
     },

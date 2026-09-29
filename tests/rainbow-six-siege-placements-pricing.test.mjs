@@ -142,5 +142,5 @@ test("quote, order, client and catalog preserve authoritative checkout rules", (
   assert.match(client, /controller\.abort\(\)/);
   assert.match(client, /disabled=\{!canCheckout \|\| isCreatingOrder\}/);
   assert.match(client, /<MinimumOrderNotice/);
-  assert.match(catalog, /slug: "unrated-matches"[\s\S]*?status: "coming-soon"/);
+  assert.match(catalog, /slug: "unrated-matches"[\s\S]*?status: "active"/);
 });

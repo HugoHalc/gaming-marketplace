@@ -15,6 +15,7 @@ import {
 } from "@/features/catalog/data/rainbow-six-siege-foundation";
 import { RainbowSixSiegeWinsConfigurator } from "@/features/configurator/components/rainbow-six-siege-wins-configurator";
 import { RainbowSixSiegePlacementsConfigurator } from "@/features/configurator/components/rainbow-six-siege-placements-configurator";
+import { RainbowSixSiegeUnratedConfigurator } from "@/features/configurator/components/rainbow-six-siege-unrated-configurator";
 import { RainbowSixSiegeRankConfigurator } from "@/features/configurator/components/rainbow-six-siege-rank-configurator";
 
 interface RainbowSixSiegeServicePageProps {
@@ -99,7 +100,7 @@ export default async function RainbowSixSiegeServicePage({
       <section className="py-7 sm:py-9 lg:py-10">
         <Container>
           <RainbowSixSiegeServiceNavigation currentSlug={service.slug}>
-            {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : service.slug === "competitive-wins" ? <RainbowSixSiegeWinsConfigurator /> : <RainbowSixSiegePlacementsConfigurator />}
+            {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : service.slug === "competitive-wins" ? <RainbowSixSiegeWinsConfigurator /> : service.slug === "placements-boost" ? <RainbowSixSiegePlacementsConfigurator /> : <RainbowSixSiegeUnratedConfigurator />}
           </RainbowSixSiegeServiceNavigation>
           {service.slug === "placements-boost" ? (
             <section className="mt-10 max-w-3xl space-y-4" aria-labelledby="placements-faq-title">
@@ -114,6 +115,24 @@ export default async function RainbowSixSiegeServicePage({
               <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
                 <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What do I need before ordering?</summary>
                 <p className="mt-2 leading-6">Your account must already meet Rainbow Six Siege ranked-access requirements.</p>
+              </details>
+            </section>
+          ) : null}
+          {service.slug === "unrated-matches" ? (
+            <section className="mt-10 max-w-3xl space-y-4" aria-labelledby="unrated-faq-title">
+              <h2 id="unrated-faq-title" className="text-2xl font-semibold text-white">Unrated Matches FAQ</h2>
+              <p className="text-sm leading-6 text-white/65">Purchase completed unrated matches, not Ranked games or rank progress. Matches are played manually; wins, win rate, and account outcomes are not guaranteed.</p>
+              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
+                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">How do Solo and Duo differ?</summary>
+                <p className="mt-2 leading-6">In Solo, the booster plays the selected unrated matches on your account. In Duo, you play alongside the booster.</p>
+              </details>
+              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
+                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What do I choose before checkout?</summary>
+                <p className="mt-2 leading-6">Select 1 to 10 games, your platform and region, a service mode, and any optional customizations. Review your total before placing the order.</p>
+              </details>
+              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
+                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What happens after checkout?</summary>
+                <p className="mt-2 leading-6">Your order appears in your dashboard, where you can follow its progress and communicate about fulfillment.</p>
               </details>
             </section>
           ) : null}
