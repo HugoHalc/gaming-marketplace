@@ -75,10 +75,27 @@ export function isRainbowSixSiegeServiceActive(slug: string) {
 
 export const rainbowSixSiegeAssetFoundation = {
   gameCard: "/game-cards/rainbow-six-siege.webp",
-  overviewHero: "/game-cards/rainbow-six-siege.webp",
+  overviewHero: "/game-heroes/rainbow-six-siege-overview-hero.webp",
   serviceHero: "/game-cards/rainbow-six-siege.webp",
-  rankBadges: null,
+  rankBadges: {
+    copper: "/ranks/rainbow-six-siege/copper.webp",
+    bronze: "/ranks/rainbow-six-siege/bronze.webp",
+    silver: "/ranks/rainbow-six-siege/silver.webp",
+    gold: "/ranks/rainbow-six-siege/gold.webp",
+    platinum: "/ranks/rainbow-six-siege/platinum.webp",
+    emerald: "/ranks/rainbow-six-siege/emerald.webp",
+    diamond: "/ranks/rainbow-six-siege/diamond.webp",
+    champion: "/ranks/rainbow-six-siege/champion.webp",
+  },
 } as const;
+
+export function getRainbowSixSiegeRankBadge(rank: string) {
+  const tier = rank.split("-")[0];
+  const badges = rainbowSixSiegeAssetFoundation.rankBadges;
+  return Object.prototype.hasOwnProperty.call(badges, tier)
+    ? badges[tier as keyof typeof badges]
+    : null;
+}
 
 export const rainbowSixSiegeGameFoundation = {
   id: "game_rainbow_six_siege_foundation",

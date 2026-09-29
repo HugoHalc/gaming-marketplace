@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
@@ -14,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getRainbowSixSiegeRankBadge } from "@/features/catalog/data/rainbow-six-siege-foundation";
 import { useCheckoutIntentContinuity } from "../client/checkout-intent";
 import {
   R6_RANK_SERVICE_SLUG,
@@ -138,6 +140,21 @@ function Choice({
   );
 }
 
+function RankBadge({ rank, size = 40 }: { rank: string; size?: 24 | 40 | 48 }) {
+  const src = getRainbowSixSiegeRankBadge(rank);
+  if (!src) return null;
+  return (
+    <Image
+      src={src}
+      alt=""
+      aria-hidden="true"
+      width={size}
+      height={size}
+      className="shrink-0 object-contain"
+    />
+  );
+}
+
 function RankSelector({
   label,
   value,
@@ -154,12 +171,22 @@ function RankSelector({
   const options = excludeFinalRank
     ? rainbowSixSiegeRankOptions.slice(0, -1)
     : rainbowSixSiegeRankOptions;
+  const selectedOption = options.find((option) => option.value === value);
 
   return (
     <fieldset className="min-w-0">
       <legend className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">
         {label}
       </legend>
+      {selectedOption ? (
+        <div className="mb-2 flex min-h-16 items-center gap-3 rounded-xl border border-emerald-300/20 bg-emerald-400/[0.045] px-3 py-2">
+          <RankBadge rank={selectedOption.value} size={48} />
+          <span className="min-w-0">
+            <span className="block text-[10px] text-white/40">Selected {label.toLowerCase()}</span>
+            <span className="block truncate text-sm font-semibold text-white">{selectedOption.label}</span>
+          </span>
+        </div>
+      ) : null}
       <div
         role="radiogroup"
         aria-label={label}
@@ -174,20 +201,24 @@ function RankSelector({
               type="button"
               role="radio"
               aria-checked={active}
+              aria-label={`Select ${option.label} rank`}
               disabled={disabled}
               tabIndex={active ? 0 : -1}
               onKeyDown={handleRadioKeyDown}
               onClick={() => onChange(option.value)}
-              className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-emerald-300/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-25 ${
+              className={`flex min-h-14 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-emerald-300/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-25 ${
                 active
                   ? "border-emerald-300/28 bg-emerald-400/[0.065] text-white"
                   : "border-transparent bg-transparent text-white/58 hover:border-white/[0.08] hover:bg-white/[0.025] hover:text-white"
               }`}
             >
-              <span>
-                <span className="block text-xs font-semibold">{option.label}</span>
-                <span className="mt-0.5 block text-[9px] uppercase tracking-[0.08em] text-white/28">
-                  {option.tier} · Division {option.division}
+              <span className="flex min-w-0 items-center gap-2.5">
+                <RankBadge rank={option.value} />
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-semibold">{option.label}</span>
+                  <span className="mt-0.5 block truncate text-[9px] uppercase tracking-[0.08em] text-white/28">
+                    {option.tier} · Division {option.division}
+                  </span>
                 </span>
               </span>
               {active ? <Check className="size-3.5 shrink-0 text-[#82F5A4]" aria-hidden="true" /> : null}
@@ -469,7 +500,7 @@ export function RainbowSixSiegeRankConfigurator() {
         <section className="min-w-0 space-y-4">
           <ConfiguratorBlock
             title="Rank progression"
-            helper="Choose a current rank and a strictly higher desired rank. Final rank badges will be added separately."
+            helper="Choose a current rank and a strictly higher desired rank."
           >
             <div className="grid gap-4 lg:grid-cols-2">
               <RankSelector
@@ -594,10 +625,13 @@ export function RainbowSixSiegeRankConfigurator() {
                   ["Mode", modeLabel],
                   ["RP gain", rpGainLabel],
                   ["Server", serverLabel],
-                ].map(([label, value]) => (
+                ].map(([label, value], index) => (
                   <div key={label} className="min-w-0">
                     <p className="text-white/32">{label}</p>
-                    <p className="mt-1 truncate font-semibold text-white/75">{value}</p>
+                    <div className="mt-1 flex min-w-0 items-center gap-1.5 font-semibold text-white/75">
+                      {index < 2 ? <RankBadge rank={index === 0 ? String(selection.currentRank) : String(selection.desiredRank)} size={24} /> : null}
+                      <span className="truncate">{value}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -775,10 +809,13 @@ export function RainbowSixSiegeRankConfigurator() {
                   ["Mode", metadata.modeLabel],
                   ["RP gain", metadata.rpGainLabel],
                   ["Server", metadata.serverLabel],
-                ].map(([label, value]) => (
+                ].map(([label, value], index) => (
                   <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.018] p-3">
                     <p className="text-[9px] uppercase tracking-[0.1em] text-white/30">{label}</p>
-                    <p className="mt-1 text-sm font-semibold text-white/80">{value}</p>
+                    <div className="mt-1 flex min-w-0 items-center gap-1.5 text-sm font-semibold text-white/80">
+                      {index < 2 ? <RankBadge rank={index === 0 ? metadata.currentRank : metadata.desiredRank} size={24} /> : null}
+                      <span className="truncate">{value}</span>
+                    </div>
                   </div>
                 ))}
               </div>

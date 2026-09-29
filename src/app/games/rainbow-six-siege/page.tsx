@@ -90,18 +90,18 @@ export default function RainbowSixSiegeOverviewPage() {
         <div className="hero-grid absolute inset-0 -z-30 opacity-20" />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 -z-20 w-full overflow-hidden sm:w-[74%] lg:w-[62%]"
+          className="pointer-events-none absolute inset-y-0 right-0 -z-20 w-full overflow-hidden sm:w-[84%] md:w-[76%] lg:w-[68%] xl:w-[64%]"
         >
           <Image
             src={rainbowSixSiegeGameFoundation.assets.overviewHero}
             alt=""
             fill
             priority
-            sizes="(min-width: 1024px) 62vw, (min-width: 640px) 74vw, 100vw"
-            className="object-cover object-center opacity-35 sm:opacity-52 lg:opacity-62"
+            sizes="(min-width: 1280px) 64vw, (min-width: 1024px) 68vw, (min-width: 768px) 76vw, (min-width: 640px) 84vw, 100vw"
+            className="object-cover object-[78%_50%] opacity-38 sm:object-[76%_50%] sm:opacity-56 md:object-[74%_50%] md:opacity-72 lg:object-[72%_50%] lg:opacity-90 xl:opacity-100"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.98)_20%,rgba(5,8,7,.84)_42%,rgba(5,8,7,.34)_70%,rgba(5,8,7,.14)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,8,7,.28)_0%,transparent_42%,rgba(5,8,7,.32)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,#050807_0%,rgba(5,8,7,.97)_18%,rgba(5,8,7,.82)_36%,rgba(5,8,7,.40)_58%,rgba(5,8,7,.10)_78%,transparent_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050807] via-[#050807]/35 to-transparent" />
         </div>
 
         <Container className="relative py-12 sm:py-16 lg:min-h-[31rem] lg:py-20">
