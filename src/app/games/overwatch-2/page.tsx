@@ -17,6 +17,7 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import { Button } from "@/components/ui/button";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
@@ -302,43 +303,18 @@ export default async function OverwatchPage() {
           <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:mt-9 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3">
             {game.services.map((service) => {
               const meta = serviceMeta(service.slug);
-              const ServiceIcon = meta.icon;
 
               return (
                 <Link
                   key={service.id}
                   href={`/games/overwatch-2/${service.slug}`}
-                  className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-amber-300/[0.18] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] focus-visible:border-amber-300/25 focus-visible:ring-2 focus-visible:ring-amber-300/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
+                  className="group flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-amber-300/[0.18] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-amber-300/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070A08] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
                 >
-                  <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-amber-400/[0.065] to-transparent" />
-                  <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-amber-200/15 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div className="relative flex items-start justify-between gap-4">
-                    <Badge className="border-white/[0.08] bg-black/20 text-white/55 transition-colors group-hover:border-amber-300/[0.12] group-hover:text-white/68">
-                      {meta.badge}
-                    </Badge>
-                    <span className="grid size-8 place-items-center rounded-lg border border-amber-300/[0.12] bg-amber-300/[0.035] text-amber-200/60 transition-[border-color,background-color,color,transform] duration-200 group-hover:scale-[1.03] group-hover:border-amber-300/[0.20] group-hover:bg-amber-300/[0.06] group-hover:text-amber-100/80">
-                      <ServiceIcon className="size-3.5" />
-                    </span>
-                  </div>
-
+                  <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-amber-200/65">{meta.badge}</p>
+                  <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{service.name}</h3>
+                  <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
                   <ServiceVisual service={service} />
-
-                  <div className="relative mt-3">
-                    <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
-                      {service.name}
-                    </h3>
-                    <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
-                  </div>
-
-                  <div className="relative mt-auto pt-6">
-                    <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[11px] font-semibold text-white/48">Configure service</span>
-                      <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-colors group-hover:border-amber-300/25 group-hover:bg-amber-300/[0.07] group-hover:text-amber-200">
-                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:transform-none" aria-hidden="true" />
-                      </span>
-                    </div>
-                  </div>
+                  <OverviewServiceCardAction label={`Configure ${service.name}`} />
                 </Link>
               );
             })}

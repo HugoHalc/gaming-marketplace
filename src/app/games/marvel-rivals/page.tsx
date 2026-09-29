@@ -15,6 +15,7 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import { Button } from "@/components/ui/button";
 import {
   marvelRivalsRanks,
@@ -225,49 +226,17 @@ function MarvelServiceCard({
   service: MarvelRivalsServiceFoundation;
 }) {
   const meta = marvelServiceMeta(service);
-  const Icon = meta.icon;
 
   return (
     <Link
       href={`/games/marvel-rivals/${service.slug}`}
-      className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:border-[#A38CFF]/[0.18] hover:bg-[#0B0D0B] hover:shadow-[0_28px_70px_-42px_rgba(0,0,0,.95)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
+      className="group flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-[#A38CFF]/[0.18] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-[#A38CFF]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#7A63F2]/[0.06] via-[#7A63F2]/[0.018] to-transparent" />
-
-      <div className="relative flex items-start justify-between gap-4">
-        <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-          {meta.badge}
-        </Badge>
-        <span className="grid size-8 place-items-center rounded-lg border border-[#A38CFF]/[0.12] bg-[#7A63F2]/[0.035] text-[#C7B9FF]/65 transition-colors group-hover:border-[#A38CFF]/[0.18] group-hover:text-[#CEC5FF]/90">
-          <Icon className="size-3.5" strokeWidth={1.7} />
-        </span>
-      </div>
-
+      <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-[#C7B9FF]/75">{meta.badge}</p>
+      <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{service.name}</h3>
+      <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
       <MarvelServiceMicrovisual service={service} />
-
-      <div className="relative mt-3">
-        <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
-          {service.name}
-        </h3>
-        <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
-          {service.description}
-        </p>
-      </div>
-
-      <div className="relative mt-auto pt-5">
-        <div className="mb-5 h-px bg-gradient-to-r from-[#A38CFF]/16 via-white/[0.08] to-transparent" />
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.13em] text-white/30">
-              Service
-            </p>
-            <p className="mt-1 text-xs font-semibold text-white/62">Configure service</p>
-          </div>
-          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#A38CFF]/25 group-hover:bg-[#7A63F2]/[0.07] group-hover:text-[#CEC5FF]">
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </span>
-        </div>
-      </div>
+      <OverviewServiceCardAction label={`Configure ${service.name}`} />
     </Link>
   );
 }

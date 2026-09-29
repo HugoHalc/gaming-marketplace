@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RainbowSixSiegeRankBadge } from "@/features/catalog/components/rainbow-six-siege-rank-badge";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import { siteConfig } from "@/config/site";
 import {
   rainbowSixSiegeGameFoundation,
@@ -233,46 +234,27 @@ export default function RainbowSixSiegeOverviewPage() {
           </div>
 
           <div className="mt-9 grid gap-4 md:grid-cols-2">
-            {rainbowSixSiegeServiceFoundations.map((service, index) => {
+            {rainbowSixSiegeServiceFoundations.map((service) => {
               const presentation = servicePresentation[service.slug];
 
               const card = (
                 <>
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-emerald-400/[0.045] to-transparent" />
-                  <div className="relative flex items-start justify-between gap-4">
-                    <Badge className="border-white/[0.08] bg-black/20 text-white/55">
-                      {presentation.eyebrow}
-                    </Badge>
-                    <span className="font-gaming-label text-[10px] tracking-[0.12em] text-emerald-200/40">{String(index + 1).padStart(2, "0")}</span>
-                  </div>
+                  <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-emerald-200/65">{presentation.eyebrow}</p>
 
-                  <div className="relative mt-8">
-                    <h3 id={`siege-service-${service.slug}`} className="text-2xl font-semibold tracking-[-0.04em] text-white">
+                  <div className="mt-2">
+                    <h3 id={`siege-service-${service.slug}`} className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">
                       {service.name}
                     </h3>
-                    <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
                       {service.description}
                     </p>
                   </div>
 
                   <SiegeServicePreview slug={service.slug} />
 
-                  <div className="relative mt-auto pt-5">
-                    <div className="mb-5 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    {service.status === "active" ? (
-                      <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-emerald-300/[0.18] bg-emerald-400/[0.05] px-3 text-xs font-semibold text-emerald-100/80">
-                        Configure service
-                        <ArrowRight className="size-3.5" aria-hidden="true" />
-                      </span>
-                    ) : (
-                      <span
-                        className="inline-flex min-h-9 items-center rounded-full border border-white/[0.09] bg-white/[0.025] px-3 text-xs font-semibold text-[#A0AAA4]"
-                        aria-label={`${service.name}, Coming soon`}
-                      >
-                        Coming soon
-                      </span>
-                    )}
-                  </div>
+                  {service.status === "active" ? (
+                    <OverviewServiceCardAction label={`Configure ${service.name}`} />
+                  ) : <div className="mt-auto pt-5 text-xs text-white/50">Coming soon</div>}
                 </>
               );
 
@@ -281,7 +263,7 @@ export default function RainbowSixSiegeOverviewPage() {
                   key={service.id}
                   href={service.route}
                   aria-labelledby={`siege-service-${service.slug}`}
-                  className="group relative flex min-h-[21rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-emerald-300/[0.18] hover:bg-[#0E1411] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/35 motion-reduce:transform-none motion-reduce:transition-none sm:p-6"
+                  className="group flex min-h-[21rem] flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-emerald-300/[0.18] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-emerald-300/35 motion-reduce:transform-none motion-reduce:transition-none sm:p-6"
                 >
                   {card}
                 </Link>
@@ -289,7 +271,7 @@ export default function RainbowSixSiegeOverviewPage() {
                 <article
                   key={service.id}
                   aria-labelledby={`siege-service-${service.slug}`}
-                  className="relative flex min-h-[20rem] flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 opacity-[0.78] sm:p-6"
+                  className="flex min-h-[21rem] flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 opacity-[0.78] sm:p-6"
                 >
                   {card}
                 </article>

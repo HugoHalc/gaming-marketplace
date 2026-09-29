@@ -18,6 +18,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
 
 export const metadata: Metadata = {
@@ -251,45 +252,17 @@ function LeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
 
 function LeagueServiceCard({ service }: { service: ServiceSummary }) {
   const meta = leagueServiceMeta(service);
-  const Icon = meta.icon;
 
   return (
     <Link
       href={`/games/league-of-legends/${service.slug}`}
-      className="group relative flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:border-[#C89B3C]/25 hover:bg-[#0B0D0B] hover:shadow-[0_30px_80px_-44px_rgba(0,0,0,.98)] sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
+      className="group flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-[#C89B3C]/25 hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-[#C89B3C]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#C89B3C]/[0.075] via-[#7A5B22]/[0.025] to-transparent" />
-      <div className="pointer-events-none absolute -right-12 -top-14 size-36 rounded-full bg-[#C89B3C]/[0.035] blur-3xl" />
-
-      <div className="relative flex items-start justify-between gap-4">
-        <Badge className="border-[#C89B3C]/16 bg-[#7A5B22]/10 text-[#E7C867]/75">
-          {meta.badge}
-        </Badge>
-        <span className="grid size-8 place-items-center rounded-lg border border-[#C89B3C]/[0.11] bg-black/20 text-[#E7C867]/50 transition-colors group-hover:border-[#C89B3C]/18 group-hover:text-[#E7C867]/80">
-          <Icon className="size-3.5" strokeWidth={1.7} />
-        </span>
-      </div>
-
+      <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-[#E7C867]/70">{meta.badge}</p>
+      <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{service.name}</h3>
+      <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
       <LeagueServiceMicrovisual service={service} />
-
-      <div className="relative mt-3">
-        <h3 className="font-gaming-value max-w-[14rem] text-2xl leading-[1.05] tracking-[-0.045em] text-white">
-          {service.name}
-        </h3>
-        <p className="mt-4 text-sm leading-6 text-[var(--muted-foreground)]">
-          {service.description}
-        </p>
-      </div>
-
-      <div className="relative mt-auto pt-5">
-        <div className="mb-5 h-px bg-gradient-to-r from-[#C89B3C]/20 via-white/[0.08] to-transparent" />
-        <div className="flex items-end justify-between gap-4">
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-white/45">Configure service</span>
-          <span className="grid size-10 place-items-center rounded-full border border-white/[0.09] bg-white/[0.035] text-white/70 transition-[border-color,background-color,color] group-hover:border-[#C89B3C]/30 group-hover:bg-[#7A5B22]/15 group-hover:text-[#E7C867]">
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </span>
-        </div>
-      </div>
+      <OverviewServiceCardAction label={`Configure ${service.name}`} />
     </Link>
   );
 }

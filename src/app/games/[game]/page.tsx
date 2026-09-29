@@ -6,7 +6,6 @@ import {
   Activity,
   ArrowLeft,
   ArrowRight,
-  Check,
   Gamepad2,
   Layers3,
   ReceiptText,
@@ -32,6 +31,7 @@ import {
 } from "@/features/catalog/data/launch-games";
 import { gameThemes } from "@/features/catalog/data/game-theme";
 import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catalog";
 
 interface GamePageProps {
@@ -416,6 +416,23 @@ function ServiceShowcaseCard({
 }) {
   const meta = overviewMeta(service, isRocketLeague, isValorant);
   const ServiceIcon = meta?.icon;
+  if (isRocketLeague || isValorant) {
+    return (
+      <Link
+        href={`/games/${gameSlug}/${service.slug}`}
+        className={`group flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${isRocketLeague ? "hover:border-blue-300/[0.18] focus-visible:ring-blue-300/35" : "hover:border-rose-300/[0.18] focus-visible:ring-rose-300/35"}`}
+      >
+        <p className={`font-gaming-label text-[10px] uppercase tracking-[0.13em] ${isRocketLeague ? "text-blue-200/65" : "text-rose-200/65"}`}>
+          {meta?.badge ?? categoryLabel(service.category)}
+        </p>
+        <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{service.name}</h3>
+        <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">{service.description}</p>
+        {isRocketLeague ? <RocketLeagueServiceMicrovisual service={service} /> : <ValorantServiceMicrovisual service={service} />}
+        <OverviewServiceCardAction label={`Configure ${service.name}`} />
+      </Link>
+    );
+  }
+
   const ctaClass = isRocketLeague
     ? "group-hover:border-blue-300/25 group-hover:bg-blue-300/[0.07] group-hover:text-blue-200"
     : isValorant
