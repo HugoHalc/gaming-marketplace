@@ -36,7 +36,7 @@ const gameVisual = {
 const homeGameCardAssets = {
   "rocket-league": "/game-cards/rocket-league-home-card.webp",
   "league-of-legends": "/game-cards/league-of-legends-home-card.webp",
-  valorant: "/game-cards/valorant.webp",
+  valorant: "/game-cards/valorant-home-card.webp",
   "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
   "dota-2": dota2AssetFoundation.gameCard,
@@ -446,8 +446,25 @@ export default async function Home() {
                     </>
                   ) : null}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/88 via-[#050807]/12 to-transparent" />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t to-transparent ${
+                      game.slug === "valorant"
+                        ? "from-[#050807]/70 via-[#050807]/10"
+                        : "from-[#050807]/88 via-[#050807]/12"
+                    }`}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
+
+                  {game.slug === "valorant" ? (
+                    <Image
+                      src="/game-cards/valorant-home-logo.png"
+                      alt="Valorant"
+                      width={1393}
+                      height={925}
+                      sizes="(min-width: 640px) 108px, 92px"
+                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[92px] max-w-[28%] object-contain sm:left-5 sm:top-5 sm:w-[108px]"
+                    />
+                  ) : null}
 
                   {game.slug === "league-of-legends" ? (
                     <Image
