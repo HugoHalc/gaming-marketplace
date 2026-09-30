@@ -78,11 +78,7 @@ export const rainbowSixSiegeCustomizationOptions = [
   { key: "streaming", label: "Streaming", meta: "+$10.00", description: "Request a stream for the active boost session when available." },
   { key: "expressDelivery", label: "Express Delivery", meta: "+20%", description: "Prioritize the order in the eligible fulfillment queue." },
   { key: "highKillCount", label: "High Kill Count", meta: "+40%", description: "Request an emphasis on higher-kill match performance." },
-  { key: "oneTrickPony", label: "One Trick Pony", meta: "+30%", description: "Request a focused operator preference for the service." },
   { key: "rankInsurance", label: "Rank Insurance", meta: "+50%", description: "Add the Rank Insurance service option to the order." },
-  { key: "vipPriority", label: "VIP Priority", meta: "+50%", description: "Apply the VIP Priority service option to the order." },
-  { key: "insaneClipDrop", label: "Insane Clip Drop", meta: "+15%", description: "Add the optional clip-focused service preference." },
-  { key: "eliteBoosterTier", label: "Elite Booster Tier", meta: "+50%", description: "Request the Elite Booster Tier option for fulfillment." },
 ] as const;
 
 export type RainbowSixSiegeRankId = (typeof rainbowSixSiegeRankOptions)[number]["value"];

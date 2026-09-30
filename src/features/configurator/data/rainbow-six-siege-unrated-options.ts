@@ -16,10 +16,6 @@ export const rainbowSixSiegeUnratedCustomizationOptions = [
   { key: "streaming", label: "Streaming", meta: "+$10.00", description: "Request a stream when available." },
   { key: "expressDelivery", label: "Express Delivery", meta: "+20%", description: "Prioritize the order in the eligible queue." },
   { key: "highKillCount", label: "High Kill Count", meta: "+40%", description: "Request an emphasis on higher-kill match performance." },
-  { key: "oneTrickPony", label: "One Trick Pony", meta: "+30%", description: "Request a single operator preference." },
-  { key: "vipPriority", label: "VIP Priority", meta: "+50%", description: "Request priority assignment when available." },
-  { key: "insaneClipDrop", label: "Insane Clip Drop", meta: "+15%", description: "Request an emphasis on clip-worthy plays." },
-  { key: "eliteBoosterTier", label: "Elite Booster Tier", meta: "+50%", description: "Request a higher-tier eligible booster." },
 ] as const;
 export type RainbowSixSiegeUnratedQuoteApiResponse = {
   quote?: QuotePreview;

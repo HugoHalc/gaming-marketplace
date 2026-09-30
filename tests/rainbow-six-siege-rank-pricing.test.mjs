@@ -32,11 +32,7 @@ function selection(overrides = {}) {
     streaming: false,
     expressDelivery: false,
     highKillCount: false,
-    oneTrickPony: false,
     rankInsurance: false,
-    vipPriority: false,
-    insaneClipDrop: false,
-    eliteBoosterTier: false,
     ...overrides,
   };
 }
@@ -388,14 +384,14 @@ test("PlayStation plus Oceania estimates 3–6 hours", () => {
   );
 });
 
-test("Streaming plus High Kill Count plus Elite Booster Tier estimates 6–12 hours", () => {
+test("Streaming plus High Kill Count plus low RP gain estimates 6–12 hours", () => {
   assert.equal(
     estimateRainbowSixSiegeStartingTime(
       selection({
         desiredRank: "bronze-v",
+        rpGain: "1-10",
         streaming: true,
         highKillCount: true,
-        eliteBoosterTier: true,
       }),
     ).range,
     "6–12 hours",
@@ -412,8 +408,6 @@ test("starting-time estimate caps at 12–24 hours above five complexity points"
       server: "oceania",
       streaming: true,
       highKillCount: true,
-      oneTrickPony: true,
-      eliteBoosterTier: true,
     }),
   );
   assert.ok(result.complexityScore > 5);
@@ -522,11 +516,7 @@ test("all Rainbow Six Siege modifiers remain priceable and reversible after disc
     ["Streaming", { streaming: true }, 1821, "Streaming (+$10.00)"],
     ["Express Delivery", { expressDelivery: true }, 985, "Express Delivery (+20%)"],
     ["High Kill Count", { highKillCount: true }, 1149, "High Kill Count (+40%)"],
-    ["One Trick Pony", { oneTrickPony: true }, 1067, "One Trick Pony (+30%)"],
     ["Rank Insurance", { rankInsurance: true }, 1232, "Rank Insurance (+50%)"],
-    ["VIP Priority", { vipPriority: true }, 1232, "VIP Priority (+50%)"],
-    ["Insane Clip Drop", { insaneClipDrop: true }, 944, "Insane Clip Drop (+15%)"],
-    ["Elite Booster Tier", { eliteBoosterTier: true }, 1232, "Elite Booster Tier (+50%)"],
   ];
 
   for (const [label, override, expectedCents, breakdownLabel] of cases) {
@@ -543,7 +533,6 @@ test("Rainbow Six Siege verified modifier sequence remains stable", () => {
   assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true })).metadata.finalTotalCents, 985);
   assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true })).metadata.finalTotalCents, 1985);
   assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true, highKillCount: true })).metadata.finalTotalCents, 2314);
-  assert.equal(calculateRainbowSixSiegeRankPricing(selection({ desiredRank: "bronze-v", expressDelivery: true, streaming: true, highKillCount: true, oneTrickPony: true })).metadata.finalTotalCents, 2560);
 });
 
 test("Rainbow Six Siege free options do not change the price", () => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { PlatformIcon } from "./platform-icon";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
@@ -103,6 +104,7 @@ function Choice({
   label,
   meta,
   description,
+  icon,
   onClick,
 }: {
   active: boolean;
@@ -110,6 +112,7 @@ function Choice({
   label: string;
   meta?: string;
   description?: string;
+  icon?: ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -128,7 +131,7 @@ function Choice({
       }`}
     >
       <span className="flex items-center justify-between gap-2">
-        <span className="min-w-0 text-xs font-semibold leading-4">{label}</span>
+        <span className="flex min-w-0 items-center gap-2 text-xs font-semibold leading-4">{icon}<span>{label}</span></span>
         <span className="flex shrink-0 items-center gap-2">
           {meta ? <span className="text-[10px] font-bold text-white/42">{meta}</span> : null}
           {active ? <Check className="size-3.5 text-[#82F5A4]" aria-hidden="true" /> : null}
@@ -377,6 +380,7 @@ export function RainbowSixSiegePlacementsConfigurator() {
               {rainbowSixSiegePlatformOptions.map((option) => (
                 <Choice
                   key={option.value}
+                  icon={<PlatformIcon platform={option.value} />}
                   active={selection.platform === option.value}
                   label={option.label}
                   meta={option.meta}

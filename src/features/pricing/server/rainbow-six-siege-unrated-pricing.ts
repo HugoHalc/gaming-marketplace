@@ -26,10 +26,6 @@ const extras = {
   streaming: { label: "Streaming", bps: 0, fixedCents: STREAMING_FIXED_CENTS },
   expressDelivery: { label: "Express Delivery", bps: 2000, fixedCents: 0 },
   highKillCount: { label: "High Kill Count", bps: 4000, fixedCents: 0 },
-  oneTrickPony: { label: "One Trick Pony", bps: 3000, fixedCents: 0 },
-  vipPriority: { label: "VIP Priority", bps: 5000, fixedCents: 0 },
-  insaneClipDrop: { label: "Insane Clip Drop", bps: 1500, fixedCents: 0 },
-  eliteBoosterTier: { label: "Elite Booster Tier", bps: 5000, fixedCents: 0 },
 } as const;
 const allowedKeys = new Set(["games", "platform", "server", "gameMode", ...Object.keys(extras)]);
 function option<T extends Record<string, unknown>>(values: T, value: unknown, label: string): T[keyof T] {

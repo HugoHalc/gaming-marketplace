@@ -89,18 +89,12 @@ const CUSTOMIZATION_KEYS = [
   "streaming",
   "expressDelivery",
   "highKillCount",
-  "oneTrickPony",
   "rankInsurance",
-  "vipPriority",
-  "insaneClipDrop",
-  "eliteBoosterTier",
 ] as const;
 
 const FULFILLMENT_SENSITIVE_CUSTOMIZATIONS = [
   "streaming",
   "highKillCount",
-  "oneTrickPony",
-  "eliteBoosterTier",
 ] as const;
 
 const EXPECTED_SELECTION_KEYS = new Set([

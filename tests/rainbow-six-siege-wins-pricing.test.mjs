@@ -13,7 +13,7 @@ const { calculateRainbowSixSiegeWinsPricing: price } = require("../src/features/
 const { progressiveDiscountBps } = require("../src/features/pricing/server/rainbow-six-siege-rank-pricing.ts");
 if (original) Module._extensions[".ts"] = original;
 else delete Module._extensions[".ts"];
-function selection(override={}) {return {currentRank:"copper-v",wins:1,platform:"pc",gameMode:"solo",server:"europe",playOffline:false,specificOperators:false,streaming:false,expressDelivery:false,highKillCount:false,oneTrickPony:false,vipPriority:false,insaneClipDrop:false,eliteBoosterTier:false,...override};}
+function selection(override={}) {return {currentRank:"copper-v",wins:1,platform:"pc",gameMode:"solo",server:"europe",playOffline:false,specificOperators:false,streaming:false,expressDelivery:false,highKillCount:false,...override};}
 function cents(s) {return price(selection(s)).metadata.finalTotalCents;}
 test("frozen references and $5 minimum guard",()=>{
   const copper=price(selection());assert.equal(copper.metadata.discountedReferenceCents,106);assert.equal(copper.metadata.basePriceCents,74);assert.equal(copper.metadata.finalTotalCents,74);
@@ -40,7 +40,7 @@ test("invalid and unknown selections are rejected",()=>{
 
 test("progressive thresholds use the pre-discount subtotal once",()=>{
   for (const [subtotal,expected] of [[4999,0],[5000,300],[9999,300],[10000,600],[14999,600],[15000,900],[19999,900],[20000,1200]]) assert.equal(progressiveDiscountBps(subtotal),expected);
-  const result=price(selection({currentRank:"champion-i",wins:5,gameMode:"duo",platform:"xbox",server:"oceania",streaming:true,highKillCount:true,vipPriority:true}));
+  const result=price(selection({currentRank:"champion-i",wins:5,gameMode:"duo",platform:"xbox",server:"oceania",streaming:true,highKillCount:true,}));
   assert.equal(result.metadata.discountBps,progressiveDiscountBps(result.metadata.preDiscountSubtotalCents));
   assert.equal(result.metadata.finalTotalCents,result.metadata.preDiscountSubtotalCents-result.metadata.discountCents);
 });

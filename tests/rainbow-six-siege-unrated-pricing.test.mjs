@@ -13,7 +13,7 @@ const { progressiveDiscountBps, roundHalfUp } = require('../src/features/pricing
 const { meetsMinimumOrderTotal } = require('../src/features/orders/minimum-order.ts');
 if (original) Module._extensions['.ts'] = original;
 else delete Module._extensions['.ts'];
-const defaults = { games: 1, platform: 'pc', gameMode: 'solo', server: 'north-america', playOffline: false, specificOperators: false, streaming: false, expressDelivery: false, highKillCount: false, oneTrickPony: false, vipPriority: false, insaneClipDrop: false, eliteBoosterTier: false };
+const defaults = { games: 1, platform: 'pc', gameMode: 'solo', server: 'north-america', playOffline: false, specificOperators: false, streaming: false, expressDelivery: false, highKillCount: false, };
 const price = (changes={}) => calculate({ ...defaults, ...changes });
 const cents = (changes={}) => price(changes).metadata.finalTotalCents;
 const source = (path) => readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
@@ -55,7 +55,7 @@ test('platform and all regions are operational selectors with zero price effect'
 
 test('service-specific Duo and all optional percentages are additive; fixed Streaming is applied once', () => {
   assert.equal(cents({games:4,gameMode:'duo'}),905);
-  for (const [key,bps] of [['expressDelivery',2000],['highKillCount',4000],['oneTrickPony',3000],['vipPriority',5000],['insaneClipDrop',1500],['eliteBoosterTier',5000]]) {
+  for (const [key,bps] of [['expressDelivery',2000],['highKillCount',4000]]) {
     assert.equal(price({games:4,[key]:true}).metadata.totalModifierBps,bps);
   }
   assert.equal(cents({games:4,playOffline:true,specificOperators:true}),503);
@@ -77,16 +77,16 @@ test('progressive boundaries and the $5 guard stay separate from the real price'
     const result=price({games}); assert.equal(result.quote.total,expected); assert.equal(result.metadata.checkoutEligible,eligible);
   }
   assert.equal(price({streaming:true}).metadata.checkoutEligible,true);
-  const high=price({games:10,gameMode:'duo',eliteBoosterTier:true,vipPriority:true});
-  assert.equal(high.metadata.preDiscountSubtotalCents,3517);
+  const high=price({games:10,gameMode:'duo'});
+  assert.equal(high.metadata.preDiscountSubtotalCents,2261);
   assert.equal(high.metadata.discountBps,0);
-  const discounted=price({games:10,gameMode:'duo',streaming:true,expressDelivery:true,highKillCount:true,oneTrickPony:true,vipPriority:true,insaneClipDrop:true,eliteBoosterTier:true});
-  assert.equal(discounted.metadata.totalModifierBps,28500);
-  assert.equal(discounted.metadata.preDiscountSubtotalCents,5836);
-  assert.equal(discounted.metadata.discountBps,300);
-  assert.equal(discounted.metadata.discountCents,175);
-  assert.equal(discounted.metadata.finalTotalCents,5661);
-  assert.equal(Math.round(discounted.quote.breakdown.reduce((sum,item)=>sum+item.amount,0)*100),5661);
+  const combined=price({games:10,gameMode:'duo',streaming:true,expressDelivery:true,highKillCount:true,});
+  assert.equal(combined.metadata.totalModifierBps,14000);
+  assert.equal(combined.metadata.preDiscountSubtotalCents,4014);
+  assert.equal(combined.metadata.discountBps,0);
+  assert.equal(combined.metadata.discountCents,0);
+  assert.equal(combined.metadata.finalTotalCents,4014);
+  assert.equal(Math.round(combined.quote.breakdown.reduce((sum,item)=>sum+item.amount,0)*100),4014);
 });
 
 test('client quote lifecycle, order recalculation, immutable snapshot and route wiring', () => {
