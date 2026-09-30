@@ -1,3 +1,4 @@
+import { gamePresentation, type PresentedGameSlug } from "@/features/catalog/data/game-presentation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -31,15 +32,6 @@ const gameVisual = {
   blue: "from-blue-500/[0.22] via-blue-500/[0.05] to-transparent border-blue-300/15",
 } as const;
 
-const homeGameCardAssets = {
-  "rocket-league": "/game-cards/rocket-league-home-card.webp",
-  "league-of-legends": "/game-cards/league-of-legends-home-card.webp",
-  valorant: "/game-cards/valorant-home-card.webp",
-  "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
-  "overwatch-2": "/game-cards/overwatch-home-card.webp",
-  "dota-2": "/game-cards/dota-2-home-card.webp",
-  "rainbow-six-siege": "/game-cards/rainbow-six-siege-home.webp",
-} as const;
 
 
 const heroTrustpilot = {
@@ -399,7 +391,7 @@ export default function Home() {
             {publicGameNavigation.map((game) => {
               const canOpenOverview = game.ready || game.overviewReady;
               const imageSrc =
-                homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
+                gamePresentation[game.slug as PresentedGameSlug].artwork;
               const cardVisual = (
                 <>
                   <div className="absolute inset-0 bg-[#090D0B]">
@@ -422,7 +414,7 @@ export default function Home() {
                     <>
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#050807]/20 via-transparent to-transparent" />
                       <Image
-                        src="/game-cards/marvel-rivals-home-iron-man.png"
+                        src={gamePresentation["marvel-rivals"].subject}
                         alt=""
                         width={379}
                         height={659}
@@ -443,7 +435,7 @@ export default function Home() {
 
                   {game.slug === "dota-2" ? (
                     <Image
-                      src="/game-cards/dota-2-home-logo.png"
+                      src={gamePresentation["dota-2"].logo}
                       alt="Dota 2"
                       width={506}
                       height={616}
@@ -454,7 +446,7 @@ export default function Home() {
 
                   {game.slug === "overwatch-2" ? (
                     <Image
-                      src="/game-cards/overwatch-home-logo-light.png"
+                      src={gamePresentation["overwatch-2"].logo}
                       alt="Overwatch"
                       width={2033}
                       height={1144}
@@ -465,7 +457,7 @@ export default function Home() {
 
                   {game.slug === "valorant" ? (
                     <Image
-                      src="/game-cards/valorant-home-logo.png"
+                      src={gamePresentation["valorant"].logo}
                       alt="Valorant"
                       width={1393}
                       height={925}
@@ -476,7 +468,7 @@ export default function Home() {
 
                   {game.slug === "league-of-legends" ? (
                     <Image
-                      src="/game-cards/league-of-legends-home-logo.png"
+                      src={gamePresentation["league-of-legends"].logo}
                       alt="League of Legends"
                       width={1707}
                       height={724}
@@ -487,7 +479,7 @@ export default function Home() {
 
                   {game.slug === "marvel-rivals" ? (
                     <Image
-                      src="/game-cards/marvel-rivals-home-logo.png"
+                      src={gamePresentation["marvel-rivals"].logo}
                       alt="Marvel Rivals"
                       width={2048}
                       height={804}
@@ -499,7 +491,7 @@ export default function Home() {
                   {game.slug === "rainbow-six-siege" ? (
                     <div className="pointer-events-none absolute left-4 top-4 z-10 h-12 w-[45%] sm:left-5 sm:top-5 sm:h-14 sm:w-[46%]">
                       <Image
-                        src="/game-cards/rainbow-six-siege-logo.png"
+                        src={gamePresentation["rainbow-six-siege"].logo}
                         alt=""
                         fill
                         sizes="(min-width: 1280px) 15vw, (min-width: 768px) 23vw, 45vw"
@@ -511,7 +503,7 @@ export default function Home() {
                   {game.slug === "rocket-league" ? (
                     <div className="pointer-events-none absolute left-6 top-4 z-10 h-10 w-[42%] sm:top-5 sm:h-[2.875rem]">
                       <Image
-                        src="/game-cards/rocket-league-logo-transparent.png"
+                        src={gamePresentation["rocket-league"].logo}
                         alt=""
                         fill
                         sizes="(min-width: 640px) 128px, 111px"

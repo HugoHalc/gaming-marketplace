@@ -1,5 +1,6 @@
 "use client";
 
+import { gamePresentation, type PresentedGameSlug } from "@/features/catalog/data/game-presentation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
@@ -10,15 +11,6 @@ interface DesktopGamesMenuProps {
   games: LaunchGameCard[];
 }
 
-const gameNavigationVisuals = {
-  "rocket-league": "/game-cards/rocket-league.webp",
-  "league-of-legends": "/game-cards/league-of-legends.webp",
-  valorant: "/game-cards/valorant.webp",
-  "marvel-rivals": "/game-cards/marvel-rivals.webp",
-  "overwatch-2": "/game-cards/overwatch.webp",
-  "dota-2": "/game-cards/dota-2.webp",
-  "rainbow-six-siege": "/game-cards/rainbow-six-siege.webp",
-} as const;
 
 export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
   const [open, setOpen] = useState(false);
@@ -94,18 +86,28 @@ export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
 
           <div className="mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-3">
             {games.map((game) => {
-              const imageSrc =
-                gameNavigationVisuals[game.slug as keyof typeof gameNavigationVisuals];
+              const presentation = gamePresentation[game.slug as PresentedGameSlug];
 
               const visual = (
                 <span className="relative h-11 w-16 shrink-0 overflow-hidden rounded-[10px] bg-[#0E1411]">
                   <Image
-                    src={imageSrc}
+                    src={presentation.artwork}
                     alt=""
                     fill
                     sizes="64px"
-                    className="object-cover object-center"
+                    className="object-cover"
+                    style={{ objectPosition: presentation.thumbnailPosition }}
                   />
+                  {game.slug === "marvel-rivals" ? (
+                    <Image
+                      src={gamePresentation["marvel-rivals"].subject}
+                      alt=""
+                      width={379}
+                      height={659}
+                      sizes="40px"
+                      className="absolute right-[2%] top-[3%] h-[136%] w-auto max-w-none object-contain"
+                    />
+                  ) : null}
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent to-[#050807]/18" />
                 </span>
               );
@@ -119,7 +121,7 @@ export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
                   >
                     {visual}
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-[#D7DDD9]">
+                      <span className="block text-sm font-semibold leading-tight text-[#D7DDD9]">
                         {game.displayName}
                       </span>
                       <span className="mt-1 inline-flex rounded-full border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#A0AAA4]">
@@ -139,7 +141,7 @@ export function DesktopGamesMenu({ games }: DesktopGamesMenuProps) {
                 >
                   {visual}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-[#D7DDD9] transition-colors group-hover:text-[#F4F7F5]">
+                    <span className="block text-sm font-semibold leading-tight text-[#D7DDD9] transition-colors group-hover:text-[#F4F7F5]">
                       {game.displayName}
                     </span>
                     <span className="mt-1 block text-[10px] text-[#667069]">
