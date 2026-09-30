@@ -35,7 +35,7 @@ const gameVisual = {
 
 const homeGameCardAssets = {
   "rocket-league": "/game-cards/rocket-league-home-card.webp",
-  "league-of-legends": "/game-cards/league-of-legends.webp",
+  "league-of-legends": "/game-cards/league-of-legends-home-card.webp",
   valorant: "/game-cards/valorant.webp",
   "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
@@ -448,6 +448,17 @@ export default async function Home() {
 
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/88 via-[#050807]/12 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
+
+                  {game.slug === "league-of-legends" ? (
+                    <Image
+                      src="/game-cards/league-of-legends-home-logo.png"
+                      alt="League of Legends"
+                      width={1707}
+                      height={724}
+                      sizes="(min-width: 640px) 142px, 122px"
+                      className="pointer-events-none absolute left-3 top-3 z-10 h-auto w-[122px] max-w-[40%] object-contain sm:left-4 sm:top-4 sm:w-[142px]"
+                    />
+                  ) : null}
 
                   {game.slug === "marvel-rivals" ? (
                     <Image
