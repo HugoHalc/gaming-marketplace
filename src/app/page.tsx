@@ -16,7 +16,6 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { publicGameNavigation } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
@@ -182,15 +181,7 @@ function BoosterAvatar({ initials }: { initials: string }) {
   );
 }
 
-export default async function Home() {
-  const catalogGames = await listCatalogGames();
-  const serviceNamesByGame = new Map(
-    catalogGames.map((game) => [
-      game.slug,
-      game.services.slice(0, 2).map((service) => service.name),
-    ]),
-  );
-
+export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
       <script
@@ -409,10 +400,6 @@ export default async function Home() {
               const canOpenOverview = game.ready || game.overviewReady;
               const imageSrc =
                 homeGameCardAssets[game.slug as keyof typeof homeGameCardAssets];
-              const serviceNames = game.ready
-                ? serviceNamesByGame.get(game.slug) ?? []
-                : [];
-
               const cardVisual = (
                 <>
                   <div className="absolute inset-0 bg-[#090D0B]">
@@ -534,50 +521,25 @@ export default async function Home() {
                   ) : null}
 
                   <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5">
-                    {game.ready && serviceNames.length ? (
-                      <div className="mb-3 flex max-w-[88%] flex-wrap gap-1.5">
-                        {serviceNames.map((serviceName) => (
-                          <span
-                            key={serviceName}
-                            className="max-w-full whitespace-normal break-words rounded-md border border-white/[0.10] bg-[#050807]/86 px-2 py-1 text-[11px] leading-4 font-medium text-[#D7DED9] backdrop-blur-sm sm:px-2.5 sm:text-[10px]"
-                          >
-                            {serviceName}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <div className="flex items-center justify-between gap-3">
-                      <span
-                        className={`inline-flex min-w-0 items-center gap-2 text-xs font-semibold ${
-                          canOpenOverview ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
-                        }`}
-                      >
-                        {game.ready ? (
-                          <>
-                            Explore services
-                            <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
-                          </>
-                        ) : game.overviewReady ? (
-                          <>
-                            View overview
-                            <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
-                          </>
-                        ) : (
-                          "Coming soon"
-                        )}
-                      </span>
-
-                      <span
-                        className={`font-gaming-label shrink-0 rounded-full border px-2 py-1 text-[10px] uppercase tracking-[0.08em] transition-colors duration-200 sm:px-2.5 sm:text-[9px] sm:tracking-[0.1em] ${
-                          game.ready
-                            ? "border-[#39E56F]/40 bg-[#39E56F]/[0.08] text-[#82F5A4]"
-                            : "border-[#FFFFFF14] bg-[#090D0B] text-[#A0AAA4]"
-                        }`}
-                      >
-                        {game.ready ? "Available" : "Coming soon"}
-                      </span>
-                    </div>
+                    <span
+                      className={`inline-flex min-w-0 items-center gap-2 text-xs font-semibold ${
+                        canOpenOverview ? "text-[#F4F7F5]" : "text-[#A0AAA4]"
+                      }`}
+                    >
+                      {game.ready ? (
+                        <>
+                          Explore services
+                          <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
+                        </>
+                      ) : game.overviewReady ? (
+                        <>
+                          View overview
+                          <ArrowRight className="size-3.5 shrink-0 text-[#82F5A4]" />
+                        </>
+                      ) : (
+                        "Coming soon"
+                      )}
+                    </span>
                   </div>
                 </>
               );
