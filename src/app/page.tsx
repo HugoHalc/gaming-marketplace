@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { publicGameNavigation } from "@/features/catalog/data/launch-games";
-import { dota2AssetFoundation } from "@/features/catalog/data/dota-2-foundation";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { trustFeatures } from "@/features/marketing/content";
@@ -39,7 +38,7 @@ const homeGameCardAssets = {
   valorant: "/game-cards/valorant-home-card.webp",
   "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
   "overwatch-2": "/game-cards/overwatch-home-card.webp",
-  "dota-2": dota2AssetFoundation.gameCard,
+  "dota-2": "/game-cards/dota-2-home-card.webp",
   "rainbow-six-siege": "/game-cards/rainbow-six-siege-home.webp",
 } as const;
 
@@ -419,7 +418,7 @@ export default async function Home() {
                   <div className="absolute inset-0 bg-[#090D0B]">
                     <Image
                       src={imageSrc}
-                      alt={game.slug === "dota-2" ? "Dota 2" : ""}
+                      alt=""
                       fill
                       priority={game.slug === "rocket-league"}
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
@@ -454,6 +453,17 @@ export default async function Home() {
                     }`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
+
+                  {game.slug === "dota-2" ? (
+                    <Image
+                      src="/game-cards/dota-2-home-logo.png"
+                      alt="Dota 2"
+                      width={506}
+                      height={616}
+                      sizes="(min-width: 640px) 60px, 52px"
+                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[52px] object-contain sm:left-5 sm:top-5 sm:w-[60px]"
+                    />
+                  ) : null}
 
                   {game.slug === "overwatch-2" ? (
                     <Image
