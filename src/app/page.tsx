@@ -37,7 +37,7 @@ const homeGameCardAssets = {
   "rocket-league": "/game-cards/rocket-league-home-card.webp",
   "league-of-legends": "/game-cards/league-of-legends.webp",
   valorant: "/game-cards/valorant.webp",
-  "marvel-rivals": "/game-cards/marvel-rivals.webp",
+  "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
   "overwatch-2": "/game-cards/overwatch.webp",
   "dota-2": dota2AssetFoundation.gameCard,
   "rainbow-six-siege": "/game-cards/rainbow-six-siege-home.webp",
@@ -432,24 +432,32 @@ export default async function Home() {
                     />
                   </div>
 
+                  {game.slug === "marvel-rivals" ? (
+                    <>
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#050807]/20 via-transparent to-transparent" />
+                      <Image
+                        src="/game-cards/marvel-rivals-home-iron-man.png"
+                        alt=""
+                        width={379}
+                        height={659}
+                        sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 60vw"
+                        className="pointer-events-none absolute right-[2%] top-[3%] h-[136%] w-auto max-w-none object-contain sm:h-[140%]"
+                      />
+                    </>
+                  ) : null}
+
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050807]/88 via-[#050807]/12 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
 
                   {game.slug === "marvel-rivals" ? (
-                    <>
-                      <div className="absolute left-5 top-5 z-10 h-9 w-32">
-                        <Image
-                          src="/game-cards/marvel-rivals-logo.png"
-                          alt="Marvel Rivals"
-                          fill
-                          sizes="144px"
-                          className="object-contain object-left"
-                        />
-                      </div>
-                      <div className="pointer-events-none absolute left-5 top-[54%] z-[1] -translate-y-1/2 select-none font-gaming-value text-[clamp(1.6rem,3.2vw,3.1rem)] uppercase tracking-[-0.04em] text-[#F4F7F5]/[0.035]">
-                        Marvel Rivals
-                      </div>
-                    </>
+                    <Image
+                      src="/game-cards/marvel-rivals-home-logo.png"
+                      alt="Marvel Rivals"
+                      width={2048}
+                      height={804}
+                      sizes="(min-width: 1280px) 200px, (min-width: 768px) 21vw, 44vw"
+                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[44%] max-w-[200px] object-contain sm:left-5 sm:top-5 sm:w-[42%]"
+                    />
                   ) : null}
 
                   {game.slug === "rainbow-six-siege" ? (
