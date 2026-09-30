@@ -455,8 +455,8 @@ export default async function Home() {
                       alt="Marvel Rivals"
                       width={2048}
                       height={804}
-                      sizes="(min-width: 1280px) 200px, (min-width: 768px) 21vw, 44vw"
-                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[44%] max-w-[200px] object-contain sm:left-5 sm:top-5 sm:w-[42%]"
+                      sizes="(min-width: 640px) 134px, 116px"
+                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[116px] max-w-[38%] object-contain sm:left-5 sm:top-5 sm:w-[134px]"
                     />
                   ) : null}
 
