@@ -498,6 +498,12 @@ export function RainbowSixSiegePlacementsConfigurator() {
                       <span className="font-semibold text-white/65">+{formatUsdCents(modifier.amountCents)}</span>
                     </div>
                   ))}
+                  {metadata.fixedChargesCents > 0 ? (
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-white/42">Streaming</span>
+                      <span className="font-semibold text-white/65">+{formatUsdCents(metadata.fixedChargesCents)}</span>
+                    </div>
+                  ) : null}
                   {metadata.discountCents > 0 ? (
                     <div className="flex items-center justify-between gap-3 text-emerald-100/75">
                       <span>Progressive discount ({metadata.discountBps / 100}%)</span>

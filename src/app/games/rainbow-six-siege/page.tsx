@@ -1,3 +1,4 @@
+import { overviewServiceGridClassName, overviewServiceCardLayoutClassName, overviewServicePreviewLayoutClassName } from "@/features/catalog/components/overview-service-card-layout";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,18 +40,18 @@ const servicePresentation: Record<
 };
 
 function SiegeServicePreview({ slug }: { slug: RainbowSixSiegeServiceSlug }) {
-  const base = "relative mt-6 flex min-h-[6.5rem] items-center overflow-hidden rounded-xl border border-white/[0.07] bg-black/20 px-4 py-3 transition-colors group-hover:border-emerald-300/[0.15]";
+  const base = `${overviewServicePreviewLayoutClassName} border border-white/[0.07] bg-black/20 transition-colors group-hover:border-emerald-300/[0.15]`;
 
   if (slug === "rank-boost") {
     return (
       <div className={`${base} justify-between gap-3`} aria-label="Illustrative rank progression">
-        <span className="flex min-w-0 items-center gap-2">
-          <RainbowSixSiegeRankBadge rank="gold-v" size={48} />
+        <span className="flex min-w-0 flex-col items-center gap-0.5 text-center">
+          <RainbowSixSiegeRankBadge rank="gold-v" size={40} />
           <span className="text-[10px] text-white/55">Example<br /><strong className="text-xs text-white/80">Gold</strong></span>
         </span>
         <ArrowRight className="size-4 shrink-0 text-emerald-200/55" aria-hidden="true" />
-        <span className="flex min-w-0 items-center gap-2">
-          <RainbowSixSiegeRankBadge rank="diamond-v" size={48} />
+        <span className="flex min-w-0 flex-col items-center gap-0.5 text-center">
+          <RainbowSixSiegeRankBadge rank="diamond-v" size={40} />
           <span className="text-[10px] text-white/55">Illustrative target<br /><strong className="text-xs text-white/80">Diamond</strong></span>
         </span>
       </div>
@@ -60,7 +61,7 @@ function SiegeServicePreview({ slug }: { slug: RainbowSixSiegeServiceSlug }) {
   if (slug === "competitive-wins") {
     return (
       <div className={`${base} gap-3`} aria-label="Fixed competitive wins preview">
-        <RainbowSixSiegeRankBadge rank="silver-v" size={48} />
+        <RainbowSixSiegeRankBadge rank="silver-v" size={40} />
         <span className="min-w-0">
           <span className="block text-xs font-semibold text-white/80">Fixed competitive wins</span>
           <span className="mt-2 flex gap-1.5" aria-hidden="true">
@@ -75,7 +76,7 @@ function SiegeServicePreview({ slug }: { slug: RainbowSixSiegeServiceSlug }) {
   if (slug === "placements-boost") {
     return (
       <div className={`${base} gap-3`} aria-label="Previous season rank and placement matches preview">
-        <RainbowSixSiegeRankBadge rank="gold" size={48} />
+        <RainbowSixSiegeRankBadge rank="gold" size={40} />
         <span className="min-w-0">
           <span className="block text-xs font-semibold text-white/80">Previous season rank</span>
           <span className="mt-1 block text-[10px] text-white/55">Placement matches <span aria-hidden="true" className="text-emerald-200/70">● ● ● ● ●</span></span>
@@ -87,7 +88,7 @@ function SiegeServicePreview({ slug }: { slug: RainbowSixSiegeServiceSlug }) {
 
   return (
     <div className={`${base} gap-3`} aria-label="Unrated match count preview">
-      <span className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/[0.12] bg-white/[0.035] text-xs font-bold tracking-[0.1em] text-white/65">NR</span>
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/[0.12] bg-white/[0.035] text-xs font-bold tracking-[0.1em] text-white/65">NR</span>
       <span className="min-w-0">
         <span className="block text-xs font-semibold text-white/80">Unranked play</span>
         <span className="mt-2 flex gap-1.5" aria-hidden="true">{[1, 2, 3, 4].map((game) => <span key={game} className="h-2 w-7 rounded-full bg-white/20" />)}</span>
@@ -233,7 +234,8 @@ export default function RainbowSixSiegeOverviewPage() {
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2">
+          <p className="mt-7 text-[11px] font-medium tracking-[0.01em] text-white/45 md:hidden">Swipe to explore 4 services</p>
+          <div className={`${overviewServiceGridClassName} mt-3 md:mt-9`}>
             {rainbowSixSiegeServiceFoundations.map((service) => {
               const presentation = servicePresentation[service.slug];
 
@@ -263,7 +265,7 @@ export default function RainbowSixSiegeOverviewPage() {
                   key={service.id}
                   href={service.route}
                   aria-labelledby={`siege-service-${service.slug}`}
-                  className="group flex min-h-[21rem] flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090b0a] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-emerald-300/[0.18] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-emerald-300/35 motion-reduce:transform-none motion-reduce:transition-none sm:p-6"
+                  className={`group ${overviewServiceCardLayoutClassName} border border-white/[0.08] bg-[#090b0a] outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-emerald-300/[0.18] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-emerald-300/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none`}
                 >
                   {card}
                 </Link>

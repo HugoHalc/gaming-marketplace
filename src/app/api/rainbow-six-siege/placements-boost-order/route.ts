@@ -99,6 +99,7 @@ export async function POST(request: Request) {
         preDiscountSubtotalCents: result.metadata.preDiscountSubtotalCents,
         discountBps: result.metadata.discountBps,
         discountCents: result.metadata.discountCents,
+        fixedChargesCents: result.metadata.fixedChargesCents,
         finalTotalCents: result.metadata.finalTotalCents,
         checkoutEligible: result.metadata.checkoutEligible,
         currency: "USD",

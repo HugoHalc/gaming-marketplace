@@ -119,8 +119,8 @@ test("all four R6S rendered platform groups use canonical decorative masks with 
 });
 
 
-test("R6S platform pricing remains service-specific and unchanged", () => {
-  const expected = [[821, 985, 985], [959, 1151, 1151], [525, 630, 630], [503, 503, 503]];
+test("R6S platform pricing follows the approved service-specific rules", () => {
+  const expected = [[821, 985, 985], [959, 1151, 1151], [525, 630, 630], [503, 604, 604]];
   for (const [index, item] of cases.filter((c) => c.game === "rainbow-six-siege").entries()) {
     const calculate = load(path.join(root, `src/features/pricing/server/rainbow-six-siege-${item.calc}-pricing`))[item.fn];
     for (const [p, platform] of ["pc", "xbox", "playstation"].entries()) {

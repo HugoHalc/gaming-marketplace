@@ -25,8 +25,8 @@ import type { ServiceSummary } from "@/features/catalog/types/catalog";
 const storefrontHighlights = [
   {
     icon: ShieldCheck,
-    title: "Server pricing",
-    description: "Every quote is recalculated server-side before the order is stored.",
+    title: "Clear pricing",
+    description: "Review the price for your selected service and options before checkout.",
   },
   {
     icon: Gamepad2,
@@ -35,15 +35,15 @@ const storefrontHighlights = [
   },
   {
     icon: Check,
-    title: "Existing order flow",
-    description: "Checkout, dashboard tracking, chat, and secure order handling stay on the existing platform flow.",
+    title: "Track your order",
+    description: "Follow your order and communicate through your BoostingPedia dashboard.",
   },
 ] as const;
 
 export const metadata: Metadata = {
   title: "Overwatch Boosting Services",
   description:
-    "Configure Overwatch Rank Boost, Competitive Wins, Competitive Drives, Placements Boost, and Unrated Matches with server-validated pricing.",
+    "Configure Overwatch Rank Boost, Competitive Wins, Competitive Drives, Placements Boost, and Unrated Matches with clear pricing.",
   alternates: { canonical: "/games/overwatch-2" },
 };
 
@@ -262,11 +262,11 @@ export default async function OverwatchPage() {
               Overwatch Boosting Services
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--muted-foreground)] sm:text-lg">
-              Choose the service that matches your goal, then configure rank, role or Open Queue, server, platform, boost method, and optional extras from one dedicated Overwatch flow.
+              Choose the service that matches your goal, then configure rank, role or Open Queue, server, platform, boost method, and optional extras.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-2">
-              {["5 active services", "PC & console", "Server-validated pricing"].map((item) => (
+              {["5 active services", "PC & console", "Clear pricing"].map((item) => (
                 <span key={item} className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65">
                   {item}
                 </span>
@@ -295,7 +295,7 @@ export default async function OverwatchPage() {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--muted-foreground)] lg:text-right">
-              Every service uses its own server-side pricing rules and the same BoostingPedia order workflow.
+              Choose your service, review the available options, and see your price before checkout.
             </p>
           </div>
 
@@ -328,10 +328,10 @@ export default async function OverwatchPage() {
             <div className="max-w-xl">
               <p className="text-sm font-semibold text-amber-200/75">Built for Overwatch</p>
               <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl">
-                One visual system. Overwatch-specific configuration.
+                Choose your goal. Customize your Overwatch service.
               </h2>
               <p className="mt-4 text-sm leading-7 text-[var(--muted-foreground)]">
-                The storefront follows the same premium BoostingPedia family as the other implemented games while keeping Overwatch-specific ranks, roles, servers, platforms, and service logic.
+                Choose the available rank, role, server, platform, and service options that match how you play Overwatch.
               </p>
             </div>
 

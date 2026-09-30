@@ -1,6 +1,7 @@
 import { meetsMinimumOrderTotal } from "../../orders/minimum-order";
 import {
   BOOSTINGPEDIA_REFERENCE_SHARE_BPS,
+  STREAMING_FIXED_CENTS,
   progressiveDiscountBps,
   roundHalfUp,
   type RainbowSixSiegeRankQuote,
@@ -42,11 +43,11 @@ const servers = {
   "middle-east": { label: "Middle East", bps: 0 },
 } as const;
 const extras = {
-  playOffline: { label: "Play Offline", bps: 0 },
-  specificOperators: { label: "Specific Operators", bps: 0 },
-  streaming: { label: "Streaming", bps: 1000 },
-  expressDelivery: { label: "Express Delivery", bps: 2000 },
-  highKillCount: { label: "High Kill Count", bps: 4000 },
+  playOffline: { label: "Play Offline", bps: 0, fixedCents: 0 },
+  specificOperators: { label: "Specific Operators", bps: 0, fixedCents: 0 },
+  streaming: { label: "Streaming", bps: 0, fixedCents: STREAMING_FIXED_CENTS },
+  expressDelivery: { label: "Express Delivery", bps: 2000, fixedCents: 0 },
+  highKillCount: { label: "High Kill Count", bps: 4000, fixedCents: 0 },
 } as const;
 const allowedKeys = new Set([
   "previousSeasonRank", "games", "platform", "gameMode", "server", ...Object.keys(extras),
@@ -80,6 +81,7 @@ export type RainbowSixSiegePlacementsQuoteMetadata = {
   totalModifierBps: number;
   percentageModifiers: Array<{ label: string; display: string; amountCents: number }>;
   percentageAdjustedCents: number;
+  fixedChargesCents: number;
   preDiscountSubtotalCents: number;
   discountBps: number;
   discountCents: number;
@@ -128,7 +130,8 @@ export function calculateRainbowSixSiegePlacementsPricing(
   if (delta !== 0 && percentageModifiers.length) {
     percentageModifiers[percentageModifiers.length - 1].amountCents += delta;
   }
-  const preDiscountSubtotalCents = percentageAdjustedCents;
+  const fixedChargesCents = selectedExtras.reduce((sum, item) => sum + item.fixedCents, 0);
+  const preDiscountSubtotalCents = percentageAdjustedCents + fixedChargesCents;
   const discountBps = progressiveDiscountBps(preDiscountSubtotalCents);
   const discountCents = roundHalfUp(preDiscountSubtotalCents * discountBps, 10000);
   const finalTotalCents = preDiscountSubtotalCents - discountCents;
@@ -143,7 +146,8 @@ export function calculateRainbowSixSiegePlacementsPricing(
     breakdown: [
       { label: `Placements · ${previousSeasonRankLabel} · ${games} ${games === 1 ? "game" : "games"}`, amount: dollars(basePriceCents) },
       ...percentageModifiers.map((item) => ({ label: `${item.label} (${item.display})`, amount: dollars(item.amountCents) })),
-      ...selectedExtras.filter((item) => item.bps === 0).map((item) => ({ label: item.label, amount: 0 })),
+      ...selectedExtras.filter((item) => item.fixedCents > 0).map((item) => ({ label: `${item.label} (+$10.00)`, amount: dollars(item.fixedCents) })),
+      ...selectedExtras.filter((item) => item.bps === 0 && item.fixedCents === 0).map((item) => ({ label: item.label, amount: 0 })),
       ...(discountCents ? [{ label: `Progressive discount (${discountBps / 100}% OFF)`, amount: -dollars(discountCents) }] : []),
     ],
   };
@@ -154,7 +158,7 @@ export function calculateRainbowSixSiegePlacementsPricing(
       platformLabel: platform.label, modeLabel: mode.label, serverLabel: server.label,
       selectedCustomizationLabels: selectedExtras.map((item) => item.label),
       referenceCents, basePriceCents, totalModifierBps, percentageModifiers,
-      percentageAdjustedCents, preDiscountSubtotalCents, discountBps, discountCents,
+      percentageAdjustedCents, fixedChargesCents, preDiscountSubtotalCents, discountBps, discountCents,
       finalTotalCents, checkoutEligible, pricingVersion: R6_PLACEMENTS_RULE_SET_VERSION,
     },
   };

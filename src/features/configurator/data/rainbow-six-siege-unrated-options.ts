@@ -4,7 +4,7 @@ export type { RainbowSixSiegeUnratedQuoteMetadata } from "@/features/pricing/ser
 import { rainbowSixSiegePlatformOptions, rainbowSixSiegeServerOptions } from "./rainbow-six-siege-rank-options";
 
 export const R6_UNRATED_SERVICE_SLUG = "unrated-matches" as const;
-export const rainbowSixSiegeUnratedPlatformOptions = rainbowSixSiegePlatformOptions.map((option) => ({ ...option, meta: "FREE" }));
+export const rainbowSixSiegeUnratedPlatformOptions = rainbowSixSiegePlatformOptions;
 export const rainbowSixSiegeUnratedServerOptions = rainbowSixSiegeServerOptions.map((option) => ({ ...option, meta: "FREE" }));
 export const rainbowSixSiegeUnratedModeOptions = [
   { value: "solo", label: "Solo", meta: "FREE", description: "The booster completes the matches on your account." },

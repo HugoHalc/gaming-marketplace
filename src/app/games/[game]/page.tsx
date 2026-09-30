@@ -1,3 +1,4 @@
+import { overviewServiceGridClassName, overviewServiceCardLayoutClassName, overviewServicePreviewLayoutClassName } from "@/features/catalog/components/overview-service-card-layout";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -163,7 +164,7 @@ function overviewMeta(
 
 function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }) {
   const base =
-    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-blue-300/[0.10] group-hover:bg-blue-300/[0.018] group-hover:text-white/90";
+    `${overviewServicePreviewLayoutClassName} border border-white/[0.055] bg-black/15 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-blue-300/[0.10] group-hover:bg-blue-300/[0.018] group-hover:text-white/90`;
 
   if (service.slug === "rank-boost") {
     const ranks = [
@@ -307,7 +308,7 @@ function RocketLeagueServiceMicrovisual({ service }: { service: ServiceSummary }
 
 function ValorantServiceMicrovisual({ service }: { service: ServiceSummary }) {
   const base =
-    "relative mt-5 flex h-[5.15rem] items-center overflow-hidden rounded-xl border border-white/[0.055] bg-black/15 px-3.5 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-rose-300/[0.10] group-hover:bg-rose-300/[0.018] group-hover:text-white/90";
+    `${overviewServicePreviewLayoutClassName} border border-white/[0.055] bg-black/15 text-white/70 transition-[border-color,background-color,color] duration-200 group-hover:border-rose-300/[0.10] group-hover:bg-rose-300/[0.018] group-hover:text-white/90`;
 
   if (service.slug === "rank-boost") {
     const ranks = [
@@ -420,7 +421,7 @@ function ServiceShowcaseCard({
     return (
       <Link
         href={`/games/${gameSlug}/${service.slug}`}
-        className={`group flex min-h-[22rem] w-[82vw] max-w-[20rem] shrink-0 snap-start flex-col rounded-[1.35rem] border border-white/[0.08] bg-[#090B0A] p-5 outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none sm:p-6 md:h-full md:w-auto md:max-w-none md:shrink md:snap-none ${isRocketLeague ? "hover:border-blue-300/[0.18] focus-visible:ring-blue-300/35" : "hover:border-rose-300/[0.18] focus-visible:ring-rose-300/35"}`}
+        className={`group ${overviewServiceCardLayoutClassName} border border-white/[0.08] bg-[#090B0A] outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none ${isRocketLeague ? "hover:border-blue-300/[0.18] focus-visible:ring-blue-300/35" : "hover:border-rose-300/[0.18] focus-visible:ring-rose-300/35"}`}
       >
         <p className={`font-gaming-label text-[10px] uppercase tracking-[0.13em] ${isRocketLeague ? "text-blue-200/65" : "text-rose-200/65"}`}>
           {meta?.badge ?? categoryLabel(service.category)}
@@ -723,7 +724,7 @@ export default async function GamePage({ params }: GamePageProps) {
             </p>
           ) : null}
 
-          <div className={`-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:items-stretch md:overflow-visible md:px-0 md:pb-0 md:snap-none xl:grid-cols-3 ${isRocketLeague || isValorant ? "mt-3 md:mt-9" : "mt-9"}`}>
+          <div className={`${overviewServiceGridClassName} ${isRocketLeague || isValorant ? "mt-3 md:mt-9" : "mt-9"}`}>
             {game.services.length > 0
               ? game.services.map((service, index) => (
                   <ServiceShowcaseCard

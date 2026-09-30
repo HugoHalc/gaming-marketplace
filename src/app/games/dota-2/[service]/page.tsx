@@ -40,14 +40,14 @@ export async function generateMetadata({
   const isHeroLevel = service.slug === "hero-level-boost";
   return {
     title: isMmrBoost
-      ? "Dota 2 MMR Boost | BoostingPedia"
+      ? "Dota 2 MMR Boost"
       : isNetWins
-        ? "Dota 2 Net Wins | BoostingPedia"
+        ? "Dota 2 Net Wins"
         : isCalibration
-          ? "Dota 2 Calibration Matches | BoostingPedia"
+          ? "Dota 2 Calibration Matches"
           : isHeroLevel
-            ? "Dota Plus Hero Level | BoostingPedia"
-            : `${service.name} | Dota 2 | BoostingPedia`,
+            ? "Dota Plus Hero Level"
+            : `${service.name} | Dota 2`,
     description: isMmrBoost
       ? "Configure your current MMR, target MMR and preferred boost options."
       : isNetWins

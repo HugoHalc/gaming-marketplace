@@ -25,7 +25,7 @@ export const rainbowSixSiegePlacementsModeOptions = [
 export const rainbowSixSiegePlacementsCustomizationOptions = [
   { key: "playOffline", label: "Play Offline", meta: "FREE", description: "Request offline status where supported." },
   { key: "specificOperators", label: "Specific Operators", meta: "FREE", description: "Add an operator preference to your order." },
-  { key: "streaming", label: "Streaming", meta: "+10%", description: "Request a stream for the active session when available." },
+  { key: "streaming", label: "Streaming", meta: "+$10.00", description: "Request a stream for the active session when available." },
   { key: "expressDelivery", label: "Express Delivery", meta: "+20%", description: "Prioritize the order in the eligible fulfillment queue." },
   { key: "highKillCount", label: "High Kill Count", meta: "+40%", description: "Request an emphasis on higher-kill match performance." },
 ] as const;

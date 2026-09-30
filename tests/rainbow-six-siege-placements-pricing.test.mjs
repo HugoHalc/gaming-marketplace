@@ -75,15 +75,15 @@ test("platform, mode, region and paid extras use additive modifiers", () => {
   assert.equal(cents({ ...gold, platform: "playstation" }), 630);
   assert.equal(cents({ ...gold, gameMode: "duo" }), 945);
   assert.equal(cents({ ...gold, server: "oceania" }), 578);
-  assert.equal(cents({ ...gold, streaming: true }), 578);
+  assert.equal(cents({ ...gold, streaming: true }), 1525);
   assert.equal(cents({ ...gold, expressDelivery: true }), 630);
   assert.equal(cents({ ...gold, highKillCount: true }), 735);
   const extras = price({ ...gold, streaming: true, expressDelivery: true, highKillCount: true });
-  assert.equal(extras.metadata.totalModifierBps, 7000);
-  assert.equal(extras.metadata.finalTotalCents, 893);
+  assert.equal(extras.metadata.totalModifierBps, 6000);
+  assert.equal(extras.metadata.finalTotalCents, 1840);
   const together = price({ ...gold, platform: "xbox", gameMode: "duo", server: "oceania", streaming: true });
-  assert.equal(together.metadata.totalModifierBps, 12000);
-  assert.equal(together.metadata.finalTotalCents, 1155);
+  assert.equal(together.metadata.totalModifierBps, 11000);
+  assert.equal(together.metadata.finalTotalCents, 2103);
   assert.equal(cents({ ...gold, playOffline: true, specificOperators: true }), 525);
   assert.deepEqual(price({ ...gold, playOffline: true, specificOperators: true }).metadata.selectedCustomizationLabels, ["Play Offline", "Specific Operators"]);
 });
@@ -93,7 +93,7 @@ test("modifiers can make a below-minimum order eligible without raising its disp
   const raised = price({ previousSeasonRank: "emerald", games: 2, streaming: true });
   assert.equal(low.quote.total, 4.73);
   assert.equal(low.metadata.checkoutEligible, false);
-  assert.equal(raised.quote.total, 5.20);
+  assert.equal(raised.quote.total, 14.73);
   assert.equal(raised.metadata.checkoutEligible, true);
 });
 
@@ -103,11 +103,11 @@ test("global progressive boundaries, one discount and line totals remain exact",
   }
   const result = price({ previousSeasonRank: "champion", games: 5, gameMode: "duo", platform: "xbox", streaming: true, highKillCount: true });
   const { metadata, quote } = result;
-  assert.equal(metadata.totalModifierBps, 15000);
-  assert.equal(metadata.preDiscountSubtotalCents, 6563);
+  assert.equal(metadata.totalModifierBps, 14000);
+  assert.equal(metadata.preDiscountSubtotalCents, 7300);
   assert.equal(metadata.discountBps, 300);
-  assert.equal(metadata.discountCents, 197);
-  assert.equal(metadata.finalTotalCents, 6366);
+  assert.equal(metadata.discountCents, 219);
+  assert.equal(metadata.finalTotalCents, 7081);
   assert.equal(Math.round(quote.breakdown.reduce((sum, item) => sum + item.amount, 0) * 100), metadata.finalTotalCents);
   assert.equal(quote.ruleSetVersion, version);
 });
@@ -143,4 +143,17 @@ test("quote, order, client and catalog preserve authoritative checkout rules", (
   assert.match(client, /disabled=\{!canCheckout \|\| isCreatingOrder\}/);
   assert.match(client, /<MinimumOrderNotice/);
   assert.match(catalog, /slug: "unrated-matches"[\s\S]*?status: "active"/);
+});
+
+
+test("Streaming is a fixed 1000 cents for every placement rank and game count", () => {
+  for (const rank of Object.keys(reference)) for (const games of [1, 2, 3, 4, 5]) {
+    const base = price({ previousSeasonRank: rank, games });
+    const streamed = price({ previousSeasonRank: rank, games, streaming: true });
+    assert.equal(streamed.metadata.fixedChargesCents, 1000);
+    assert.equal(streamed.metadata.preDiscountSubtotalCents - base.metadata.preDiscountSubtotalCents, 1000);
+    assert.equal(streamed.metadata.totalModifierBps, base.metadata.totalModifierBps);
+    assert.ok(streamed.quote.breakdown.some((line) => line.label === "Streaming (+$10.00)" && line.amount === 10));
+    assert.ok(!streamed.metadata.percentageModifiers.some((line) => line.label === "Streaming"));
+  }
 });

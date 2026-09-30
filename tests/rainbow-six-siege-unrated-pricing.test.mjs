@@ -42,10 +42,11 @@ test('malformed quantities, incomplete selections and unknown keys are rejected'
   assert.throws(()=>price({expressDelivery:'true'}));
 });
 
-test('platform and all regions are operational selectors with zero price effect', () => {
+test('PC remains free, consoles add 20%, and all regions remain free', () => {
   for (const platform of ['pc','xbox','playstation']) for (const server of ['europe','north-america','latin-america','asia','oceania','brazil','middle-east']) {
     const result=price({games:4,platform,server});
-    assert.equal(result.metadata.finalTotalCents,503);
+    assert.equal(result.metadata.finalTotalCents,platform==='pc'?503:604);
+    assert.equal(result.metadata.totalModifierBps,platform==='pc'?0:2000);
     assert.ok(result.metadata.platformLabel);
     assert.ok(result.metadata.serverLabel);
   }
@@ -108,4 +109,17 @@ test('client quote lifecycle, order recalculation, immutable snapshot and route 
   assert.match(quote,/calculateRainbowSixSiegeUnratedPricing\(selection\)/);
   assert.match(page,/RainbowSixSiegeUnratedConfigurator/);
   assert.match(catalog,/slug: "unrated-matches"[\s\S]*?status: "active"/);
+});
+
+
+test('console percentages combine additively with retained extras and fixed Streaming', () => {
+  for (const platform of ['xbox','playstation']) {
+    const result=price({games:4,platform,expressDelivery:true,highKillCount:true,streaming:true});
+    assert.equal(result.metadata.totalModifierBps,8000);
+    assert.equal(result.metadata.percentageAdjustedCents,905);
+    assert.equal(result.metadata.fixedChargesCents,1000);
+    assert.equal(result.metadata.finalTotalCents,1905);
+    assert.equal(result.metadata.checkoutEligible,true);
+    assert.equal(Math.round(result.quote.breakdown.reduce((sum,line)=>sum+line.amount,0)*100),1905);
+  }
 });

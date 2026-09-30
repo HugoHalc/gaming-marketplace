@@ -1,3 +1,5 @@
+import { overviewServiceGridClassName, overviewServiceCardLayoutClassName, overviewServicePreviewLayoutClassName } from "@/features/catalog/components/overview-service-card-layout";
+import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,7 +17,7 @@ import {
 } from "@/features/catalog/data/dota-2-foundation";
 
 export const metadata: Metadata = {
-  title: "Dota 2 Boosting Services | BoostingPedia",
+  title: "Dota 2 Boosting Services",
   description:
     "Choose a focused Dota 2 service for MMR progression, net wins, calibration matches, or Dota Plus hero progression.",
   alternates: { canonical: "/games/dota-2" },
@@ -30,20 +32,21 @@ const serviceMeta: Record<Dota2ServiceCategory, { label: string }> = {
 };
 
 function Dota2ServicePreview({ slug }: { slug: string }) {
+  const previewClassName = `${overviewServicePreviewLayoutClassName} border border-white/[0.06] bg-black/20`;
   if (slug === "mmr-boost") {
     const fromBadge = getDota2RankBadge("Guardian");
     const toBadge = getDota2RankBadge("Divine");
     return (
-      <div className="mt-5 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative MMR progression preview">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            {fromBadge ? <Image src={fromBadge} alt="" width={52} height={52} className="size-12 shrink-0 object-contain" /> : null}
+      <div className={previewClassName} aria-label="Illustrative MMR progression preview">
+        <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-col items-center gap-0.5 text-center">
+            {fromBadge ? <Image src={fromBadge} alt="" width={52} height={52} className="size-9 shrink-0 object-contain" /> : null}
             <div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Illustrative start</p><p className="mt-1 text-xs font-semibold text-white/70">Guardian</p></div>
           </div>
           <ArrowRight className="size-4 shrink-0 text-red-200/45" aria-hidden="true" />
-          <div className="flex min-w-0 items-center gap-2.5 text-right">
+          <div className="flex min-w-0 flex-col-reverse items-center gap-0.5 text-center">
             <div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Illustrative target</p><p className="mt-1 text-xs font-semibold text-white/70">Divine</p></div>
-            {toBadge ? <Image src={toBadge} alt="" width={52} height={52} className="size-12 shrink-0 object-contain" /> : null}
+            {toBadge ? <Image src={toBadge} alt="" width={52} height={52} className="size-9 shrink-0 object-contain" /> : null}
           </div>
         </div>
       </div>
@@ -53,11 +56,11 @@ function Dota2ServicePreview({ slug }: { slug: string }) {
   if (slug === "net-wins") {
     const badge = getDota2RankBadge("Archon");
     return (
-      <div className="mt-5 flex min-h-[5.8rem] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative Net Wins progress preview">
-        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain" /> : null}
+      <div className={`${previewClassName} gap-3`} aria-label="Illustrative Net Wins progress preview">
+        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-10 shrink-0 object-contain" /> : null}
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Competitive context</p><span className="font-gaming-label text-[9px] text-red-200/55">NET WINS</span></div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-red-400/30 to-red-200/65" /></div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-red-400/30 to-red-200/65" /></div>
           <p className="mt-2 text-[10px] text-white/35">Wins minus losses · visual service preview</p>
         </div>
       </div>
@@ -67,21 +70,22 @@ function Dota2ServicePreview({ slug }: { slug: string }) {
   if (slug === "calibration-matches") {
     const badge = getDota2RankBadge("Ancient");
     return (
-      <div className="mt-5 flex min-h-[5.8rem] items-center gap-4 rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative calibration preview">
+      <div className={`${previewClassName} gap-3`} aria-label="Illustrative calibration preview">
         <div className="min-w-0 flex-1">
           <p className="text-[9px] uppercase tracking-[0.12em] text-white/30">Calibration context</p>
-          <div className="mt-3 flex items-center gap-1.5" aria-hidden="true">
+          <div className="mt-2 flex items-center gap-1.5" aria-hidden="true">
             <span className="h-1.5 flex-1 rounded-full bg-red-200/55" /><span className="h-1.5 flex-1 rounded-full bg-red-200/38" /><span className="h-1.5 flex-1 rounded-full bg-white/[0.10]" /><span className="h-1.5 flex-1 rounded-full bg-white/[0.08]" />
           </div>
           <p className="mt-2 text-[10px] text-white/35">Placement context without a guaranteed outcome</p>
         </div>
-        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-14 shrink-0 object-contain" /> : null}
+        {badge ? <Image src={badge} alt="" width={58} height={58} className="size-10 shrink-0 object-contain" /> : null}
       </div>
     );
   }
 
   return (
-    <div className="mt-5 min-h-[5.8rem] rounded-xl border border-white/[0.06] bg-black/20 p-4" aria-label="Illustrative Dota Plus Hero Level progression preview">
+    <div className={previewClassName} aria-label="Illustrative Dota Plus Hero Level progression preview">
+      <div className="min-w-0 w-full">
       <div className="flex items-center justify-between gap-3">
         <span className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-white/35">Current level</span>
         <ArrowRight className="size-4 text-red-200/40" aria-hidden="true" />
@@ -89,6 +93,7 @@ function Dota2ServicePreview({ slug }: { slug: string }) {
       </div>
       <div className="mt-3 flex items-center gap-2" aria-hidden="true"><span className="size-2 rounded-full border border-red-200/35 bg-[#090D0B]" /><span className="h-px flex-1 bg-gradient-to-r from-red-300/20 via-red-200/55 to-red-300/20" /><span className="size-3 rounded-full border border-red-200/55 bg-red-300/10" /></div>
       <p className="mt-2 text-[10px] text-white/35">One hero · Dota Plus level progression</p>
+      </div>
     </div>
   );
 }
@@ -194,14 +199,15 @@ export default function Dota2FoundationPage() {
             </p>
           </div>
 
-          <div className="mt-9 grid gap-4 md:grid-cols-2">
+          <p className="mt-7 text-[11px] font-medium tracking-[0.01em] text-white/45 md:hidden">Swipe to explore 4 services</p>
+          <div className={`${overviewServiceGridClassName} mt-3 md:mt-9`}>
             {dota2ServiceFoundations.map((service) => {
               const meta = serviceMeta[service.category];
               return (
                 <Link
                   key={service.id}
                   href={service.route}
-                  className="group flex min-h-[21rem] flex-col rounded-[1.45rem] border border-white/[0.08] bg-[#090B0A] p-5 transition-[transform,border-color,background-color] hover:-translate-y-0.5 hover:border-red-300/[0.16] hover:bg-[#0E1411] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none sm:p-6"
+                  className={`group ${overviewServiceCardLayoutClassName} border border-white/[0.08] bg-[#090B0A] outline-none transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-red-300/[0.16] hover:bg-[#0E1411] focus-visible:ring-2 focus-visible:ring-red-300/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050807] motion-reduce:transform-none motion-reduce:transition-none`}
                 >
                   <div>
                     <p className="font-gaming-label text-[10px] uppercase tracking-[0.13em] text-red-200/55">{meta.label}</p>
@@ -211,19 +217,7 @@ export default function Dota2FoundationPage() {
 
                   <Dota2ServicePreview slug={service.slug} />
 
-                  <div className="mt-auto pt-5">
-                    <div className="mb-4 h-px bg-gradient-to-r from-white/[0.10] to-transparent" />
-                    <span className="inline-flex items-center text-xs font-semibold text-[#82F5A4]">
-                      {service.slug === "mmr-boost"
-                        ? "Configure MMR Boost"
-                        : service.slug === "net-wins"
-                          ? "Configure Net Wins"
-                          : service.slug === "calibration-matches"
-                            ? "Configure Calibration Matches"
-                            : "Configure Hero Level"}
-                      <ArrowRight className="ml-2 size-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
-                    </span>
-                  </div>
+                  <OverviewServiceCardAction label={service.slug === "hero-level-boost" ? "Configure Hero Level" : `Configure ${service.name}`} />
                 </Link>
               );
             })}

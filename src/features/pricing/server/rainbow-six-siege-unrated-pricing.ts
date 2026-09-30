@@ -13,7 +13,9 @@ export const R6_UNRATED_REFERENCE_CENTS = [179, 359, 538, 718, 897, 1076, 1256, 
 export type RainbowSixSiegeUnratedSelection = Record<string, string | number | boolean>;
 
 const platforms = {
-  pc: "PC", xbox: "Xbox", playstation: "PlayStation",
+  pc: { label: "PC", bps: 0 },
+  xbox: { label: "Xbox", bps: 2000 },
+  playstation: { label: "PlayStation", bps: 2000 },
 } as const;
 const servers = {
   europe: "Europe", "north-america": "North America", "latin-america": "Latin America",
@@ -67,7 +69,7 @@ export function calculateRainbowSixSiegeUnratedPricing(
   if (typeof games !== "number" || !Number.isInteger(games) || games < 1 || games > 10) {
     throw new Error("Select 1 to 10 games.");
   }
-  const platformLabel = option(platforms, selection.platform, "platform");
+  const platform = option(platforms, selection.platform, "platform");
   const serverLabel = option(servers, selection.server, "server");
   const mode = option(modes, selection.gameMode, "game mode");
   const selectedExtras = (Object.keys(extras) as Array<keyof typeof extras>).filter((key) => {
@@ -77,7 +79,7 @@ export function calculateRainbowSixSiegeUnratedPricing(
 
   const referenceCents = R6_UNRATED_REFERENCE_CENTS[games - 1];
   const basePriceCents = roundHalfUp(referenceCents * BOOSTINGPEDIA_REFERENCE_SHARE_BPS, 10000);
-  const percentageSources = [mode, ...selectedExtras].filter((item) => item.bps > 0);
+  const percentageSources = [platform, mode, ...selectedExtras].filter((item) => item.bps > 0);
   const totalModifierBps = percentageSources.reduce((sum, item) => sum + item.bps, 0);
   const percentageAdjustedCents = roundHalfUp(basePriceCents * (10000 + totalModifierBps), 10000);
   const percentageModifiers = percentageSources.map((item) => ({
@@ -107,7 +109,7 @@ export function calculateRainbowSixSiegeUnratedPricing(
   return {
     quote,
     metadata: {
-      games, platformLabel, serverLabel, modeLabel: mode.label,
+      games, platformLabel: platform.label, serverLabel, modeLabel: mode.label,
       selectedCustomizationLabels: selectedExtras.map((item) => item.label),
       referenceCents, basePriceCents, percentageModifiers, totalModifierBps,
       percentageAdjustedCents, fixedChargesCents, preDiscountSubtotalCents,
