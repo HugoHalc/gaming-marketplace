@@ -38,7 +38,7 @@ const homeGameCardAssets = {
   "league-of-legends": "/game-cards/league-of-legends-home-card.webp",
   valorant: "/game-cards/valorant-home-card.webp",
   "marvel-rivals": "/game-cards/marvel-rivals-home-background.webp",
-  "overwatch-2": "/game-cards/overwatch.webp",
+  "overwatch-2": "/game-cards/overwatch-home-card.webp",
   "dota-2": dota2AssetFoundation.gameCard,
   "rainbow-six-siege": "/game-cards/rainbow-six-siege-home.webp",
 } as const;
@@ -454,6 +454,17 @@ export default async function Home() {
                     }`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#050807]/46 via-[#050807]/06 to-transparent" />
+
+                  {game.slug === "overwatch-2" ? (
+                    <Image
+                      src="/game-cards/overwatch-home-logo-light.png"
+                      alt="Overwatch"
+                      width={2033}
+                      height={1144}
+                      sizes="(min-width: 640px) 124px, 108px"
+                      className="pointer-events-none absolute left-4 top-4 z-10 h-auto w-[108px] max-w-[36%] object-contain sm:left-5 sm:top-5 sm:w-[124px]"
+                    />
+                  ) : null}
 
                   {game.slug === "valorant" ? (
                     <Image
