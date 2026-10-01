@@ -392,7 +392,8 @@ test("paid extras receive final cents without negative service prices or missing
 test("home games heading contains only customer title and retains responsive card layout", () => {
   const source = readFileSync(path.join(root, "src/app/page.tsx"), "utf8");
   const section = source.split('<section id="games"')[1].split('</section>')[0];
-  assert.match(section, /Select your game:/);
+  assert.match(section, /Select your game/);
+  assert.doesNotMatch(section, /Select your game:/);
   assert.doesNotMatch(section, /Choose your game|Jump straight into a game storefront/);
   assert.doesNotMatch(section.split('<h2')[0], /<p/);
   assert.match(section, /text-3xl.*sm:text-4xl.*lg:text-5xl/);

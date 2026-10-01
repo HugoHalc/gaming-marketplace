@@ -374,7 +374,7 @@ export default function Home() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <h2 className="text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
-                Select your game:
+                Select your game
               </h2>
             </div>
             <Link
