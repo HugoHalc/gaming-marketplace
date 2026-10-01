@@ -1,8 +1,10 @@
 "use client";
 
+import { GameServiceNavigation } from "./game-service-navigation";
+import { serviceNavigationGridClassName } from "@/features/catalog/components/service-page-shell";
+
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -515,44 +517,10 @@ export function LeagueOfLegendsPhaseTwoConfigurator({ gameSlug, service }: { gam
 
   return (
     <>
-      <nav aria-label="League of Legends services" className="mb-3 sm:mb-4 xl:hidden">
-        <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex min-w-max gap-2">
-            {serviceNavigation.map((item) => {
-              const active = service.slug === item.slug;
-              return (
-                <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`inline-flex h-11 items-center sm:h-10 justify-center whitespace-nowrap rounded-xl border px-3.5 text-xs font-semibold transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"}`}>
-                  {active ? <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" /> : null}
-                  {item.mobileLabel}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
 
-      <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
-        <aside className="hidden xl:block">
-          <nav aria-label="League of Legends services" className="sticky top-24 overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09] p-2.5">
-            <div className="px-2.5 pb-3 pt-2">
-              <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#E7C867]/80">League of Legends</p>
-              <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">Services</p>
-            </div>
-            <div className="space-y-1.5">
-              {serviceNavigation.map((item) => {
-                const active = service.slug === item.slug;
-                return (
-                  <Link key={item.slug} href={`/games/league-of-legends/${item.slug}`} aria-current={active ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-colors ${active ? "border-[#C89B3C]/35 bg-[#7A5B22]/15 text-[#F4F7F5]" : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"}`}>
-                    <span className="min-w-0 flex-1 truncate text-xs font-semibold">{item.label}</span>
-                    {active ? <span className="size-1.5 shrink-0 rounded-full bg-[#39E56F]" /> : null}
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="mx-2.5 my-3 h-px bg-white/[0.06]" />
-            <Link href="/games/league-of-legends" className="flex items-center px-3 pb-2 text-[10px] font-medium text-white/35 transition-colors hover:text-white/65">League of Legends overview</Link>
-          </nav>
-        </aside>
+
+      <div className={serviceNavigationGridClassName}>
+        <GameServiceNavigation gameName="League of Legends" gameSlug="league-of-legends" activeSlug={service.slug} items={serviceNavigation} accentTextClass="text-[#E7C867]/80" accentBorderClass="border-[#C89B3C]/35" />
 
         <div className="grid min-w-0 gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
           <section className="min-w-0">

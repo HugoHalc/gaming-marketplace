@@ -1,12 +1,10 @@
+import { ServicePageHeader, serviceWorkspaceClassName } from "@/features/catalog/components/service-page-shell";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Crosshair, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
-import { Badge } from "@/components/ui/badge";
 import { Dota2ServiceNavigation } from "@/features/catalog/components/dota-2-service-navigation";
 import { Dota2MmrConfigurator } from "@/features/configurator/components/dota-2-mmr-configurator";
 import { Dota2NetWinsConfigurator } from "@/features/configurator/components/dota-2-net-wins-configurator";
@@ -91,168 +89,22 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
   const { service: slug } = await params;
   const service = findDota2ServiceFoundation(slug);
   if (!service) notFound();
-
-  const isMmrBoost = service.slug === "mmr-boost";
-  const isNetWins = service.slug === "net-wins";
-  const isCalibration = service.slug === "calibration-matches";
-  const isHeroLevel = service.slug === "hero-level-boost";
-
+  const metadata = await generateMetadata({ params: Promise.resolve({ service: slug }) });
+  const title = service.slug === "hero-level-boost" ? "Dota Plus Hero Level" : `Dota 2 ${service.name}`;
   return (
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
-
-      {isMmrBoost ? (
-        <>
-          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <Dota2ServiceHeroBackground />
-            <Container className="py-8 sm:py-10 lg:py-12">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <Link href="/" className="transition-colors hover:text-white">Home</Link>
-                <span>/</span>
-                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
-                <span>/</span>
-                <span className="text-white">MMR Boost</span>
-              </div>
-
-              <div className="mt-8 max-w-3xl">
-                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
-                  <ShieldCheck className="mr-2 size-3.5" />
-                  Dota 2 MMR Boost
-                </Badge>
-                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-                  Dota 2 MMR Boost
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
-                  Configure your current MMR, target MMR and preferred boost options.
-                </p>
-              </div>
-            </Container>
-          </section>
-
-          <section className="py-7 sm:py-9 lg:py-10">
-            <Container>
-              <Dota2ServiceNavigation currentSlug="mmr-boost">
-                <Dota2MmrConfigurator />
-              </Dota2ServiceNavigation>
-            </Container>
-          </section>
-        </>
-      ) : isNetWins ? (
-        <>
-          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <Dota2ServiceHeroBackground />
-            <Container className="py-8 sm:py-10 lg:py-12">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <Link href="/" className="transition-colors hover:text-white">Home</Link>
-                <span>/</span>
-                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
-                <span>/</span>
-                <span className="text-white">Net Wins</span>
-              </div>
-
-              <div className="mt-8 max-w-3xl">
-                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
-                  <Trophy className="mr-2 size-3.5" />
-                  Dota 2 Net Wins
-                </Badge>
-                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-                  Dota 2 Net Wins
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
-                  Purchase a fixed number of net ranked wins. Net wins are calculated as wins minus losses.
-                </p>
-              </div>
-            </Container>
-          </section>
-
-          <section className="py-7 sm:py-9 lg:py-10">
-            <Container>
-              <Dota2ServiceNavigation currentSlug="net-wins">
-                <Dota2NetWinsConfigurator />
-              </Dota2ServiceNavigation>
-            </Container>
-          </section>
-        </>
-      ) : isCalibration ? (
-        <>
-          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <Dota2ServiceHeroBackground />
-            <Container className="py-8 sm:py-10 lg:py-12">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <Link href="/" className="transition-colors hover:text-white">Home</Link>
-                <span>/</span>
-                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
-                <span>/</span>
-                <span className="text-white">Calibration Matches</span>
-              </div>
-
-              <div className="mt-8 max-w-3xl">
-                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
-                  <Crosshair className="mr-2 size-3.5" />
-                  Dota 2 Calibration Matches
-                </Badge>
-                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-                  Dota 2 Calibration Matches
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
-                  Purchase a selected number of calibration matches based on your previous rank, Rank Confidence and preferred play settings.
-                </p>
-                <p className="mt-2 max-w-2xl text-xs leading-5 text-white/40">
-                  Final rank, match outcomes and Rank Confidence changes are not guaranteed.
-                </p>
-              </div>
-            </Container>
-          </section>
-
-          <section className="py-7 sm:py-9 lg:py-10">
-            <Container>
-              <Dota2ServiceNavigation currentSlug="calibration-matches">
-                <Dota2CalibrationConfigurator />
-              </Dota2ServiceNavigation>
-            </Container>
-          </section>
-        </>
-      ) : isHeroLevel ? (
-        <>
-          <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
-            <Dota2ServiceHeroBackground />
-            <Container className="py-8 sm:py-10 lg:py-12">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <Link href="/" className="transition-colors hover:text-white">Home</Link>
-                <span>/</span>
-                <Link href="/games/dota-2" className="transition-colors hover:text-white">Dota 2</Link>
-                <span>/</span>
-                <span className="text-white">Dota Plus Hero Level</span>
-              </div>
-
-              <div className="mt-8 max-w-3xl">
-                <Badge className="border-red-300/15 bg-red-400/[0.055] text-red-200">
-                  <Sparkles className="mr-2 size-3.5" />
-                  Dota 2 Hero Progression
-                </Badge>
-                <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-                  Dota Plus Hero Level
-                </h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
-                  Progress one selected hero from its current Dota Plus Hero Level to your chosen target.
-                </p>
-                <p className="mt-2 max-w-2xl text-xs leading-5 text-white/40">
-                  An active Dota Plus subscription is required.
-                </p>
-              </div>
-            </Container>
-          </section>
-
-          <section className="py-7 sm:py-9 lg:py-10">
-            <Container>
-              <Dota2ServiceNavigation currentSlug="hero-level-boost">
-                <Dota2HeroLevelConfigurator />
-              </Dota2ServiceNavigation>
-            </Container>
-          </section>
-        </>
-      ) : null}
-
+      <ServicePageHeader gameName="Dota 2" gameSlug="dota-2" serviceName={service.name} title={title} description={metadata.description ?? service.description} hasArtwork background={<Dota2ServiceHeroBackground />}>
+        {service.slug === "calibration-matches" ? <p className="mt-2 max-w-2xl text-xs leading-5 text-white/55">Final rank, match outcomes and Rank Confidence changes are not guaranteed.</p> : null}
+        {service.slug === "hero-level-boost" ? <p className="mt-2 max-w-2xl text-xs leading-5 text-white/55">An active Dota Plus subscription is required.</p> : null}
+      </ServicePageHeader>
+      <section className={serviceWorkspaceClassName}>
+        <Container>
+          <Dota2ServiceNavigation currentSlug={service.slug}>
+            {service.slug === "mmr-boost" ? <Dota2MmrConfigurator /> : service.slug === "net-wins" ? <Dota2NetWinsConfigurator /> : service.slug === "calibration-matches" ? <Dota2CalibrationConfigurator /> : <Dota2HeroLevelConfigurator />}
+          </Dota2ServiceNavigation>
+        </Container>
+      </section>
       <SiteFooter />
     </main>
   );

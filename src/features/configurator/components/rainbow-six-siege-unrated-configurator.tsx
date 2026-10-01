@@ -83,7 +83,7 @@ function ConfiguratorBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5">
+    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
       <div className="mb-4">
         <h2 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-emerald-200/70">
           {title}
@@ -356,7 +356,7 @@ export function RainbowSixSiegeUnratedConfigurator() {
   return (
     <>
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
-        <section className="min-w-0 space-y-4">
+        <section className="min-w-0 space-y-5 sm:space-y-6">
           <ConfiguratorBlock title="Number of Games" helper="Choose between one and ten completed unrated matches. Ranked games are not included.">
             <div role="radiogroup" aria-label="Number of Games" className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {Array.from({ length: 10 }, (_, index) => index + 1).map((games) => <Choice key={games} active={selection.games === games} label={String(games)} onClick={() => update("games", games)} />)}

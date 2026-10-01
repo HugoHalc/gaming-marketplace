@@ -1,12 +1,10 @@
+import { ServicePageHeader, serviceWorkspaceClassName } from "@/features/catalog/components/service-page-shell";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
-import { Badge } from "@/components/ui/badge";
 import { RainbowSixSiegeServiceNavigation } from "@/features/catalog/components/rainbow-six-siege-service-navigation";
 import {
   findRainbowSixSiegeServiceFoundation,
@@ -53,7 +51,7 @@ export default async function RainbowSixSiegeServicePage({
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
 
-      <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">
+      <ServicePageHeader gameName="Rainbow Six Siege" gameSlug="rainbow-six-siege" serviceName={service.name} title={`Rainbow Six Siege ${service.name}`} description={service.description} hasArtwork background={<>
         <div className="hero-grid absolute inset-y-0 left-0 -z-20 w-[62%] opacity-10" />
         <div
           aria-hidden="true"
@@ -71,33 +69,9 @@ export default async function RainbowSixSiegeServicePage({
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#050807] via-[#050807]/32 to-transparent" />
         </div>
 
-        <Container className="py-8 sm:py-10 lg:py-12">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-            <Link href="/" className="transition-colors hover:text-white">Home</Link>
-            <span>/</span>
-            <Link href="/games/rainbow-six-siege" className="transition-colors hover:text-white">
-              Rainbow Six Siege
-            </Link>
-            <span>/</span>
-            <span className="text-white">{service.name}</span>
-          </div>
+      </>} />
 
-          <div className="mt-8 max-w-3xl">
-            <Badge className="border-emerald-300/15 bg-emerald-400/[0.055] text-emerald-100/80">
-              <ShieldCheck className="mr-2 size-3.5" aria-hidden="true" />
-              Rainbow Six Siege {service.name}
-            </Badge>
-            <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
-              Rainbow Six Siege {service.name}
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted-foreground)]">
-              {service.description}
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      <section className="py-7 sm:py-9 lg:py-10">
+      <section className={serviceWorkspaceClassName}>
         <Container>
           <RainbowSixSiegeServiceNavigation currentSlug={service.slug}>
             {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : service.slug === "competitive-wins" ? <RainbowSixSiegeWinsConfigurator /> : service.slug === "placements-boost" ? <RainbowSixSiegePlacementsConfigurator /> : <RainbowSixSiegeUnratedConfigurator />}

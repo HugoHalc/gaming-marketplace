@@ -1,8 +1,8 @@
+import { ServicePageHeader, serviceWorkspaceClassName } from "@/features/catalog/components/service-page-shell";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
@@ -54,6 +54,11 @@ const serviceCopy: Record<
   },
 };
 
+// Match the existing public routes to their dedicated service-page shell.
+export function generateStaticParams() {
+  return Object.keys(serviceCopy).map((service) => ({ service }));
+}
+
 export async function generateMetadata({ params }: OverwatchServicePageProps): Promise<Metadata> {
   const { service: serviceSlug } = await params;
   const copy = serviceCopy[serviceSlug];
@@ -84,7 +89,7 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
     <main className="min-h-screen overflow-hidden bg-[#050807]">
       <SiteHeader />
 
-      <section className="relative isolate min-h-[232px] overflow-hidden border-b border-white/[0.06] sm:min-h-[286px] lg:min-h-[300px]">
+      <ServicePageHeader gameName="Overwatch 2" gameSlug="overwatch-2" serviceName={service.name} title={copy.title} description={copy.description} hasArtwork background={<>
         <Image
           src="/game-heroes/overwatch-hero.jpg"
           alt=""
@@ -95,24 +100,9 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
         />
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(5,6,5,0.96)_0%,rgba(5,6,5,0.86)_42%,rgba(5,6,5,0.44)_70%,rgba(5,6,5,0.18)_100%)]" />
         <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(5,6,5,0.20)_0%,rgba(5,6,5,0.02)_42%,rgba(5,6,5,0.34)_100%)]" />
-        <Container className="flex min-h-[232px] items-center py-5 sm:min-h-[286px] sm:py-8 lg:min-h-[300px] lg:py-9">
-          <div className="max-w-2xl">
-            <Link href="/games/overwatch-2" className="inline-flex items-center gap-1.5 text-[11px] font-medium text-white/48 transition-colors hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/35 sm:hidden">
-              <ArrowLeft className="size-3.5" aria-hidden="true" />
-              Back to Overwatch 2
-            </Link>
-            <div className="hidden items-center gap-2 text-[11px] text-white/40 sm:flex">
-              <Link href="/games/overwatch-2" className="transition-colors hover:text-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/35">Overwatch 2</Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-white/62">{copy.title}</span>
-            </div>
-            <h1 className="mt-4 max-w-[18ch] text-[1.8rem] font-bold tracking-[-0.04em] text-white sm:mt-3 sm:text-[2.5rem] lg:text-[2.75rem]">{copy.title}</h1>
-            <p className="mt-3 hidden max-w-xl text-sm leading-6 text-white/56 sm:block lg:text-[15px]">{copy.description}</p>
-          </div>
-        </Container>
-      </section>
+      </>} />
 
-      <section className="py-5 sm:py-10 lg:py-12">
+      <section className={serviceWorkspaceClassName}>
         <Container>
           <OverwatchServiceConfigurator gameSlug="overwatch-2" service={service} schema={schema} />
         </Container>

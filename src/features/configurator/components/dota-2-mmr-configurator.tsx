@@ -82,7 +82,7 @@ function handleRadioKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
 
 function ConfiguratorBlock({ title, helper, children }: { title: string; helper?: string; children: ReactNode }) {
   return (
-    <section className="rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5">
+    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
       <div className="mb-4">
         <h2 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-red-200/70">{title}</h2>
         {helper ? <p className="mt-1 text-[11px] leading-4 text-white/35">{helper}</p> : null}
@@ -376,7 +376,7 @@ export function Dota2MmrConfigurator() {
   return (
     <>
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
-        <section className="min-w-0 space-y-4">
+        <section className="min-w-0 space-y-5 sm:space-y-6">
           <ConfiguratorBlock title="MMR Progression" helper="Set a valid progression from Current MMR to Desired MMR.">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
               <div className="space-y-3">
@@ -478,7 +478,7 @@ export function Dota2MmrConfigurator() {
           </ConfiguratorBlock>
         </section>
 
-        <aside id="boost-summary" className="scroll-mt-28 xl:sticky xl:top-24">
+        <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
           <div className="space-y-3">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
               <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4">

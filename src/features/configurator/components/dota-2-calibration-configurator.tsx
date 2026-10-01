@@ -104,7 +104,7 @@ function ConfiguratorBlock({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5">
+    <section className="rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5">
       <div className="mb-4">
         <h2 className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.15em] text-red-200/70">
           {title}
@@ -801,7 +801,7 @@ export function Dota2CalibrationConfigurator() {
   return (
     <>
       <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
-        <section className="min-w-0 space-y-4">
+        <section className="min-w-0 space-y-5 sm:space-y-6">
           <ConfiguratorBlock
             title="Previous Rank"
             helper="Your previous rank determines the base per-match rate. Final rank is not guaranteed."
@@ -1115,7 +1115,7 @@ export function Dota2CalibrationConfigurator() {
           </ConfiguratorBlock>
         </section>
 
-        <aside id="boost-summary" className="scroll-mt-28 xl:sticky xl:top-24">
+        <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
           <div className="space-y-3">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
               <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4">

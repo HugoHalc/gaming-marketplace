@@ -635,7 +635,7 @@ export function MarvelRivalsRankConfigurator({ service }: {
   return (
     <>
       <GameConfiguratorColumns>
-        <section className="min-w-0 space-y-4 sm:space-y-5">
+        <section className="min-w-0 space-y-5 sm:space-y-6">
             <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start">
               <MarvelRivalsConfiguratorBlock ariaLabel="Current rank">
                 <RankSelector

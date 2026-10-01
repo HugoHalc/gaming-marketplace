@@ -12,7 +12,7 @@ export function MarvelRivalsConfiguratorBlock({
   return (
     <section
       aria-label={ariaLabel}
-      className={`rounded-2xl border border-white/[0.07] bg-black/10 p-4 sm:p-5 ${className}`}
+      className={`rounded-xl border border-white/[0.08] bg-[#0A0E0C]/75 p-4 sm:p-5 ${className}`}
     >
       {children}
     </section>

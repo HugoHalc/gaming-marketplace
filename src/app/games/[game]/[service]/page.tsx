@@ -1,13 +1,15 @@
+import { ServicePageHeader, serviceWorkspaceClassName } from "@/features/catalog/components/service-page-shell";
+import { GameServiceWorkspace } from "@/features/configurator/components/game-service-navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { RocketLeagueFaqAccordion } from "@/components/marketing/rocket-league-faq-accordion";
-import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
 import { findCatalogGameBySlug, listCatalogGames } from "@/features/catalog/data/catalog-repository";
 import { gameThemes } from "@/features/catalog/data/game-theme";
@@ -399,7 +401,6 @@ export default async function ServicePage({ params }: ServicePageProps) {
               : service.slug === "clash-boost"
                 ? "League of Legends Clash Boost"
                 : `League of Legends ${service.name}`;
-  const isCompactService = isCustomRocketLeagueService || isCustomValorantService || isLeagueOfLegendsService;
   const valorantBreadcrumbLabel = isCustomValorantService
     ? valorantServiceNavigation.find((item) => item.slug === service.slug)?.label
     : undefined;
@@ -471,6 +472,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
     ? null
     : await getServiceConfiguratorSchema({ serviceId: service.id, category: service.category });
 
+  const isCompactService = isCustomRocketLeagueService || isCustomValorantService || isLeagueOfLegendsService;
   const theme = gameThemes[game.accent];
 
   const heroBadge = isRocketLeagueRank
@@ -555,6 +557,48 @@ export default async function ServicePage({ params }: ServicePageProps) {
       ) : null}
       <SiteHeader />
 
+      {isCustomRocketLeagueService || isCustomValorantService || isLeagueOfLegendsService ? (
+      <ServicePageHeader gameName={game.name} gameSlug={game.slug} serviceName={service.name} hasArtwork={isCustomRocketLeagueService || isCustomValorantService}
+        title={isCustomRocketLeagueService ? (isRocketLeagueRank ? "Rocket League Rank Boosting" : isRocketLeagueWins ? "Rocket League Win Boosting" : isRocketLeaguePlacements ? "Rocket League Placement Boosting" : isRocketLeagueTournament ? "Rocket League Tournament Boosting" : "Rocket League Season Rewards Boosting") : isCustomValorantService ? (isValorantRank ? "Valorant Rank Boost" : isValorantWins ? "Valorant Competitive Wins" : "Valorant Placements Boost") : isLeagueOfLegendsService ? leagueOfLegendsServiceTitle : service.name}
+        description={isCustomRocketLeagueService || isCustomValorantService ? heroTitle : service.description}
+        background={<>
+        {isCustomRocketLeagueService ? (
+          <>
+            <Image
+              src="/game-heroes/rocket-league-service-hero.webp"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="pointer-events-none -z-30 object-cover object-[42%_42%] sm:object-[58%_42%] lg:object-[67%_42%]"
+            />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(3,5,4,0.93)_0%,rgba(3,5,4,0.82)_46%,rgba(3,5,4,0.50)_72%,rgba(3,5,4,0.30)_100%)] sm:bg-[linear-gradient(90deg,rgba(3,5,4,0.97)_0%,rgba(3,5,4,0.88)_34%,rgba(3,5,4,0.48)_58%,rgba(3,5,4,0.16)_80%,rgba(3,5,4,0.26)_100%)]" />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(3,5,4,0.24)_0%,rgba(3,5,4,0.02)_42%,rgba(3,5,4,0.34)_100%)]" />
+          </>
+        ) : isCustomValorantService ? (
+          <>
+            <Image
+              src="/game-heroes/valorant-storefront.jpeg"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="pointer-events-none -z-30 object-cover object-[76%_46%] sm:object-[76%_43%] lg:object-[76%_40%]"
+            />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgba(5,5,7,0.95)_0%,rgba(5,5,7,0.88)_42%,rgba(5,5,7,0.50)_68%,rgba(5,5,7,0.22)_100%)] sm:bg-[linear-gradient(90deg,rgba(5,5,7,0.97)_0%,rgba(5,5,7,0.90)_34%,rgba(5,5,7,0.50)_58%,rgba(5,5,7,0.14)_80%,rgba(5,5,7,0.24)_100%)]" />
+            <div className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(5,5,7,0.18)_0%,rgba(5,5,7,0.01)_45%,rgba(5,5,7,0.30)_100%)]" />
+          </>
+        ) : isLeagueOfLegendsService ? (
+          <div className="absolute inset-0 -z-20 bg-[#050807]" />
+        ) : (
+          <>
+            <div className="hero-grid absolute inset-0 -z-20 opacity-25" />
+            <div className={`absolute left-1/2 top-[-20rem] -z-10 h-[34rem] w-[60rem] -translate-x-1/2 rounded-full ${theme.softGlow} blur-[120px]`} />
+          </>
+        )}
+        </>}
+      />
+      ) : (
       <section className={`relative isolate overflow-hidden border-b border-white/[0.06] ${isLeagueOfLegendsService ? "min-h-[180px] sm:min-h-[208px] lg:min-h-[220px]" : isCompactService ? "min-h-[232px] sm:min-h-[286px] lg:min-h-[300px]" : ""}`}>
         {isCustomRocketLeagueService ? (
           <>
@@ -704,88 +748,13 @@ export default async function ServicePage({ params }: ServicePageProps) {
           )}
         </Container>
       </section>
+      )}
 
-      <section className={isCompactService ? "pb-6 pt-3 sm:pb-10 sm:pt-4 lg:pb-12 lg:pt-5" : "py-6 sm:py-12 lg:py-16"}>
+      <section className={isCompactService ? serviceWorkspaceClassName : "py-6 sm:py-12 lg:py-16"}>
         <Container>
           {isCustomRocketLeagueService ? (
-            <>
-              <nav aria-label="Rocket League services" className="mb-3 sm:mb-4 xl:hidden">
-                <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  <div className="flex min-w-max gap-2">
-                    {rocketLeagueServiceNavigation.map((item) => {
-                      const active = service.slug === item.slug;
+            <GameServiceWorkspace gameName="Rocket League" gameSlug="rocket-league" activeSlug={service.slug} items={rocketLeagueServiceNavigation} accentTextClass="text-blue-200/60" accentBorderClass="border-blue-300/[0.20]">
 
-                      return (
-                        <Link
-                          key={item.slug}
-                          href={`/games/rocket-league/${item.slug}`}
-                          aria-current={active ? "page" : undefined}
-                          className={`inline-flex h-11 items-center justify-center whitespace-nowrap sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
-                            active
-                              ? "border-blue-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                              : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-                          }`}
-                        >
-                          {active ? (
-                            <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" aria-hidden="true" />
-                          ) : null}
-                          {item.mobileLabel}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              </nav>
-
-              <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
-                <aside className="hidden xl:block">
-                  <nav
-                    aria-label="Rocket League services"
-                    className="sticky top-24 overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09] p-2.5"
-                  >
-                    <div className="px-2.5 pb-3 pt-2">
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-200/60">
-                        Rocket League
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">Services</p>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      {rocketLeagueServiceNavigation.map((item) => {
-                        const active = service.slug === item.slug;
-
-                        return (
-                          <Link
-                            key={item.slug}
-                            href={`/games/rocket-league/${item.slug}`}
-                            aria-current={active ? "page" : undefined}
-                            className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
-                              active
-                                ? "border-blue-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                                : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"
-                            }`}
-                          >
-                            <span className="min-w-0 flex-1 truncate text-xs font-semibold">{item.label}</span>
-                            {active ? (
-                              <span className="size-1.5 shrink-0 rounded-full bg-[#39E56F]" aria-hidden="true" />
-                            ) : null}
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mx-2.5 my-3 h-px bg-white/[0.06]" />
-                    <Link
-                      href="/games/rocket-league"
-                      className="flex items-center px-3 pb-2 text-[10px] font-medium text-white/35 transition-colors duration-200 hover:text-white/65 motion-reduce:transition-none"
-                    >
-                      <ArrowLeft className="mr-2 size-3" />
-                      Rocket League overview
-                    </Link>
-                  </nav>
-                </aside>
-
-                <div className="min-w-0">
                   {isRocketLeagueRank ? (
                     <RocketLeagueRankConfigurator gameSlug={game.slug} service={service} />
                   ) : isRocketLeagueWins ? (
@@ -797,92 +766,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                   ) : isRocketLeagueRewards ? (
                     <RocketLeagueRewardsConfigurator gameSlug={game.slug} service={service} />
                   ) : null}
-                </div>
-              </div>
-            </>
+            </GameServiceWorkspace>
           ) : isCustomValorantService && schema ? (
-            <>
-              <nav aria-label="Valorant services" className="mb-3 sm:mb-4 xl:hidden">
-                <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  <div className="flex min-w-max gap-2">
-                    {valorantServiceNavigation.map((item) => {
-                      const active = service.slug === item.slug;
+            <GameServiceWorkspace gameName="Valorant" gameSlug="valorant" activeSlug={service.slug} items={valorantServiceNavigation} accentTextClass="text-rose-200/60" accentBorderClass="border-rose-300/[0.20]">
 
-                      return (
-                        <Link
-                          key={item.slug}
-                          href={`/games/valorant/${item.slug}`}
-                          aria-current={active ? "page" : undefined}
-                          className={`inline-flex h-11 items-center justify-center whitespace-nowrap sm:h-10 rounded-xl border px-3.5 text-xs font-semibold transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
-                            active
-                              ? "border-rose-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                              : "border-white/[0.08] bg-[#090D0B] text-white/55 hover:border-white/[0.14] hover:bg-[#0E1411] hover:text-white"
-                          }`}
-                        >
-                          {active ? (
-                            <span className="mr-2 size-1.5 rounded-full bg-[#39E56F]" aria-hidden="true" />
-                          ) : null}
-                          {item.mobileLabel}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              </nav>
-
-              <div className="xl:grid xl:grid-cols-[13.5rem_minmax(0,1fr)] xl:gap-4 2xl:grid-cols-[14.5rem_minmax(0,1fr)] 2xl:gap-5">
-                <aside className="hidden xl:block">
-                  <nav
-                    aria-label="Valorant services"
-                    className="sticky top-24 overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09] p-2.5"
-                  >
-                    <div className="px-2.5 pb-3 pt-2">
-                      <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.16em] text-rose-200/60">
-                        Valorant
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">Services</p>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      {valorantServiceNavigation.map((item) => {
-                        const active = service.slug === item.slug;
-
-                        return (
-                          <Link
-                            key={item.slug}
-                            href={`/games/valorant/${item.slug}`}
-                            aria-current={active ? "page" : undefined}
-                            className={`group flex min-h-11 items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-[border-color,background-color,color] duration-200 ease-out motion-reduce:transition-none ${
-                              active
-                                ? "border-rose-300/[0.20] bg-[#131B17] text-[#F4F7F5]"
-                                : "border-transparent bg-transparent text-white/52 hover:border-white/[0.08] hover:bg-[#0E1411] hover:text-white"
-                            }`}
-                          >
-                            <span className="min-w-0 flex-1 truncate text-xs font-semibold">{item.label}</span>
-                            {active ? (
-                              <span className="size-1.5 shrink-0 rounded-full bg-[#39E56F]" aria-hidden="true" />
-                            ) : null}
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mx-2.5 my-3 h-px bg-white/[0.06]" />
-                    <Link
-                      href="/games/valorant"
-                      className="flex items-center px-3 pb-2 text-[10px] font-medium text-white/35 transition-colors duration-200 hover:text-white/65 motion-reduce:transition-none"
-                    >
-                      <ArrowLeft className="mr-2 size-3" />
-                      Valorant overview
-                    </Link>
-                  </nav>
-                </aside>
-
-                <div className="min-w-0">
                   <ServiceConfigurator gameSlug={game.slug} service={service} schema={schema} />
-                </div>
-              </div>
-            </>
+            </GameServiceWorkspace>
           ) : schema ? (
             <ServiceConfigurator gameSlug={game.slug} service={service} schema={schema} />
           ) : null}
