@@ -5,6 +5,7 @@ import type { ConfiguratorField, ConfiguratorOption, ServiceConfiguratorSchema }
 import { getConfiguratorSchema } from "./mock-configurators";
 import { getOverwatchConfiguratorSchema } from "./overwatch-configurators";
 import { getValorantConfiguratorSchema } from "./valorant-configurators";
+import { ROCKET_LEAGUE_WINS_MAX } from "./rocket-league-limits";
 
 type DbOption = { value: string; label: string; price_multiplier: number | null; sort_order: number };
 type DbField = {
@@ -52,6 +53,11 @@ export async function getServiceConfiguratorSchema(input: {
   serviceId: string;
   category: ServiceCategory;
 }): Promise<ServiceConfiguratorSchema> {
+  if (input.serviceId === "service_rl_wins") {
+    const schema = getConfiguratorSchema(input.category);
+    return { ...schema, fields: schema.fields.map((field) => field.key === "wins"
+      ? { ...field, max: ROCKET_LEAGUE_WINS_MAX } : field) };
+  }
   const overwatchSchema = getOverwatchConfiguratorSchema(input.serviceId);
   if (overwatchSchema) return overwatchSchema;
 

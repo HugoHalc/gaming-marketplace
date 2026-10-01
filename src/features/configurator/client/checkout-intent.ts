@@ -3,6 +3,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ConfiguratorSelection } from "../types/configurator";
+import { isRocketLeagueWinsQuantity } from "../data/rocket-league-limits";
 
 const CHECKOUT_INTENT_VERSION = 1 as const;
 const CHECKOUT_INTENT_SESSION_KEY = "boostingpedia.checkout-intent.v1";
@@ -209,6 +210,13 @@ function readMatchingCheckoutIntent(
 
     const selection = sanitizeSelection(intent.selection, template);
     if (!selection) {
+      removeStoredIntent(source);
+      continue;
+    }
+
+    // Older RL wins intents above the new limit are rejected, never clamped or auto-submitted.
+    if (gameSlug === "rocket-league" && serviceSlug === "wins"
+      && !isRocketLeagueWinsQuantity(selection.wins)) {
       removeStoredIntent(source);
       continue;
     }

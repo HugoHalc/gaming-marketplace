@@ -10,12 +10,15 @@ import {
 } from "@/features/orders/minimum-order";
 import { createServerValidatedOrder } from "@/features/orders/server/order-repository";
 import { calculateQuotePreview } from "@/features/pricing/server/calculate-quote";
+import { assertRocketLeagueQuoteFresh } from "@/features/pricing/server/rocket-league-reference-pricing";
 import { hasSecretSupabaseEnv } from "@/lib/supabase/env";
 
 interface CreateOrderBody {
   gameSlug?: string;
   serviceSlug?: string;
   selection?: ConfiguratorSelection;
+  expectedTotalCents?: number;
+  expectedRuleSetVersion?: string;
 }
 
 export async function POST(request: Request) {
@@ -43,6 +46,10 @@ export async function POST(request: Request) {
 
     if (quote.ruleSetVersion.startsWith("mock-")) {
       return NextResponse.json({ error: "Live pricing is not available for order creation." }, { status: 503 });
+    }
+
+    if (body.gameSlug === "rocket-league") {
+      assertRocketLeagueQuoteFresh(quote, body.expectedTotalCents, body.expectedRuleSetVersion);
     }
 
     if (!meetsMinimumOrderTotal(quote.total)) {

@@ -1,0 +1,2236 @@
+{
+  "version": "2026-10-01",
+  "baseline": "6970e071f03e8ac4b5945701b91a4dcce12be271",
+  "capturedAtUtc": "2026-10-01T04:24:52.706387+00:00",
+  "unitsPerCent": 100,
+  "services": {
+    "rank": {
+      "sourceUrl": "https://boostingmarket.com/en/rocket-league-boost/rocket-league-rank-boost",
+      "payloadKey": "data.get-game-pack-rocket-league-rank-boost-en-primary-page.data",
+      "htmlSha256": "430bc988b074d01327b8b01e797a9f09e470e78b6ac17237b2333a4a641aea3e",
+      "prices": [
+        {
+          "id": 299,
+          "title": "Bronze I > Bronze II",
+          "rawDollars": "2.914",
+          "referenceUnits": 29140,
+          "rankId": "bronze-1"
+        },
+        {
+          "id": 300,
+          "title": "Bronze II > Bronze III",
+          "rawDollars": "2.914",
+          "referenceUnits": 29140,
+          "rankId": "bronze-2"
+        },
+        {
+          "id": 301,
+          "title": "Bronze III > Silver I",
+          "rawDollars": "2.914",
+          "referenceUnits": 29140,
+          "rankId": "bronze-3"
+        },
+        {
+          "id": 302,
+          "title": "Silver I > Silver II",
+          "rawDollars": "2.914",
+          "referenceUnits": 29140,
+          "rankId": "silver-1"
+        },
+        {
+          "id": 303,
+          "title": "Silver II > Silver III",
+          "rawDollars": "3.387",
+          "referenceUnits": 33870,
+          "rankId": "silver-2"
+        },
+        {
+          "id": 304,
+          "title": "Silver III > Gold I",
+          "rawDollars": "3.387",
+          "referenceUnits": 33870,
+          "rankId": "silver-3"
+        },
+        {
+          "id": 305,
+          "title": "Gold I > Gold II",
+          "rawDollars": "3.871",
+          "referenceUnits": 38710,
+          "rankId": "gold-1"
+        },
+        {
+          "id": 306,
+          "title": "Gold II > Gold III",
+          "rawDollars": "3.871",
+          "referenceUnits": 38710,
+          "rankId": "gold-2"
+        },
+        {
+          "id": 307,
+          "title": "Gold III > Platinum I",
+          "rawDollars": "6.871",
+          "referenceUnits": 68710,
+          "rankId": "gold-3"
+        },
+        {
+          "id": 308,
+          "title": "Platinum I > Platinum II",
+          "rawDollars": "5.828",
+          "referenceUnits": 58280,
+          "rankId": "platinum-1"
+        },
+        {
+          "id": 309,
+          "title": "Platinum II > Platinum III",
+          "rawDollars": "5.796",
+          "referenceUnits": 57960,
+          "rankId": "platinum-2"
+        },
+        {
+          "id": 310,
+          "title": "Platinum III > Diamond I",
+          "rawDollars": "9.753",
+          "referenceUnits": 97530,
+          "rankId": "platinum-3"
+        },
+        {
+          "id": 311,
+          "title": "Diamond I > Diamond II",
+          "rawDollars": "11.4094",
+          "referenceUnits": 114094,
+          "rankId": "diamond-1"
+        },
+        {
+          "id": 312,
+          "title": "Diamond II > Diamond III",
+          "rawDollars": "14.089",
+          "referenceUnits": 140890,
+          "rankId": "diamond-2"
+        },
+        {
+          "id": 313,
+          "title": "Diamond III > Champion I",
+          "rawDollars": "18.528",
+          "referenceUnits": 185280,
+          "rankId": "diamond-3"
+        },
+        {
+          "id": 314,
+          "title": "Champion I > Champion II",
+          "rawDollars": "19.335",
+          "referenceUnits": 193350,
+          "rankId": "champion-1"
+        },
+        {
+          "id": 315,
+          "title": "Champion II > Champion III",
+          "rawDollars": "24.024",
+          "referenceUnits": 240240,
+          "rankId": "champion-2"
+        },
+        {
+          "id": 316,
+          "title": "Champion III > Grand Champion I",
+          "rawDollars": "33.638",
+          "referenceUnits": 336380,
+          "rankId": "champion-3"
+        },
+        {
+          "id": 317,
+          "title": "Grand Champion I > Grand Champion II",
+          "rawDollars": "48.059",
+          "referenceUnits": 480590,
+          "rankId": "grand-champion-1"
+        },
+        {
+          "id": 318,
+          "title": "Grand Champion II > Grand Champion III",
+          "rawDollars": "67.287",
+          "referenceUnits": 672870,
+          "rankId": "grand-champion-2"
+        },
+        {
+          "id": 319,
+          "title": "Grand Champion III > Supersonic I",
+          "rawDollars": "121.891",
+          "referenceUnits": 1218910,
+          "rankId": "grand-champion-3"
+        }
+      ],
+      "progressDiscount": [
+        {
+          "id": 45,
+          "discount": 3,
+          "slab": 50,
+          "order": 1
+        },
+        {
+          "id": 46,
+          "discount": 6,
+          "slab": 100,
+          "order": 2
+        },
+        {
+          "id": 47,
+          "discount": 9,
+          "slab": 150,
+          "order": 3
+        },
+        {
+          "id": 48,
+          "discount": 12,
+          "slab": 200,
+          "order": 4
+        }
+      ],
+      "approvedOptions": [
+        {
+          "id": 58,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              61
+            ]
+          },
+          "const_title": "play_offline",
+          "title": "Play Offline",
+          "description": "The Booster will appear offline during the progression of the orders, to ensure maximum safety",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 1,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 59,
+          "type": "fixed",
+          "price_type": 0,
+          "price": 10,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              61
+            ]
+          },
+          "const_title": "stream",
+          "title": "Streaming",
+          "description": "You will be able to follow the progression of your order live, on Twitch or YouTube",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 2,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 60,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "priority",
+          "title": "Express Delivery",
+          "description": "The order will be placed at the top of the queue and will be delivered at 2x speed",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 3,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 61,
+          "type": "variable",
+          "price_type": 0,
+          "price": 45,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              58,
+              59
+            ]
+          },
+          "const_title": "self_play",
+          "title": "Play with Booster",
+          "description": "The Booster will play on another account and Duo with you during the order",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 4,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 955,
+          "type": "variable",
+          "price_type": 0,
+          "price": 50,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "rank_insurance",
+          "title": "Rank Insurance",
+          "description": "Stay secure at your new rank. Your boost ends with extra wins added as a buffer, so you don\u2019t risk dropping back down right away.",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 101,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        }
+      ],
+      "queues": [
+        {
+          "id": 56,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "1v1",
+          "description": "Solo Duels",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 57,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "2v2",
+          "description": "Doubles",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 58,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "3v3",
+          "description": "Standard",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 261,
+          "type": "variable",
+          "price_type": 0,
+          "price": 30,
+          "rules": [],
+          "title": "4v4",
+          "description": "Squads",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 59,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Rumble",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 60,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Dropshot",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 61,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Hoops",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 62,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Snowday",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 539,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Heatseeker",
+          "description": null,
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        }
+      ],
+      "platforms": [
+        {
+          "id": 1,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PC",
+          "image_light": "/images/pack-options/light/windows.webp",
+          "image_dark": "/images/pack-options/dark/windows.webp"
+        },
+        {
+          "id": 2,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Xbox",
+          "image_light": "/images/pack-options/light/xbox.webp",
+          "image_dark": "/images/pack-options/dark/xbox.webp"
+        },
+        {
+          "id": 3,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PlayStation",
+          "image_light": "/images/pack-options/light/playstation.webp",
+          "image_dark": "/images/pack-options/dark/playstation.webp"
+        },
+        {
+          "id": 4,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Nintendo Switch",
+          "image_light": "/images/pack-options/light/nintendo-switch.webp",
+          "image_dark": "/images/pack-options/dark/nintendo-switch.webp"
+        },
+        {
+          "id": 5,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "SteamDeck",
+          "image_light": "/images/pack-options/light/steamdeck.webp",
+          "image_dark": "/images/pack-options/dark/steamdeck.webp"
+        }
+      ],
+      "platformIncrement": [],
+      "globalDiscount": {
+        "id": 5,
+        "game_id": 4,
+        "discount": 45,
+        "status": true,
+        "ending_date": "2026-10-30",
+        "is_fake": false,
+        "created_at": null,
+        "updated_at": "2026-09-30T01:16:09.000000Z"
+      }
+    },
+    "wins": {
+      "sourceUrl": "https://boostingmarket.com/en/rocket-league-boost/rocket-league-wins-boost",
+      "payloadKey": "data.get-game-pack-rocket-league-wins-boost-en-primary-page.data",
+      "htmlSha256": "4e93a7e1ccbd05b78b5e9de7f50f29d05d099b4e1f68cfdaadecfba806994727",
+      "prices": [
+        {
+          "id": 320,
+          "title": "Bronze I",
+          "rawDollars": "1.881",
+          "referenceUnits": 18810,
+          "rankId": "bronze-1"
+        },
+        {
+          "id": 321,
+          "title": "Bronze II",
+          "rawDollars": "1.881",
+          "referenceUnits": 18810,
+          "rankId": "bronze-2"
+        },
+        {
+          "id": 322,
+          "title": "Bronze III",
+          "rawDollars": "1.881",
+          "referenceUnits": 18810,
+          "rankId": "bronze-3"
+        },
+        {
+          "id": 323,
+          "title": "Silver I",
+          "rawDollars": "2.827",
+          "referenceUnits": 28270,
+          "rankId": "silver-1"
+        },
+        {
+          "id": 324,
+          "title": "Silver II",
+          "rawDollars": "2.827",
+          "referenceUnits": 28270,
+          "rankId": "silver-2"
+        },
+        {
+          "id": 325,
+          "title": "Silver III",
+          "rawDollars": "2.827",
+          "referenceUnits": 28270,
+          "rankId": "silver-3"
+        },
+        {
+          "id": 326,
+          "title": "Gold I",
+          "rawDollars": "3.861",
+          "referenceUnits": 38610,
+          "rankId": "gold-1"
+        },
+        {
+          "id": 327,
+          "title": "Gold II",
+          "rawDollars": "3.861",
+          "referenceUnits": 38610,
+          "rankId": "gold-2"
+        },
+        {
+          "id": 328,
+          "title": "Gold III",
+          "rawDollars": "3.861",
+          "referenceUnits": 38610,
+          "rankId": "gold-3"
+        },
+        {
+          "id": 329,
+          "title": "Platinum I",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "platinum-1"
+        },
+        {
+          "id": 330,
+          "title": "Platinum II",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "platinum-2"
+        },
+        {
+          "id": 331,
+          "title": "Platinum III",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "platinum-3"
+        },
+        {
+          "id": 332,
+          "title": "Diamond I",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "diamond-1"
+        },
+        {
+          "id": 333,
+          "title": "Diamond II",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "diamond-2"
+        },
+        {
+          "id": 334,
+          "title": "Diamond III",
+          "rawDollars": "4.895",
+          "referenceUnits": 48950,
+          "rankId": "diamond-3"
+        },
+        {
+          "id": 335,
+          "title": "Champion I",
+          "rawDollars": "6.875",
+          "referenceUnits": 68750,
+          "rankId": "champion-1"
+        },
+        {
+          "id": 336,
+          "title": "Champion II",
+          "rawDollars": "6.875",
+          "referenceUnits": 68750,
+          "rankId": "champion-2"
+        },
+        {
+          "id": 337,
+          "title": "Champion III",
+          "rawDollars": "7.755",
+          "referenceUnits": 77550,
+          "rankId": "champion-3"
+        },
+        {
+          "id": 338,
+          "title": "Grand Champion I",
+          "rawDollars": "8.426",
+          "referenceUnits": 84260,
+          "rankId": "grand-champion-1"
+        },
+        {
+          "id": 339,
+          "title": "Grand Champion II",
+          "rawDollars": "8.855",
+          "referenceUnits": 88550,
+          "rankId": "grand-champion-2"
+        },
+        {
+          "id": 340,
+          "title": "Grand Champion III",
+          "rawDollars": "12.177",
+          "referenceUnits": 121770,
+          "rankId": "grand-champion-3"
+        },
+        {
+          "id": 341,
+          "title": "Supersonic I",
+          "rawDollars": "19.113",
+          "referenceUnits": 191130,
+          "rankId": "supersonic-legend"
+        }
+      ],
+      "progressDiscount": [
+        {
+          "id": 49,
+          "discount": 3,
+          "slab": 50,
+          "order": 1
+        },
+        {
+          "id": 50,
+          "discount": 6,
+          "slab": 100,
+          "order": 2
+        },
+        {
+          "id": 51,
+          "discount": 9,
+          "slab": 150,
+          "order": 3
+        },
+        {
+          "id": 52,
+          "discount": 12,
+          "slab": 200,
+          "order": 4
+        }
+      ],
+      "approvedOptions": [
+        {
+          "id": 62,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              65
+            ]
+          },
+          "const_title": "play_offline",
+          "title": "Play Offline",
+          "description": "The Booster will appear offline during the progression of the orders, to ensure maximum safety",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 1,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 63,
+          "type": "fixed",
+          "price_type": 0,
+          "price": 10,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              65
+            ]
+          },
+          "const_title": "stream",
+          "title": "Streaming",
+          "description": "You will be able to follow the progression of your order live, on Twitch or YouTube",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 2,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 64,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "priority",
+          "title": "Express Delivery",
+          "description": "The order will be placed at the top of the queue and will be delivered at 2x speed",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 3,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 65,
+          "type": "variable",
+          "price_type": 0,
+          "price": 45,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              62,
+              63
+            ]
+          },
+          "const_title": "self_play",
+          "title": "Play with Booster",
+          "description": "The Booster will play on another account and Duo with you during the order",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 4,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        }
+      ],
+      "queues": [
+        {
+          "id": 63,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "1v1",
+          "description": "Solo Duels",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 64,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "2v2",
+          "description": "Doubles",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 65,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "3v3",
+          "description": "Standard",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 262,
+          "type": "variable",
+          "price_type": 0,
+          "price": 30,
+          "rules": [],
+          "title": "4v4",
+          "description": "Squads",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 66,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Rumble",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 67,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Dropshot",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 68,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Hoops",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 69,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Snowday",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 540,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Heatseeker",
+          "description": null,
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        }
+      ],
+      "platforms": [
+        {
+          "id": 1,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PC",
+          "image_light": "/images/pack-options/light/windows.webp",
+          "image_dark": "/images/pack-options/dark/windows.webp"
+        },
+        {
+          "id": 2,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Xbox",
+          "image_light": "/images/pack-options/light/xbox.webp",
+          "image_dark": "/images/pack-options/dark/xbox.webp"
+        },
+        {
+          "id": 3,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PlayStation",
+          "image_light": "/images/pack-options/light/playstation.webp",
+          "image_dark": "/images/pack-options/dark/playstation.webp"
+        },
+        {
+          "id": 4,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Nintendo Switch",
+          "image_light": "/images/pack-options/light/nintendo-switch.webp",
+          "image_dark": "/images/pack-options/dark/nintendo-switch.webp"
+        },
+        {
+          "id": 5,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "SteamDeck",
+          "image_light": "/images/pack-options/light/steamdeck.webp",
+          "image_dark": "/images/pack-options/dark/steamdeck.webp"
+        }
+      ],
+      "platformIncrement": [],
+      "globalDiscount": {
+        "id": 5,
+        "game_id": 4,
+        "discount": 45,
+        "status": true,
+        "ending_date": "2026-10-30",
+        "is_fake": false,
+        "created_at": null,
+        "updated_at": "2026-09-30T01:16:09.000000Z"
+      }
+    },
+    "tournament": {
+      "sourceUrl": "https://boostingmarket.com/en/rocket-league-boost/rocket-league-tournament-boost",
+      "payloadKey": "data.get-game-pack-rocket-league-tournament-boost-en-primary-page.data",
+      "htmlSha256": "89f2d25ff890456574e3245d2ab8f64e67c5e4283c11f3babc86524fa8b0c07a",
+      "prices": [
+        {
+          "id": 364,
+          "title": "Bronze",
+          "rawDollars": "17.182",
+          "referenceUnits": 171820,
+          "rankId": "bronze"
+        },
+        {
+          "id": 365,
+          "title": "Silver",
+          "rawDollars": "20.955",
+          "referenceUnits": 209550,
+          "rankId": "silver"
+        },
+        {
+          "id": 366,
+          "title": "Gold",
+          "rawDollars": "32.01",
+          "referenceUnits": 320100,
+          "rankId": "gold"
+        },
+        {
+          "id": 367,
+          "title": "Platinum",
+          "rawDollars": "43.197",
+          "referenceUnits": 431970,
+          "rankId": "platinum"
+        },
+        {
+          "id": 368,
+          "title": "Diamond",
+          "rawDollars": "54.373",
+          "referenceUnits": 543730,
+          "rankId": "diamond"
+        },
+        {
+          "id": 369,
+          "title": "Champion",
+          "rawDollars": "65.153",
+          "referenceUnits": 651530,
+          "rankId": "champion"
+        },
+        {
+          "id": 370,
+          "title": "Grand Champion",
+          "rawDollars": "86.768",
+          "referenceUnits": 867680,
+          "rankId": "grand-champion"
+        },
+        {
+          "id": 371,
+          "title": "Supersonic",
+          "rawDollars": "156.079",
+          "referenceUnits": 1560790,
+          "rankId": "supersonic-legend"
+        }
+      ],
+      "progressDiscount": [
+        {
+          "id": 57,
+          "discount": 3,
+          "slab": 50,
+          "order": 1
+        },
+        {
+          "id": 58,
+          "discount": 6,
+          "slab": 100,
+          "order": 2
+        },
+        {
+          "id": 59,
+          "discount": 9,
+          "slab": 150,
+          "order": 3
+        },
+        {
+          "id": 60,
+          "discount": 12,
+          "slab": 200,
+          "order": 4
+        }
+      ],
+      "approvedOptions": [
+        {
+          "id": 70,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              73
+            ]
+          },
+          "const_title": "play_offline",
+          "title": "Play Offline",
+          "description": "The Booster will appear offline during the progression of the orders, to ensure maximum safety",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 1,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 71,
+          "type": "fixed",
+          "price_type": 0,
+          "price": 10,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              73
+            ]
+          },
+          "const_title": "stream",
+          "title": "Streaming",
+          "description": "You will be able to follow the progression of your order live, on Twitch or YouTube",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 2,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 72,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "priority",
+          "title": "Express Delivery",
+          "description": "The order will be placed at the top of the queue and will be delivered at 2x speed",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 3,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 73,
+          "type": "variable",
+          "price_type": 0,
+          "price": 45,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              70,
+              71
+            ]
+          },
+          "const_title": "self_play",
+          "title": "Play with Booster",
+          "description": "The Booster will play on another account and Duo with you during the order",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 4,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        }
+      ],
+      "queues": [
+        {
+          "id": 77,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "1v1",
+          "description": "Solo Duels",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 78,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "2v2",
+          "description": "Doubles",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 79,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "3v3",
+          "description": "Standard",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 264,
+          "type": "variable",
+          "price_type": 0,
+          "price": 30,
+          "rules": [],
+          "title": "4v4",
+          "description": "Squads",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 80,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Rumble",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 81,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Dropshot",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 82,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Hoops",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 83,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Snowday",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 542,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Heatseeker",
+          "description": null,
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        }
+      ],
+      "platforms": [
+        {
+          "id": 1,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PC",
+          "image_light": "/images/pack-options/light/windows.webp",
+          "image_dark": "/images/pack-options/dark/windows.webp"
+        },
+        {
+          "id": 2,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Xbox",
+          "image_light": "/images/pack-options/light/xbox.webp",
+          "image_dark": "/images/pack-options/dark/xbox.webp"
+        },
+        {
+          "id": 3,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PlayStation",
+          "image_light": "/images/pack-options/light/playstation.webp",
+          "image_dark": "/images/pack-options/dark/playstation.webp"
+        },
+        {
+          "id": 4,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Nintendo Switch",
+          "image_light": "/images/pack-options/light/nintendo-switch.webp",
+          "image_dark": "/images/pack-options/dark/nintendo-switch.webp"
+        },
+        {
+          "id": 5,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "SteamDeck",
+          "image_light": "/images/pack-options/light/steamdeck.webp",
+          "image_dark": "/images/pack-options/dark/steamdeck.webp"
+        }
+      ],
+      "platformIncrement": [],
+      "globalDiscount": {
+        "id": 5,
+        "game_id": 4,
+        "discount": 45,
+        "status": true,
+        "ending_date": "2026-10-30",
+        "is_fake": false,
+        "created_at": null,
+        "updated_at": "2026-09-30T01:16:09.000000Z"
+      }
+    },
+    "rewards": {
+      "sourceUrl": "https://boostingmarket.com/en/rocket-league-boost/rocket-league-rewards-boost",
+      "payloadKey": "data.get-game-pack-rocket-league-rewards-boost-en-primary-page.data",
+      "htmlSha256": "3e1591a728da6773c11b80c0759b5e90c72f5d1583fd17015f4e21fe89106dfc",
+      "prices": [
+        {
+          "id": 342,
+          "title": "Bronze I",
+          "rawDollars": "1.056",
+          "referenceUnits": 10560,
+          "rankId": "bronze-1"
+        },
+        {
+          "id": 343,
+          "title": "Bronze II",
+          "rawDollars": "1.056",
+          "referenceUnits": 10560,
+          "rankId": "bronze-2"
+        },
+        {
+          "id": 344,
+          "title": "Bronze III",
+          "rawDollars": "1.056",
+          "referenceUnits": 10560,
+          "rankId": "bronze-3"
+        },
+        {
+          "id": 345,
+          "title": "Silver I",
+          "rawDollars": "2.123",
+          "referenceUnits": 21230,
+          "rankId": "silver-1"
+        },
+        {
+          "id": 346,
+          "title": "Silver II",
+          "rawDollars": "2.123",
+          "referenceUnits": 21230,
+          "rankId": "silver-2"
+        },
+        {
+          "id": 347,
+          "title": "Silver III",
+          "rawDollars": "2.123",
+          "referenceUnits": 21230,
+          "rankId": "silver-3"
+        },
+        {
+          "id": 348,
+          "title": "Gold I",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "gold-1"
+        },
+        {
+          "id": 349,
+          "title": "Gold II",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "gold-2"
+        },
+        {
+          "id": 350,
+          "title": "Gold III",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "gold-3"
+        },
+        {
+          "id": 351,
+          "title": "Platinum I",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "platinum-1"
+        },
+        {
+          "id": 352,
+          "title": "Platinum II",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "platinum-2"
+        },
+        {
+          "id": 353,
+          "title": "Platinum III",
+          "rawDollars": "3.289",
+          "referenceUnits": 32890,
+          "rankId": "platinum-3"
+        },
+        {
+          "id": 354,
+          "title": "Diamond I",
+          "rawDollars": "4.345",
+          "referenceUnits": 43450,
+          "rankId": "diamond-1"
+        },
+        {
+          "id": 355,
+          "title": "Diamond II",
+          "rawDollars": "4.345",
+          "referenceUnits": 43450,
+          "rankId": "diamond-2"
+        },
+        {
+          "id": 356,
+          "title": "Diamond III",
+          "rawDollars": "4.345",
+          "referenceUnits": 43450,
+          "rankId": "diamond-3"
+        },
+        {
+          "id": 357,
+          "title": "Champion I",
+          "rawDollars": "6.567",
+          "referenceUnits": 65670,
+          "rankId": "champion-1"
+        },
+        {
+          "id": 358,
+          "title": "Champion II",
+          "rawDollars": "6.567",
+          "referenceUnits": 65670,
+          "rankId": "champion-2"
+        },
+        {
+          "id": 359,
+          "title": "Champion III",
+          "rawDollars": "6.567",
+          "referenceUnits": 65670,
+          "rankId": "champion-3"
+        },
+        {
+          "id": 360,
+          "title": "Grand Champion I",
+          "rawDollars": "8.789",
+          "referenceUnits": 87890,
+          "rankId": "grand-champion-1"
+        },
+        {
+          "id": 361,
+          "title": "Grand Champion II",
+          "rawDollars": "9.955",
+          "referenceUnits": 99550,
+          "rankId": "grand-champion-2"
+        },
+        {
+          "id": 362,
+          "title": "Grand Champion III",
+          "rawDollars": "11.176",
+          "referenceUnits": 111760,
+          "rankId": "grand-champion-3"
+        },
+        {
+          "id": 363,
+          "title": "Supersonic I",
+          "rawDollars": "14.9615",
+          "referenceUnits": 149615,
+          "rankId": "supersonic-legend"
+        }
+      ],
+      "progressDiscount": [
+        {
+          "id": 53,
+          "discount": 3,
+          "slab": 50,
+          "order": 1
+        },
+        {
+          "id": 54,
+          "discount": 6,
+          "slab": 100,
+          "order": 2
+        },
+        {
+          "id": 55,
+          "discount": 9,
+          "slab": 150,
+          "order": 3
+        },
+        {
+          "id": 56,
+          "discount": 12,
+          "slab": 200,
+          "order": 4
+        }
+      ],
+      "approvedOptions": [
+        {
+          "id": 66,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              69
+            ]
+          },
+          "const_title": "play_offline",
+          "title": "Play Offline",
+          "description": "The Booster will appear offline during the progression of the orders, to ensure maximum safety",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 1,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 67,
+          "type": "fixed",
+          "price_type": 0,
+          "price": 10,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              69
+            ]
+          },
+          "const_title": "stream",
+          "title": "Streaming",
+          "description": "You will be able to follow the progression of your order live, on Twitch or YouTube",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 2,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 68,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "priority",
+          "title": "Express Delivery",
+          "description": "The order will be placed at the top of the queue and will be delivered at 2x speed",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 3,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 69,
+          "type": "variable",
+          "price_type": 0,
+          "price": 45,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              66,
+              67
+            ]
+          },
+          "const_title": "self_play",
+          "title": "Play with Booster",
+          "description": "The Booster will play on another account and Duo with you during the order",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 4,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        }
+      ],
+      "queues": [
+        {
+          "id": 70,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "1v1",
+          "description": "Solo Duels",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 71,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "2v2",
+          "description": "Doubles",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 72,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "3v3",
+          "description": "Standard",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 263,
+          "type": "variable",
+          "price_type": 0,
+          "price": 30,
+          "rules": [],
+          "title": "4v4",
+          "description": "Squads",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 73,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Rumble",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 74,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Dropshot",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 75,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Hoops",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 76,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Snowday",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 541,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Heatseeker",
+          "description": null,
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        }
+      ],
+      "platforms": [
+        {
+          "id": 1,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PC",
+          "image_light": "/images/pack-options/light/windows.webp",
+          "image_dark": "/images/pack-options/dark/windows.webp"
+        },
+        {
+          "id": 2,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Xbox",
+          "image_light": "/images/pack-options/light/xbox.webp",
+          "image_dark": "/images/pack-options/dark/xbox.webp"
+        },
+        {
+          "id": 3,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PlayStation",
+          "image_light": "/images/pack-options/light/playstation.webp",
+          "image_dark": "/images/pack-options/dark/playstation.webp"
+        },
+        {
+          "id": 4,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Nintendo Switch",
+          "image_light": "/images/pack-options/light/nintendo-switch.webp",
+          "image_dark": "/images/pack-options/dark/nintendo-switch.webp"
+        },
+        {
+          "id": 5,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "SteamDeck",
+          "image_light": "/images/pack-options/light/steamdeck.webp",
+          "image_dark": "/images/pack-options/dark/steamdeck.webp"
+        }
+      ],
+      "platformIncrement": [],
+      "globalDiscount": {
+        "id": 5,
+        "game_id": 4,
+        "discount": 45,
+        "status": true,
+        "ending_date": "2026-10-30",
+        "is_fake": false,
+        "created_at": null,
+        "updated_at": "2026-09-30T01:16:09.000000Z"
+      }
+    },
+    "placements": {
+      "sourceUrl": "https://boostingmarket.com/en/rocket-league-boost/rocket-league-placements-boost",
+      "payloadKey": "data.get-game-pack-rocket-league-placements-boost-en-primary-page.data",
+      "htmlSha256": "177c91468bf2568ca0f47b60c1f48215c6bff2cee2ea38820bbae3aee37fab17",
+      "prices": [
+        {
+          "id": 803,
+          "title": "Unranked",
+          "rawDollars": "2.89",
+          "referenceUnits": 28900,
+          "rankId": "unrated"
+        },
+        {
+          "id": 372,
+          "title": "Bronze I",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "bronze-1"
+        },
+        {
+          "id": 373,
+          "title": "Bronze II",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "bronze-2"
+        },
+        {
+          "id": 374,
+          "title": "Bronze III",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "bronze-3"
+        },
+        {
+          "id": 375,
+          "title": "Silver I",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "silver-1"
+        },
+        {
+          "id": 376,
+          "title": "Silver II",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "silver-2"
+        },
+        {
+          "id": 377,
+          "title": "Silver III",
+          "rawDollars": "1.99",
+          "referenceUnits": 19900,
+          "rankId": "silver-3"
+        },
+        {
+          "id": 378,
+          "title": "Gold I",
+          "rawDollars": "2.21",
+          "referenceUnits": 22100,
+          "rankId": "gold-1"
+        },
+        {
+          "id": 379,
+          "title": "Gold II",
+          "rawDollars": "2.21",
+          "referenceUnits": 22100,
+          "rankId": "gold-2"
+        },
+        {
+          "id": 380,
+          "title": "Gold III",
+          "rawDollars": "2.21",
+          "referenceUnits": 22100,
+          "rankId": "gold-3"
+        },
+        {
+          "id": 381,
+          "title": "Platinum I",
+          "rawDollars": "3.39",
+          "referenceUnits": 33900,
+          "rankId": "platinum-1"
+        },
+        {
+          "id": 382,
+          "title": "Platinum II",
+          "rawDollars": "3.39",
+          "referenceUnits": 33900,
+          "rankId": "platinum-2"
+        },
+        {
+          "id": 383,
+          "title": "Platinum III",
+          "rawDollars": "4.39",
+          "referenceUnits": 43900,
+          "rankId": "platinum-3"
+        },
+        {
+          "id": 384,
+          "title": "Diamond I",
+          "rawDollars": "4.56",
+          "referenceUnits": 45600,
+          "rankId": "diamond-1"
+        },
+        {
+          "id": 385,
+          "title": "Diamond II",
+          "rawDollars": "4.56",
+          "referenceUnits": 45600,
+          "rankId": "diamond-2"
+        },
+        {
+          "id": 386,
+          "title": "Diamond III",
+          "rawDollars": "5.56",
+          "referenceUnits": 55600,
+          "rankId": "diamond-3"
+        },
+        {
+          "id": 387,
+          "title": "Champion I",
+          "rawDollars": "5.39",
+          "referenceUnits": 53900,
+          "rankId": "champion-1"
+        },
+        {
+          "id": 388,
+          "title": "Champion II",
+          "rawDollars": "6.63",
+          "referenceUnits": 66300,
+          "rankId": "champion-2"
+        },
+        {
+          "id": 389,
+          "title": "Champion III",
+          "rawDollars": "6.06",
+          "referenceUnits": 60600,
+          "rankId": "champion-3"
+        },
+        {
+          "id": 390,
+          "title": "Grand Champion I",
+          "rawDollars": "7.38",
+          "referenceUnits": 73800,
+          "rankId": "grand-champion-1"
+        },
+        {
+          "id": 391,
+          "title": "Grand Champion II",
+          "rawDollars": "8.38",
+          "referenceUnits": 83800,
+          "rankId": "grand-champion-2"
+        },
+        {
+          "id": 392,
+          "title": "Grand Champion III",
+          "rawDollars": "8.38",
+          "referenceUnits": 83800,
+          "rankId": "grand-champion-3"
+        },
+        {
+          "id": 393,
+          "title": "Supersonic I",
+          "rawDollars": "9.99",
+          "referenceUnits": 99900,
+          "rankId": "supersonic-legend"
+        }
+      ],
+      "progressDiscount": [
+        {
+          "id": 61,
+          "discount": 3,
+          "slab": 50,
+          "order": 1
+        },
+        {
+          "id": 62,
+          "discount": 6,
+          "slab": 100,
+          "order": 2
+        },
+        {
+          "id": 63,
+          "discount": 9,
+          "slab": 150,
+          "order": 3
+        },
+        {
+          "id": 64,
+          "discount": 12,
+          "slab": 200,
+          "order": 4
+        }
+      ],
+      "approvedOptions": [
+        {
+          "id": 74,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              77
+            ]
+          },
+          "const_title": "play_offline",
+          "title": "Play Offline",
+          "description": "The Booster will appear offline during the progression of the orders, to ensure maximum safety",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 1,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 75,
+          "type": "fixed",
+          "price_type": 0,
+          "price": 10,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              77
+            ]
+          },
+          "const_title": "stream",
+          "title": "Streaming",
+          "description": "You will be able to follow the progression of your order live, on Twitch or YouTube",
+          "member_unique": 0,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 2,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 76,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": [],
+          "const_title": "priority",
+          "title": "Express Delivery",
+          "description": "The order will be placed at the top of the queue and will be delivered at 2x speed",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 3,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        },
+        {
+          "id": 77,
+          "type": "variable",
+          "price_type": 0,
+          "price": 45,
+          "parent_option_id": null,
+          "bypass_calculation": 1,
+          "rules": {
+            "disable": [
+              74,
+              75
+            ]
+          },
+          "const_title": "self_play",
+          "title": "Play with Booster",
+          "description": "The Booster will play on another account and Duo with you during the order",
+          "member_unique": 1,
+          "multi_select": 0,
+          "coupon_enable": 1,
+          "slab": null,
+          "slug": null,
+          "is_hidden": false,
+          "order": 4,
+          "min_order_value": null,
+          "min_order_price": null,
+          "min_order_type": null
+        }
+      ],
+      "queues": [
+        {
+          "id": 84,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "1v1",
+          "description": "Solo Duels",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 85,
+          "type": "free",
+          "price_type": 0,
+          "price": 0,
+          "rules": [],
+          "title": "2v2",
+          "description": "Doubles",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 86,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "3v3",
+          "description": "Standard",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 265,
+          "type": "variable",
+          "price_type": 0,
+          "price": 30,
+          "rules": [],
+          "title": "4v4",
+          "description": "Squads",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 87,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Rumble",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 88,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Dropshot",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 89,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Hoops",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 90,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Snowday",
+          "description": "",
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        },
+        {
+          "id": 543,
+          "type": "variable",
+          "price_type": 0,
+          "price": 20,
+          "rules": [],
+          "title": "Heatseeker",
+          "description": null,
+          "multi_select": 0,
+          "slab": null,
+          "tooltip": null
+        }
+      ],
+      "platforms": [
+        {
+          "id": 1,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PC",
+          "image_light": "/images/pack-options/light/windows.webp",
+          "image_dark": "/images/pack-options/dark/windows.webp"
+        },
+        {
+          "id": 2,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Xbox",
+          "image_light": "/images/pack-options/light/xbox.webp",
+          "image_dark": "/images/pack-options/dark/xbox.webp"
+        },
+        {
+          "id": 3,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "PlayStation",
+          "image_light": "/images/pack-options/light/playstation.webp",
+          "image_dark": "/images/pack-options/dark/playstation.webp"
+        },
+        {
+          "id": 4,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "Nintendo Switch",
+          "image_light": "/images/pack-options/light/nintendo-switch.webp",
+          "image_dark": "/images/pack-options/dark/nintendo-switch.webp"
+        },
+        {
+          "id": 5,
+          "price": 0,
+          "price_type": 0,
+          "type": "free",
+          "title": "SteamDeck",
+          "image_light": "/images/pack-options/light/steamdeck.webp",
+          "image_dark": "/images/pack-options/dark/steamdeck.webp"
+        }
+      ],
+      "platformIncrement": [],
+      "globalDiscount": {
+        "id": 5,
+        "game_id": 4,
+        "discount": 45,
+        "status": true,
+        "ending_date": "2026-10-30",
+        "is_fake": false,
+        "created_at": null,
+        "updated_at": "2026-09-30T01:16:09.000000Z"
+      }
+    }
+  },
+  "chunks": [
+    {
+      "url": "https://boostingmarket.com/_nuxt/DtgAhZvn.js",
+      "sha256": "9423c25b3e9995c21d6d0011fc654ad73d7f02c81456851d0ea07067c9b26c48"
+    },
+    {
+      "url": "https://boostingmarket.com/_nuxt/CibCIq3q.js",
+      "sha256": "2e92e4084f11e5e5ded7f8cfad43b989b65b7b9fd94c62857b4ad3a505b91c47"
+    },
+    {
+      "url": "https://boostingmarket.com/_nuxt/DBX2luMd.js",
+      "sha256": "0a746804ae48c6285caef29bae264ede4a38852779617ca4f3f3d9cc10fe184d"
+    }
+  ]
+}

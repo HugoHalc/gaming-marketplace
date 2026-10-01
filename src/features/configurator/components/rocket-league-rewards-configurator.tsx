@@ -93,25 +93,6 @@ function firstRankForFamily(familyKey: string) {
   return `${familyKey}-1`;
 }
 
-function volumeDiscountRate(wins: number) {
-  if (wins >= 10) return 21;
-  if (wins >= 8) return 20;
-  if (wins >= 6) return 19;
-  if (wins >= 4) return 18;
-  if (wins >= 3) return 10;
-  if (wins >= 2) return 5;
-  return 0;
-}
-
-function nextDiscountTier(wins: number) {
-  if (wins < 2) return { wins: 2, discount: 5 };
-  if (wins < 3) return { wins: 3, discount: 10 };
-  if (wins < 4) return { wins: 4, discount: 18 };
-  if (wins < 6) return { wins: 6, discount: 19 };
-  if (wins < 8) return { wins: 8, discount: 20 };
-  if (wins < 10) return { wins: 10, discount: 21 };
-  return null;
-}
 
 function ChoicePill({
   active,
@@ -391,8 +372,8 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
   const wins = quantityValue ?? lastValidQuantity;
   const sliderQuantity = quantityValue ?? lastValidQuantity;
   const quantityDisplay = selection.wins === "" ? "—" : String(selection.wins);
-  const discountRate = quantityIsValid ? volumeDiscountRate(wins) : 0;
-  const nextTier = quantityIsValid ? nextDiscountTier(wins) : null;
+  const discountRate = quantityIsValid && quote && !isLoading && !error
+    ? Math.round((quote.discount / quote.subtotal) * 100) : 0;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -476,7 +457,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
   );
 
   async function createOrder() {
-    if (!minimumOrderSatisfied || isCreatingOrder) return;
+    if (!quote || !minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -488,6 +469,8 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
           gameSlug,
           serviceSlug: service.slug,
           selection,
+          expectedTotalCents: Math.round(quote.total * 100),
+          expectedRuleSetVersion: quote.ruleSetVersion,
         }),
       });
 
@@ -616,7 +599,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
               </div>
 
               <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Rewards package discount</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Automatic price adjustment</p>
                 <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
                   {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
@@ -628,10 +611,8 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 ) : null}
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
                   {!quantityIsValid
-                    ? "Enter a valid quantity to view package discounts."
-                    : nextTier
-                      ? `Add ${nextTier.wins - wins} more win${nextTier.wins - wins === 1 ? "" : "s"} to unlock ${nextTier.discount}% OFF.`
-                      : "Maximum rewards discount unlocked."}
+                    ? "Enter a valid quantity to view your price."
+                    : "All applicable price adjustments are included in your quote."}
                 </p>
               </div>
             </div>
@@ -829,7 +810,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
           <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
             {[
               "Server-calculated final pricing.",
-              "Real rewards package discounts.",
+              "Automatic price adjustments.",
               "Live order tracking included.",
             ].map((note) => (
               <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">

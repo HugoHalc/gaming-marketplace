@@ -359,7 +359,7 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
   );
 
   async function createOrder() {
-    if (!minimumOrderSatisfied || isCreatingOrder) return;
+    if (!quote || !minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -371,6 +371,8 @@ export function RocketLeagueTournamentConfigurator({ gameSlug, service }: Props)
           gameSlug,
           serviceSlug: service.slug,
           selection,
+          expectedTotalCents: Math.round(quote.total * 100),
+          expectedRuleSetVersion: quote.ruleSetVersion,
         }),
       });
 

@@ -32,6 +32,7 @@ import type {
   ConfiguratorSelection,
   QuotePreview,
 } from "../types/configurator";
+import { ROCKET_LEAGUE_WINS_MAX } from "../data/rocket-league-limits";
 import { PlatformIcon } from "./platform-icon";
 import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
@@ -92,23 +93,6 @@ function firstRankForFamily(familyKey: string) {
     : `${familyKey}-1`;
 }
 
-function volumeDiscountRate(wins: number) {
-  if (wins >= 16) return 18;
-  if (wins >= 11) return 15;
-  if (wins >= 8) return 12;
-  if (wins >= 5) return 8;
-  if (wins >= 3) return 5;
-  return 0;
-}
-
-function nextDiscountTier(wins: number) {
-  if (wins < 3) return { wins: 3, discount: 5 };
-  if (wins < 5) return { wins: 5, discount: 8 };
-  if (wins < 8) return { wins: 8, discount: 12 };
-  if (wins < 11) return { wins: 11, discount: 15 };
-  if (wins < 16) return { wins: 16, discount: 18 };
-  return null;
-}
 
 function ChoicePill({
   active,
@@ -341,14 +325,14 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [lastValidQuantity, setLastValidQuantity] = useState(4);
 
-  const quantityResult = parseWholeNumberQuantity(selection.wins, 1, 20);
+  const quantityResult = parseWholeNumberQuantity(selection.wins, 1, ROCKET_LEAGUE_WINS_MAX);
   const quantityIsValid = quantityResult.valid;
   const quantityValue = quantityResult.valid ? quantityResult.value : null;
   const wins = quantityValue ?? lastValidQuantity;
   const sliderQuantity = quantityValue ?? lastValidQuantity;
   const quantityDisplay = selection.wins === "" ? "—" : String(selection.wins);
-  const discountRate = quantityIsValid ? volumeDiscountRate(wins) : 0;
-  const nextTier = quantityIsValid ? nextDiscountTier(wins) : null;
+  const discountRate = quantityIsValid && quote && !isLoading && !error
+    ? Math.round((quote.discount / quote.subtotal) * 100) : 0;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -432,7 +416,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
   );
 
   async function createOrder() {
-    if (!minimumOrderSatisfied || isCreatingOrder) return;
+    if (!quote || !minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -444,6 +428,8 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
           gameSlug,
           serviceSlug: service.slug,
           selection,
+          expectedTotalCents: Math.round(quote.total * 100),
+          expectedRuleSetVersion: quote.ruleSetVersion,
         }),
       });
 
@@ -521,14 +507,14 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                     type="number"
                     inputMode="numeric"
                     min={1}
-                    max={20}
+                    max={ROCKET_LEAGUE_WINS_MAX}
                     step={1}
                     value={String(selection.wins ?? "")}
                     onChange={(event) => {
-                      const currentQuantity = parseWholeNumberQuantity(selection.wins, 1, 20);
+                      const currentQuantity = parseWholeNumberQuantity(selection.wins, 1, ROCKET_LEAGUE_WINS_MAX);
                       if (currentQuantity.valid) setLastValidQuantity(currentQuantity.value);
 
-                      const nextQuantity = quantitySelectionValue(event.target.value, 1, 20);
+                      const nextQuantity = quantitySelectionValue(event.target.value, 1, ROCKET_LEAGUE_WINS_MAX);
                       if (typeof nextQuantity === "number") setLastValidQuantity(nextQuantity);
                       update("wins", nextQuantity);
                     }}
@@ -539,7 +525,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
 
               {!quantityIsValid ? (
                 <p id="wins-quantity-error" role="alert" className="mt-2 text-[10px] leading-4 text-amber-100/75">
-                  Enter a whole number between 1 and 20.
+                  Enter a whole number between 1 and 12.
                 </p>
               ) : null}
 
@@ -547,7 +533,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 aria-label="Competitive wins slider"
                 type="range"
                 min={1}
-                max={20}
+                max={ROCKET_LEAGUE_WINS_MAX}
                 step={1}
                 value={sliderQuantity}
                 onChange={(event) => {
@@ -557,7 +543,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 }}
                 className="mt-5 h-1.5 w-full cursor-pointer appearance-none rounded-full border border-white/[0.06] bg-transparent accent-[#39E56F]"
                 style={{
-                  background: `linear-gradient(to right, rgba(57,229,111,.55) 0%, rgba(57,229,111,.55) ${((wins - 1) / 19) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / 19) * 100}%, rgba(255,255,255,.07) 100%)`,
+                  background: `linear-gradient(to right, rgba(57,229,111,.55) 0%, rgba(57,229,111,.55) ${((wins - 1) / (ROCKET_LEAGUE_WINS_MAX - 1)) * 100}%, rgba(255,255,255,.07) ${((wins - 1) / (ROCKET_LEAGUE_WINS_MAX - 1)) * 100}%, rgba(255,255,255,.07) 100%)`,
                 }}
               />
 
@@ -567,12 +553,11 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 <span>5</span>
                 <span>8</span>
                 <span>11</span>
-                <span>16</span>
-                <span>20</span>
+                <span>12</span>
               </div>
 
               <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Volume discount</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Automatic price adjustment</p>
                 <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
                   {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
@@ -584,10 +569,8 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 ) : null}
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
                   {!quantityIsValid
-                    ? "Enter a valid quantity to view volume discounts."
-                    : nextTier
-                      ? `Add ${nextTier.wins - wins} more win${nextTier.wins - wins === 1 ? "" : "s"} to unlock ${nextTier.discount}% OFF.`
-                      : "Maximum volume discount unlocked."}
+                    ? "Enter a valid quantity to view your price."
+                    : "All applicable price adjustments are included in your quote."}
                 </p>
               </div>
             </div>
@@ -783,7 +766,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
           <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
             {[
               "Server-calculated final pricing.",
-              "Real volume discounts.",
+              "Automatic price adjustments.",
               "Live order tracking included.",
             ].map((note) => (
               <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">

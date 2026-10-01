@@ -98,25 +98,6 @@ function firstRankForFamily(familyKey: string) {
   return `${familyKey}-1`;
 }
 
-function volumeDiscountRate(matches: number) {
-  if (matches >= 10) return 21;
-  if (matches >= 8) return 20;
-  if (matches >= 6) return 19;
-  if (matches >= 4) return 18;
-  if (matches >= 3) return 10;
-  if (matches >= 2) return 5;
-  return 0;
-}
-
-function nextDiscountTier(matches: number) {
-  if (matches < 2) return { matches: 2, discount: 5 };
-  if (matches < 3) return { matches: 3, discount: 10 };
-  if (matches < 4) return { matches: 4, discount: 18 };
-  if (matches < 6) return { matches: 6, discount: 19 };
-  if (matches < 8) return { matches: 8, discount: 20 };
-  if (matches < 10) return { matches: 10, discount: 21 };
-  return null;
-}
 
 function ChoicePill({
   active,
@@ -363,8 +344,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
   const matches = quantityValue ?? lastValidQuantity;
   const sliderQuantity = quantityValue ?? lastValidQuantity;
   const quantityDisplay = selection.matches === "" ? "—" : String(selection.matches);
-  const discountRate = quantityIsValid ? volumeDiscountRate(matches) : 0;
-  const nextTier = quantityIsValid ? nextDiscountTier(matches) : null;
+  const discountRate = quantityIsValid && quote && !isLoading && !error
+    ? Math.round((quote.discount / quote.subtotal) * 100) : 0;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -448,7 +429,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
   );
 
   async function createOrder() {
-    if (!minimumOrderSatisfied || isCreatingOrder) return;
+    if (!quote || !minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -460,6 +441,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
           gameSlug,
           serviceSlug: service.slug,
           selection,
+          expectedTotalCents: Math.round(quote.total * 100),
+          expectedRuleSetVersion: quote.ruleSetVersion,
         }),
       });
 
@@ -588,7 +571,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
               </div>
 
               <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Package discount</p>
+                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Automatic price adjustment</p>
                 <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
                   {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
                 </p>
@@ -600,10 +583,8 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
                 ) : null}
                 <p className="mt-2 text-[10px] leading-4 text-white/40">
                   {!quantityIsValid
-                    ? "Enter a valid quantity to view package discounts."
-                    : nextTier
-                      ? `Add ${nextTier.matches - matches} more match${nextTier.matches - matches === 1 ? "" : "es"} to unlock ${nextTier.discount}% OFF.`
-                      : "Maximum placement discount unlocked."}
+                    ? "Enter a valid quantity to view your price."
+                    : "All applicable price adjustments are included in your quote."}
                 </p>
               </div>
             </div>
@@ -799,7 +780,7 @@ export function RocketLeaguePlacementsConfigurator({ gameSlug, service }: Props)
           <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
             {[
               "Server-calculated final pricing.",
-              "Real package discounts.",
+              "Automatic price adjustments.",
               "Live order tracking included.",
             ].map((note) => (
               <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">

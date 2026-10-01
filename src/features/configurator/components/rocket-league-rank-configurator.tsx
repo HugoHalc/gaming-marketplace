@@ -467,7 +467,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
   );
 
   async function createOrder() {
-    if (!minimumOrderSatisfied || isCreatingOrder) return;
+    if (!quote || !minimumOrderSatisfied || isCreatingOrder) return;
     setIsCreatingOrder(true);
     setOrderError(null);
 
@@ -475,7 +475,11 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameSlug, serviceSlug: service.slug, selection }),
+        body: JSON.stringify({
+          gameSlug, serviceSlug: service.slug, selection,
+          expectedTotalCents: Math.round(quote.total * 100),
+          expectedRuleSetVersion: quote.ruleSetVersion,
+        }),
       });
       const payload = (await response.json()) as {
         order?: { id: string; orderNumber: string };
