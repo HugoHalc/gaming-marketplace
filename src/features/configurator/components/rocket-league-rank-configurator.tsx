@@ -1,5 +1,6 @@
 "use client";
 
+import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -774,7 +775,7 @@ export function RocketLeagueRankConfigurator({ gameSlug, service }: RocketLeague
               <>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="space-y-2">
-                  {quote.breakdown.map((item, index) => (
+                  {presentRocketLeaguePriceBreakdown(quote.breakdown, quote.total, gameSlug).map((item, index) => (
                     <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
                       <span className="text-[#A0AAA4]">{item.label}</span>
                       <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>

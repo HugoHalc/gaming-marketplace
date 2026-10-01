@@ -1,3 +1,4 @@
+import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, CircleDollarSign, Gamepad2, UserRound } from "lucide-react";
@@ -61,7 +62,7 @@ export default async function AdminOrderDetailPage({
         <section className="rounded-3xl border border-white/10 bg-[var(--surface)] p-6">
           <div className="flex items-center gap-2 text-violet-200"><Gamepad2 className="size-4"/><p className="text-xs font-semibold">SERVICE</p></div><h2 className="mt-3 text-2xl font-semibold">{item?.serviceName ?? "Gaming service"}</h2><p className="mt-1 text-sm text-[var(--muted-foreground)]">{item?.gameName}</p>
           {item ? <><div className="my-6 h-px bg-white/10"/><h3 className="text-sm font-semibold">Configuration</h3><dl className="mt-4 grid gap-3 sm:grid-cols-2">{Object.entries(item.configuration).map(([key, value]) => <div key={key} className="rounded-xl border border-white/[0.07] bg-black/15 p-3"><dt className="text-xs text-[var(--muted-foreground)]">{formatLabel(key)}</dt><dd className="mt-1 text-sm font-medium text-white">{formatValue(value)}</dd></div>)}</dl>
-          <div className="my-6 h-px bg-white/10"/><h3 className="text-sm font-semibold">Price breakdown</h3><div className="mt-4 space-y-3">{item.priceBreakdown.map((line, index) => <div key={`${line.label}-${index}`} className="flex justify-between gap-4 text-sm"><span className="text-[var(--muted-foreground)]">{line.label}</span><span className={line.amount < 0 ? "text-emerald-300" : "text-white"}>{line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}</span></div>)}</div></> : null}
+          <div className="my-6 h-px bg-white/10"/><h3 className="text-sm font-semibold">Price breakdown</h3><div className="mt-4 space-y-3">{presentRocketLeaguePriceBreakdown(item.priceBreakdown, item.total, item.gameName).map((line, index) => <div key={`${line.label}-${index}`} className="flex justify-between gap-4 text-sm"><span className="text-[var(--muted-foreground)]">{line.label}</span><span className={line.amount < 0 ? "text-emerald-300" : "text-white"}>{line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}</span></div>)}</div></> : null}
         </section>
 
         <section className="rounded-3xl border border-white/10 bg-[var(--surface)] p-6">

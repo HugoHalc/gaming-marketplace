@@ -373,9 +373,8 @@ export default function Home() {
         <Container>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="font-gaming-label text-sm text-[#A0AAA4]">Choose your game</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
-                Jump straight into a game storefront.
+              <h2 className="text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl lg:text-5xl">
+                Select your game:
               </h2>
             </div>
             <Link
@@ -387,7 +386,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2 xl:grid-cols-3">
             {publicGameNavigation.map((game) => {
               const canOpenOverview = game.ready || game.overviewReady;
               const imageSrc =

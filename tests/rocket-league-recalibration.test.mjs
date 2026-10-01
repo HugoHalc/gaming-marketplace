@@ -79,6 +79,7 @@ function load(file) {
 const src = (file) => load(path.join(root, "src", file));
 const shared = src("features/pricing/server/rocket-league-reference-pricing.ts");
 const reference = src("features/pricing/server/rocket-league-reference.ts");
+const presentation = src("features/configurator/presentation/rocket-league-price-breakdown.ts").presentRocketLeaguePriceBreakdown;
 const minimum = src("features/orders/minimum-order.ts");
 const catalog = src("features/catalog/data/catalog-repository.ts");
 const quoteRoute = src("app/api/quotes/preview/route.ts");
@@ -157,6 +158,10 @@ for (const family of Object.keys(calculators)) test(`${family}: every base confi
         assert.equal(cents(quote.discount), expected.raw - expected.total);
         assert.deepEqual(quote, calculators[family](input));
         assert.equal(quote.breakdown.reduce((sum, item) => sum + cents(item.amount), 0), expected.total);
+        const visible = presentation(quote.breakdown, quote.total, "rocket-league");
+        assert.equal(visible.reduce((sum, line) => sum + cents(line.amount), 0), expected.total);
+        assert.ok(visible.every((line) => Number.isFinite(line.amount) && line.amount >= 0 && !/automatic price adjustment/i.test(line.label)));
+        assert.deepEqual(visible.map((line) => line.label), quote.breakdown.filter((line) => line.amount >= 0).map((line) => line.label));
         assert.ok(Number.isSafeInteger(cents(quote.total)) && quote.total >= 0);
         assert.equal(minimum.meetsMinimumOrderTotal(quote.total), expected.total >= 500);
         const stages = shared.rocketLeaguePriceFromReferenceSubtotal(expected.raw);
@@ -258,11 +263,11 @@ test("all five real configurators show server quotes, minimum gate, and submit v
   const originalFetch = globalThis.fetch;
   try {
     globalThis.fetch = async (_url, options) => orderRoute.POST(request(JSON.parse(options.body)));
-    for (const family of Object.keys(calculators)) {
-      const selection = family === "rank" ? { ...base, currentRank: "grand-champion-1", targetRank: "grand-champion-3" }
-        : family === "tournament" ? { ...base, currentRank: "gold" }
-          : family === "placements" ? { ...base, previousRank: "bronze-3", matches: 10 }
-            : { ...base, currentRank: "bronze-3", wins: 10 };
+    for (const family of Object.keys(calculators)) for (const lowPrice of [false, true]) {
+      const selection = family === "rank" ? { ...base, currentRank: lowPrice ? "bronze-1" : "grand-champion-1", targetRank: lowPrice ? "bronze-2" : "grand-champion-3" }
+        : family === "tournament" ? { ...base, currentRank: lowPrice ? "bronze" : "gold" }
+          : family === "placements" ? { ...base, previousRank: "bronze-3", matches: lowPrice ? 1 : 10 }
+            : { ...base, currentRank: "bronze-3", wins: lowPrice ? 1 : 10 };
       for (const liveStream of [false, true]) {
         selection.liveStream = liveStream;
         const quote = calculators[family](selection);
@@ -271,9 +276,16 @@ test("all five real configurators show server quotes, minimum gate, and submit v
         const tree = component({ gameSlug: "rocket-league", service: game.services.find((s) => s.slug === slug[family]) });
         const html = renderToStaticMarkup(tree);
         assert.ok(html.includes(new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(quote.total)));
+        assert.doesNotMatch(html, /Automatic price adjustment|% OFF|Unlocked/);
+        const displayed = presentation(quote.breakdown, quote.total, "rocket-league");
+        for (const line of displayed) {
+          assert.ok(html.includes(line.label), `${family}: ${line.label}`);
+          assert.ok(html.includes(new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(line.amount)));
+        }
         const checkout = findCheckout(tree);
         assert.ok(checkout, family);
         assert.equal(checkout.props.disabled, quote.total < 5);
+        if (quote.total < 5) assert.match(html, /Minimum order total: \$5\.00/);
         inserts.length = 0;
         await checkout.props.onClick();
         assert.equal(inserts.length, quote.total < 5 ? 0 : 2);
@@ -340,4 +352,51 @@ test("all base configurations with compatible percentage and fixed extras retain
   const to = oracle("tournament", { ...base, currentRank: "platinum", liveStream: true });
   assert.equal(from.progressive, 0);
   assert.equal(to.progressive, 3);
+});
+
+
+test("presentation incorporates adjustments without mutating historical snapshots or other games", () => {
+  const frozen = Object.freeze([
+    Object.freeze({ label: "Rank Boost", amount: 33.64 }),
+    Object.freeze({ label: "Automatic price adjustment", amount: -22.54 }),
+  ]);
+  assert.deepEqual(presentation(frozen, 11.1, "Rocket League"), [{ label: "Rank Boost", amount: 11.1 }]);
+  assert.deepEqual(presentation(frozen, undefined, "Rocket League"), [{ label: "Rank Boost", amount: 11.1 }]);
+  assert.equal(presentation(frozen, 11.1, "Valorant"), frozen);
+  assert.equal(frozen[0].amount, 33.64);
+  assert.equal(frozen[1].amount, -22.54);
+  const noAdjustment = [{ label: "Rank Boost", amount: 12 }];
+  assert.equal(presentation(noAdjustment, 12, "rocket-league"), noAdjustment);
+});
+
+test("paid extras receive final cents without negative service prices or missing free extras", () => {
+  const lines = [
+    { label: "Competitive Wins", amount: 1.88 },
+    { label: "Live Stream", amount: 10 },
+    { label: "Appear Offline", amount: 0 },
+    { label: "Automatic price adjustment", amount: -7.96 },
+  ];
+  const expected = [{ label: "Competitive Wins", amount: 0.62 }, { label: "Live Stream", amount: 3.3 }, { label: "Appear Offline", amount: 0 }];
+  assert.deepEqual(presentation(lines, 3.92, "rocket-league"), expected);
+  assert.deepEqual(presentation(lines, undefined, "Rocket League"), expected);
+  assert.equal(lines[1].amount, 10);
+  assert.equal(minimum.meetsMinimumOrderTotal(3.92), false);
+  const summary = src("components/orders/order-configuration-summary.tsx").OrderConfigurationSummary;
+  const html = renderToStaticMarkup(React.createElement(summary, {
+    gameName: "Rocket League", configuration: { currentRank: "bronze-3" }, priceBreakdown: lines,
+  }));
+  assert.doesNotMatch(html, /Automatic price adjustment|\$10\.00/);
+  assert.match(html, /Live Stream/);
+});
+
+test("home games heading contains only customer title and retains responsive card layout", () => {
+  const source = readFileSync(path.join(root, "src/app/page.tsx"), "utf8");
+  const section = source.split('<section id="games"')[1].split('</section>')[0];
+  assert.match(section, /Select your game:/);
+  assert.doesNotMatch(section, /Choose your game|Jump straight into a game storefront/);
+  assert.doesNotMatch(section.split('<h2')[0], /<p/);
+  assert.match(section, /text-3xl.*sm:text-4xl.*lg:text-5xl/);
+  assert.match(section, /mt-6 grid gap-4 sm:mt-8 md:grid-cols-2 xl:grid-cols-3/);
+  assert.match(section, /publicGameNavigation\.map/);
+  assert.match(section, /href="\/games"/);
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -331,8 +332,6 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
   const wins = quantityValue ?? lastValidQuantity;
   const sliderQuantity = quantityValue ?? lastValidQuantity;
   const quantityDisplay = selection.wins === "" ? "—" : String(selection.wins);
-  const discountRate = quantityIsValid && quote && !isLoading && !error
-    ? Math.round((quote.discount / quote.subtotal) * 100) : 0;
   const boostMethod = String(selection.boostMethod);
   const selectedPlaylist = useMemo(
     () => playlists.find((item) => item.value === selection.playlist) ?? playlists[1],
@@ -555,24 +554,6 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                 <span>11</span>
                 <span>12</span>
               </div>
-
-              <div className="mt-3 rounded-xl border border-[#39E56F]/18 bg-[#39E56F]/[0.035] p-3.5">
-                <p className="font-gaming-label text-[10px] font-semibold uppercase tracking-[0.13em] text-[#A0AAA4]">Automatic price adjustment</p>
-                <p className="font-gaming-value mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-[#F4F7F5]">
-                  {!quantityIsValid ? "—" : discountRate > 0 ? `${discountRate}% OFF` : "Standard price"}
-                </p>
-                {quantityIsValid && discountRate > 0 ? (
-                  <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-medium text-[#82F5A4]">
-                    <Check className="size-3" strokeWidth={2.7} />
-                    Unlocked
-                  </p>
-                ) : null}
-                <p className="mt-2 text-[10px] leading-4 text-white/40">
-                  {!quantityIsValid
-                    ? "Enter a valid quantity to view your price."
-                    : "All applicable price adjustments are included in your quote."}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -763,10 +744,9 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
             </div>
           </div>
 
-          <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-3">
+          <div className="grid gap-2 rounded-xl border border-white/[0.06] bg-black/10 p-3 sm:grid-cols-2">
             {[
               "Server-calculated final pricing.",
-              "Automatic price adjustments.",
               "Live order tracking included.",
             ].map((note) => (
               <div key={note} className="flex items-center gap-2 text-[10px] text-white/40">
@@ -797,12 +777,6 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Package</p>
                     <p className="font-gaming-value mt-0.5 text-xl font-bold text-[#F4F7F5]">{quantityDisplay} <span className="text-xs font-semibold text-white/45">Wins</span></p>
                   </div>
-                  {discountRate > 0 ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#82F5A4]">
-                      <Check className="size-3" strokeWidth={2.7} />
-                      {discountRate}% OFF
-                    </span>
-                  ) : null}
                 </div>
               </div>
 
@@ -822,7 +796,7 @@ export function RocketLeagueWinsConfigurator({ gameSlug, service }: Props) {
               <>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 <div className="space-y-2">
-                  {quote.breakdown.map((item, index) => (
+                  {presentRocketLeaguePriceBreakdown(quote.breakdown, quote.total, gameSlug).map((item, index) => (
                     <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
                       <span className="text-[#A0AAA4]">{item.label}</span>
                       <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>

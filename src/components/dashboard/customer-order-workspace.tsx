@@ -1,5 +1,6 @@
 "use client";
 
+import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -73,6 +74,9 @@ export function CustomerOrderWorkspace({
   backLabel = "Orders",
 }: Props) {
   const item = order.items[0];
+  const displayedPriceBreakdown = item
+    ? presentRocketLeaguePriceBreakdown(item.priceBreakdown, item.total, item.gameName)
+    : [];
   const config = item?.configuration ?? {};
   const isMarvelRivals = isMarvelRivalsGame(item?.gameName);
   const isOverwatch = isOverwatchGame(item?.gameName);
@@ -288,7 +292,7 @@ export function CustomerOrderWorkspace({
                 gameName={item.gameName}
                 serviceName={item.serviceName}
                 configuration={item.configuration}
-                priceBreakdown={item.priceBreakdown}
+                priceBreakdown={displayedPriceBreakdown}
               />
             </div>
           ) : null}
@@ -299,7 +303,7 @@ export function CustomerOrderWorkspace({
             </h2>
 
             <div className="mt-4 divide-y divide-white/[0.06]">
-              {item?.priceBreakdown.map((line, index) => (
+              {displayedPriceBreakdown.map((line, index) => (
                 <div
                   key={`${line.label}-${index}`}
                   className="flex min-h-11 items-center justify-between gap-4 py-3"

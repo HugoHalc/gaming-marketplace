@@ -1,5 +1,6 @@
 "use client";
 
+import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { ArrowRight, Sparkles } from "lucide-react";
 import {
   GameRankValue,
@@ -675,7 +676,7 @@ export function OrderConfigurationSummary({
 
   const currentRank = resolveGameRank(gameName, currentValue);
   const desiredRank = resolveGameRank(gameName, desiredValue);
-  const extras = paidExtras(priceBreakdown);
+  const extras = paidExtras(presentRocketLeaguePriceBreakdown(priceBreakdown, undefined, gameName));
 
   if (!currentRank && !desiredRank && !extras.length) {
     return null;
