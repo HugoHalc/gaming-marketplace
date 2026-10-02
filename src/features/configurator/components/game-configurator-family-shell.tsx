@@ -7,7 +7,7 @@ import { PaymentMethodsTrustBlock } from "./payment-methods-trust-block";
 
 export function GameConfiguratorColumns({ children }: { children: ReactNode }) {
   return (
-    <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <div data-configurator-columns className="grid min-w-0 gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
       {children}
     </div>
   );
@@ -77,12 +77,12 @@ export function GameOrderAside({
     <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
       <div className="space-y-3">
         <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-          <div className="border-b border-white/[0.07] bg-gradient-to-br from-violet-500/[0.05] via-transparent to-transparent px-4 py-4">
+          <div className="border-b border-white/[0.07] bg-gradient-to-br from-violet-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
                   Order Summary
-                </p>
+                </h2>
                 <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{gameLabel}</p>
               </div>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-medium ${

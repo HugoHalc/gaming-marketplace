@@ -1,5 +1,9 @@
 "use client";
 
+import { usePresentedServiceQuote } from "../presentation/use-presented-service-quote";
+import { BeforeCheckoutGuidance } from "./service-order-guidance";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
 import Image from "next/image";
@@ -345,6 +349,7 @@ function CompactRankSelector({
 function ValorantOrderGuidance() {
   return (
     <>
+      <BeforeCheckoutGuidance />
       <section
         className="mt-3 border-t border-white/[0.06] pt-3"
         aria-labelledby="valorant-estimated-timing-heading"
@@ -829,8 +834,10 @@ export function ValorantServiceConfigurator({
   }, [selection, isRankBoost, isWins, isPlacements]);
 
 
+  const presentationQuote = usePresentedServiceQuote(quote);
+
   return (
-    <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <ServiceConfiguratorPresentation><div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
       <section className="min-w-0">
         <div className="space-y-5 sm:space-y-6">
           {isRankBoost ? (
@@ -1076,12 +1083,12 @@ export function ValorantServiceConfigurator({
       <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-            <div className="border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.05] via-transparent to-transparent px-4 py-4">
+            <div className="border-b border-white/[0.07] bg-gradient-to-br from-rose-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                  <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
                     Order Summary
-                  </p>
+                  </h2>
                   <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{serviceLabel}</p>
                 </div>
                 {isLoading ? (
@@ -1151,26 +1158,17 @@ export function ValorantServiceConfigurator({
                 </div>
               ) : null}
 
-              {quote ? (
+              {presentationQuote ? (
                 <>
                   <div className="my-4 h-px bg-white/[0.08]" />
-                  <div className="space-y-2">
-                    {quote.breakdown.map((item, index) => (
-                      <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
-                        <span className="text-[#A0AAA4]">{item.label}</span>
-                        <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
-                          {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <ServicePriceBreakdown quote={presentationQuote} />
 
                   <div className="my-4 h-px bg-white/[0.08]" />
                   <div className="flex items-end justify-between gap-4" aria-live="polite">
                     <div className="min-w-0">
                       <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                       <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">
-                        {formatPrice(quote.total)}
+                        {formatPrice(presentationQuote.total)}
                       </p>
                       {!isLoading ? (
                         <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
@@ -1209,9 +1207,9 @@ export function ValorantServiceConfigurator({
                 <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div>
               ) : null}
 
-              <p className="mt-3 text-[10px] leading-4 text-white/42">
+              <div className="min-w-0"><h3 className="text-xs font-semibold text-[#A0AAA4]">Before checkout</h3><p className="mt-3 text-[10px] leading-4 text-white/42">
                 {selection.queue === "duo" ? "No account access required." : "Account details are requested after checkout."}
-              </p>
+              </p></div>
 
               {!quantityIsValid ? (
                 <p className="mt-3 text-[10px] leading-4 text-amber-100/75" role="status">
@@ -1223,7 +1221,7 @@ export function ValorantServiceConfigurator({
                 <MinimumOrderNotice id={minimumNoticeId} shortfallCents={minimumShortfallCents} />
               ) : null}
 
-              <ValorantOrderGuidance />
+
 
               <Button
                 className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
@@ -1252,6 +1250,7 @@ export function ValorantServiceConfigurator({
                   </>
                 )}
               </Button>
+<ValorantOrderGuidance />
 
             </div>
           </div>
@@ -1266,7 +1265,7 @@ export function ValorantServiceConfigurator({
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
             <div className="mt-0.5 flex items-baseline gap-2">
               <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-                {quote ? formatPrice(quote.total) : "—"}
+                {presentationQuote ? formatPrice(presentationQuote.total) : "—"}
               </p>
               {isLoading ? (
                 <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
@@ -1285,6 +1284,6 @@ export function ValorantServiceConfigurator({
           </a>
         </div>
       </div>
-    </div>
+    </div></ServiceConfiguratorPresentation>
   );
 }

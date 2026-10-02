@@ -1,5 +1,7 @@
 "use client";
 
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -370,8 +372,8 @@ export function Dota2HeroLevelConfigurator() {
   const progressionLevels = currentResult.valid && desiredResult.valid && desiredResult.value > currentResult.value ? desiredResult.value - currentResult.value : null;
 
   return (
-    <>
-      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <ServiceConfiguratorPresentation><>
+      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
         <section className="min-w-0 space-y-5 sm:space-y-6">
           <ConfiguratorBlock title="Selected Hero" helper="One hero per order.">
             <label htmlFor="dota2-hero-level-name" className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">Hero</label>
@@ -441,7 +443,7 @@ export function Dota2HeroLevelConfigurator() {
         <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
           <div className="space-y-3">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4">
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
                 <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-white">Order Summary</h2>
                 <p className="mt-1.5 text-[11px] text-[#A0AAA4]">Dota Plus Hero Level</p>
               </div>
@@ -462,7 +464,7 @@ export function Dota2HeroLevelConfigurator() {
                 </div>
 
                 {selectedExtras.length ? <div className="mt-3 border-t border-white/[0.06] pt-3"><p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Selected extras</p><div className="mt-2 flex flex-wrap gap-1.5">{selectedExtras.map((extra) => <span key={extra} className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2 py-1 text-[9px] text-white/58">{extra}</span>)}</div></div> : null}
-                {quote ? <div className="mt-4 border-t border-white/[0.08] pt-3"><p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Price breakdown</p><div className="mt-2 divide-y divide-white/[0.05]">{quote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex items-start justify-between gap-3 py-2 text-[10px]"><span className="min-w-0 text-white/42">{item.label}</span><span className="shrink-0 font-medium text-white/72">{formatUsd(item.amount)}</span></div>)}</div></div> : null}
+                {quote ? <div className="mt-4 border-t border-white/[0.08] pt-3"><p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">Price breakdown</p><ServicePriceBreakdown quote={quote} /></div> : null}
                 {quoteError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{quoteError}</div> : null}
 
                 <div className="my-4 h-px bg-white/[0.08]" />
@@ -477,7 +479,7 @@ export function Dota2HeroLevelConfigurator() {
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
 
                 <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
-                  <div className="flex items-start gap-2.5 px-3 py-3"><ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-red-200/70" /><p className="text-[10px] leading-4 text-white/45">Account details are requested after checkout through the protected order workflow.</p></div>
+                  <div className="flex items-start gap-2.5 px-3 py-3"><ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-red-200/70" /><div className="min-w-0"><h3 className="text-xs font-semibold text-[#A0AAA4]">Before checkout</h3><p className="text-[10px] leading-4 text-white/45">Account details are requested after checkout through the protected order workflow.</p></div></div>
                   <div className="flex items-start gap-2.5 border-t border-white/[0.06] px-3 py-3"><Clock3 className="mt-0.5 size-3.5 shrink-0 text-red-200/65" /><div><p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200/65">Estimated timing</p><p className="mt-1 text-[10px] leading-4 text-white/42">Estimated start — Unavailable</p><p className="text-[10px] leading-4 text-white/42">Estimated completion — Unavailable</p><p className="mt-1 text-[9px] leading-4 text-white/30">No verified timing estimate is available for this configuration.</p></div></div>
                   <div className="border-t border-white/[0.06] px-3 py-3"><div className="flex items-start gap-2.5"><UsersRound className="mt-0.5 size-3.5 shrink-0 text-red-200/65" /><div className="min-w-0"><p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-red-200/65">Verify before you order</p><p className="mt-1 text-[10px] leading-4 text-white/42">One hero per order. An active Dota Plus subscription is required before Checkout.</p><div className="mt-1 flex flex-wrap gap-x-3"><a href="https://www.trustpilot.com/review/boostingpedia.com" target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Public Trustpilot reviews<ExternalLink className="ml-1 size-2.5" /></a><Link href="/refunds" className="inline-flex min-h-11 items-center text-[10px] text-white/50 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/30">Refund policy</Link></div></div></div></div>
                 </div>
@@ -497,6 +499,6 @@ export function Dota2HeroLevelConfigurator() {
           <span aria-hidden="true" />
         </div>
       </div>
-    </>
+    </></ServiceConfiguratorPresentation>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePresentedServiceQuote } from "../presentation/use-presented-service-quote";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
@@ -438,8 +440,10 @@ export function MarvelRivalsHeroConfigurator({
     return rows;
   }, [selection.boostMethod, selection.platform, selection.region]);
 
+  const presentationQuote = usePresentedServiceQuote(quote);
+
   return (
-    <>
+    <ServiceConfiguratorPresentation><>
       <GameConfiguratorColumns>
         <section className="min-w-0 space-y-5 sm:space-y-6">
             <MarvelRivalsConfiguratorBlock ariaLabel="Select hero">
@@ -688,7 +692,7 @@ export function MarvelRivalsHeroConfigurator({
           progression={<HeroSummary selection={selection} />}
           metadata={<SummaryRows rows={summaryRows} />}
           checkoutError={checkout.orderError}
-          quote={quote}
+          quote={presentationQuote}
           quoteLoading={quoteLoading}
           checkoutAction={
             <MarvelRivalsCheckoutButton
@@ -725,6 +729,6 @@ export function MarvelRivalsHeroConfigurator({
           />
         }
       />
-    </>
+    </></ServiceConfiguratorPresentation>
   );
 }

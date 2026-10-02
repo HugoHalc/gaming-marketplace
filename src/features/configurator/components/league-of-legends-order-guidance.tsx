@@ -20,18 +20,18 @@ export function LeagueOfLegendsOrderGuidance({
 
   return (
     <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
-      {accountAccess ? (
+      {(
         <section className="px-3 py-3" aria-label="Account access guidance">
           <div className="flex items-start gap-2.5">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-[#E7C867]/75" aria-hidden="true" />
-            <p className="min-w-0 text-[10px] leading-4 text-white/45">
+            <div className="min-w-0"><h3 className="text-xs font-semibold text-[#A0AAA4]">Before checkout</h3><p className="min-w-0 text-[10px] leading-4 text-white/45">
               {accountAccess === "account"
                 ? "Account details are requested after checkout."
-                : "No account access required."}
-            </p>
+                : accountAccess === "duo" ? "No account access required." : "Final order details are validated before checkout."}
+            </p></div>
           </div>
         </section>
-      ) : null}
+      )}
 
       <section
         className={accountAccess ? "border-t border-white/[0.06] px-3 py-3" : "px-3 py-3"}

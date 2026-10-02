@@ -1,5 +1,8 @@
 "use client";
 
+import { usePresentedServiceQuote } from "../presentation/use-presented-service-quote";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import { GameServiceNavigation } from "./game-service-navigation";
 import { serviceNavigationGridClassName } from "@/features/catalog/components/service-page-shell";
 
@@ -724,15 +727,17 @@ export function LeagueOfLegendsServiceConfigurator({
     isWins && selection.demotionShield === true ? "Demotion Shield · +20%" : null,
   ].filter((item): item is string => Boolean(item));
 
+  const presentationQuote = usePresentedServiceQuote(quote);
+
   return (
-    <>
+    <ServiceConfiguratorPresentation><>
 
 
       <div className={serviceNavigationGridClassName}>
         <GameServiceNavigation gameName="League of Legends" gameSlug="league-of-legends" activeSlug={service.slug} items={serviceNavigation} accentTextClass="text-[#E7C867]/70" accentBorderClass="border-[#C89B3C]/30" />
 
         <div className="min-w-0">
-          <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+          <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
             <section className="min-w-0">
               <div className="space-y-4">
                 {isRank ? (
@@ -880,7 +885,7 @@ export function LeagueOfLegendsServiceConfigurator({
 
             <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
               <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-                <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4">
+                <div className="border-b border-white/[0.07] bg-gradient-to-br from-[#C89B3C]/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
@@ -1000,24 +1005,15 @@ export function LeagueOfLegendsServiceConfigurator({
 
                   {error ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{error}</div> : null}
 
-                  {quote ? (
+                  {presentationQuote ? (
                     <>
                       <div className="my-4 h-px bg-white/[0.08]" />
-                      <div className="space-y-2">
-                        {quote.breakdown.map((item, index) => (
-                          <div key={`${item.label}-${index}`} className="flex min-h-7 items-center justify-between gap-4 text-[11px]">
-                            <span className="text-[#A0AAA4]">{item.label}</span>
-                            <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
-                              {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      <ServicePriceBreakdown quote={presentationQuote} />
                       <div className="my-4 h-px bg-white/[0.08]" />
                       <div className="flex items-end justify-between gap-4" role="status" aria-live="polite" aria-atomic="true">
                         <div className="min-w-0">
                           <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
-                          <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(quote.total)}</p>
+                          <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(presentationQuote.total)}</p>
                           <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
                             <Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />
                             Server-Validated Price
@@ -1047,10 +1043,7 @@ export function LeagueOfLegendsServiceConfigurator({
                   <MinimumOrderNotice id={`lol-${service.slug}-minimum-order`} shortfallCents={belowMinimum ? minimumShortfallCents : 0} />
                   {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">{orderError}</div> : null}
 
-                  <LeagueOfLegendsOrderGuidance
-                    idPrefix={`lol-${service.slug}`}
-                    accountAccess={selection.boostMethod === "duo" ? "duo" : "account"}
-                  />
+
 
                   <Button
                     className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
@@ -1071,6 +1064,10 @@ export function LeagueOfLegendsServiceConfigurator({
                       </>
                     )}
                   </Button>
+<LeagueOfLegendsOrderGuidance
+                    idPrefix={`lol-${service.slug}`}
+                    accountAccess={selection.boostMethod === "duo" ? "duo" : "account"}
+                  />
                 </div>
               </div>
               <PaymentMethodsTrustBlock className="mt-3" />
@@ -1083,7 +1080,7 @@ export function LeagueOfLegendsServiceConfigurator({
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <div>
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/35">Your total</p>
-            <p className="font-gaming-value mt-0.5 text-[1.55rem] font-bold leading-none text-[#F4F7F5]">{quote ? formatPrice(quote.total) : "—"}</p>
+            <p className="font-gaming-value mt-0.5 text-[1.55rem] font-bold leading-none text-[#F4F7F5]">{presentationQuote ? formatPrice(presentationQuote.total) : "—"}</p>
             {belowMinimum ? (
               <p className="mt-1 text-[9px] font-medium leading-3 text-[#E7C867]/80">
                 Add {formatUsdCents(minimumShortfallCents)} to reach the $5.00 minimum.
@@ -1095,6 +1092,6 @@ export function LeagueOfLegendsServiceConfigurator({
           </a>
         </div>
       </div>
-    </>
+    </></ServiceConfiguratorPresentation>
   );
 }

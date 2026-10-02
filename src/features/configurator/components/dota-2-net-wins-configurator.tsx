@@ -1,5 +1,7 @@
 "use client";
 
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -745,8 +747,8 @@ export function Dota2NetWinsConfigurator() {
   }
 
   return (
-    <>
-      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <ServiceConfiguratorPresentation><>
+      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
         <section className="min-w-0 space-y-5 sm:space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-3">
@@ -1021,7 +1023,7 @@ export function Dota2NetWinsConfigurator() {
         <aside id="boost-summary" className="scroll-mt-28 xl:scroll-mt-24 xl:sticky xl:top-24">
           <div className="space-y-3">
             <div className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4">
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-red-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
                 <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-white">
                   Order Summary
                 </h2>
@@ -1109,21 +1111,7 @@ export function Dota2NetWinsConfigurator() {
                     <p className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/30">
                       Price breakdown
                     </p>
-                    <div className="mt-2 divide-y divide-white/[0.05]">
-                      {quote.breakdown.map((item, index) => (
-                        <div
-                          key={`${item.label}-${index}`}
-                          className="flex items-start justify-between gap-3 py-2 text-[10px]"
-                        >
-                          <span className="min-w-0 text-white/42">
-                            {item.label}
-                          </span>
-                          <span className="shrink-0 font-medium text-white/72">
-                            {formatUsd(item.amount)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    <ServicePriceBreakdown quote={quote} />
                   </div>
                 ) : null}
 
@@ -1201,11 +1189,11 @@ export function Dota2NetWinsConfigurator() {
                       className="mt-0.5 size-3.5 shrink-0 text-red-200/70"
                       aria-hidden="true"
                     />
-                    <p className="text-[10px] leading-4 text-white/45">
+                    <div className="min-w-0"><h3 className="text-xs font-semibold text-[#A0AAA4]">Before checkout</h3><p className="text-[10px] leading-4 text-white/45">
                       {selection.boostMethod === "solo"
                         ? "Account details are requested after checkout through the protected order workflow."
                         : "You play with the booster; account access is not required for the booster to play on your behalf."}
-                    </p>
+                    </p></div>
                   </div>
 
                   <div className="flex items-start gap-2.5 border-t border-white/[0.06] px-3 py-3">
@@ -1352,6 +1340,6 @@ export function Dota2NetWinsConfigurator() {
           <span aria-hidden="true" />
         </div>
       </div>
-    </>
+    </></ServiceConfiguratorPresentation>
   );
 }

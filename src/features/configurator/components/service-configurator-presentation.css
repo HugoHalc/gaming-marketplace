@@ -1,0 +1,145 @@
+/* Scoped to configurators: the 2A page shell, navigation and global UI are untouched. */
+.bp-service-experience {
+  --service-control-radius: 0.75rem;
+  --service-selected-border: rgb(57 229 111 / 45%);
+  --service-selected-surface: rgb(57 229 111 / 7%);
+  --service-focus: #82f5a4;
+  min-width: 0;
+}
+
+.bp-service-experience [data-configurator-columns] > *,
+.bp-service-experience aside,
+.bp-service-experience [role="radiogroup"] > * {
+  min-width: 0;
+}
+
+.bp-service-experience button,
+.bp-service-experience select,
+.bp-service-experience input:not([type="checkbox"]):not([type="radio"]),
+.bp-service-experience aside a {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.bp-service-experience button[role="radio"],
+.bp-service-experience button[aria-pressed] {
+  min-width: 0;
+  border-radius: var(--service-control-radius);
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+}
+
+.bp-service-experience button[role="radio"]:not(:disabled):hover,
+.bp-service-experience button[aria-pressed]:not(:disabled):hover {
+  border-color: rgb(57 229 111 / 30%);
+  background-color: rgb(57 229 111 / 4%);
+}
+
+.bp-service-experience button[aria-checked="true"],
+.bp-service-experience button[aria-pressed="true"] {
+  border-color: var(--service-selected-border);
+  background-color: var(--service-selected-surface);
+  box-shadow: none;
+}
+
+.bp-service-experience button:focus-visible,
+.bp-service-experience input:focus-visible,
+.bp-service-experience select:focus-visible,
+.bp-service-experience a:focus-visible {
+  outline: 2px solid var(--service-focus);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.bp-service-experience button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.bp-service-experience [class~="truncate"] {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.bp-service-experience [class*="text-[8px]"],
+.bp-service-experience [class*="text-[9px]"],
+.bp-service-experience [class*="text-[10px]"],
+.bp-service-experience [class*="text-[11px]"] {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.bp-service-experience [class*="text-white/25"],
+.bp-service-experience [class*="text-white/28"],
+.bp-service-experience [class*="text-white/30"],
+.bp-service-experience [class*="text-white/32"],
+.bp-service-experience [class*="text-white/35"],
+.bp-service-experience [class*="text-white/38"],
+.bp-service-experience [class*="text-white/40"],
+.bp-service-experience [class*="text-white/42"],
+.bp-service-experience [class*="text-white/45"] {
+  color: #a0aaa4;
+}
+
+.bp-service-experience img {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.bp-service-experience [role="radio"] > svg,
+.bp-service-experience button[aria-pressed] > svg {
+  flex-shrink: 0;
+}
+
+.bp-service-experience [data-service-summary-header] {
+  padding: 1rem;
+  border-bottom: 1px solid rgb(255 255 255 / 7%);
+}
+
+@media (max-width: 639px) {
+  .bp-service-experience input,
+  .bp-service-experience select {
+    font-size: 1rem;
+  }
+
+  .bp-service-experience [data-service-summary-header] > [class*="flex"] {
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+  }
+
+  .bp-service-experience [class~="whitespace-nowrap"] {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .bp-service-experience [class*="text-[2.35rem]"] {
+    font-size: clamp(1.75rem, 8vw, 2.35rem);
+  }
+
+  .bp-service-experience [class*="grid-cols-[minmax(0,1fr)_auto_3.75rem]"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .bp-service-experience [class*="grid-cols-[minmax(0,1fr)_auto_3.75rem]"] > span[aria-hidden="true"] {
+    display: none;
+  }
+
+  .bp-service-experience:has(input:focus, select:focus) [class*="fixed"][class*="bottom-0"] {
+    display: none;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-service-experience button[role="radio"],
+  .bp-service-experience button[aria-pressed] {
+    transition: none;
+  }
+}
+
+@media (max-width: 1279px) {
+  .bp-service-experience [data-configurator-columns] {
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+  }
+}

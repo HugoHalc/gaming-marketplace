@@ -38,11 +38,11 @@ export function MarvelRivalsOrderGuidance({
             className="mt-0.5 size-3.5 shrink-0 text-[#CEC5FF]/75"
             aria-hidden="true"
           />
-          <p className="min-w-0 text-[10px] leading-4 text-white/45">
+          <div className="min-w-0"><h3 className="text-xs font-semibold text-[#A0AAA4]">Before checkout</h3><p className="min-w-0 text-[10px] leading-4 text-white/45">
             {boostMethod === "solo"
               ? "Account details are requested after checkout."
               : "No account access required."}
-          </p>
+          </p></div>
         </div>
       </section>
 

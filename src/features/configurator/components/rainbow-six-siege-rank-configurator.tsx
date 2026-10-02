@@ -1,5 +1,8 @@
 "use client";
 
+import { ServiceOrderGuidance } from "./service-order-guidance";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import { PlatformIcon } from "./platform-icon";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -7,10 +10,8 @@ import type { KeyboardEvent, ReactNode } from "react";
 import {
   ArrowRight,
   Check,
-  Clock3,
   LoaderCircle,
   LockKeyhole,
-  ShieldCheck,
   SlidersHorizontal,
   X,
 } from "lucide-react";
@@ -49,9 +50,6 @@ function formatUsd(value: number) {
   }).format(value);
 }
 
-function formatUsdCents(cents: number) {
-  return formatUsd(cents / 100);
-}
 
 function handleRadioKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
   const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
@@ -404,8 +402,8 @@ export function RainbowSixSiegeRankConfigurator() {
             : "Waiting for quote";
 
   return (
-    <>
-      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <ServiceConfiguratorPresentation><>
+      <div className="grid gap-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
         <section className="min-w-0 space-y-5 sm:space-y-6">
           <ConfiguratorBlock
             title="Rank progression"
@@ -513,12 +511,12 @@ export function RainbowSixSiegeRankConfigurator() {
 
         <aside className="min-w-0 xl:sticky xl:top-24">
           <div className="overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#080B09]">
-            <div className="border-b border-white/[0.07] bg-gradient-to-br from-emerald-500/[0.05] via-transparent to-transparent px-4 py-4">
+            <div className="border-b border-white/[0.07] bg-gradient-to-br from-emerald-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
+                  <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
                     Order Summary
-                  </p>
+                  </h2>
                   <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">Rainbow Six Siege Rank Boost</p>
                 </div>
                 <span aria-live="polite" role="status" className="shrink-0 rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[9px] text-[#A0AAA4]">
@@ -570,30 +568,7 @@ export function RainbowSixSiegeRankConfigurator() {
               </div>
 
               {metadata && quote ? (
-                <div className="space-y-2.5 border-t border-white/[0.06] pt-4 text-[11px]">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-white/42">Base price</span>
-                    <span className="font-semibold text-white/75">{formatUsdCents(metadata.basePriceCents)}</span>
-                  </div>
-                  {metadata.percentageModifiers.map((modifier) => (
-                    <div key={`${modifier.label}-${modifier.display}`} className="flex items-center justify-between gap-3">
-                      <span className="min-w-0 truncate text-white/42">{modifier.label} {modifier.display}</span>
-                      <span className="font-semibold text-white/65">+{formatUsdCents(modifier.amountCents)}</span>
-                    </div>
-                  ))}
-                  {metadata.fixedChargesCents > 0 ? (
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-white/42">Fixed charges</span>
-                      <span className="font-semibold text-white/65">+{formatUsdCents(metadata.fixedChargesCents)}</span>
-                    </div>
-                  ) : null}
-                  {metadata.discountCents > 0 ? (
-                    <div className="flex items-center justify-between gap-3 text-emerald-100/75">
-                      <span>Progressive discount ({metadata.discountBps / 100}%)</span>
-                      <span className="font-semibold">−{formatUsdCents(metadata.discountCents)}</span>
-                    </div>
-                  ) : null}
-                </div>
+                <ServicePriceBreakdown quote={quote} />
               ) : null}
 
               {quoteError ? (
@@ -619,35 +594,7 @@ export function RainbowSixSiegeRankConfigurator() {
                 shortfallCents={belowMinimum ? minimumShortfallCents : 0}
               />
 
-              <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
-                <div className="flex items-start gap-2.5 px-3 py-3">
-                  <Clock3 className="mt-0.5 size-3.5 shrink-0 text-emerald-200/65" aria-hidden="true" />
-                  <div
-                    className="min-w-0"
-                    role="status"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200/65">
-                      Estimated starting time
-                    </p>
-                    <p className="mt-1 text-sm font-semibold leading-5 text-white/72">
-                      {startingTimeEstimate?.range ?? "Unavailable"}
-                    </p>
-                    <p className="mt-1 text-[9px] leading-4 text-white/30">
-                      {startingTimeEstimate
-                        ? R6_STARTING_TIME_DISCLAIMER
-                        : "Select a valid configuration to view an estimate."}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2.5 border-t border-white/[0.06] px-3 py-3">
-                  <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-emerald-200/65" aria-hidden="true" />
-                  <p className="text-[10px] leading-4 text-white/42">
-                    Pricing is recalculated on the server before the order is created.
-                  </p>
-                </div>
-              </div>
+
 
               {orderError ? (
                 <div role="alert" className="rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] text-rose-200">
@@ -666,6 +613,7 @@ export function RainbowSixSiegeRankConfigurator() {
                 Checkout
                 <ArrowRight className="ml-2 size-4" aria-hidden="true" />
               </Button>
+<ServiceOrderGuidance startingTime={startingTimeEstimate?.range ?? "Unavailable"} timingNote={startingTimeEstimate ? R6_STARTING_TIME_DISCLAIMER : "Select a valid configuration to view an estimate."} />
             </div>
           </div>
           <PaymentMethodsTrustBlock />
@@ -753,21 +701,7 @@ export function RainbowSixSiegeRankConfigurator() {
                 </p>
               </div>
 
-              <div className="space-y-2 border-t border-white/[0.07] pt-4 text-xs">
-                {quote.breakdown.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between gap-4">
-                    <span className="text-white/45">{item.label}</span>
-                    <span className={item.amount < 0 ? "font-semibold text-emerald-100/75" : "font-semibold text-white/70"}>
-                      {item.amount < 0 ? "−" : item.amount > 0 && !item.label.startsWith("Rank progression") ? "+" : ""}
-                      {formatUsd(Math.abs(item.amount))}
-                    </span>
-                  </div>
-                ))}
-                <div className="mt-3 flex items-end justify-between gap-4 border-t border-white/[0.07] pt-4">
-                  <span className="text-sm font-semibold text-white/65">Final total</span>
-                  <span className="font-gaming-value text-3xl font-bold tracking-[-0.04em] text-white">{formatUsd(quote.total)}</span>
-                </div>
-              </div>
+              <ServicePriceBreakdown quote={quote} />
 
               <div className="rounded-xl border border-emerald-300/[0.10] bg-emerald-400/[0.025] p-3 text-[10px] leading-5 text-white/48">
                 Your selections and total will be recalculated on the server when you continue. If the configuration changes, a fresh quote is required.
@@ -803,6 +737,6 @@ export function RainbowSixSiegeRankConfigurator() {
       <div className="sr-only" aria-live="polite">
         {quoteIsCurrent && currentQuote ? `Quote updated to ${formatUsd(currentQuote.total)}.` : quoteStatus}
       </div>
-    </>
+    </></ServiceConfiguratorPresentation>
   );
 }

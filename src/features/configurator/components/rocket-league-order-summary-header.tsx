@@ -2,10 +2,10 @@ import { LoaderCircle } from "lucide-react";
 
 export function RocketLeagueOrderSummaryHeader({ serviceTitle, isLoading, ready }: { serviceTitle: string; isLoading: boolean; ready: boolean }) {
   return (
-    <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.05] via-transparent to-transparent px-4 py-4">
+    <div className="border-b border-white/[0.07] bg-gradient-to-br from-blue-500/[0.05] via-transparent to-transparent px-4 py-4" data-service-summary-header>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</p>
+          <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
           <p className="mt-1.5 text-[11px] font-medium text-[#A0AAA4]">{serviceTitle}</p>
         </div>
         {isLoading || !ready ? (

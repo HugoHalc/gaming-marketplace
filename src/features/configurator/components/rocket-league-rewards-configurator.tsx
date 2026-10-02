@@ -1,6 +1,8 @@
 "use client";
 
-import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
+import { usePresentedServiceQuote } from "../presentation/use-presented-service-quote";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -517,8 +519,10 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
     ? playlists.filter((playlist) => playlist.group === "Extra")
     : playlists.filter((playlist) => playlist.group === "Extra").slice(0, 2);
 
+  const presentationQuote = usePresentedServiceQuote(quote);
+
   return (
-    <div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0">
+    <ServiceConfiguratorPresentation><div className="grid gap-4 pb-[calc(5.25rem+env(safe-area-inset-bottom))] xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start xl:pb-0" data-configurator-columns>
       <section className="min-w-0">
         <div className="space-y-5 sm:space-y-6">
           <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
@@ -865,19 +869,10 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 </div>
               ) : null}
 
-            {quote ? (
+            {presentationQuote ? (
               <>
                 <div className="my-4 h-px bg-white/[0.08]" />
-                <div className="space-y-2">
-                  {presentRocketLeaguePriceBreakdown(quote.breakdown, quote.total, gameSlug).map((item, index) => (
-                    <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]">
-                      <span className="text-[#A0AAA4]">{item.label}</span>
-                      <span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>
-                        {item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <ServicePriceBreakdown quote={presentationQuote} />
 
                 <div className="my-4 h-px bg-white/[0.08]" />
 
@@ -885,7 +880,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                   <div className="min-w-0">
                     <p className="text-[11px] font-medium text-[#A0AAA4]">Total</p>
                     <p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">
-                      {formatPrice(quote.total)}
+                      {formatPrice(presentationQuote.total)}
                     </p>
                     {!isLoading ? (
                       <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38">
@@ -929,7 +924,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
               </div>
             ) : null}
 
-            <AccountBoostCheckoutReassurance selected={boostMethod === "account"} accent="blue" />
+
 
             <Button
               className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none"
@@ -950,6 +945,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
                 </>
               )}
             </Button>
+<AccountBoostCheckoutReassurance selected={boostMethod === "account"} accent="blue" />
 
             </div>
           </div>
@@ -966,7 +962,7 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
             </p>
             <div className="mt-0.5 flex items-baseline gap-2">
               <p className="font-gaming-value whitespace-nowrap text-[1.55rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">
-                {quote ? formatPrice(quote.total) : "—"}
+                {presentationQuote ? formatPrice(presentationQuote.total) : "—"}
               </p>
               {isLoading ? (
                 <span className="inline-flex items-center gap-1 text-[9px] text-[#A0AAA4]">
@@ -990,6 +986,6 @@ export function RocketLeagueRewardsConfigurator({ gameSlug, service }: Props) {
           </a>
         </div>
       </div>
-    </div>
+    </div></ServiceConfiguratorPresentation>
   );
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { BeforeCheckoutGuidance } from "./service-order-guidance";
+import { ServiceConfiguratorPresentation } from "./service-configurator-presentation";
+import { ServicePriceBreakdown } from "./service-price-breakdown";
 import { GameServiceNavigation } from "./game-service-navigation";
 import { serviceNavigationGridClassName } from "@/features/catalog/components/service-page-shell";
 
@@ -541,8 +544,9 @@ function DriveRankSelector({ value, onChange }: { value: string; onChange: (valu
 
 function OverwatchOrderGuidance() {
   return (
-    <div className="mt-4 border-t border-white/[0.06]">
-      <section className="px-0 py-3" aria-labelledby="overwatch-estimated-timing-heading">
+    <div className="mt-4 overflow-hidden rounded-xl border border-white/[0.07] bg-black/15">
+      <BeforeCheckoutGuidance />
+      <section className="border-t border-white/[0.06] px-3 py-3" aria-labelledby="overwatch-estimated-timing-heading">
         <div className="flex items-start gap-2.5">
           <Clock3 className="mt-0.5 size-3.5 shrink-0 text-amber-200/65" aria-hidden="true" />
           <div className="min-w-0 flex-1">
@@ -555,7 +559,7 @@ function OverwatchOrderGuidance() {
           </div>
         </div>
       </section>
-      <section className="border-t border-white/[0.06] py-3" aria-labelledby="overwatch-verify-order-heading">
+      <section className="border-t border-white/[0.06] px-3 py-3" aria-labelledby="overwatch-verify-order-heading">
         <div className="flex items-start gap-2.5">
           <UsersRound className="mt-0.5 size-3.5 shrink-0 text-amber-200/65" aria-hidden="true" />
           <div className="min-w-0 flex-1">
@@ -790,12 +794,12 @@ export function OverwatchServiceConfigurator({
 
 
   return (
-    <div className="pb-[calc(5.5rem+env(safe-area-inset-bottom))] xl:pb-0">
+    <ServiceConfiguratorPresentation><div className="pb-[calc(5.5rem+env(safe-area-inset-bottom))] xl:pb-0">
 
       <div className={serviceNavigationGridClassName}>
         <GameServiceNavigation gameName="Overwatch 2" gameSlug="overwatch-2" activeSlug={service.slug} items={serviceNavigation} accentTextClass="text-amber-200/60" accentBorderClass="border-amber-300/[0.18]" />
 
-        <div className="min-w-0 grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+        <div className="min-w-0 grid gap-4 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start" data-configurator-columns>
           <section className="min-w-0">
             <div className="space-y-5 sm:space-y-6">
               {isRank ? (
@@ -890,7 +894,7 @@ export function OverwatchServiceConfigurator({
 
           <aside className="xl:sticky xl:top-24">
             <div id="boost-summary" className="overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#070A08] shadow-[0_26px_70px_-46px_rgba(0,0,0,.95)]">
-              <div className="border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.07] via-transparent to-transparent px-4 py-4">
+              <div className="border-b border-white/[0.07] bg-gradient-to-br from-amber-500/[0.07] via-transparent to-transparent px-4 py-4" data-service-summary-header>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <h2 className="font-gaming-value text-[1.65rem] font-bold leading-none tracking-[-0.045em] text-[#F4F7F5]">Order Summary</h2>
@@ -1001,13 +1005,15 @@ export function OverwatchServiceConfigurator({
                 </div>
                 <div className="my-4 h-px bg-white/[0.08]" />
                 {error ? <div className="rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{error}</div> : null}
-                {displayedQuote ? <><div className="space-y-2">{displayedQuote.breakdown.map((item, index) => <div key={`${item.label}-${index}`} className="flex items-center justify-between gap-4 text-[11px]"><span className="text-[#A0AAA4]">{item.label}</span><span className={item.amount < 0 ? "font-medium text-[#82F5A4]" : "font-medium text-white/78"}>{item.amount < 0 ? "−" : ""}{formatPrice(Math.abs(item.amount))}</span></div>)}</div><div className="my-4 h-px bg-white/[0.08]" /><div className="flex items-end justify-between gap-4" aria-live="polite"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(displayedQuote.total)}</p><p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38"><Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />Server-validated price</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div></> : <><div className="my-4 h-px bg-white/[0.08]" /><div aria-live="polite"><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>{isLoading ? <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35"><LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />Updating price…</p> : <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>}</div></>}
-                <AccountBoostCheckoutReassurance selected={accountBoostSelected} accent="gold" />
+                {displayedQuote ? <><ServicePriceBreakdown quote={displayedQuote} /><div className="my-4 h-px bg-white/[0.08]" /><div className="flex items-end justify-between gap-4" aria-live="polite"><div><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 whitespace-nowrap text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">{formatPrice(displayedQuote.total)}</p><p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/38"><Check className="size-3 text-[#82F5A4]" strokeWidth={2.5} aria-hidden="true" />Server-validated price</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[9px] font-medium text-white/45">USD</span></div></> : <><div className="my-4 h-px bg-white/[0.08]" /><div aria-live="polite"><p className="text-[11px] font-medium text-[#A0AAA4]">Total</p><p className="font-gaming-value mt-1 text-[2.35rem] font-bold leading-none tracking-[-0.05em] text-[#F4F7F5]">—</p>{isLoading ? <p className="mt-2 inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35"><LoaderCircle className="size-3 animate-spin text-[#82F5A4] motion-reduce:animate-none" />Updating price…</p> : <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.11em] text-white/35">Price unavailable</p>}</div></>}
+
                 {!configurationIsValid ? <p className="mt-3 text-[10px] leading-4 text-amber-100/75" role="status">Enter a valid configuration to continue to checkout.</p> : null}
                 {minimumBlocked ? <MinimumOrderNotice id={minimumNoticeId} shortfallCents={minimumShortfall} /> : null}
-                <OverwatchOrderGuidance />
+
                 {orderError ? <div className="mt-3 rounded-lg border border-rose-300/15 bg-rose-400/[0.06] p-2.5 text-[10px] leading-4 text-rose-200">{orderError}</div> : null}
                 <Button className="mt-4 h-12 w-full rounded-xl bg-[#39E56F] font-semibold text-[#050807] shadow-none transition-colors duration-200 hover:bg-[#20C95A] hover:text-[#050807] motion-reduce:transition-none" size="lg" aria-describedby={minimumBlocked ? minimumNoticeId : undefined} disabled={!displayedQuote || isLoading || isCreatingOrder || !canContinue} onClick={createOrder}>{isCreatingOrder ? <>Preparing checkout<LoaderCircle className="ml-2 size-4 animate-spin" /></> : <>Checkout<ArrowRight className="ml-2 size-4" /></>}</Button>
+<AccountBoostCheckoutReassurance selected={accountBoostSelected} accent="gold" />
+<OverwatchOrderGuidance />
               </div>
             </div>
             <PaymentMethodsTrustBlock className="mt-3" />
@@ -1021,6 +1027,6 @@ export function OverwatchServiceConfigurator({
           <a href="#boost-summary" className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-white/[0.10] bg-white/[0.05] px-4 text-xs font-semibold text-white/75 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/35">View order</a>
         </div>
       </div>
-    </div>
+    </div></ServiceConfiguratorPresentation>
   );
 }

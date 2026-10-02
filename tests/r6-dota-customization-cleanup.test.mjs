@@ -32,6 +32,7 @@ function load(file) {
   const loadedModule = { exports: {} };
   cache.set(filename, loadedModule);
   const localRequire = (name) => {
+    if (name.endsWith(".css")) return {};
     if (mocks[name]) return mocks[name];
     if (name.startsWith("@/")) return load(path.join(root, "src", name.slice(2)));
     if (name.startsWith(".")) return load(path.resolve(path.dirname(filename), name));
