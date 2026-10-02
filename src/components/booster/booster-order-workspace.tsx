@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
   Clock3,
   KeyRound,
@@ -16,12 +15,9 @@ import type {
 import type { OrderWorkspaceMessage } from "@/features/orders/server/order-workspace-repository";
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
+import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
-import {
-  GameRankValue,
-  gameCardAsset,
-  resolveGameRank,
-} from "@/components/orders/game-order-presentation";
+import { gameCardAsset } from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
 function formatMoney(value: number) {
@@ -94,14 +90,6 @@ export function BoosterOrderWorkspace({
   const item = order.items[0];
   const config = item?.configuration ?? {};
 
-  const currentValue =
-    typeof config.currentRank !== "undefined"
-      ? config.currentRank
-      : config.previousRank;
-
-  const targetValue = config.targetRank;
-  const currentRank = resolveGameRank(item?.gameName, currentValue);
-  const targetRank = resolveGameRank(item?.gameName, targetValue);
   const suggestedPlatform =
     typeof config.platform === "string" ? config.platform : undefined;
 
@@ -119,7 +107,7 @@ export function BoosterOrderWorkspace({
             Orders
           </Link>
 
-          <div className="flex items-center gap-2 text-[9px] text-[#667069]">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#667069]">
             <span className="font-gaming-value">
               {order.orderNumber}
             </span>
@@ -144,7 +132,7 @@ export function BoosterOrderWorkspace({
               <p className="font-gaming-label text-[8px] uppercase tracking-[0.14em] text-[#667069]">
                 {item?.gameName ?? "Gaming service"}
               </p>
-              <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.03em] text-[#F4F7F5]">
+              <h1 className="mt-1 break-words text-xl font-semibold tracking-[-0.03em] text-[#F4F7F5]">
                 {item?.serviceName ?? "Boost Order"}
               </h1>
               <div className="mt-2 flex items-center gap-2">
@@ -153,41 +141,15 @@ export function BoosterOrderWorkspace({
                 >
                   {status.label}
                 </span>
-                <span className="text-[9px] text-[#667069]">
+                <span className="text-xs text-[#A4AEA8]">
                   Paid order
                 </span>
               </div>
             </div>
           </div>
-
-          {(currentRank || targetRank) ? (
-            <div className="flex min-w-0 items-center gap-4 lg:justify-end">
-              {currentRank ? (
-                <GameRankValue
-                  gameName={item?.gameName}
-                  value={currentValue}
-                  label="Current"
-                  size="lg"
-                />
-              ) : null}
-
-              {currentRank && targetRank ? (
-                <ArrowRight className="size-4 shrink-0 text-blue-200/30" />
-              ) : null}
-
-              {targetRank ? (
-                <GameRankValue
-                  gameName={item?.gameName}
-                  value={targetValue}
-                  label="Desired"
-                  size="lg"
-                />
-              ) : null}
-            </div>
-          ) : null}
         </header>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_410px]">
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_410px]">
           <main className="min-w-0">
             <section>
               <div className="mb-3 flex items-center justify-between gap-3">
@@ -213,15 +175,6 @@ export function BoosterOrderWorkspace({
             </section>
 
             <div className="mt-6 space-y-6">
-              {item ? (
-                <OrderConfigurationSummary
-                  gameName={item.gameName}
-                  configuration={item.configuration}
-                  priceBreakdown={item.priceBreakdown}
-                  compact
-                />
-              ) : null}
-
               {history.length ? (
                 <section className="border-t border-white/[0.05] pt-5">
                   <div className="flex items-center gap-2">
@@ -258,9 +211,9 @@ export function BoosterOrderWorkspace({
           </main>
 
           <aside className="min-w-0 xl:sticky xl:top-[72px] xl:self-start">
-            <div className="border-y border-white/[0.06]">
-              <section className="py-4">
-                <div className="flex items-end justify-between gap-4">
+            <div className="space-y-3">
+              <OrderWorkspaceCard title="Order Details">
+                <div className="flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
                       Booster Payout
@@ -278,57 +231,69 @@ export function BoosterOrderWorkspace({
                 </div>
 
                 <dl className="mt-4 divide-y divide-white/[0.045]">
-                  <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Order</dt>
-                    <dd className="font-gaming-value text-[10px] font-bold text-[#F4F7F5]">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 py-2.5">
+                    <dt className="text-xs text-[#A4AEA8]">Order</dt>
+                    <dd className="text-right font-gaming-value text-xs font-bold text-[#F4F7F5]">
                       {order.orderNumber}
                     </dd>
                   </div>
-                  <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Payment</dt>
-                    <dd className="text-[10px] font-semibold text-[#82F5A4]">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 py-2.5">
+                    <dt className="text-xs text-[#A4AEA8]">Payment</dt>
+                    <dd className="text-right text-xs font-semibold text-[#82F5A4]">
                       {formatLabel(order.paymentStatus)}
                     </dd>
                   </div>
-                  <div className="flex items-center justify-between gap-4 py-2.5">
-                    <dt className="text-[9px] text-[#667069]">Service</dt>
-                    <dd className="max-w-[220px] truncate text-right text-[10px] font-semibold text-[#F4F7F5]">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 py-2.5">
+                    <dt className="text-xs text-[#A4AEA8]">Service</dt>
+                    <dd className="min-w-0 break-words text-right text-xs font-semibold text-[#F4F7F5]">
                       {item?.serviceName ?? "Gaming Service"}
                     </dd>
                   </div>
-                  {suggestedPlatform ? (
-                    <div className="flex items-center justify-between gap-4 py-2.5">
-                      <dt className="text-[9px] text-[#667069]">Platform</dt>
-                      <dd className="text-[10px] font-semibold text-[#F4F7F5]">
+                  {suggestedPlatform && item?.gameName !== "Marvel Rivals" && item?.gameName !== "Overwatch 2" ? (
+                    <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 py-2.5">
+                      <dt className="text-xs text-[#A4AEA8]">Platform</dt>
+                      <dd className="text-right text-xs font-semibold text-[#F4F7F5]">
                         {formatLabel(suggestedPlatform)}
                       </dd>
                     </div>
                   ) : null}
                 </dl>
-              </section>
+                {item ? (
+                  <div className="mt-4">
+                    <OrderConfigurationSummary
+                      gameName={item.gameName}
+                      serviceName={item.serviceName}
+                      configuration={item.configuration}
+                      priceBreakdown={item.priceBreakdown}
+                      compact
+                      embedded
+                      flatRanks
+                      rankSize="lg"
+                    />
+                  </div>
+                ) : null}
+              </OrderWorkspaceCard>
 
-              <section className="border-t border-white/[0.05] py-4">
+              <OrderWorkspaceCard>
                 <div className="mb-2 flex items-center gap-2">
                   <KeyRound className="size-3.5 text-[#667069]" />
-                  <p className="text-[13px] font-semibold text-[#F4F7F5]">
+                  <h2 className="text-[15px] font-semibold text-[#F4F7F5]">
                     Secure Account Access
-                  </p>
+                  </h2>
                 </div>
 
                 <OrderAccountDetails
                   orderId={order.id}
                   canEdit={false}
                 />
-              </section>
+              </OrderWorkspaceCard>
 
-              <section className="border-t border-white/[0.05]">
-                <OrderOperationsPanel
-                  orderId={order.id}
-                  canManage
-                  suggestedPlatform={suggestedPlatform}
-                  orderStatus={order.status}
-                />
-              </section>
+              <OrderOperationsPanel
+                orderId={order.id}
+                canManage
+                suggestedPlatform={suggestedPlatform}
+                orderStatus={order.status}
+              />
             </div>
           </aside>
         </div>

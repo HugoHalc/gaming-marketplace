@@ -32,12 +32,14 @@ export function GameRankValue({
   division,
   label,
   size = "md",
+  flat = false,
 }: {
   gameName: unknown;
   value: unknown;
   division?: unknown;
   label?: string;
   size?: "sm" | "md" | "lg";
+  flat?: boolean;
 }) {
   const slug = normalizedGameSlug(gameName);
 
@@ -47,6 +49,7 @@ export function GameRankValue({
         value={value}
         label={label}
         size={size}
+        flat={flat}
       />
     );
   }
@@ -70,7 +73,7 @@ export function GameRankValue({
           alt=""
           width={dimensions}
           height={dimensions}
-          className="shrink-0 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
+          className={`shrink-0 object-contain ${flat ? "" : "drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"}`}
           style={{ width: dimensions, height: dimensions }}
         />
       ) : null}
@@ -90,7 +93,7 @@ export function GameRankValue({
         ) : null}
         <p
           className={`font-gaming-value font-bold text-[#F4F7F5] ${
-            marvel || overwatch ? "break-words leading-tight" : "truncate"
+            flat || marvel || overwatch ? "break-words leading-tight" : "truncate"
           } ${
             size === "lg" ? "text-sm" : size === "sm" ? "text-[10px]" : "text-[11px]"
           }`}

@@ -186,9 +186,15 @@ function MarvelExtras({
 function MarvelRivalsConfigurationSummary({
   configuration,
   compact,
+  embedded = false,
+  flatRanks = false,
+  rankSize,
 }: {
   configuration: Configuration;
   compact: boolean;
+  embedded?: boolean;
+  flatRanks?: boolean;
+  rankSize?: "sm" | "md" | "lg";
 }) {
   const currentRankValue = stringConfig(configuration, "currentRank");
   const currentDivision = stringConfig(configuration, "currentDivision");
@@ -274,9 +280,11 @@ function MarvelRivalsConfigurationSummary({
   return (
     <section
       className={
-        compact
-          ? "border-t border-white/[0.05] pt-5"
-          : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
+        embedded
+          ? "min-w-0"
+          : compact
+            ? "border-t border-white/[0.05] pt-5"
+            : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
       }
     >
       <h2
@@ -302,7 +310,8 @@ function MarvelRivalsConfigurationSummary({
             value={currentRankValue}
             division={currentDivision}
             label="Current Rank"
-            size={compact ? "sm" : "md"}
+            size={rankSize ?? (compact ? "sm" : "md")}
+            flat={flatRanks}
           />
           <ArrowRight className="size-4 shrink-0 text-[#CEC5FF]/35" />
           <GameRankValue
@@ -310,7 +319,8 @@ function MarvelRivalsConfigurationSummary({
             value={targetRankValue}
             division={targetDivision}
             label="Desired Rank"
-            size={compact ? "sm" : "md"}
+            size={rankSize ?? (compact ? "sm" : "md")}
+            flat={flatRanks}
           />
         </div>
       ) : previousRank ? (
@@ -326,7 +336,8 @@ function MarvelRivalsConfigurationSummary({
             value={previousRankValue}
             division={previousDivision}
             label="Previous Rank"
-            size={compact ? "md" : "lg"}
+            size={rankSize ?? (compact ? "md" : "lg")}
+            flat={flatRanks}
           />
         </div>
       ) : currentRank ? (
@@ -342,7 +353,8 @@ function MarvelRivalsConfigurationSummary({
             value={currentRankValue}
             division={currentDivision}
             label="Current Rank"
-            size={compact ? "md" : "lg"}
+            size={rankSize ?? (compact ? "md" : "lg")}
+            flat={flatRanks}
           />
         </div>
       ) : null}
@@ -468,10 +480,16 @@ function OverwatchConfigurationSummary({
   serviceName,
   configuration,
   compact,
+  embedded = false,
+  flatRanks = false,
+  rankSize,
 }: {
   serviceName?: string;
   configuration: Configuration;
   compact: boolean;
+  embedded?: boolean;
+  flatRanks?: boolean;
+  rankSize?: "sm" | "md" | "lg";
 }) {
   const normalizedService = serviceName?.trim().toLowerCase() ?? "";
   const isRankBoost = normalizedService === "rank boost" || Boolean(configuration.targetRank);
@@ -556,9 +574,11 @@ function OverwatchConfigurationSummary({
   return (
     <section
       className={
-        compact
-          ? "border-t border-white/[0.05] pt-5"
-          : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
+        embedded
+          ? "min-w-0"
+          : compact
+            ? "border-t border-white/[0.05] pt-5"
+            : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
       }
     >
       <h2
@@ -584,7 +604,8 @@ function OverwatchConfigurationSummary({
               gameName="Overwatch 2"
               value={currentRankValue}
               label="Current Rank"
-              size={compact ? "sm" : "md"}
+              size={rankSize ?? (compact ? "sm" : "md")}
+              flat={flatRanks}
             />
           ) : <span />}
           <ArrowRight className="size-4 shrink-0 text-amber-200/35" />
@@ -593,7 +614,8 @@ function OverwatchConfigurationSummary({
               gameName="Overwatch 2"
               value={targetRankValue}
               label="Target Rank"
-              size={compact ? "sm" : "md"}
+              size={rankSize ?? (compact ? "sm" : "md")}
+              flat={flatRanks}
             />
           ) : <span />}
         </div>
@@ -603,7 +625,8 @@ function OverwatchConfigurationSummary({
             gameName="Overwatch 2"
             value={currentRankValue}
             label={isPlacements ? "Previous Rank" : "Current Rank"}
-            size={compact ? "md" : "lg"}
+            size={rankSize ?? (compact ? "md" : "lg")}
+            flat={flatRanks}
           />
         </div>
       ) : isDrives && driveRank ? (
@@ -612,7 +635,8 @@ function OverwatchConfigurationSummary({
             gameName="Overwatch 2"
             value={driveRankValue}
             label="Drive Rank"
-            size={compact ? "md" : "lg"}
+            size={rankSize ?? (compact ? "md" : "lg")}
+            flat={flatRanks}
           />
           {currentDrive !== null && desiredDrive !== null ? (
             <div className="mt-3 flex min-w-0 items-center gap-2 text-[11px] text-[#A0AAA4]">
@@ -641,18 +665,27 @@ export function OrderConfigurationSummary({
   configuration,
   priceBreakdown,
   compact = false,
+  embedded = false,
+  flatRanks = false,
+  rankSize,
 }: {
   gameName: string;
   serviceName?: string;
   configuration: Configuration;
   priceBreakdown: PriceLine[];
   compact?: boolean;
+  embedded?: boolean;
+  flatRanks?: boolean;
+  rankSize?: "sm" | "md" | "lg";
 }) {
   if (isMarvelRivalsGame(gameName)) {
     return (
       <MarvelRivalsConfigurationSummary
         configuration={configuration}
         compact={compact}
+        embedded={embedded}
+        flatRanks={flatRanks}
+        rankSize={rankSize}
       />
     );
   }
@@ -663,6 +696,9 @@ export function OrderConfigurationSummary({
         serviceName={serviceName}
         configuration={configuration}
         compact={compact}
+        embedded={embedded}
+        flatRanks={flatRanks}
+        rankSize={rankSize}
       />
     );
   }
@@ -685,9 +721,11 @@ export function OrderConfigurationSummary({
   return (
     <section
       className={
-        compact
-          ? "border-t border-white/[0.05] pt-5"
-          : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
+        embedded
+          ? "min-w-0"
+          : compact
+            ? "border-t border-white/[0.05] pt-5"
+            : "rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.10)]"
       }
     >
       <h2
@@ -701,13 +739,14 @@ export function OrderConfigurationSummary({
       </h2>
 
       {(currentRank || desiredRank) ? (
-        <div className={compact ? "mt-4 flex min-w-0 items-center gap-4 sm:gap-5" : "mt-5 flex min-w-0 items-center gap-5 border-y border-white/[0.06] py-4 sm:gap-6"}>
+        <div className={compact ? "mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4" : "mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 border-y border-white/[0.06] py-4 sm:gap-6"}>
           {currentRank ? (
             <GameRankValue
               gameName={gameName}
               value={currentValue}
               label="Current Rank"
-              size={compact ? "md" : "lg"}
+              size={rankSize ?? (compact ? "md" : "lg")}
+              flat={flatRanks}
             />
           ) : null}
 
@@ -720,7 +759,8 @@ export function OrderConfigurationSummary({
               gameName={gameName}
               value={desiredValue}
               label="Desired Rank"
-              size={compact ? "md" : "lg"}
+              size={rankSize ?? (compact ? "md" : "lg")}
+              flat={flatRanks}
             />
           ) : null}
         </div>

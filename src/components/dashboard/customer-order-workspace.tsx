@@ -4,7 +4,6 @@ import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/prese
 import Link from "next/link";
 import {
   ArrowLeft,
-  ArrowRight,
   CreditCard,
   MessageSquare,
   ShieldCheck,
@@ -21,12 +20,11 @@ import type {
 import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
+import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 import {
-  GameRankValue,
   isMarvelRivalsGame,
   isOverwatchGame,
-  resolveGameRank,
 } from "@/components/orders/game-order-presentation";
 import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
 
@@ -80,46 +78,6 @@ export function CustomerOrderWorkspace({
   const config = item?.configuration ?? {};
   const isMarvelRivals = isMarvelRivalsGame(item?.gameName);
   const isOverwatch = isOverwatchGame(item?.gameName);
-  const normalizedServiceName = item?.serviceName?.trim().toLowerCase() ?? "";
-  const isOverwatchDrives = isOverwatch && normalizedServiceName === "competitive drives";
-  const isOverwatchPlacements = isOverwatch && normalizedServiceName === "placements boost";
-
-  const hasCurrentRank = typeof config.currentRank !== "undefined";
-  const currentValue = isOverwatchDrives
-    ? config.driveRank
-    : hasCurrentRank
-      ? config.currentRank
-      : config.previousRank;
-  const currentDivision = hasCurrentRank
-    ? config.currentDivision
-    : config.previousDivision;
-  const targetValue = isOverwatchDrives ? undefined : config.targetRank;
-  const targetDivision = config.targetDivision;
-
-  const currentRank = resolveGameRank(
-    item?.gameName,
-    currentValue,
-    currentDivision,
-  );
-  const targetRank = resolveGameRank(
-    item?.gameName,
-    targetValue,
-    targetDivision,
-  );
-  const currentRankLabel = isOverwatchDrives
-    ? "Drive Rank"
-    : isOverwatchPlacements || (isMarvelRivals && !hasCurrentRank)
-      ? "Previous"
-      : "Current";
-  const currentDrive =
-    isOverwatchDrives && typeof config.currentDrive === "number"
-      ? config.currentDrive
-      : null;
-  const desiredDrive =
-    isOverwatchDrives && typeof config.desiredDrive === "number"
-      ? config.desiredDrive
-      : null;
-
   const suggestedPlatform =
     typeof config.platform === "string"
       ? config.platform
@@ -192,80 +150,14 @@ export function CustomerOrderWorkspace({
             </span>
           </div>
         </div>
-
-        {(currentRank || targetRank || (currentDrive !== null && desiredDrive !== null)) ? (
-          <div
-            className={`flex min-w-0 flex-wrap items-center gap-3 border-l pl-4 sm:gap-4 lg:justify-end ${
-              isMarvelRivals
-                ? "border-[#A38CFF]/20"
-                : isOverwatch
-                  ? "border-amber-300/20"
-                  : "border-[#4DA3FF]/20"
-            }`}
-          >
-            {currentRank ? (
-              <GameRankValue
-                gameName={item?.gameName}
-                value={currentValue}
-                division={currentDivision}
-                label={currentRankLabel}
-                size={isMarvelRivals || isOverwatch ? "md" : "lg"}
-              />
-            ) : null}
-
-            {currentRank && targetRank ? (
-              <ArrowRight
-                className={`size-4 shrink-0 ${
-                  isMarvelRivals
-                    ? "text-[#CEC5FF]/35"
-                    : isOverwatch
-                      ? "text-amber-200/35"
-                      : "text-blue-200/30"
-                }`}
-              />
-            ) : null}
-
-            {targetRank ? (
-              <GameRankValue
-                gameName={item?.gameName}
-                value={targetValue}
-                division={targetDivision}
-                label="Desired"
-                size={isMarvelRivals || isOverwatch ? "md" : "lg"}
-              />
-            ) : null}
-
-            {currentDrive !== null && desiredDrive !== null ? (
-              <div className="flex min-w-0 items-center gap-2 rounded-xl border border-amber-300/10 bg-amber-300/[0.025] px-3 py-2">
-                <div>
-                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-amber-200/50">
-                    Current Drive
-                  </p>
-                  <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
-                    {currentDrive.toLocaleString("en-US")}
-                  </p>
-                </div>
-                <ArrowRight className="size-3.5 shrink-0 text-amber-200/35" />
-                <div>
-                  <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-amber-200/50">
-                    Desired Drive
-                  </p>
-                  <p className="font-gaming-value mt-1 text-[11px] font-bold text-[#F4F7F5]">
-                    {desiredDrive.toLocaleString("en-US")}
-                  </p>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
       </header>
 
-      <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_410px]">
         <main className="min-w-0">
           <section>
             <div className="mb-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2.5">
-                <MessageSquare className="size-4 text-[#39D5E6]/75" />
+                <MessageSquare className="size-4 text-[#82F5A4]/75" />
                 <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
                   Conversation
                 </h2>
@@ -286,18 +178,7 @@ export function CustomerOrderWorkspace({
             />
           </section>
 
-          {item ? (
-            <div className="mt-6">
-              <OrderConfigurationSummary
-                gameName={item.gameName}
-                serviceName={item.serviceName}
-                configuration={item.configuration}
-                priceBreakdown={displayedPriceBreakdown}
-              />
-            </div>
-          ) : null}
-
-          <section className="mt-6 rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+          <section className="mt-6 rounded-[18px] border border-white/[0.07] bg-[#0B110E] p-5">
             <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[#F4F7F5]">
               Price Breakdown
             </h2>
@@ -338,9 +219,83 @@ export function CustomerOrderWorkspace({
 
         <aside className="min-w-0 xl:sticky xl:top-[76px] xl:self-start">
           <div className="space-y-3">
-            <section className="rounded-[16px] border border-white/[0.07] bg-[#0B110E] p-4">
+            <OrderWorkspaceCard>
               <div className="flex items-center gap-2.5">
-                <UserRound className="size-4 text-[#39D5E6]/70" />
+                <CreditCard className="size-4 text-[#82F5A4]/75" />
+                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
+                  Order Details
+                </h2>
+              </div>
+
+              <dl className="mb-4 space-y-3 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <dt>Status</dt><dd><OrderStatusBadge status={order.status} /></dd>
+                </div>
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                  <dt>Order</dt><dd className="text-right font-semibold text-[#F4F7F5]">{order.orderNumber}</dd>
+                </div>
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                  <dt>Service</dt><dd className="text-right font-semibold text-[#F4F7F5]">{item?.serviceName ?? "Gaming service"}</dd>
+                </div>
+                {suggestedPlatform && !isMarvelRivals && !isOverwatch ? (
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                    <dt>Platform</dt><dd className="text-right font-semibold text-[#F4F7F5]">{suggestedPlatform}</dd>
+                  </div>
+                ) : null}
+              </dl>
+              <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="font-gaming-value text-[28px] font-bold tracking-[-0.03em] text-[#F4F7F5]">
+                    {formatMoney(order.total)}
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#6F7B74]">
+                    {order.paymentStatus === "paid"
+                      ? "Stripe confirmed"
+                      : order.paymentStatus === "pending"
+                        ? "Payment pending"
+                        : "Payment not completed"}
+                  </p>
+                </div>
+
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase ${
+                    order.paymentStatus === "paid"
+                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.08] text-[#82F5A4]"
+                      : "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]"
+                  }`}
+                >
+                  {order.paymentStatus}
+                </span>
+              </div>
+
+              {item ? (
+                <div className="mt-4">
+                  <OrderConfigurationSummary
+                    gameName={item.gameName}
+                    serviceName={item.serviceName}
+                    configuration={item.configuration}
+                    priceBreakdown={displayedPriceBreakdown}
+                    compact
+                    embedded
+                    flatRanks
+                    rankSize={isMarvelRivals || isOverwatch ? "md" : "lg"}
+                  />
+                </div>
+              ) : null}
+
+              {canPay ? (
+                <form action="/api/checkout" method="post" className="mt-4">
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <button className="h-10 w-full rounded-lg bg-[#39E56F] text-[10px] font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
+                    Complete secure payment
+                  </button>
+                </form>
+              ) : null}
+            </OrderWorkspaceCard>
+
+            <OrderWorkspaceCard>
+              <div className="flex items-center gap-2.5">
+                <UserRound className="size-4 text-[#82F5A4]/70" />
                 <h2 className="text-[15px] font-bold text-[#F4F7F5]">
                   Booster
                 </h2>
@@ -375,52 +330,9 @@ export function CustomerOrderWorkspace({
                   Your assigned booster will appear here once the order is accepted.
                 </p>
               )}
-            </section>
+            </OrderWorkspaceCard>
 
-            <section className="rounded-[16px] border border-white/[0.08] bg-[#0F1713] p-4">
-              <div className="flex items-center gap-2.5">
-                <CreditCard className="size-4 text-[#82F5A4]/75" />
-                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
-                  Payment
-                </h2>
-              </div>
-
-              <div className="mt-3 flex items-end justify-between gap-4">
-                <div>
-                  <p className="font-gaming-value text-[28px] font-bold tracking-[-0.03em] text-[#F4F7F5]">
-                    {formatMoney(order.total)}
-                  </p>
-                  <p className="mt-1 text-[12px] text-[#6F7B74]">
-                    {order.paymentStatus === "paid"
-                      ? "Stripe confirmed"
-                      : order.paymentStatus === "pending"
-                        ? "Payment pending"
-                        : "Payment not completed"}
-                  </p>
-                </div>
-
-                <span
-                  className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase ${
-                    order.paymentStatus === "paid"
-                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.08] text-[#82F5A4]"
-                      : "border-white/[0.08] bg-white/[0.025] text-[#A0AAA4]"
-                  }`}
-                >
-                  {order.paymentStatus}
-                </span>
-              </div>
-
-              {canPay ? (
-                <form action="/api/checkout" method="post" className="mt-4">
-                  <input type="hidden" name="orderId" value={order.id} />
-                  <button className="h-10 w-full rounded-lg bg-[#39E56F] text-[10px] font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
-                    Complete secure payment
-                  </button>
-                </form>
-              ) : null}
-            </section>
-
-            <section className="rounded-[16px] border border-[#39E56F]/12 bg-[#0F1713] p-4">
+            <OrderWorkspaceCard>
               <div className="mb-3 flex items-start gap-2.5">
                 <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-[10px] border border-[#39E56F]/14 bg-[#39E56F]/[0.045]">
                   <ShieldCheck className="size-4 text-[#82F5A4]" />
@@ -447,18 +359,14 @@ export function CustomerOrderWorkspace({
                   />
                 </div>
               ) : null}
-            </section>
+            </OrderWorkspaceCard>
 
-            <section>
-              <div className="space-y-3 [&>div]:border-0 [&>div]:bg-transparent [&>section]:rounded-[16px] [&>section]:border [&>section]:border-white/[0.07] [&>section]:bg-[#0B110E] [&>section]:shadow-[0_8px_24px_rgba(0,0,0,0.10)] [&>section:first-child]:border-[#39E56F]/10 [&>section:first-child]:bg-[#39E56F]/[0.025] [&_h2]:text-[15px] [&_h2]:font-bold [&_p]:text-[11px] [&_input]:h-11 [&_input]:bg-[#080D0A] [&_textarea]:bg-[#080D0A] [&_[class*='border-dashed']]:min-h-20 [&_[class*='border-dashed']]:border-white/[0.12] [&_[class*='border-dashed']]:bg-[#080D0A]">
-                <OrderOperationsPanel
-                  orderId={order.id}
-                  canManage={false}
-                  suggestedPlatform={suggestedPlatform}
-                  orderStatus={order.status}
-                />
-              </div>
-            </section>
+            <OrderOperationsPanel
+              orderId={order.id}
+              canManage={false}
+              suggestedPlatform={suggestedPlatform}
+              orderStatus={order.status}
+            />
           </div>
         </aside>
       </div>

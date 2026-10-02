@@ -490,15 +490,13 @@ export function OrderLiveChat({
       className={
         premium
           ? "overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#0B110E]"
-          : "overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] shadow-[0_24px_80px_rgba(0,0,0,0.34)]"
+          : "overflow-hidden rounded-[18px] border border-white/[0.08] bg-[#0B100D]"
       }
     >
-      <div className={premium ? "pointer-events-none h-px w-full bg-[#39D5E6]/20" : "pointer-events-none h-px w-full bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent"} />
-
-      <div className="flex h-[min(760px,calc(100dvh-150px))] min-h-[560px] flex-col max-sm:h-[calc(100dvh-158px)] max-sm:min-h-[520px]">
-        <header className={premium ? "shrink-0 border-b border-white/[0.07] bg-[#0F1713] px-4 py-4 sm:px-5" : "shrink-0 border-b border-white/[0.06] bg-[linear-gradient(180deg,rgba(19,27,23,0.95),rgba(11,16,13,0.95))] px-4 py-3.5 sm:px-5"}>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-3">
+      <div className="flex h-[min(760px,calc(100dvh-150px))] min-h-[560px] flex-col max-sm:h-[calc(100dvh-158px)] max-sm:min-h-[400px]">
+        <header className={premium ? "shrink-0 border-b border-white/[0.07] bg-[#0F1713] px-4 py-4 sm:px-5" : "shrink-0 border-b border-white/[0.06] bg-[#0F1713] px-4 py-3.5 sm:px-5"}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               {participant?.avatarUrl ? (
                 <img
                   src={participant.avatarUrl}
@@ -516,7 +514,7 @@ export function OrderLiveChat({
                 <p className={premium ? "font-gaming-label text-[10px] uppercase tracking-[0.12em] text-[#6F7B74]" : "font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]"}>
                   Order communication
                 </p>
-                <p className={premium ? "truncate text-[15px] font-bold text-[#F4F7F5]" : "truncate text-sm font-semibold text-[#F4F7F5]"}>
+                <p className={premium ? "break-words text-[15px] font-bold text-[#F4F7F5]" : "break-words text-sm font-semibold text-[#F4F7F5]"}>
                   {participant?.displayName ?? booster?.displayName ?? "Conversation"}
                 </p>
                 <div className={premium ? "mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-[#A4AEA8]" : "mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9px] text-[#A0AAA4]"}>
@@ -586,7 +584,7 @@ export function OrderLiveChat({
         ) : (
           <>
             <div className={premium ? "min-h-0 flex-1 bg-[#080D0A] p-3 sm:p-4" : "min-h-0 flex-1 bg-[#080B09] p-3 sm:p-4"}>
-              <div className={premium ? "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-white/[0.07] bg-[#080D0A]" : "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(6,8,7,0.98),rgba(10,12,11,1))]"}>
+              <div className={premium ? "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] border border-white/[0.07] bg-[#080D0A]" : "relative flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-white/[0.06] bg-[#080B09]"}>
                 <div
                   ref={scrollerRef}
                   onScroll={handleScroll}
@@ -664,7 +662,7 @@ export function OrderLiveChat({
                                   className={`flex ${mine ? "justify-end" : "justify-start"} ${groupedWithPrevious ? "pt-0" : "pt-2"}`}
                                 >
                                   <div
-                                    className={`flex max-w-[88%] items-end gap-2 sm:max-w-[70%] ${mine ? "flex-row-reverse" : ""}`}
+                                    className={`flex min-w-0 max-w-[88%] items-end gap-2 sm:max-w-[70%] ${mine ? "flex-row-reverse" : ""}`}
                                   >
                                     {!mine ? (
                                       groupedWithPrevious ? (
@@ -691,7 +689,7 @@ export function OrderLiveChat({
                                       ) : null}
 
                                       <div
-                                        className={`rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 ${
+                                        className={`break-words [overflow-wrap:anywhere] rounded-[16px] border px-3.5 py-2.5 text-left text-xs leading-5 ${
                                           premium
                                             ? mine
                                               ? "border-white/[0.07] bg-[#141B17] text-[#F4F7F5]"
@@ -760,7 +758,7 @@ export function OrderLiveChat({
                     <button
                       type="button"
                       onClick={jumpToLatest}
-                      className="sticky bottom-2 left-1/2 z-10 mx-auto flex -translate-x-1/2 items-center rounded-full border border-white/[0.08] bg-[#131B17] px-3 py-1.5 text-[9px] font-semibold text-[#F4F7F5] shadow-lg"
+                      className="sticky bottom-2 left-1/2 z-10 mx-auto flex -translate-x-1/2 items-center rounded-full border border-white/[0.08] bg-[#131B17] px-3 py-1.5 text-[9px] font-semibold text-[#F4F7F5]"
                     >
                       {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
                       <ArrowDown className="ml-1.5 size-3" />
@@ -784,7 +782,7 @@ export function OrderLiveChat({
                       </div>
                     ) : null}
 
-                    <div className={premium ? "flex items-end gap-2 rounded-[14px] border border-white/[0.08] bg-[#0F1713] px-3 py-1.5 transition-colors focus-within:border-[#39E56F]/35 focus-within:ring-1 focus-within:ring-[#39E56F]/15" : "flex items-end gap-2 rounded-[16px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 transition-colors focus-within:border-white/[0.16]"}>
+                    <div className={premium ? "flex items-end gap-2 rounded-[14px] border border-white/[0.08] bg-[#0F1713] px-3 py-1.5 transition-colors focus-within:border-[#39E56F]/35" : "flex items-end gap-2 rounded-[16px] border border-white/[0.08] bg-[#0E1411] px-3 py-1.5 transition-colors focus-within:border-white/[0.16]"}>
                       <textarea
                         value={body}
                         onChange={(event) => setBody(event.target.value)}
@@ -792,13 +790,13 @@ export function OrderLiveChat({
                         maxLength={1500}
                         rows={1}
                         placeholder="Write a message..."
-                        className="max-h-32 min-h-[42px] min-w-0 flex-1 resize-none bg-transparent py-2.5 text-xs text-[#F4F7F5] outline-none placeholder:text-[#667069]"
+                        className="max-h-32 min-h-[44px] min-w-0 flex-1 resize-none bg-transparent py-2.5 text-xs text-[#F4F7F5] outline-none placeholder:text-[#667069]"
                       />
 
                       <button
                         type="submit"
                         disabled={!body.trim() || sending}
-                        className={premium ? "mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#1B5E35] text-white transition-colors hover:bg-[#20C95A] active:bg-[#39E56F] active:text-[#041008] disabled:cursor-not-allowed disabled:opacity-35" : "mb-1 grid size-9 shrink-0 place-items-center rounded-xl bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"}
+                        className={premium ? "mb-1 grid size-11 shrink-0 place-items-center rounded-xl bg-[#1B5E35] text-white transition-colors hover:bg-[#20C95A] active:bg-[#39E56F] active:text-[#041008] disabled:cursor-not-allowed disabled:opacity-35" : "mb-1 grid size-11 shrink-0 place-items-center rounded-xl bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#20C95A] disabled:cursor-not-allowed disabled:opacity-35"}
                         aria-label="Send message"
                       >
                         <Send className="size-4" strokeWidth={1.9} />

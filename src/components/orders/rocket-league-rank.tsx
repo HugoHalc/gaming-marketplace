@@ -9,10 +9,12 @@ export function RocketLeagueRankValue({
   value,
   label,
   size = "md",
+  flat = false,
 }: {
   value: unknown;
   label?: string;
   size?: "sm" | "md" | "lg";
+  flat?: boolean;
 }) {
   const rank = resolveRocketLeagueRank(value);
   if (!rank) return null;
@@ -27,7 +29,7 @@ export function RocketLeagueRankValue({
           alt=""
           width={dimensions}
           height={dimensions}
-          className="shrink-0 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"
+          className={`shrink-0 object-contain ${flat ? "" : "drop-shadow-[0_5px_10px_rgba(0,0,0,.42)]"}`}
           style={{ width: dimensions, height: dimensions }}
         />
       ) : null}
@@ -38,7 +40,7 @@ export function RocketLeagueRankValue({
           </p>
         ) : null}
         <p
-          className={`font-gaming-value truncate font-bold text-[#F4F7F5] ${
+          className={`font-gaming-value ${flat ? "break-words leading-tight" : "truncate"} font-bold text-[#F4F7F5] ${
             size === "lg" ? "text-sm" : size === "sm" ? "text-[10px]" : "text-[11px]"
           }`}
         >

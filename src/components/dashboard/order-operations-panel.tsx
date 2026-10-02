@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
 import {
   AlertTriangle,
   Check,
@@ -359,12 +360,12 @@ function EvidenceSection({
   }
 
   return (
-    <section className="p-5">
+    <OrderWorkspaceCard>
       <div className="flex items-center gap-2.5">
-        <ImageIcon className="size-4 text-[#667069]" />
+        <ImageIcon className="size-4 text-[#A4AEA8]" />
         <h2 className="text-sm font-semibold text-[#F4F7F5]">{title}</h2>
       </div>
-      <p className="mt-2 text-[10px] leading-4 text-[#667069]">{description}</p>
+      <p className="mt-2 text-xs leading-5 text-[#A4AEA8]">{description}</p>
 
       {canManage ? (
         <div className="mt-4">
@@ -377,13 +378,13 @@ function EvidenceSection({
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder="https://imgur.com/... or i.imgur.com/..."
-            className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none placeholder:text-[#667069] focus:border-[#39E56F]/35"
+            className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none placeholder:text-[#A4AEA8] focus:border-[#39E56F]/35"
           />
           <button
             type="button"
             onClick={save}
             disabled={saving || !url.trim()}
-            className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-[10px] font-semibold text-[#F4F7F5] hover:bg-white/[0.05] disabled:opacity-40"
+            className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-xs font-semibold text-[#F4F7F5] hover:bg-white/[0.05] disabled:opacity-40"
           >
             {saving ? <Loader2 className="mr-2 size-3 animate-spin" /> : null}
             {evidence ? "Update Screenshot Link" : "Save Screenshot Link"}
@@ -396,7 +397,7 @@ function EvidenceSection({
           href={evidence.url}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 flex items-center justify-between rounded-xl border border-[#39E56F]/10 bg-[#39E56F]/[0.025] px-3 py-2.5 text-[10px] font-medium text-[#82F5A4]"
+          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#39E56F]/10 bg-[#39E56F]/[0.025] px-3 py-2.5 text-[10px] font-medium text-[#82F5A4]"
         >
           <span className="flex items-center gap-2">
             <Check className="size-3.5" />
@@ -408,10 +409,10 @@ function EvidenceSection({
         </a>
       ) : (
         <div className="mt-3 flex min-h-12 items-center justify-center rounded-xl border border-dashed border-white/[0.07] bg-[#090D0B] px-3 text-center">
-          <p className="text-[9px] text-[#667069]">No screenshot link recorded yet.</p>
+          <p className="text-[9px] text-[#A4AEA8]">No screenshot link recorded yet.</p>
         </div>
       )}
-    </section>
+    </OrderWorkspaceCard>
   );
 }
 
@@ -515,7 +516,7 @@ export function OrderOperationsPanel({
   );
 
   if (loading) {
-    return <div className="p-5 text-[10px] text-[#667069]"><Loader2 className="mr-2 inline size-3.5 animate-spin" />Loading order operations…</div>;
+    return <OrderWorkspaceCard><div className="text-xs text-[#A4AEA8]"><Loader2 className="mr-2 inline size-3.5 animate-spin" />Loading order operations…</div></OrderWorkspaceCard>;
   }
 
   const operational = state?.operationalState;
@@ -529,48 +530,46 @@ export function OrderOperationsPanel({
 
   return (
     <>
-      <section className="p-5">
-        <div className="flex items-start justify-between gap-3">
+      <OrderWorkspaceCard>
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">
               Operational Status
             </p>
             <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
               {operationalStatus?.title ?? "Not initialized"}
             </p>
             {operationalStatus?.description ? (
-              <p className="mt-1 text-[10px] leading-4 text-[#667069]">
+              <p className="mt-1 text-xs leading-5 text-[#A4AEA8]">
                 {operationalStatus.description}
               </p>
             ) : null}
           </div>
           {operational === "delivered" && state?.autoCompleteAt ? (
             <div className="shrink-0 text-right">
-              <p className="text-[9px] text-[#667069]">Auto-completes</p>
+              <p className="text-[9px] text-[#A4AEA8]">Auto-completes</p>
               <p className="mt-1 text-[10px] font-medium text-[#A0AAA4]">{formatDate(state.autoCompleteAt)}</p>
             </div>
           ) : null}
         </div>
         {state?.operationalNote ? (
-          <p className="mt-3 rounded-lg bg-white/[0.025] px-3 py-2 text-[9px] leading-4 text-[#A0AAA4]">{state.operationalNote}</p>
+          <p className="mt-3 rounded-lg bg-white/[0.025] px-3 py-2 text-[11px] leading-5 text-[#A0AAA4]">{state.operationalNote}</p>
         ) : null}
-      </section>
+      </OrderWorkspaceCard>
 
-      <div className="h-px bg-white/[0.06]" />
-
-      <section className="p-5">
+      <OrderWorkspaceCard>
         <div className="flex items-center gap-2.5">
-          <UserRoundCheck className="size-4 text-[#667069]" />
+          <UserRoundCheck className="size-4 text-[#A4AEA8]" />
           <h2 className="text-sm font-semibold text-[#F4F7F5]">User Integrity Validation</h2>
         </div>
-        <p className="mt-2 text-[10px] leading-4 text-[#667069]">Record the customer's platform identity for operational history.</p>
+        <p className="mt-2 text-xs leading-5 text-[#A4AEA8]">Record the customer's platform identity for operational history.</p>
 
         {effectiveCanManage ? (
           <div className="mt-4 space-y-2">
             <input value={platform} onChange={(e) => setPlatform(e.target.value)} placeholder="Platform (Epic Games, Steam, PSN...)" maxLength={80} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
             <input value={playerId} onChange={(e) => setPlayerId(e.target.value)} placeholder="Player ID / Account ID" maxLength={160} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
             <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Internal note (optional)" maxLength={500} rows={2} className="w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2.5 text-[11px] text-[#F4F7F5] outline-none" />
-            <button type="button" onClick={saveIntegrity} disabled={busy || !platform.trim() || !playerId.trim()} className="h-9 w-full rounded-xl border border-white/[0.08] bg-white/[0.025] text-[10px] font-semibold text-[#F4F7F5] disabled:opacity-40">
+            <button type="button" onClick={saveIntegrity} disabled={busy || !platform.trim() || !playerId.trim()} className="h-9 w-full rounded-xl border border-white/[0.08] bg-white/[0.025] text-xs font-semibold text-[#F4F7F5] disabled:opacity-40">
               {state?.currentIntegrity ? "Update Validation" : "Save Validation"}
             </button>
           </div>
@@ -581,88 +580,81 @@ export function OrderOperationsPanel({
             <div className="flex items-start gap-2">
               <ShieldCheck className="mt-0.5 size-4 text-[#82F5A4]" />
               <div>
-                <p className="text-[9px] uppercase tracking-[0.08em] text-[#667069]">Recorded identity</p>
+                <p className="text-[9px] uppercase tracking-[0.08em] text-[#A4AEA8]">Recorded identity</p>
                 <p className="mt-1 text-xs font-semibold text-[#F4F7F5]">{state.currentIntegrity.platform} — {state.currentIntegrity.playerId}</p>
               </div>
             </div>
           </div>
         ) : null}
-      </section>
-
-      <div className="h-px bg-white/[0.06]" />
+      </OrderWorkspaceCard>
 
       <EvidenceSection title="Start Order Screenshot" description="Paste an HTTPS image link. No image file is uploaded to BoostingPedia." type="start" evidence={state?.startEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
-
-      <div className="h-px bg-white/[0.06]" />
 
       <EvidenceSection title="Deliver Order Screenshot" description="Paste the final proof link before marking the order Delivered." type="delivery" evidence={state?.deliveryEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
 
       {effectiveCanManage && operational && operational !== "completed" ? (
         <>
-          <div className="h-px bg-white/[0.06]" />
-          <section className="p-5">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">Booster Controls</p>
+          <OrderWorkspaceCard>
+            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">Booster Controls</p>
 
             <div className="mt-3 grid gap-2">
               {operational === "accepted" ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-[10px] font-bold text-[#050807]"><Play className="mr-2 size-3" />Start Work</button>
+                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807]"><Play className="mr-2 size-3" />Start Work</button>
               ) : null}
 
               {operational === "waiting_customer" ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-[10px] font-semibold text-[#F4F7F5]"><RotateCcw className="mr-2 size-3" />Resume Work</button>
+                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-xs font-semibold text-[#F4F7F5]"><RotateCcw className="mr-2 size-3" />Resume Work</button>
               ) : null}
 
               {operational === "in_progress" ? (
                 <>
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "waiting_customer" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-[10px] font-semibold text-[#F4F7F5]"><Clock3 className="mr-2 size-3" />Waiting for Customer</button>
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "delivered" })} disabled={busy || !readyToDeliver} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-[10px] font-bold text-[#050807] disabled:bg-white/[0.06] disabled:text-[#667069]"><Send className="mr-2 size-3" />Deliver Order</button>
-                  {!readyToDeliver ? <p className="text-[9px] leading-4 text-[#667069]">Integrity validation and both screenshot links are required before delivery.</p> : null}
+                  <button onClick={() => lifecycle({ action: "transition", nextState: "waiting_customer" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-xs font-semibold text-[#F4F7F5]"><Clock3 className="mr-2 size-3" />Waiting for Customer</button>
+                  <button onClick={() => lifecycle({ action: "transition", nextState: "delivered" })} disabled={busy || !readyToDeliver} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807] disabled:bg-white/[0.06] disabled:text-[#A4AEA8]"><Send className="mr-2 size-3" />Deliver Order</button>
+                  {!readyToDeliver ? <p className="text-[11px] leading-5 text-[#A4AEA8]">Integrity validation and both screenshot links are required before delivery.</p> : null}
                 </>
               ) : null}
 
               {operational !== "delivered" && operational !== "issue" ? (
                 <div className="mt-2">
                   <textarea value={issueNote} onChange={(e) => setIssueNote(e.target.value)} placeholder="Describe the issue..." maxLength={500} rows={2} className="w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2 text-[10px] text-[#F4F7F5] outline-none" />
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "issue", note: issueNote })} disabled={busy || !issueNote.trim()} className="mt-2 flex h-9 w-full items-center justify-center rounded-xl border border-amber-300/15 bg-amber-300/[0.04] text-[10px] font-semibold text-amber-100 disabled:opacity-40"><AlertTriangle className="mr-2 size-3" />Report Issue</button>
+                  <button onClick={() => lifecycle({ action: "transition", nextState: "issue", note: issueNote })} disabled={busy || !issueNote.trim()} className="mt-2 flex h-9 w-full items-center justify-center rounded-xl border border-amber-300/15 bg-amber-300/[0.04] text-xs font-semibold text-amber-100 disabled:opacity-40"><AlertTriangle className="mr-2 size-3" />Report Issue</button>
                 </div>
               ) : null}
 
               {operational === "issue" && state?.canAdminister ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress", note: "Issue resolved by admin." })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-[#39E56F]/15 text-[10px] font-semibold text-[#82F5A4]">Resolve & Resume Work</button>
+                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress", note: "Issue resolved by admin." })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-[#39E56F]/15 text-xs font-semibold text-[#82F5A4]">Resolve & Resume Work</button>
               ) : null}
             </div>
-          </section>
+          </OrderWorkspaceCard>
         </>
       ) : null}
 
       {state?.isCustomer && operational === "delivered" ? (
         <>
-          <div className="h-px bg-white/[0.06]" />
-          <section className="p-5">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">Review Delivery</p>
+          <OrderWorkspaceCard>
+            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">Review Delivery</p>
             <h3 className="mt-2 text-sm font-semibold text-[#F4F7F5]">Is everything correct?</h3>
-            <p className="mt-2 text-[10px] leading-4 text-[#A0AAA4]">Confirm the delivery, or report a problem before the 48-hour review window ends.</p>
-            <button onClick={() => lifecycle({ action: "confirm_delivery" })} disabled={busy} className="mt-4 h-10 w-full rounded-xl bg-[#39E56F] text-[10px] font-bold text-[#050807]">Confirm Delivery</button>
+            <p className="mt-2 text-xs leading-5 text-[#A0AAA4]">Confirm the delivery, or report a problem before the 48-hour review window ends.</p>
+            <button onClick={() => lifecycle({ action: "confirm_delivery" })} disabled={busy} className="mt-4 h-10 w-full rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807]">Confirm Delivery</button>
             <textarea value={customerProblem} onChange={(e) => setCustomerProblem(e.target.value)} placeholder="Describe the problem..." maxLength={500} rows={3} className="mt-3 w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2.5 text-[10px] text-[#F4F7F5] outline-none" />
-            <button onClick={() => lifecycle({ action: "report_problem", note: customerProblem })} disabled={busy || !customerProblem.trim()} className="mt-2 h-9 w-full rounded-xl border border-rose-300/15 bg-rose-300/[0.03] text-[10px] font-semibold text-rose-200 disabled:opacity-40">Report a Problem</button>
-          </section>
+            <button onClick={() => lifecycle({ action: "report_problem", note: customerProblem })} disabled={busy || !customerProblem.trim()} className="mt-2 h-9 w-full rounded-xl border border-rose-300/15 bg-rose-300/[0.03] text-xs font-semibold text-rose-200 disabled:opacity-40">Report a Problem</button>
+          </OrderWorkspaceCard>
         </>
       ) : null}
 
       {state ? (
         <>
-          <div className="h-px bg-white/[0.06]" />
-          <section className="p-5">
+          <OrderWorkspaceCard>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#667069]">
+                <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">
                   Operational History
                 </p>
-                <p className="mt-1 text-[10px] leading-4 text-[#A0AAA4]">
+                <p className="mt-1 text-xs leading-5 text-[#A0AAA4]">
                   Customer-facing lifecycle
                 </p>
               </div>
-              <Clock3 className="size-4 text-[#667069]" aria-hidden="true" />
+              <Clock3 className="size-4 text-[#A4AEA8]" aria-hidden="true" />
             </div>
 
             <ol className="mt-4" aria-label="Operational history timeline">
@@ -708,13 +700,12 @@ export function OrderOperationsPanel({
                             ? "border-[#39E56F] bg-[#39E56F] text-[#050807]"
                             : isCompleted
                               ? "border-[#39E56F]/30 bg-[#0B110E] text-[#82F5A4]"
-                              : "border-white/[0.12] bg-[#0B110E] text-[#667069]"
+                              : "border-white/[0.12] bg-[#0B110E] text-[#A4AEA8]"
                         }`}
                         aria-hidden="true"
                       >
                         {isCurrent ? (
                           <>
-                            <span className="absolute -inset-1.5 rounded-full border border-[#39E56F]/25 opacity-70 animate-ping [animation-duration:1.8s] [animation-timing-function:ease-in-out] motion-reduce:animate-none" />
                             <span className="relative size-1.5 rounded-full bg-[#050807]" />
                           </>
                         ) : isCompleted ? (
@@ -744,7 +735,7 @@ export function OrderOperationsPanel({
                             isCurrent
                               ? "border-[#39E56F]/18 bg-[#39E56F]/[0.045] text-[#82F5A4]"
                               : isCompleted
-                                ? "border-white/[0.07] bg-white/[0.02] text-[#667069]"
+                                ? "border-white/[0.07] bg-white/[0.02] text-[#A4AEA8]"
                                 : "border-white/[0.05] bg-transparent text-[#56605A]"
                           }`}
                         >
@@ -757,7 +748,7 @@ export function OrderOperationsPanel({
                       </div>
 
                       <p
-                        className={`mt-1.5 break-words text-[9px] leading-4 ${
+                        className={`mt-1.5 break-words text-[11px] leading-5 ${
                           stage.status === "upcoming"
                             ? "text-[#56605A]"
                             : "text-[#A0AAA4]"
@@ -766,7 +757,7 @@ export function OrderOperationsPanel({
                         {stage.description}
                       </p>
 
-                      <p className="mt-1 text-[9px] text-[#667069]">
+                      <p className="mt-1 text-[9px] text-[#A4AEA8]">
                         {timeLabel}
                       </p>
                     </div>
@@ -774,11 +765,11 @@ export function OrderOperationsPanel({
                 );
               })}
             </ol>
-          </section>
+          </OrderWorkspaceCard>
         </>
       ) : null}
 
-      {error ? <div className="border-t border-rose-300/10 px-5 py-3 text-[9px] leading-4 text-rose-300">{error}</div> : null}
+      {error ? <OrderWorkspaceCard><p role="alert" className="text-xs leading-5 text-rose-300">{error}</p></OrderWorkspaceCard> : null}
     </>
   );
 }
