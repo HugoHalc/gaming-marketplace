@@ -1,17 +1,12 @@
 "use client";
 
-import { Eye, EyeOff, Save } from "lucide-react";
+import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
 import { useEffect, useState } from "react";
+import type { OrderCredentialPayload } from "@/lib/security/order-credentials";
 
-interface OrderAccountDetailsProps {
-  orderId: string;
-  canEdit: boolean;
-}
-
-export function OrderAccountDetails({
-  orderId,
-  canEdit,
-}: OrderAccountDetailsProps) {
+export function OrderAccountDetails({ orderId, canEdit, mode = "account", asCard = false, enabled = true }: {
+  orderId: string; canEdit: boolean; mode?: "account" | "player" | null; asCard?: boolean; enabled?: boolean;
+}) {
   const [hasCredentials, setHasCredentials] = useState(false);
   const [accountEmail, setAccountEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,167 +14,86 @@ export function OrderAccountDetails({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    if (!enabled) return;
     let active = true;
     fetch(`/api/orders/${orderId}/credentials`, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Unable to load account detail state.");
         return response.json() as Promise<{ hasCredentials?: boolean }>;
       })
-      .then((payload) => {
-        if (active) setHasCredentials(Boolean(payload.hasCredentials));
-      })
-      .catch(() => {
-        if (active) setMessage("Unable to load secure account details.");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+      .then((payload) => { if (active) setHasCredentials(Boolean(payload.hasCredentials)); })
+      .catch(() => { if (active) setMessage("Unable to load secure account details."); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [orderId, enabled]);
 
-    return () => {
-      active = false;
-    };
-  }, [orderId]);
-
+  function hide() {
+    setRevealed(false); setShowPassword(false); setAccountEmail(""); setPassword(""); setUsername("");
+  }
   async function reveal() {
     setMessage(null);
-    const response = await fetch(`/api/orders/${orderId}/credentials?reveal=1`, {
-      cache: "no-store",
-    });
-    const payload = (await response.json()) as {
-      credentials?: { accountEmail: string; password: string } | null;
-      error?: string;
-    };
-
-    if (!response.ok || !payload.credentials) {
-      setMessage(payload.error || "No saved credentials are available.");
-      return;
-    }
-
-    setAccountEmail(payload.credentials.accountEmail);
-    setPassword(payload.credentials.password);
-    setRevealed(true);
+    try {
+      const response = await fetch(`/api/orders/${orderId}/credentials?reveal=1`, { cache: "no-store" });
+      const payload = await response.json() as { credentials?: OrderCredentialPayload | null; error?: string };
+      if (!response.ok || !payload.credentials) throw new Error(payload.error || "No saved account details are available.");
+      const data = payload.credentials;
+      if (data.kind === "player") setUsername(data.username);
+      else { setAccountEmail(data.accountEmail); setPassword(data.password); }
+      setShowPassword(false); setRevealed(true);
+    } catch (caught) { setMessage(caught instanceof Error ? caught.message : "Unable to load secure account details."); }
   }
-
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canEdit || saving) return;
-
-    setSaving(true);
-    setMessage(null);
-
+    setSaving(true); setMessage(null);
     try {
       const response = await fetch(`/api/orders/${orderId}/credentials`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accountEmail, password }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mode === "player" ? { kind: "player", username } : { accountEmail, password }),
       });
-      const payload = (await response.json()) as { error?: string };
+      const payload = await response.json() as { error?: string };
       if (!response.ok) throw new Error(payload.error || "Unable to save account details.");
-
-      setHasCredentials(true);
-      setRevealed(false);
-      setAccountEmail("");
-      setPassword("");
-      setMessage("Account details saved securely.");
-    } catch (caught) {
-      setMessage(
-        caught instanceof Error ? caught.message : "Unable to save account details.",
-      );
-    } finally {
-      setSaving(false);
-    }
+      setHasCredentials(true); hide(); setMessage("Account details saved securely.");
+    } catch (caught) { setMessage(caught instanceof Error ? caught.message : "Unable to save account details."); }
+    finally { setSaving(false); }
   }
-
-  return (
-    <div>
-      {loading ? (
-        <p className="py-2 text-[10px] text-[#667069]">Loading secure details…</p>
-      ) : (
-        <>
-          {hasCredentials && !revealed ? (
-            <div className="flex items-center justify-between gap-3 py-1.5">
-              <p className="text-[11px] font-semibold text-[#F4F7F5]">
-                Credentials saved
-              </p>
-              <button
-                type="button"
-                onClick={reveal}
-                className="inline-flex h-9 items-center rounded-lg border border-white/[0.08] px-3 text-[10px] font-semibold text-[#A0AAA4] hover:bg-white/[0.03] hover:text-[#F4F7F5]"
-              >
-                <Eye className="mr-1.5 size-3.5" />
-                Reveal
-              </button>
-            </div>
-          ) : null}
-
-          {canEdit && (!hasCredentials || revealed) ? (
-            <form onSubmit={save} className="mt-2 space-y-3">
-              <label className="block">
-                <span className="text-[10px] text-[#667069]">Game account email</span>
-                <input
-                  type="email"
-                  required
-                  maxLength={320}
-                  value={accountEmail}
-                  onChange={(event) => setAccountEmail(event.target.value)}
-                  autoComplete="off"
-                  className="mt-1.5 h-10 w-full rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 text-xs text-[#F4F7F5] outline-none focus:border-blue-300/[0.18]"
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-[10px] text-[#667069]">Password</span>
-                <div className="relative mt-1.5">
-                  <input
-                    type={revealed ? "text" : "password"}
-                    required
-                    maxLength={256}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    autoComplete="new-password"
-                    className="h-10 w-full rounded-xl border border-white/[0.07] bg-[#090D0B] px-3 pr-10 text-xs text-[#F4F7F5] outline-none focus:border-blue-300/[0.18]"
-                  />
-                  {revealed ? (
-                    <EyeOff className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-[#667069]" />
-                  ) : null}
-                </div>
-              </label>
-
-              <button
-                type="submit"
-                disabled={saving}
-                className="inline-flex h-9 items-center rounded-lg bg-[#39E56F] px-3 text-[10px] font-semibold text-[#050807] hover:bg-[#20C95A] disabled:opacity-50"
-              >
-                <Save className="mr-1.5 size-3.5" />
-                {saving ? "Saving…" : hasCredentials ? "Update securely" : "Save securely"}
-              </button>
-            </form>
-          ) : null}
-
-          {!canEdit && hasCredentials && revealed ? (
-            <div className="mt-2 space-y-3">
-              <div>
-                <p className="text-[10px] text-[#667069]">Game account email</p>
-                <p className="mt-1 break-all text-xs text-[#F4F7F5]">{accountEmail}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-[#667069]">Password</p>
-                <p className="mt-1 break-all font-mono text-xs text-[#F4F7F5]">{password}</p>
-              </div>
-            </div>
-          ) : null}
-        </>
-      )}
-
-      {message ? (
-        <p className="mt-3 text-[10px] leading-4 text-[#A0AAA4]">{message}</p>
-      ) : null}
-
-      <p className="mt-2 text-[9px] leading-4 text-[#667069]">
-        Encrypted and only accessible to you and your assigned booster.
-      </p>
-    </div>
-  );
+  const inputClass = "mt-1 h-11 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] px-3 text-sm text-[#F4F7F5]";
+  const controlClass = "min-h-11 rounded-lg border border-white/[0.08] px-3 text-xs font-semibold text-[#F4F7F5]";
+  const messageId = `account-message-${orderId}`;
+  // Historical snapshots keep access to saved details, without asking for new unnecessary credentials.
+  if (mode === null && (loading || (!hasCredentials && !message))) return null;
+  const content = !enabled ? <p className="text-xs">Available after payment is confirmed.</p> : <div>
+    {loading ? <p className="text-xs">Loading secure details…</p> : <>
+      {hasCredentials ? <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-[#82F5A4]">Details saved</p>
+        <button type="button" aria-expanded={revealed} aria-controls={`account-content-${orderId}`} onClick={revealed ? hide : reveal} className={controlClass}>{revealed ? "Hide" : canEdit ? "View / edit" : "View details"}</button>
+      </div> : !canEdit ? <p className="text-xs">Waiting for the customer’s account details.</p> : null}
+      <div id={`account-content-${orderId}`}>
+        {canEdit && (!hasCredentials || revealed) ? <form onSubmit={save} className="mt-2 space-y-2">
+          {mode === "player" ? <label className="block text-xs">In-game username / Player ID
+            <input required maxLength={160} autoComplete="off" value={username} onChange={(event) => setUsername(event.target.value)} aria-describedby={message ? messageId : undefined} className={inputClass} />
+          </label> : <>
+            <label className="block text-xs">Game account email<input type="email" required maxLength={320} autoComplete="off" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} aria-describedby={message ? messageId : undefined} className={inputClass} /></label>
+            <label className="block text-xs">Password<input type={showPassword ? "text" : "password"} required maxLength={256} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} aria-describedby={message ? messageId : undefined} className={inputClass} /></label>
+          </>}
+          {mode === "player" ? <p className="text-xs">Your booster uses this name to add you in-game.</p> : <button type="button" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className={controlClass}>{showPassword ? "Mask password" : "Show password"}</button>}
+          <button type="submit" disabled={saving || (mode === "player" ? !username.trim() : !accountEmail.trim() || !password)} className="min-h-11 w-full rounded-lg bg-[#39E56F] text-xs font-semibold text-[#050807] disabled:opacity-40">{saving ? "Saving…" : hasCredentials ? "Update securely" : "Save securely"}</button>
+        </form> : null}
+        {!canEdit && hasCredentials && revealed ? <dl className="mt-2 space-y-2 text-xs">
+          {mode === "player" ? <div><dt>In-game username / Player ID</dt><dd className="mt-1 break-words text-white">{username}</dd></div> : <>
+            <div><dt>Game account email</dt><dd className="mt-1 break-all text-white">{accountEmail}</dd></div>
+            <div><dt>Password</dt><dd className="mt-1 break-all text-white">{showPassword ? password : "••••••••"}</dd></div>
+            <button type="button" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className={controlClass}>{showPassword ? "Mask password" : "Show password"}</button>
+          </>}
+        </dl> : null}
+      </div>
+    </>}
+    {message ? <p id={messageId} role="status" className="mt-2 text-xs">{message}</p> : null}
+    <p className="mt-2 text-xs leading-4">Encrypted access for authorized order participants only.</p>
+  </div>;
+  return asCard ? <OrderWorkspaceCard title="Account Details">{content}</OrderWorkspaceCard> : content;
 }

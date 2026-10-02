@@ -1,4 +1,6 @@
 import "server-only";
+import { getAccountDetailsMode } from "@/features/orders/presentation/account-details-mode";
+import type { OrderCredentialPayload } from "@/lib/security/order-credentials";
 import { createSecretServerClient } from "@/lib/supabase/server";
 import { requireAdmin, requireUser } from "@/features/auth/server/auth";
 import {
@@ -403,24 +405,34 @@ export async function getOrderUnreadMessageCount(orderId: string) {
 
 export async function saveOrderCredentials(
   orderId: string,
-  input: { accountEmail: string; password: string },
+  input: OrderCredentialPayload,
 ) {
-  const accountEmail = input.accountEmail.trim();
-  const password = input.password;
-
-  if (!accountEmail || accountEmail.length > 320) {
-    throw new Error("Enter a valid account email.");
-  }
-  if (!password || password.length > 256) {
-    throw new Error("Enter a valid password.");
-  }
-
   const { identity, order, supabase } = await getAuthorizedOrder(orderId);
   if (order.user_id !== identity.id) {
     throw new Error("Only the customer who owns this order can update credentials.");
   }
 
-  const encrypted = encryptOrderCredentials({ accountEmail, password });
+  const { data: items, error: itemError } = await supabase.from("order_items")
+    .select("game_name, configuration").eq("order_id", orderId);
+  if (itemError) throw new Error("Unable to load account detail requirements.");
+  const modes = (items ?? []).map((item) => getAccountDetailsMode(item.game_name, item.configuration ?? {}));
+  // Historical snapshots without a method retain their existing email/password contract.
+  const expectedMode = modes.includes("account") ? "account" : modes.includes("player") ? "player" : null;
+  let payload: OrderCredentialPayload;
+  if (input.kind === "player") {
+    if (expectedMode !== "player") throw new Error("Account details do not match the order method.");
+    const username = input.username.trim();
+    if (!username || username.length > 160) throw new Error("Enter a valid in-game username.");
+    payload = { kind: "player", username };
+  } else {
+    if (expectedMode === "player") throw new Error("Account details do not match the order method.");
+    const accountEmail = input.accountEmail.trim();
+    const password = input.password;
+    if (!accountEmail || accountEmail.length > 320) throw new Error("Enter a valid account email.");
+    if (!password || password.length > 256) throw new Error("Enter a valid password.");
+    payload = { accountEmail, password };
+  }
+  const encrypted = encryptOrderCredentials(payload);
 
   const { error } = await supabase.from("order_credentials").upsert(
     {

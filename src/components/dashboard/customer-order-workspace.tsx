@@ -4,10 +4,7 @@ import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/prese
 import Link from "next/link";
 import {
   ArrowLeft,
-  CreditCard,
   MessageSquare,
-  ShieldCheck,
-  UserRound,
 } from "lucide-react";
 import type {
   OrderRecord,
@@ -20,13 +17,13 @@ import type {
 import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import { OrderLiveChat } from "@/components/dashboard/order-live-chat";
 import { OrderAccountDetails } from "@/components/dashboard/order-account-details";
-import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
+import { getAccountDetailsMode } from "@/features/orders/presentation/account-details-mode";
 import { OrderOperationsPanel } from "@/components/dashboard/order-operations-panel";
 import {
   isMarvelRivalsGame,
   isOverwatchGame,
 } from "@/components/orders/game-order-presentation";
-import { OrderConfigurationSummary } from "@/components/orders/order-configuration-summary";
+import { OrderWorkspaceConfiguration } from "@/components/orders/order-workspace-configuration";
 
 interface Props {
   order: OrderRecord;
@@ -78,6 +75,7 @@ export function CustomerOrderWorkspace({
   const config = item?.configuration ?? {};
   const isMarvelRivals = isMarvelRivalsGame(item?.gameName);
   const isOverwatch = isOverwatchGame(item?.gameName);
+  const accountDetailsMode = getAccountDetailsMode(item?.gameName ?? "", config);
   const suggestedPlatform =
     typeof config.platform === "string"
       ? config.platform
@@ -219,15 +217,12 @@ export function CustomerOrderWorkspace({
 
         <aside className="min-w-0 xl:sticky xl:top-[76px] xl:self-start">
           <div className="space-y-3">
-            <OrderWorkspaceCard>
-              <div className="flex items-center gap-2.5">
-                <CreditCard className="size-4 text-[#82F5A4]/75" />
-                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
-                  Order Details
-                </h2>
-              </div>
-
-              <dl className="mb-4 space-y-3 text-xs">
+            <OrderOperationsPanel
+              orderId={order.id}
+              canManage={false}
+              suggestedPlatform={suggestedPlatform}
+              orderStatus={order.status}
+              details={<><p className="mb-2 text-xs font-semibold text-white">{item?.gameName}</p><dl className="mb-4 space-y-2 text-xs">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <dt>Status</dt><dd><OrderStatusBadge status={order.status} /></dd>
                 </div>
@@ -237,15 +232,11 @@ export function CustomerOrderWorkspace({
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
                   <dt>Service</dt><dd className="text-right font-semibold text-[#F4F7F5]">{item?.serviceName ?? "Gaming service"}</dd>
                 </div>
-                {suggestedPlatform && !isMarvelRivals && !isOverwatch ? (
-                  <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
-                    <dt>Platform</dt><dd className="text-right font-semibold text-[#F4F7F5]">{suggestedPlatform}</dd>
-                  </div>
-                ) : null}
+                
               </dl>
               <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <p className="font-gaming-value text-[28px] font-bold tracking-[-0.03em] text-[#F4F7F5]">
+                  <p className="font-gaming-value text-2xl font-bold tracking-[-0.03em] text-[#F4F7F5]">
                     {formatMoney(order.total)}
                   </p>
                   <p className="mt-1 text-[12px] text-[#6F7B74]">
@@ -270,16 +261,7 @@ export function CustomerOrderWorkspace({
 
               {item ? (
                 <div className="mt-4">
-                  <OrderConfigurationSummary
-                    gameName={item.gameName}
-                    serviceName={item.serviceName}
-                    configuration={item.configuration}
-                    priceBreakdown={displayedPriceBreakdown}
-                    compact
-                    embedded
-                    flatRanks
-                    rankSize={isMarvelRivals || isOverwatch ? "md" : "lg"}
-                  />
+                  <OrderWorkspaceConfiguration gameName={item.gameName} configuration={item.configuration} priceBreakdown={item.priceBreakdown} rankSize={isMarvelRivals || isOverwatch ? "md" : "lg"} />
                 </div>
               ) : null}
 
@@ -291,17 +273,8 @@ export function CustomerOrderWorkspace({
                   </button>
                 </form>
               ) : null}
-            </OrderWorkspaceCard>
-
-            <OrderWorkspaceCard>
-              <div className="flex items-center gap-2.5">
-                <UserRound className="size-4 text-[#82F5A4]/70" />
-                <h2 className="text-[15px] font-bold text-[#F4F7F5]">
-                  Booster
-                </h2>
-              </div>
-
-              {boosterAssignment ? (
+            
+<div className="mt-3">{boosterAssignment ? (
                 <div className="mt-3 flex items-center gap-3">
                   <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-[#0F1713] text-[11px] font-bold text-[#F4F7F5]">
                     {boosterAssignment.avatarUrl ? (
@@ -330,42 +303,9 @@ export function CustomerOrderWorkspace({
                   Your assigned booster will appear here once the order is accepted.
                 </p>
               )}
-            </OrderWorkspaceCard>
-
-            <OrderWorkspaceCard>
-              <div className="mb-3 flex items-start gap-2.5">
-                <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-[10px] border border-[#39E56F]/14 bg-[#39E56F]/[0.045]">
-                  <ShieldCheck className="size-4 text-[#82F5A4]" />
-                </span>
-                <div>
-                  <h2 className="text-[15px] font-bold text-[#F4F7F5]">
-                    Secure Account Access
-                  </h2>
-                  <p className="mt-1 text-[11px] leading-4 text-[#6F7B74]">
-                    {boosterAssignment
-                      ? "Share your game login securely with your assigned booster"
-                      : secureAccessAvailable
-                        ? "Add your game login now. It stays encrypted until a booster is assigned."
-                        : "Available immediately after payment is confirmed"}
-                  </p>
-                </div>
-              </div>
-
-              {boosterAssignment || secureAccessAvailable ? (
-                <div className="[&_input]:h-11 [&_input]:border-white/[0.08] [&_input]:bg-[#0A100D] [&_input]:text-[13px] [&_input]:focus:border-[#39E56F]/35 [&_input]:focus:ring-1 [&_input]:focus:ring-[#39E56F]/20 [&_label>span]:text-[11px] [&_label>span]:text-[#6F7B74] [&_button]:min-h-10 [&_p]:text-[11px]">
-                  <OrderAccountDetails
-                    orderId={order.id}
-                    canEdit={isCustomerOwner}
-                  />
-                </div>
-              ) : null}
-            </OrderWorkspaceCard>
-
-            <OrderOperationsPanel
-              orderId={order.id}
-              canManage={false}
-              suggestedPlatform={suggestedPlatform}
-              orderStatus={order.status}
+            </div>
+</>}
+              accountDetails={<OrderAccountDetails orderId={order.id} canEdit={isCustomerOwner} mode={accountDetailsMode} asCard enabled={Boolean(boosterAssignment || secureAccessAvailable)} />}
             />
           </div>
         </aside>

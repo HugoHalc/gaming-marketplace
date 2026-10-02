@@ -1,21 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { OrderWorkspaceCard } from "@/components/dashboard/order-workspace-card";
-import {
-  AlertTriangle,
-  Check,
-  Clock3,
-  ExternalLink,
-  ImageIcon,
-  Loader2,
-  Play,
-  RotateCcw,
-  Send,
-  ShieldCheck,
-  UserRoundCheck,
-} from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 
 type OperationalState =
   | "accepted"
@@ -231,7 +219,7 @@ function buildCustomerLifecycleStages(
       title: "User Integrity Validation",
       done: Boolean(state.currentIntegrity),
       timestamp: state.currentIntegrity?.recordedAt ?? null,
-      completedCopy: "Customer validation completed.",
+      completedCopy: "In-game identity recorded manually.",
       currentCopy: "Customer validation in progress.",
       pendingCopy: "Waiting for customer validation.",
     },
@@ -330,101 +318,60 @@ function buildCustomerLifecycleStages(
   });
 }
 
-function EvidenceSection({
-  title,
-  description,
-  type,
-  evidence,
-  canManage,
-  onSaved,
-}: {
-  title: string;
-  description: string;
-  type: "start" | "delivery";
-  evidence: Evidence | null;
-  canManage: boolean;
+const primary = "min-h-11 w-full rounded-lg bg-[#39E56F] px-3 text-xs font-semibold text-[#050807] disabled:opacity-40";
+const secondary = "min-h-11 w-full rounded-lg border border-white/[0.08] px-3 text-xs font-semibold text-white disabled:opacity-40";
+function EvidenceSection({ title, type, evidence, canManage, active, onSaved, children }: {
+  title: string; type: "start" | "delivery"; evidence: Evidence | null;
+  canManage: boolean; active: boolean;
   onSaved: (type: "start" | "delivery", url: string) => Promise<void>;
+  children?: ReactNode;
 }) {
   const [url, setUrl] = useState(evidence?.url ?? "");
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => setUrl(evidence?.url ?? ""), [evidence?.url]);
-
+  const [editing, setEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const expanded = canManage && active && (!evidence || editing);
+  const id = `evidence-${type}`;
   async function save() {
-    setSaving(true);
-    try {
-      await onSaved(type, url);
-    } finally {
-      setSaving(false);
-    }
+    if (saving || !canManage || !active) return;
+    setSaving(true); setError(null);
+    try { await onSaved(type, url); setEditing(false); }
+    catch (caught) { setError(caught instanceof Error ? caught.message : "Unable to save screenshot link."); }
+    finally { setSaving(false); }
   }
-
-  return (
-    <OrderWorkspaceCard>
-      <div className="flex items-center gap-2.5">
-        <ImageIcon className="size-4 text-[#A4AEA8]" />
-        <h2 className="text-sm font-semibold text-[#F4F7F5]">{title}</h2>
-      </div>
-      <p className="mt-2 text-xs leading-5 text-[#A4AEA8]">{description}</p>
-
-      {canManage ? (
-        <div className="mt-4">
-          <input
-            type="text"
-            inputMode="url"
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-            placeholder="https://imgur.com/... or i.imgur.com/..."
-            className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none placeholder:text-[#A4AEA8] focus:border-[#39E56F]/35"
-          />
-          <button
-            type="button"
-            onClick={save}
-            disabled={saving || !url.trim()}
-            className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-xs font-semibold text-[#F4F7F5] hover:bg-white/[0.05] disabled:opacity-40"
-          >
-            {saving ? <Loader2 className="mr-2 size-3 animate-spin" /> : null}
-            {evidence ? "Update Screenshot Link" : "Save Screenshot Link"}
-          </button>
-        </div>
-      ) : null}
-
-      {evidence ? (
-        <a
-          href={evidence.url}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#39E56F]/10 bg-[#39E56F]/[0.025] px-3 py-2.5 text-[10px] font-medium text-[#82F5A4]"
-        >
-          <span className="flex items-center gap-2">
-            <Check className="size-3.5" />
-            Screenshot recorded
-          </span>
-          <span className="flex items-center gap-1.5">
-            View Screenshot <ExternalLink className="size-3" />
-          </span>
-        </a>
-      ) : (
-        <div className="mt-3 flex min-h-12 items-center justify-center rounded-xl border border-dashed border-white/[0.07] bg-[#090D0B] px-3 text-center">
-          <p className="text-[9px] text-[#A4AEA8]">No screenshot link recorded yet.</p>
-        </div>
-      )}
-    </OrderWorkspaceCard>
-  );
+  return <OrderWorkspaceCard title={title}>
+    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+      <span className={evidence ? "text-[#82F5A4]" : ""}>{evidence ? "Submitted" : active ? "Ready to submit" : "Pending"}</span>
+      {evidence && canManage && active ? <button className={secondary + " !w-auto"} type="button" aria-expanded={expanded} aria-controls={id} onClick={() => { setUrl(evidence.url); setEditing(!editing); }}>{editing ? "Cancel edit" : "Edit link"}</button> : null}
+    </div>
+    <div id={id}>
+      {expanded ? <div className="mt-2 space-y-2">
+        <p className="text-xs">Paste an HTTPS screenshot link; no file is uploaded.</p>
+        <label className="block text-xs">Screenshot URL<input type="url" inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={url} onChange={(event) => setUrl(event.target.value)} aria-describedby={error ? `${id}-error` : undefined} className="mt-1 h-11 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] px-3 text-white" /></label>
+        <button type="button" onClick={save} disabled={saving || !url.trim()} className={primary}>{saving ? "Saving…" : evidence ? "Update Screenshot Link" : "Save Screenshot Link"}</button>
+      </div> : null}
+    </div>
+    {evidence ? <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <time dateTime={evidence.submittedAt}>{formatDate(evidence.submittedAt)}</time>
+      <a href={evidence.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-[#82F5A4] underline">View Screenshot<ExternalLink className="size-3" /></a>
+    </div> : null}
+    {error ? <p id={`${id}-error`} role="alert" className="mt-2 text-xs text-rose-300">{error}</p> : null}
+    {children}
+  </OrderWorkspaceCard>;
 }
 
 export function OrderOperationsPanel({
   orderId,
-  canManage,
   suggestedPlatform,
+  details,
+  accountDetails,
 }: {
   orderId: string;
   canManage: boolean;
   suggestedPlatform?: string;
   orderStatus: string;
+  details?: ReactNode;
+  accountDetails?: ReactNode;
 }) {
   const router = useRouter();
   const [state, setState] = useState<OperationsState | null>(null);
@@ -436,6 +383,7 @@ export function OrderOperationsPanel({
   const [issueNote, setIssueNote] = useState("");
   const [customerProblem, setCustomerProblem] = useState("");
   const [busy, setBusy] = useState(false);
+  const [editIntegrity, setEditIntegrity] = useState(false);
 
   async function refresh() {
     const response = await fetch(`/api/orders/${orderId}/operations`, { cache: "no-store" });
@@ -447,9 +395,15 @@ export function OrderOperationsPanel({
 
   useEffect(() => {
     let active = true;
-    refresh()
+    fetch(`/api/orders/${orderId}/operations`, { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json() as OperationsState & { error?: string };
+        if (!response.ok) throw new Error(payload.error || "Unable to load order operations.");
+        return payload;
+      })
       .then((payload) => {
         if (!active) return;
+        setState(payload);
         if (payload.currentIntegrity) {
           setPlatform(payload.currentIntegrity.platform);
           setPlayerId(payload.currentIntegrity.playerId);
@@ -467,11 +421,11 @@ export function OrderOperationsPanel({
       const response = await fetch(`/api/orders/${orderId}/integrity`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platform, playerId, internalNote: note }),
+        body: JSON.stringify({ platform: suggestedPlatform ?? platform, playerId, internalNote: note }),
       });
       const payload = (await response.json()) as OperationsState & { error?: string };
       if (!response.ok) throw new Error(payload.error || "Unable to save validation.");
-      setState(payload);
+      setState(payload); setEditIntegrity(false);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to save validation.");
     } finally { setBusy(false); }
@@ -515,261 +469,86 @@ export function OrderOperationsPanel({
     [state],
   );
 
-  if (loading) {
-    return <OrderWorkspaceCard><div className="text-xs text-[#A4AEA8]"><Loader2 className="mr-2 inline size-3.5 animate-spin" />Loading order operations…</div></OrderWorkspaceCard>;
-  }
-
   const operational = state?.operationalState;
-  const effectiveCanManage = state?.canManage ?? canManage;
-  const operationalStatus = state
-    ? getOperationalStatusPresentation(state)
-    : null;
-  const customerLifecycle = state
-    ? buildCustomerLifecycleStages(state)
-    : [];
+  // Never render management fields until the server confirms the viewer's permissions.
+  const effectiveCanManage = Boolean(state?.canManage);
+  const operationalStatus = state ? getOperationalStatusPresentation(state) : null;
+  const customerLifecycle = state ? buildCustomerLifecycleStages(state) : [];
+  const hasIntegrity = Boolean(state?.currentIntegrity);
+  const integrityActive = Boolean(operational && operational !== "delivered" && operational !== "completed");
+  const integrityExpanded = effectiveCanManage && ((integrityActive && !hasIntegrity) || (hasIntegrity && editIntegrity));
+  const startActive = Boolean(state?.startEvidence || (integrityActive && hasIntegrity));
+  const deliveryActive = Boolean((operational === "in_progress" && hasIntegrity && state?.startEvidence) || (operational !== "accepted" && state?.deliveryEvidence));
+  const startedAt = state?.operationalHistory.find((event) => event.toState === "in_progress")?.createdAt;
 
-  return (
-    <>
-      <OrderWorkspaceCard>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">
-              Operational Status
-            </p>
-            <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-              {operationalStatus?.title ?? "Not initialized"}
-            </p>
-            {operationalStatus?.description ? (
-              <p className="mt-1 text-xs leading-5 text-[#A4AEA8]">
-                {operationalStatus.description}
-              </p>
-            ) : null}
+  return <>
+    <OrderWorkspaceCard title="Order Details">
+      {details}
+      {loading ? <p className="mt-2 text-xs"><Loader2 className="mr-2 inline size-3.5 animate-spin" />Loading order operations…</p> : <>
+        <p className={`mt-3 text-xs font-semibold ${operational === "issue" ? "text-rose-300" : operational ? "text-[#82F5A4]" : "text-[#A4AEA8]"}`}>{operationalStatus?.title ?? "Not initialized"}</p>
+        {operationalStatus?.description ? <p className="mt-1 text-xs leading-4">{operationalStatus.description}</p> : null}
+        {startedAt ? <p className="mt-2 text-xs">Started <time dateTime={startedAt}>{formatDate(startedAt)}</time></p> : null}
+        {state?.operationalNote ? <p className="mt-2 text-xs">{state.operationalNote}</p> : null}
+        {operational === "delivered" && state?.autoCompleteAt ? <p className="mt-2 text-xs">Auto-completes {formatDate(state.autoCompleteAt)}</p> : null}
+        {effectiveCanManage && operational && operational !== "completed" ? <details className="mt-2">
+          <summary className="min-h-11 cursor-pointer py-3 text-xs font-semibold text-white">Operational actions</summary>
+          <div className="space-y-2">
+            {operational === "waiting_customer" ? <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className={secondary}>Resume Work</button> : null}
+            {operational === "in_progress" ? <button onClick={() => lifecycle({ action: "transition", nextState: "waiting_customer" })} disabled={busy} className={secondary}>Waiting for Customer</button> : null}
+            {operational !== "delivered" && operational !== "issue" ? <>
+              <label className="block text-xs">Issue description<textarea value={issueNote} onChange={(event) => setIssueNote(event.target.value)} maxLength={500} rows={2} className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] p-3 text-white" /></label>
+              <button onClick={() => lifecycle({ action: "transition", nextState: "issue", note: issueNote })} disabled={busy || !issueNote.trim()} className={secondary}>Report Issue</button>
+            </> : null}
+            {operational === "issue" && state?.canAdminister ? <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress", note: "Issue resolved by admin." })} disabled={busy} className={secondary}>Resolve &amp; Resume Work</button> : null}
           </div>
-          {operational === "delivered" && state?.autoCompleteAt ? (
-            <div className="shrink-0 text-right">
-              <p className="text-[9px] text-[#A4AEA8]">Auto-completes</p>
-              <p className="mt-1 text-[10px] font-medium text-[#A0AAA4]">{formatDate(state.autoCompleteAt)}</p>
-            </div>
-          ) : null}
-        </div>
-        {state?.operationalNote ? (
-          <p className="mt-3 rounded-lg bg-white/[0.025] px-3 py-2 text-[11px] leading-5 text-[#A0AAA4]">{state.operationalNote}</p>
-        ) : null}
-      </OrderWorkspaceCard>
+        </details> : null}
+        {state ? <details className="mt-2">
+          <summary className="min-h-11 cursor-pointer py-3 text-xs font-semibold text-white">Operational History</summary>
+          <ol aria-label="Operational history timeline" className="space-y-2 text-xs">{state.operationalHistory.map((event) => <li key={event.id}><span className="font-semibold text-white">{stateLabels[event.toState]}</span> · {formatDate(event.createdAt)}{event.note ? <p>{event.note}</p> : null}</li>)}</ol>
+          <ol aria-label="Customer lifecycle" className="mt-3 space-y-2 text-xs">{customerLifecycle.map((stage) => <li key={stage.key}><span className="font-semibold">{stage.title} · {stage.status}</span><p>{stage.description}</p>{stage.timestamp ? <time dateTime={stage.timestamp}>{formatDate(stage.timestamp)}</time> : null}</li>)}</ol>
+        </details> : null}
+      </>}
+      {error ? <p id={`operation-error-${orderId}`} role="alert" className="mt-2 text-xs text-rose-300">{error}</p> : null}
+    </OrderWorkspaceCard>
 
-      <OrderWorkspaceCard>
-        <div className="flex items-center gap-2.5">
-          <UserRoundCheck className="size-4 text-[#A4AEA8]" />
-          <h2 className="text-sm font-semibold text-[#F4F7F5]">User Integrity Validation</h2>
-        </div>
-        <p className="mt-2 text-xs leading-5 text-[#A4AEA8]">Record the customer's platform identity for operational history.</p>
+    <OrderWorkspaceCard title="User Integrity Validation">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className={hasIntegrity ? "text-[#82F5A4]" : ""}>{hasIntegrity ? "Validated · recorded manually" : effectiveCanManage && integrityActive ? "Ready to validate" : "Pending"}</span>
+        {hasIntegrity && effectiveCanManage ? <button type="button" aria-expanded={integrityExpanded} aria-controls={`integrity-${orderId}`} onClick={() => setEditIntegrity(!editIntegrity)} className={secondary + " !w-auto"}>{editIntegrity ? "Cancel edit" : "Edit identity"}</button> : null}
+      </div>
+      {state?.currentIntegrity ? <p className="mt-1 break-words text-xs text-white">{state.currentIntegrity.playerId} · {state.currentIntegrity.platform}<br /><time className="text-[#A4AEA8]" dateTime={state.currentIntegrity.recordedAt}>{formatDate(state.currentIntegrity.recordedAt)}</time></p> : !integrityExpanded ? <p className="mt-1 text-xs">Your assigned booster records the in-game identity.</p> : null}
+      <div id={`integrity-${orderId}`}>
+        {integrityExpanded ? <div className="mt-2 space-y-2">
+          <p className="text-xs">Record the customer’s in-game identity manually.</p>
+          {!suggestedPlatform && !state?.currentIntegrity?.platform ? <label className="block text-xs">Platform<input value={platform} onChange={(event) => setPlatform(event.target.value)} maxLength={80} className="mt-1 h-11 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] px-3 text-white" /></label> : null}
+          <label className="block text-xs">In-game username / Player ID<input value={playerId} onChange={(event) => setPlayerId(event.target.value)} maxLength={160} aria-describedby={error ? `operation-error-${orderId}` : undefined} className="mt-1 h-11 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] px-3 text-white" /></label>
+          <details><summary className="min-h-11 cursor-pointer py-3 text-xs">Internal note / previous identities</summary>
+            <label className="block text-xs">Internal note (optional)<textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} rows={2} className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] p-3 text-white" /></label>
+            {state?.knownIdentities.map((record) => <p key={`${record.orderId}-${record.playerId}`} className="mt-2 text-xs">{record.playerId} · {record.platform} · {formatDate(record.recordedAt)}{record.internalNote ? ` · ${record.internalNote}` : ""}</p>)}
+          </details>
+          <button type="button" onClick={saveIntegrity} disabled={busy || !platform.trim() || !playerId.trim()} className={primary}>Save Validation</button>
+        </div> : null}
+      </div>
+    </OrderWorkspaceCard>
 
-        {effectiveCanManage ? (
-          <div className="mt-4 space-y-2">
-            <input value={platform} onChange={(e) => setPlatform(e.target.value)} placeholder="Platform (Epic Games, Steam, PSN...)" maxLength={80} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
-            <input value={playerId} onChange={(e) => setPlayerId(e.target.value)} placeholder="Player ID / Account ID" maxLength={160} className="h-10 w-full rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 text-[11px] text-[#F4F7F5] outline-none" />
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Internal note (optional)" maxLength={500} rows={2} className="w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2.5 text-[11px] text-[#F4F7F5] outline-none" />
-            <button type="button" onClick={saveIntegrity} disabled={busy || !platform.trim() || !playerId.trim()} className="h-9 w-full rounded-xl border border-white/[0.08] bg-white/[0.025] text-xs font-semibold text-[#F4F7F5] disabled:opacity-40">
-              {state?.currentIntegrity ? "Update Validation" : "Save Validation"}
-            </button>
-          </div>
-        ) : null}
-
-        {state?.currentIntegrity ? (
-          <div className="mt-3 rounded-xl border border-[#39E56F]/10 bg-[#39E56F]/[0.025] px-3 py-3">
-            <div className="flex items-start gap-2">
-              <ShieldCheck className="mt-0.5 size-4 text-[#82F5A4]" />
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.08em] text-[#A4AEA8]">Recorded identity</p>
-                <p className="mt-1 text-xs font-semibold text-[#F4F7F5]">{state.currentIntegrity.platform} — {state.currentIntegrity.playerId}</p>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </OrderWorkspaceCard>
-
-      <EvidenceSection title="Start Order Screenshot" description="Paste an HTTPS image link. No image file is uploaded to BoostingPedia." type="start" evidence={state?.startEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
-
-      <EvidenceSection title="Deliver Order Screenshot" description="Paste the final proof link before marking the order Delivered." type="delivery" evidence={state?.deliveryEvidence ?? null} canManage={effectiveCanManage} onSaved={saveEvidence} />
-
-      {effectiveCanManage && operational && operational !== "completed" ? (
-        <>
-          <OrderWorkspaceCard>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">Booster Controls</p>
-
-            <div className="mt-3 grid gap-2">
-              {operational === "accepted" ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807]"><Play className="mr-2 size-3" />Start Work</button>
-              ) : null}
-
-              {operational === "waiting_customer" ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-xs font-semibold text-[#F4F7F5]"><RotateCcw className="mr-2 size-3" />Resume Work</button>
-              ) : null}
-
-              {operational === "in_progress" ? (
-                <>
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "waiting_customer" })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-white/[0.08] text-xs font-semibold text-[#F4F7F5]"><Clock3 className="mr-2 size-3" />Waiting for Customer</button>
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "delivered" })} disabled={busy || !readyToDeliver} className="flex h-10 items-center justify-center rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807] disabled:bg-white/[0.06] disabled:text-[#A4AEA8]"><Send className="mr-2 size-3" />Deliver Order</button>
-                  {!readyToDeliver ? <p className="text-[11px] leading-5 text-[#A4AEA8]">Integrity validation and both screenshot links are required before delivery.</p> : null}
-                </>
-              ) : null}
-
-              {operational !== "delivered" && operational !== "issue" ? (
-                <div className="mt-2">
-                  <textarea value={issueNote} onChange={(e) => setIssueNote(e.target.value)} placeholder="Describe the issue..." maxLength={500} rows={2} className="w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2 text-[10px] text-[#F4F7F5] outline-none" />
-                  <button onClick={() => lifecycle({ action: "transition", nextState: "issue", note: issueNote })} disabled={busy || !issueNote.trim()} className="mt-2 flex h-9 w-full items-center justify-center rounded-xl border border-amber-300/15 bg-amber-300/[0.04] text-xs font-semibold text-amber-100 disabled:opacity-40"><AlertTriangle className="mr-2 size-3" />Report Issue</button>
-                </div>
-              ) : null}
-
-              {operational === "issue" && state?.canAdminister ? (
-                <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress", note: "Issue resolved by admin." })} disabled={busy} className="flex h-10 items-center justify-center rounded-xl border border-[#39E56F]/15 text-xs font-semibold text-[#82F5A4]">Resolve & Resume Work</button>
-              ) : null}
-            </div>
-          </OrderWorkspaceCard>
-        </>
-      ) : null}
-
-      {state?.isCustomer && operational === "delivered" ? (
-        <>
-          <OrderWorkspaceCard>
-            <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">Review Delivery</p>
-            <h3 className="mt-2 text-sm font-semibold text-[#F4F7F5]">Is everything correct?</h3>
-            <p className="mt-2 text-xs leading-5 text-[#A0AAA4]">Confirm the delivery, or report a problem before the 48-hour review window ends.</p>
-            <button onClick={() => lifecycle({ action: "confirm_delivery" })} disabled={busy} className="mt-4 h-10 w-full rounded-xl bg-[#39E56F] text-xs font-bold text-[#050807]">Confirm Delivery</button>
-            <textarea value={customerProblem} onChange={(e) => setCustomerProblem(e.target.value)} placeholder="Describe the problem..." maxLength={500} rows={3} className="mt-3 w-full resize-none rounded-xl border border-white/[0.08] bg-[#090D0B] px-3 py-2.5 text-[10px] text-[#F4F7F5] outline-none" />
-            <button onClick={() => lifecycle({ action: "report_problem", note: customerProblem })} disabled={busy || !customerProblem.trim()} className="mt-2 h-9 w-full rounded-xl border border-rose-300/15 bg-rose-300/[0.03] text-xs font-semibold text-rose-200 disabled:opacity-40">Report a Problem</button>
-          </OrderWorkspaceCard>
-        </>
-      ) : null}
-
-      {state ? (
-        <>
-          <OrderWorkspaceCard>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="font-gaming-label text-[9px] uppercase tracking-[0.12em] text-[#A4AEA8]">
-                  Operational History
-                </p>
-                <p className="mt-1 text-xs leading-5 text-[#A0AAA4]">
-                  Customer-facing lifecycle
-                </p>
-              </div>
-              <Clock3 className="size-4 text-[#A4AEA8]" aria-hidden="true" />
-            </div>
-
-            <ol className="mt-4" aria-label="Operational history timeline">
-              {customerLifecycle.map((stage, index) => {
-                const hasNext = index < customerLifecycle.length - 1;
-                const isCompleted = stage.status === "completed";
-                const isCurrent = stage.status === "current";
-                const timeLabel = stage.timestamp
-                  ? formatDate(stage.timestamp)
-                  : isCurrent &&
-                      (stage.key === "in_progress" ||
-                        stage.key === "customer_confirmation")
-                    ? "Now"
-                    : "Pending";
-
-                return (
-                  <li
-                    key={stage.key}
-                    className="relative grid grid-cols-[28px_minmax(0,1fr)] gap-3"
-                    aria-label={`${stage.title} — ${
-                      isCompleted
-                        ? "Completed"
-                        : isCurrent
-                          ? "Current"
-                          : "Pending"
-                    }`}
-                  >
-                    <div className="relative flex justify-center">
-                      {hasNext ? (
-                        <span
-                          className={`absolute left-1/2 top-5 bottom-0 w-px -translate-x-1/2 ${
-                            isCompleted
-                              ? "bg-[#39E56F]/18"
-                              : "bg-white/[0.08]"
-                          }`}
-                          aria-hidden="true"
-                        />
-                      ) : null}
-
-                      <span
-                        className={`relative z-[1] mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${
-                          isCurrent
-                            ? "border-[#39E56F] bg-[#39E56F] text-[#050807]"
-                            : isCompleted
-                              ? "border-[#39E56F]/30 bg-[#0B110E] text-[#82F5A4]"
-                              : "border-white/[0.12] bg-[#0B110E] text-[#A4AEA8]"
-                        }`}
-                        aria-hidden="true"
-                      >
-                        {isCurrent ? (
-                          <>
-                            <span className="relative size-1.5 rounded-full bg-[#050807]" />
-                          </>
-                        ) : isCompleted ? (
-                          <Check className="size-2.5" strokeWidth={2.5} />
-                        ) : (
-                          <span className="size-1.5 rounded-full border border-white/[0.24]" />
-                        )}
-                      </span>
-                    </div>
-
-                    <div className={hasNext ? "pb-5" : ""}>
-                      <div className="flex min-w-0 flex-wrap items-center gap-2">
-                        <p
-                          className={`min-w-0 text-[11px] font-semibold leading-4 ${
-                            isCurrent
-                              ? "text-[#82F5A4]"
-                              : isCompleted
-                                ? "text-[#F4F7F5]"
-                                : "text-[#7C8780]"
-                          }`}
-                        >
-                          {stage.title}
-                        </p>
-
-                        <span
-                          className={`rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] ${
-                            isCurrent
-                              ? "border-[#39E56F]/18 bg-[#39E56F]/[0.045] text-[#82F5A4]"
-                              : isCompleted
-                                ? "border-white/[0.07] bg-white/[0.02] text-[#A4AEA8]"
-                                : "border-white/[0.05] bg-transparent text-[#56605A]"
-                          }`}
-                        >
-                          {isCompleted
-                            ? "Completed"
-                            : isCurrent
-                              ? "Current"
-                              : "Pending"}
-                        </span>
-                      </div>
-
-                      <p
-                        className={`mt-1.5 break-words text-[11px] leading-5 ${
-                          stage.status === "upcoming"
-                            ? "text-[#56605A]"
-                            : "text-[#A0AAA4]"
-                        }`}
-                      >
-                        {stage.description}
-                      </p>
-
-                      <p className="mt-1 text-[9px] text-[#A4AEA8]">
-                        {timeLabel}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </OrderWorkspaceCard>
-        </>
-      ) : null}
-
-      {error ? <OrderWorkspaceCard><p role="alert" className="text-xs leading-5 text-rose-300">{error}</p></OrderWorkspaceCard> : null}
-    </>
-  );
+    <EvidenceSection title="Order Start Screenshot" type="start" evidence={state?.startEvidence ?? null} canManage={effectiveCanManage} active={startActive} onSaved={saveEvidence}>
+      {effectiveCanManage && operational === "accepted" ? <button onClick={() => lifecycle({ action: "transition", nextState: "in_progress" })} disabled={busy} className={primary + " mt-2"}>Start Work</button> : null}
+    </EvidenceSection>
+    <EvidenceSection title="Deliver Order Screenshot" type="delivery" evidence={state?.deliveryEvidence ?? null} canManage={effectiveCanManage} active={deliveryActive} onSaved={saveEvidence}>
+      {effectiveCanManage && operational === "in_progress" ? <>
+        <button onClick={() => lifecycle({ action: "transition", nextState: "delivered" })} disabled={busy || !readyToDeliver} className={primary + " mt-2"}>Deliver Order</button>
+        {!readyToDeliver ? <p className="mt-1 text-xs">Integrity validation and both screenshot links are required before delivery.</p> : null}
+      </> : null}
+      {operational === "delivered" || operational === "completed" ? <p className="mt-1 text-xs text-[#82F5A4]">{operational === "completed" ? "Completed" : "Delivered"}</p> : null}
+      {state?.isCustomer && operational === "delivered" ? <div className="mt-2 space-y-2">
+        <p className="text-xs">Confirm delivery, or report a problem within the 48-hour review window.</p>
+        <button onClick={() => lifecycle({ action: "confirm_delivery" })} disabled={busy} className={primary}>Confirm Delivery</button>
+        <details><summary className="min-h-11 cursor-pointer py-3 text-xs">Report a delivery problem</summary>
+          <label className="block text-xs">Problem description<textarea value={customerProblem} onChange={(event) => setCustomerProblem(event.target.value)} maxLength={500} rows={3} className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#090D0B] p-3 text-white" /></label>
+          <button onClick={() => lifecycle({ action: "report_problem", note: customerProblem })} disabled={busy || !customerProblem.trim()} className={secondary + " mt-2"}>Report a Problem</button>
+        </details>
+      </div> : null}
+    </EvidenceSection>
+    {accountDetails}
+  </>;
 }

@@ -3,10 +3,9 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
-export interface OrderCredentialPayload {
-  accountEmail: string;
-  password: string;
-}
+export type OrderCredentialPayload =
+  | { kind?: "account"; accountEmail: string; password: string }
+  | { kind: "player"; username: string };
 
 function normalizeConfiguredKey(value: string) {
   let normalized = value.trim();
@@ -99,7 +98,14 @@ export function decryptOrderCredentials(input: {
 
   const parsed = JSON.parse(
     plaintext.toString("utf8"),
-  ) as Partial<OrderCredentialPayload>;
+  ) as { kind?: string; username?: string; accountEmail?: string; password?: string };
+
+  if (parsed.kind === "player") {
+    if (typeof parsed.username !== "string" || !parsed.username.trim() || parsed.username.length > 160) {
+      throw new Error("Invalid credential payload.");
+    }
+    return { kind: "player", username: parsed.username };
+  }
 
   if (
     typeof parsed.accountEmail !== "string" ||

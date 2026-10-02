@@ -13,6 +13,8 @@ function safeCredentialError(error: unknown, action: "load" | "save") {
   const safeMessages = new Set([
     "Enter a valid account email.",
     "Enter a valid password.",
+    "Enter a valid in-game username.",
+    "Account details do not match the order method.",
     "Only the customer who owns this order can update credentials.",
     "Order not found.",
     "Order access denied.",
@@ -24,7 +26,7 @@ function safeCredentialError(error: unknown, action: "load" | "save") {
 
   console.error(
     `[secure-account-access] Unable to ${action} credentials`,
-    error,
+    error instanceof Error ? error.name : "UnknownError",
   );
 
   return {
@@ -69,24 +71,23 @@ export async function POST(
   try {
     const { id } = await context.params;
     const payload = (await request.json()) as {
+      kind?: unknown;
+      username?: unknown;
       accountEmail?: unknown;
       password?: unknown;
     };
 
-    if (
-      typeof payload.accountEmail !== "string" ||
-      typeof payload.password !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Account email and password are required." },
-        { status: 400 },
-      );
+    if (payload.kind === "player") {
+      if (typeof payload.username !== "string") {
+        return NextResponse.json({ error: "Enter a valid in-game username." }, { status: 400 });
+      }
+      await saveOrderCredentials(id, { kind: "player", username: payload.username });
+    } else {
+      if (typeof payload.accountEmail !== "string" || typeof payload.password !== "string") {
+        return NextResponse.json({ error: "Account email and password are required." }, { status: 400 });
+      }
+      await saveOrderCredentials(id, { accountEmail: payload.accountEmail, password: payload.password });
     }
-
-    await saveOrderCredentials(id, {
-      accountEmail: payload.accountEmail,
-      password: payload.password,
-    });
 
     return NextResponse.json({ saved: true });
   } catch (error) {

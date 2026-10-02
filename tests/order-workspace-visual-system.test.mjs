@@ -32,6 +32,7 @@ const hookReact = {
   useCallback: (fn) => fn,
 };
 function invoke(fn, props, name = fn.name) {
+  if (name === "EvidenceSection") name += props.type;
   const previous = active;
   const values = fixtures.get(name) ?? [];
   if (!fixtures.has(name)) fixtures.set(name, values);
@@ -93,7 +94,7 @@ function reset(state = operationsState()) {
   fixtures.set("OrderAccountDetails", [false, "", "", false, false, false, null]);
 }
 function order(overrides = {}) {
-  return { id: "order-1", orderNumber: "BP-123456", status: "in_progress", paymentStatus: "paid", currency: "USD", subtotal: 35, discount: 0, total: 35, customerNote: null, createdAt: now, updatedAt: now, items: [{ id: "item-1", gameName: "Rocket League", serviceName: "Rank Boost", serviceCategory: "rank", configuration: { currentRank: "gold-1", targetRank: "platinum-1", platform: "pc", expressDelivery: true }, priceBreakdown: [{ label: "Rank Boost", amount: 30 }, { label: "Express Delivery", amount: 5 }], subtotal: 35, discount: 0, total: 35, ruleSetVersion: "test" }], ...overrides };
+  return { id: "order-1", orderNumber: "BP-123456", status: "in_progress", paymentStatus: "paid", currency: "USD", subtotal: 35, discount: 0, total: 35, customerNote: null, createdAt: now, updatedAt: now, items: [{ id: "item-1", gameName: "Rocket League", serviceName: "Rank Boost", serviceCategory: "rank", configuration: { currentRank: "gold-1", targetRank: "platinum-1", platform: "pc", boostMethod: "account", expressDelivery: true }, priceBreakdown: [{ label: "Rank Boost", amount: 30 }, { label: "Express Delivery", amount: 5 }], subtotal: 35, discount: 0, total: 35, ruleSetVersion: "test" }], ...overrides };
 }
 const props = (record = order(), role = "customer") => ({ order: record, history: [], currentUserId: "customer-1", currentUserRole: role, initialMessages: [message], boosterAssignment: { displayName: "Test Booster", avatarUrl: null }, boosterPayout: 10.54 });
 const html = (Component, data) => renderToStaticMarkup(React.createElement(Component, data));
@@ -121,7 +122,7 @@ for (const status of ["pending_payment", "paid", "queued", "in_progress", "compl
     for (const Component of [Customer, Booster]) {
       const markup = html(Component, props(record)); const sidebar = aside(markup);
       assert.equal((sidebar.match(/>Order Details</g) ?? []).length, 1);
-      assert.match(sidebar, /BP-123456/); assert.match(sidebar, /Secure Account Access/);
+      assert.match(sidebar, /BP-123456/); assert.match(sidebar, /Account Details/);
       assert.ok(markup.indexOf("<main") < markup.indexOf("<aside"));
       assert.doesNotMatch(sidebar, /shadow-|drop-shadow|blur-|xl:sticky/);
       assert.equal((markup.match(/>Current Rank</g) ?? []).length, 1);
@@ -142,7 +143,7 @@ test("secure credential editing remains customer-only and payment/assignment-gat
   assert.doesNotMatch(html(Customer, noAssignment), /type="email"/);
   assert.match(html(Customer, { ...noAssignment, order: order() }), /type="email"/);
   fixtures.set("OrderAccountDetails", [true, "", "", false, false, false, null]);
-  assert.match(html(Account, { orderId: "order-1", canEdit: false }), /Reveal/);
+  assert.match(html(Account, { orderId: "order-1", canEdit: false }), /View details/);
   assert.doesNotMatch(html(Account, { orderId: "order-1", canEdit: false }), /type="password"/);
 });
 
@@ -155,7 +156,8 @@ for (const operationalState of ["accepted", "in_progress", "waiting_customer", "
     assert.equal(Boolean(button(rendered, "Deliver Order")), operationalState === "in_progress");
     assert.equal(Boolean(button(rendered, "Report Issue")), !["delivered", "issue", "completed"].includes(operationalState));
     if (operationalState === "in_progress") assert.equal(button(rendered, "Deliver Order").props.disabled, true);
-    assert.equal(button(rendered, "Save Validation").props.disabled, true);
+    if (["delivered", "completed"].includes(operationalState)) assert.equal(button(rendered, "Save Validation"), undefined);
+    else assert.equal(button(rendered, "Save Validation").props.disabled, true);
     assert.doesNotMatch(html(Operations, operationsProps), /Confirm Delivery/);
     seedOperations(operationsState({ operationalState, canManage: false }));
     rendered = tree(Operations, operationsProps); // Server permission overrides canManage prop.
@@ -166,9 +168,9 @@ for (const operationalState of ["accepted", "in_progress", "waiting_customer", "
     if (operationalState === "delivered") assert.equal(button(rendered, "Report a Problem").props.disabled, true);
     const markup = html(Operations, operationsProps);
     assert.equal((markup.match(/<h2[^>]*>User Integrity Validation<\/h2>/g) ?? []).length, 1);
-    assert.equal((markup.match(/>Start Order Screenshot</g) ?? []).length, 1);
+    assert.equal((markup.match(/>Order Start Screenshot</g) ?? []).length, 1);
     assert.equal((markup.match(/>Deliver Order Screenshot</g) ?? []).length, 1);
-    assert.ok((markup.match(/data-order-workspace-card=""/g) ?? []).length >= 5);
+    assert.ok((markup.match(/data-order-workspace-card=""/g) ?? []).length === 4);
   });
 }
 
@@ -284,4 +286,100 @@ test("mobile structure keeps chat first, intrinsic card widths, wrapping ranks a
     assert.match(markup, /break-words leading-tight/);
     assert.match(markup, /size-11 shrink-0/);
   }
+});
+
+
+test("compact sidebar has exactly five modules and no redundant status/access cards", () => {
+  reset();
+  for (const Component of [Customer, Booster]) {
+    const markup = aside(html(Component, props()));
+    assert.equal((markup.match(/data-order-workspace-card=""/g) ?? []).length, 5);
+    for (const title of ["Order Details", "User Integrity Validation", "Order Start Screenshot", "Deliver Order Screenshot", "Account Details"]) assert.equal((markup.match(new RegExp(`>${title}<`, "g")) ?? []).length, 1);
+    assert.doesNotMatch(markup, />Operational Status<|>Secure Account Access<|>Booster Controls<|>Review Delivery</);
+  }
+});
+test("Duo customer submits only username; Solo password remains masked after reveal", async () => {
+  reset();
+  const data = { orderId: "order-1", canEdit: true, mode: "player" };
+  fixtures.set("OrderAccountDetails", [false, "", "", false, false, false, null, "synthetic-player"]);
+  assert.doesNotMatch(html(Account, data), /type="email"|type="password"/);
+  const oldFetch = globalThis.fetch;
+  try {
+    let submitted;
+    globalThis.fetch = async (_url, init) => { submitted = JSON.parse(init.body); return Response.json({ saved: true }); };
+    await nodes(tree(Account, data)).find((node) => node.type === "form").props.onSubmit({ preventDefault() {} });
+    assert.deepEqual(submitted, { kind: "player", username: "synthetic-player" });
+    assert.doesNotMatch(html(Account, data), /<form/);
+    fixtures.set("OrderAccountDetails", [true, "synthetic@example.invalid", "synthetic-only", true, false, false, null, "", false]);
+    assert.match(html(Account, { ...data, mode: "account" }), /type="password"/);
+    const booster = html(Account, { ...data, mode: "account", canEdit: false });
+    assert.doesNotMatch(booster, /synthetic-only|<form/);
+    assert.match(booster, /Show password/);
+  } finally { globalThis.fetch = oldFetch; }
+});
+test("server permissions override client props, completed steps collapse and future evidence stays locked", () => {
+  reset(operationsState({ canManage: false, isCustomer: true }));
+  assert.doesNotMatch(html(Operations, operationsProps), /<input|<textarea/);
+  seedOperations(null, { 2: "Order access denied." });
+  assert.doesNotMatch(html(Operations, operationsProps), /<input|<textarea/);
+  reset(operationsState({ canManage: true, isCustomer: false }));
+  let markup = html(Operations, operationsProps);
+  assert.match(markup, /In-game username \/ Player ID/);
+  assert.doesNotMatch(markup, /Screenshot URL/);
+  reset(operationsState({ canManage: true, isCustomer: false, currentIntegrity: integrity }));
+  markup = html(Operations, operationsProps);
+  assert.match(markup, /Validated · recorded manually/);
+  assert.doesNotMatch(markup, /maxLength="160"/);
+  assert.equal((markup.match(/Screenshot URL/g) ?? []).length, 1);
+  reset(operationsState({ canManage: true, isCustomer: false, operationalState: "in_progress", currentIntegrity: integrity, startEvidence: evidence("start"), deliveryEvidence: evidence("delivery") }));
+  markup = html(Operations, operationsProps);
+  assert.doesNotMatch(markup, /Screenshot URL/);
+  assert.equal(button(tree(Operations, operationsProps), "Deliver Order").props.disabled, false);
+});
+test("non-account service omits Account Details and quantity services show snapshot fields without fake ranks", () => {
+  reset(); const record = order();
+  record.items[0].configuration = { games: 7, region: "europe" };
+  record.items[0].serviceName = "Unrated Games";
+  const markup = aside(html(Customer, props(record)));
+  assert.doesNotMatch(markup, /Account Details|Current Rank|Desired Rank/);
+  assert.match(markup, />Games<.*>7</s);
+  assert.match(markup, />Region<.*>Europe</s);
+  assert.equal((markup.match(/data-order-workspace-card=""/g) ?? []).length, 4);
+});
+
+
+test("saving evidence collapses the active form; a failed save keeps the URL and field error", async () => {
+  reset(operationsState({ canManage: true, isCustomer: false, currentIntegrity: integrity }));
+  fixtures.set("EvidenceSectionstart", ["https://example.com/start.png", false, false, null]);
+  const oldFetch = globalThis.fetch;
+  try {
+    let request;
+    globalThis.fetch = async (url, init) => { request = { url, body: JSON.parse(init.body) }; return Response.json(operationsState({ canManage: true, isCustomer: false, currentIntegrity: integrity, startEvidence: evidence("start") })); };
+    await button(tree(Operations, operationsProps), "Save Screenshot Link").props.onClick();
+    assert.deepEqual(request, { url: "/api/orders/order-1/evidence", body: { type: "start", url: "https://example.com/start.png" } });
+    assert.doesNotMatch(html(Operations, operationsProps), /Screenshot URL/);
+    reset(operationsState({ canManage: true, isCustomer: false, currentIntegrity: integrity }));
+    fixtures.set("EvidenceSectionstart", ["https://example.com/start.png", false, false, null]);
+    globalThis.fetch = async () => Response.json({ error: "Synthetic save failure" }, { status: 500 });
+    await button(tree(Operations, operationsProps), "Save Screenshot Link").props.onClick();
+    const rendered = tree(Operations, operationsProps);
+    assert.match(textOf(rendered), /Synthetic save failure/);
+    const field = nodes(rendered).find((node) => node.type === "input" && node.props.type === "url");
+    assert.equal(field.props.value, "https://example.com/start.png");
+    assert.equal(field.props["aria-describedby"], "evidence-start-error");
+  } finally { globalThis.fetch = oldFetch; }
+});
+test("delivery callback remains beside its evidence and uses the existing lifecycle transition", async () => {
+  reset(operationsState({ canManage: true, isCustomer: false, operationalState: "in_progress", currentIntegrity: integrity, startEvidence: evidence("start"), deliveryEvidence: evidence("delivery") }));
+  const oldFetch = globalThis.fetch;
+  try {
+    let sent;
+    globalThis.fetch = async (url, init) => { sent = { url, body: JSON.parse(init.body) }; return Response.json(operationsState({ operationalState: "delivered", canManage: true })); };
+    const rendered = tree(Operations, operationsProps);
+    const deliveryCard = nodes(rendered).find((node) => node.props["data-order-workspace-card"] !== undefined && textOf(node).includes("Deliver Order Screenshot"));
+    assert.ok(button(deliveryCard, "Deliver Order"));
+    await button(deliveryCard, "Deliver Order").props.onClick();
+    assert.deepEqual(sent, { url: "/api/orders/order-1/lifecycle", body: { action: "transition", nextState: "delivered" } });
+    assert.doesNotMatch(html(Operations, operationsProps), />Deliver Order</);
+  } finally { globalThis.fetch = oldFetch; }
 });
