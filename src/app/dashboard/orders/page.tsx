@@ -29,6 +29,7 @@ export default async function OrdersPage({
   const canAccessBooster = Boolean(boosterProfile);
   const boosterMode =
     canAccessBooster &&
+    query.mode !== "customer" &&
     (query.mode === "booster" || identity.profile?.role === "booster");
 
   if (boosterMode) {

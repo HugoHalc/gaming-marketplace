@@ -5,7 +5,7 @@ import { normalizedGameSlug } from "@/components/orders/game-order-presentation-
 export type BoardBucket = "available" | "active" | "completed";
 export type BoardOrder = {
   id: string; orderNumber: string; bucket: BoardBucket; payout: number;
-  gameName: string; gameSlug: string; serviceName: string;
+  gameName: string; gameSlug: string; serviceName: string; serviceCategory?: string;
   createdAt: string; assignedAt: string | null;
   configuration: Record<string, string | number | boolean>;
   extras: string[];
@@ -54,7 +54,7 @@ export function projectBoardOrders(entries: BoosterOrderCard[], bucket: BoardBuc
     }
     const configuration = Object.fromEntries(Object.entries(publicConfiguration).filter(([key, value]) => publicFields.has(key) && ((typeof value === "string" && value !== "") || typeof value === "boolean" || (typeof value === "number" && Number.isFinite(value)))));
     const extras = Object.entries(extraLabels).filter(([key]) => item.configuration[key] === true).map(([, label]) => label);
-    return [{ id: order.id, orderNumber: order.orderNumber, bucket, payout, gameName: item.gameName, gameSlug, serviceName: item.serviceName, createdAt: order.createdAt, assignedAt, configuration, extras }];
+    return [{ id: order.id, orderNumber: order.orderNumber, bucket, payout, gameName: item.gameName, gameSlug, serviceName: item.serviceName, serviceCategory: item.serviceCategory, createdAt: order.createdAt, assignedAt, configuration, extras }];
   });
 }
 export function filterBoardOrders(orders: BoardOrder[], bucket: BoardBucket, game: string, query: string) {
@@ -68,4 +68,22 @@ export function mergeConfirmedClaims(snapshot: BoardOrder[], confirmed: BoardOrd
     if (!byId.has(order.id) || byId.get(order.id)?.bucket === "available") byId.set(order.id, order);
   }
   return [...byId.values()];
+}
+
+/** Prefer existing compact public numbers; shorten long public numbers without changing IDs. */
+export function shortBoardOrderIds(orders: BoardOrder[]) {
+  const unique = [...new Map(orders.map((order) => [order.id, order])).values()];
+  const source = (order: BoardOrder) => (order.orderNumber || order.id).replace(/^VB-/, "");
+  const labels = new Map(unique.map((order) => [order.id, order.orderNumber && order.orderNumber.length <= 8 ? order.orderNumber : `#${source(order).slice(-6)}`]));
+  for (let width = 7; width <= Math.max(6, ...unique.map((order) => source(order).length)); width++) {
+    const counts = new Map<string, number>();
+    for (const label of labels.values()) counts.set(label, (counts.get(label) ?? 0) + 1);
+    const collisions = unique.filter((order) => (counts.get(labels.get(order.id)!) ?? 0) > 1);
+    if (!collisions.length) break;
+    for (const order of collisions) labels.set(order.id, `#${source(order).slice(-width)}`);
+  }
+  const counts = new Map<string, number>();
+  for (const label of labels.values()) counts.set(label, (counts.get(label) ?? 0) + 1);
+  for (const order of unique) if ((counts.get(labels.get(order.id)!) ?? 0) > 1) labels.set(order.id, `#${order.id}`);
+  return labels;
 }

@@ -14,6 +14,9 @@ const contexts = new Map();
 const cache = new Map();
 let active = null;
 let refreshes = 0;
+let clientDate = true;
+let pathname = "/dashboard/orders";
+let mode = "booster";
 const router = { refresh() { refreshes++; } };
 const hooks = {
   ...React,
@@ -31,6 +34,7 @@ const hooks = {
     const old = context.effects[index];
     if (!old || deps.some((dep, i) => dep !== old.deps[i])) context.effects[index] = { fn, deps, cleanup: old?.cleanup, pending: true };
   },
+  useSyncExternalStore: (_subscribe, snapshot, serverSnapshot) => clientDate ? snapshot() : serverSnapshot(),
   useMemo: (fn) => fn(), useCallback: (fn) => fn,
   useTransition: () => [false, (fn) => fn()],
 };
@@ -49,7 +53,7 @@ function load(file) {
   const mod = { exports: {} }; cache.set(filename, mod);
   const localRequire = (name) => {
     if (name === "react") return hooks;
-    if (name === "next/navigation") return { useRouter: () => router };
+    if (name === "next/navigation") return { useRouter: () => router, usePathname: () => pathname, useSearchParams: () => new URLSearchParams(mode ? `mode=${mode}` : "") };
     if (name === "next/image") return { __esModule: true, default: ({ src, alt, width, height, className }) => React.createElement("img", { src, alt, width, height, className }) };
     if (name === "next/link") return { __esModule: true, default: ({ children, ...props }) => React.createElement("a", props, children) };
     if (name.startsWith("@/")) return load(path.join(root, "src", name.slice(2)));
@@ -78,7 +82,7 @@ function nodes(node, result = []) {
 }
 const textOf = (node) => typeof node === "string" || typeof node === "number" ? String(node) : Array.isArray(node) ? node.map(textOf).join("") : node?.props ? textOf(node.props.children) : "";
 const render = (Component, props) => expand(React.createElement(Component, props));
-const button = (tree, label) => nodes(tree).find((node) => node.type === "button" && textOf(node) === label);
+const button = (tree, label) => nodes(tree).find((node) => node.type === "button" && (textOf(node) === label || node.props["aria-label"] === label));
 function keyedTree(node, key = "root") {
   if (node == null || typeof node !== "object") return node;
   if (Array.isArray(node)) return node.map((child, index) => keyedTree(child, String(index)));
@@ -173,9 +177,11 @@ test("chime is short, user unlocked, non-overlapping and cleaned up", async () =
 test("board initial load is silent; new eligible order sounds once after Enable", async () => browser(async ({ stored }) => {
   let tree = render(Hub, hubProps([order()])); await effects();
   assert.equal(Audio.instances.length, 0); assert.doesNotMatch(html(tree), /New order available/);
-  await button(tree, "Enable order sounds").props.onClick();
+  button(tree, "Enable order sounds").props.onClick();
+  tree = render(Hub, hubProps([order()]));
+  await button(tree, "On").props.onClick();
   tree = render(Hub, hubProps([order()])); await effects();
-  assert.ok(button(tree, "Order sounds: On"));
+  assert.ok(button(tree, "Order sounds on"));
   const rows = [order("fresh"), order()]; render(Hub, hubProps(rows)); await effects();
   tree = render(Hub, hubProps(rows)); assert.match(html(tree), /New order available/);
   assert.equal(Audio.instances[0].oscillators.length, 2);
@@ -187,9 +193,10 @@ test("board initial load is silent; new eligible order sounds once after Enable"
 test("mute still shows new order toast without sound; saved preference respects autoplay", async () => browser(async ({ stored }) => {
   stored.set("boostingpedia:order-board:sounds:v1:booster-one", '{"version":1,"enabled":true}');
   let tree = render(Hub, hubProps([])); await effects(); tree = render(Hub, hubProps([]));
-  assert.equal(Audio.instances.length, 0); assert.match(html(tree), /Activate sounds for this browser session/);
-  await button(tree, "Enable order sounds").props.onClick(); tree = render(Hub, hubProps([]));
-  button(tree, "Order sounds: On").props.onClick();
+  assert.equal(Audio.instances.length, 0); assert.doesNotMatch(html(tree), /Activate for this browser session/);
+  button(tree, "Enable order sounds").props.onClick(); tree = render(Hub, hubProps([]));
+  await button(tree, "On").props.onClick(); tree = render(Hub, hubProps([]));
+  button(tree, "Off").props.onClick();
   const rows = [order("muted")]; render(Hub, hubProps(rows)); await effects(); tree = render(Hub, hubProps(rows));
   assert.match(html(tree), /New order available/); assert.equal(Audio.instances[0].oscillators.length, 0);
   assert.match(stored.get("boostingpedia:order-board:sounds:v1:booster-one"), /"enabled":false/);
@@ -204,7 +211,7 @@ test("polling skips hidden/pending/claiming states and cleans up listeners", asy
   document.visibilityState = "visible"; listeners.get("visibilitychange")(); assert.equal(refreshes, 1);
   const context = contexts.get("BoosterOrdersHub:"); context.states[6] = 1;
   tree = render(Hub, hubProps([order()])); await effects();
-  [...intervals.values()][0].fn(); assert.equal(refreshes, 1); assert.equal(button(tree, "Refresh").props.disabled, true);
+  [...intervals.values()][0].fn(); assert.equal(refreshes, 1); assert.equal(button(tree, "Refresh orders").props.disabled, true);
   cleanup(); assert.equal(intervals.size, 0); assert.equal(listeners.size, 0);
 }));
 
@@ -258,9 +265,9 @@ test("cards share responsive structure, canonical flat ranks, real payout and wo
   assert.equal(Card.elapsedOrderTime("2026-10-02T05:00:00Z", now), "1h ago");
   assert.equal(Card.elapsedOrderTime("bad", now), null);
   reset(); const grid = html(render(Hub, hubProps([order()])));
-  assert.match(grid, /grid-cols-1 md:grid-cols-2 2xl:grid-cols-3/); assert.match(grid, /xl:hidden/);
+  assert.match(grid, /grid-cols-1 md:grid-cols-2 min-\[1440px\]:grid-cols-3/); assert.match(grid, /min-\[1600px\]:hidden/);
   reset(); const list = html(render(Hub, hubProps([order()], { initialLayout: "list" })));
-  assert.doesNotMatch(list, /2xl:grid-cols-3/);
+  assert.doesNotMatch(list, /min-\[1440px\]:grid-cols-3/);
   assert.equal((grid.match(/data-order-board-card=/g) ?? []).length, (list.match(/data-order-board-card=/g) ?? []).length);
 });
 
@@ -272,7 +279,7 @@ test("default Available and specific empty states preserve accessible controls",
   reset(); assert.match(html(render(Hub, hubProps([], { initialSearch: "no result" }))), /No search results/);
   reset(); const tree = render(Hub, hubProps([order()]));
   assert.equal(button(tree, "Available 1").props["aria-pressed"], true);
-  assert.equal(button(tree, "Grid").props["aria-pressed"], true);
+  assert.equal(button(tree, "Grid view").props["aria-pressed"], true);
 });
 
 test("existing active-profile eligibility and admin atomic operations remain authoritative", () => {
@@ -333,4 +340,99 @@ test("claim conflict stays visible after removal and successful claim moves to I
     button(tree, "In Progress 1").props.onClick(); tree = render(Hub, hubProps([order()]));
     assert.match(html(tree), /Open Workspace/); assert.match(html(tree), /\$9\.87/);
   } finally { globalThis.fetch = previous; }
+});
+
+test("short IDs reuse compact public numbers and expand colliding suffixes consistently", () => {
+  const rows = [{ ...order("uuid-one"), orderNumber: "VB-25EE2C00D2" }, { ...order("uuid-two"), orderNumber: "VB-ABCD2C00D2" }, { ...order("uuid-three"), orderNumber: "#12345" }];
+  const labels = model.shortBoardOrderIds(rows);
+  assert.equal(new Set(labels.values()).size, rows.length);
+  assert.equal(labels.get("uuid-three"), "#12345");
+  assert.ok(labels.get("uuid-one").length > 7);
+  assert.deepEqual([...model.shortBoardOrderIds([...rows].reverse())].sort(), [...labels].sort());
+  const single = model.shortBoardOrderIds([rows[0]]); assert.equal(single.get("uuid-one"), "#2C00D2");
+  reset(); const markup = html(render(Card.BoosterOrderCardView, { order: rows[0], shortId: single.get(rows[0].id), now, isNew: false, onSeen() {}, onClaimed() {}, onConflict() {}, onPending() {} }));
+  assert.match(markup, /#2C00D2/); assert.match(markup, /title="VB-25EE2C00D2 · uuid-one"/); assert.match(markup, /aria-label="Order VB-25EE2C00D2"/);
+});
+
+test("toolbar has compact icon controls and no permanent polling or sound setup copy", () => {
+  reset(); const tree = render(Hub, hubProps([order()])), markup = html(tree);
+  assert.match(markup, /data-order-board-toolbar/); assert.match(markup, /xl:flex-nowrap/);
+  assert.doesNotMatch(markup, /Auto-refresh|15 seconds|preference is saved|Test sound/);
+  assert.ok(button(tree, "Refresh orders")); assert.ok(button(tree, "Grid view")); assert.ok(button(tree, "List view"));
+  assert.ok(button(tree, "Enable order sounds"));
+  assert.match(markup, /placeholder="Search orders"/); assert.match(markup, /sr-only/);
+  const link = nodes(tree).find((node) => node.type === "a" && textOf(node) === "Switch to Customer Orders");
+  assert.equal(link.props.href, "/dashboard/orders?mode=customer");
+});
+
+test("sound popover preserves Test/On/Off and Escape returns focus without autoplay", async () => browser(async ({ listeners }) => {
+  let tree = render(Hub, hubProps([])); await effects();
+  assert.equal(Audio.instances.length, 0);
+  button(tree, "Enable order sounds").props.onClick(); tree = render(Hub, hubProps([])); await effects();
+  assert.equal(button(tree, "Enable order sounds").props["aria-expanded"], true);
+  await button(tree, "Test sound").props.onClick(); tree = render(Hub, hubProps([]));
+  assert.equal(Audio.instances[0].oscillators.length, 2); assert.equal(button(tree, "On").props["aria-pressed"], false);
+  await button(tree, "On").props.onClick(); tree = render(Hub, hubProps([])); assert.ok(button(tree, "Order sounds on"));
+  button(tree, "Off").props.onClick(); tree = render(Hub, hubProps([])); assert.ok(button(tree, "Order sounds muted"));
+  let focused = 0; button(tree, "Order sounds muted").props.ref.current = { focus() { focused++; } };
+  listeners.get("keydown")({ key: "Escape" }); tree = render(Hub, hubProps([]));
+  assert.equal(focused, 1); assert.equal(button(tree, "Order sounds muted").props["aria-expanded"], false);
+  assert.doesNotMatch(html(tree), /Test sound/);
+}));
+
+test("dates hydrate consistently and then use browser timezone without a hardcoded timezone", () => {
+  const DateView = load(path.join(root, "src/components/booster/order-local-date")).OrderLocalDate;
+  const timestamp = "2026-10-02T03:21:00Z";
+  clientDate = false; reset(); assert.equal(textOf(render(DateView, { timestamp })), "2026-10-02");
+  const previous = process.env.TZ;
+  try {
+    clientDate = true; process.env.TZ = "America/Mexico_City";
+    const local = textOf(render(DateView, { timestamp }));
+    assert.equal(local, new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp)));
+    assert.doesNotMatch(local, /UTC/);
+    process.env.TZ = "Asia/Tokyo"; assert.notEqual(textOf(render(DateView, { timestamp })), local);
+    assert.equal(render(DateView, { timestamp: "invalid" }), null);
+  } finally { if (previous === undefined) delete process.env.TZ; else process.env.TZ = previous; clientDate = true; }
+});
+
+test("shell labels match booster/customer view while menus and permissions remain available", () => {
+  const Shell = load(path.join(root, "src/components/dashboard/dashboard-shell")).DashboardShell;
+  const props = { children: "BOARD", displayName: "Tester", email: "test@example.invalid", avatarUrl: null, initials: "T", unreadNotifications: 0, canAccessBooster: true, canAccessAdmin: true, defaultBoosterContext: false };
+  for (const scenario of [{ mode: "booster", defaultRole: false, active: true, booster: true }, { mode: "", defaultRole: true, active: true, booster: true }, { mode: "customer", defaultRole: true, active: true, booster: false }, { mode: "booster", defaultRole: false, active: false, booster: false }]) {
+    reset(); pathname = "/dashboard/orders"; mode = scenario.mode;
+    const tree = render(Shell, { ...props, canAccessBooster: scenario.active, defaultBoosterContext: scenario.defaultRole });
+    const header = nodes(tree).find((node) => node.type === "header");
+    assert.equal(textOf(header).includes("Booster Account"), scenario.booster);
+    assert.equal(textOf(header).includes("Customer Account"), !scenario.booster);
+    const links = nodes(tree).filter((node) => node.type === "a");
+    assert.ok(links.some((node) => node.props.href === "/admin"));
+    assert.equal(links.some((node) => node.props.href === "/booster"), scenario.active);
+  }
+  reset(); pathname = "/dashboard/settings"; mode = "booster";
+  assert.match(textOf(render(Shell, props)), /Customer Account/);
+  pathname = "/dashboard/orders"; mode = "booster";
+});
+
+test("explicit customer switch selects customer render without widening booster or admin access", async () => {
+  const filename = path.join(root, "src/app/dashboard/orders/page.tsx");
+  const source = ts.transpileModule(readFileSync(filename, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
+  for (const scenario of [{ role: "booster", active: true, mode: "customer", board: false }, { role: "booster", active: true, mode: "", board: true }, { role: "admin", active: true, mode: "booster", board: true }, { role: "admin", active: false, mode: "booster", board: false }, { role: "customer", active: false, mode: "booster", board: false }]) {
+    let boardCalls = 0, customerCalls = 0;
+    const Board = () => null, Customer = () => null;
+    const mod = { exports: {} }, query = { select() { return query; }, eq() { return query; }, async maybeSingle() { return { data: scenario.active ? { user_id: "viewer" } : null }; } };
+    const mockedRequire = (name) => {
+      if (name === "react/jsx-runtime") return require(name);
+      if (name === "next/link") return { default: () => null };
+      if (name.endsWith("auth/server/auth")) return { requireUser: async () => ({ id: "viewer", profile: { role: scenario.role } }) };
+      if (name.endsWith("order-repository")) return { listCurrentUserOrders: async () => { customerCalls++; return []; } };
+      if (name.endsWith("supabase/server")) return { createSecretServerClient: () => ({ from: () => query }) };
+      if (name.endsWith("server/order-board")) return { getBoosterOrderBoard: async () => { boardCalls++; return { viewerId: "viewer", orders: [], generatedAt: now }; } };
+      if (name.endsWith("/booster-orders-hub")) return { BoosterOrdersHub: Board };
+      if (name.endsWith("/dashboard-orders-hub")) return { DashboardOrdersHub: Customer };
+      throw new Error(name);
+    };
+    vm.runInThisContext(`(function(require,module,exports){${source}\n})`, { filename })(mockedRequire, mod, mod.exports);
+    await mod.exports.default({ searchParams: Promise.resolve({ mode: scenario.mode }) });
+    assert.equal(boardCalls, Number(scenario.board)); assert.equal(customerCalls, Number(!scenario.board));
+  }
 });

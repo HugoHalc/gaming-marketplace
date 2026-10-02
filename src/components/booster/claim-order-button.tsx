@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 
-export function ClaimOrderButton({ orderId, onClaimed, onConflict, onPending }: {
+export function ClaimOrderButton({ orderId, onClaimed, onConflict, onPending, compact = false }: {
   orderId: string;
+  compact?: boolean;
   onClaimed?: (orderId: string, payout: number) => void;
   onConflict?: (orderId: string) => void;
   onPending?: (pending: boolean) => void;
@@ -31,7 +32,7 @@ export function ClaimOrderButton({ orderId, onClaimed, onConflict, onPending }: 
     finally { lock.current = false; setPending(false); onPending?.(false); }
   }
   return <form action={`/api/booster/orders/${orderId}/claim`} method="post" onSubmit={accept} className="min-w-0">
-    <button type="submit" disabled={pending} aria-describedby={error ? `claim-error-${orderId}` : undefined} className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#39E56F] px-3 py-2 text-xs font-semibold text-[#050807] transition-colors hover:bg-[#55ED82] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39E56F] disabled:opacity-50">{pending ? "Accepting…" : "Accept Order"}</button>
+    <button type="submit" disabled={pending} aria-describedby={error ? `claim-error-${orderId}` : undefined} className={`inline-flex min-h-11 items-center justify-center rounded-lg text-xs font-semibold text-[#050807] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39E56F] disabled:opacity-50 ${compact ? "w-auto" : "w-full bg-[#39E56F] px-3 py-2 hover:bg-[#55ED82]"}`}><span className={compact ? "inline-flex min-h-10 items-center justify-center rounded-lg bg-[#39E56F] px-3 transition-colors hover:bg-[#55ED82]" : undefined}>{pending ? "Accepting…" : "Accept Order"}</span></button>
     {error ? <p id={`claim-error-${orderId}`} role="alert" className="mt-2 break-words text-xs text-rose-300">{error}</p> : null}
   </form>;
 }

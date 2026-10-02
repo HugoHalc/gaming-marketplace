@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Bell,
   ChevronRight,
@@ -23,6 +23,7 @@ interface DashboardShellProps {
   avatarUrl: string | null;
   initials: string;
   unreadNotifications: number;
+  defaultBoosterContext?: boolean;
   canAccessBooster: boolean;
   canAccessAdmin: boolean;
 }
@@ -116,8 +117,10 @@ function SidebarContent({
   canAccessBooster,
   canAccessAdmin,
   onNavigate,
+  accountLabel = "Customer Account",
 }: Omit<DashboardShellProps, "children" | "unreadNotifications"> & {
   pathname: string;
+  accountLabel?: string;
   onNavigate?: () => void;
 }) {
   return (
@@ -135,13 +138,13 @@ function SidebarContent({
         </Link>
 
         <p className="font-gaming-label mt-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#667069]">
-          Customer Account
+          {accountLabel}
         </p>
       </div>
 
       <nav
         className="min-h-0 flex-1 overflow-y-auto px-3"
-        aria-label="Customer navigation"
+        aria-label="Account navigation"
       >
         <div className="space-y-1">
           <NavigationItem
@@ -260,8 +263,12 @@ export function DashboardShell({
   unreadNotifications,
   canAccessBooster,
   canAccessAdmin,
+  defaultBoosterContext = false,
 }: DashboardShellProps) {
   const pathname = usePathname();
+  const query = useSearchParams();
+  const boosterBoard = pathname === "/dashboard/orders" && canAccessBooster && query.get("mode") !== "customer" && (query.get("mode") === "booster" || defaultBoosterContext);
+  const accountLabel = boosterBoard ? "Booster Account" : "Customer Account";
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -291,6 +298,7 @@ export function DashboardShell({
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[228px] border-r border-white/[0.06] bg-[#070A08] lg:block">
         <SidebarContent
           pathname={pathname}
+          accountLabel={accountLabel}
           displayName={displayName}
           email={email}
           avatarUrl={avatarUrl}
@@ -314,7 +322,7 @@ export function DashboardShell({
 
             <div className="min-w-0">
               <p className="font-gaming-label text-[9px] font-semibold uppercase tracking-[0.15em] text-[#667069]">
-                Customer Account
+                {accountLabel}
               </p>
               <p className="truncate text-sm font-semibold text-[#F4F7F5]">
                 {pageLabel(pathname)}
@@ -377,6 +385,7 @@ export function DashboardShell({
 
           <SidebarContent
             pathname={pathname}
+            accountLabel={accountLabel}
             displayName={displayName}
             email={email}
             avatarUrl={avatarUrl}

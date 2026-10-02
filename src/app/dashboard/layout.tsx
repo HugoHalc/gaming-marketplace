@@ -59,6 +59,7 @@ export default async function DashboardLayout({
         avatarUrl={identity.profile?.avatar_url ?? null}
         initials={getAvatarInitials(identity)}
         unreadNotifications={unreadNotifications}
+        defaultBoosterContext={identity.profile?.role === "booster"}
         canAccessBooster={Boolean(boosterProfile)}
         canAccessAdmin={identity.profile?.role === "admin"}
       >
