@@ -3,12 +3,9 @@ import { requireUser } from "@/features/auth/server/auth";
 import { listCurrentUserOrders } from "@/features/orders/server/order-repository";
 import { createSecretServerClient } from "@/lib/supabase/server";
 import { DashboardOrdersHub } from "@/components/dashboard/dashboard-orders-hub";
+import { getBoosterOrderBoard } from "@/features/booster/server/order-board";
 import { BoosterOrdersHub } from "@/components/dashboard/booster-orders-hub";
-import {
-  listActiveBoosterOrders,
-  listAvailableBoosterOrders,
-  listCompletedBoosterOrders,
-} from "@/features/booster/server/booster-orders";
+
 
 export const metadata = { title: "Orders | BoostingPedia" };
 export const dynamic = "force-dynamic";
@@ -35,19 +32,8 @@ export default async function OrdersPage({
     (query.mode === "booster" || identity.profile?.role === "booster");
 
   if (boosterMode) {
-    const [available, active, completed] = await Promise.all([
-      listAvailableBoosterOrders(),
-      listActiveBoosterOrders(),
-      listCompletedBoosterOrders(),
-    ]);
-
-    return (
-      <BoosterOrdersHub
-        available={available}
-        active={active}
-        completed={completed}
-      />
-    );
+    const board = await getBoosterOrderBoard();
+    return <BoosterOrdersHub key={board.viewerId} {...board} />;
   }
 
   const orders = await listCurrentUserOrders();

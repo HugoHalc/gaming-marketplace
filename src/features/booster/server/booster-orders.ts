@@ -115,7 +115,7 @@ export async function listAvailableBoosterOrders(): Promise<BoosterOrderCard[]> 
     .select(ORDER_SELECT)
     .eq("payment_status", "paid")
     .in("status", ["paid", "queued"])
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(100);
 
   if (error) {

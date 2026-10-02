@@ -2,410 +2,156 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Gamepad2, Grid2X2, List, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { ClaimOrderButton } from "@/components/booster/claim-order-button";
-import type { OrderRecord } from "@/features/orders/types/orders";
-import {
-  GameRankValue,
-  gameCardAsset,
-  resolveGameRank,
-} from "@/components/orders/game-order-presentation";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { BoosterOrderCardView } from "@/components/booster/booster-order-card";
+import { boardGames, filterBoardOrders, gameLogos, mergeConfirmedClaims, type BoardBucket, type BoardOrder } from "@/features/booster/presentation/order-board";
+import { canRefreshBoard, createOrderChime, OrderAlertTracker, readSeenIds } from "@/features/booster/presentation/order-alerts";
 
-type BoosterOrderEntry = {
-  order: OrderRecord;
-  payout: number;
-  payoutRateBps: number;
-  assignedAt: string | null;
-};
+const control = "min-h-11 rounded-lg border border-white/[0.08] px-3 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39E56F]";
+const activeControl = "border-[#39E56F]/30 bg-[#39E56F]/[0.07] text-[#82F5A4]";
+const bucketLabels = { available: "Available", active: "In Progress", completed: "Completed" };
 
-type Bucket = "placed" | "active" | "completed";
-type FilterKey = "all" | Bucket;
-type ViewMode = "grid" | "list";
-type MarketplaceEntry = BoosterOrderEntry & { bucket: Bucket };
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(value);
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function formatLabel(value: string) {
-  return value
-    .replace(/([A-Z])/g, " $1")
-    .replace(/[_-]/g, " ")
-    .replace(/^./, (letter) => letter.toUpperCase());
-}
-
-function statusLabel(bucket: Bucket) {
-  if (bucket === "placed") return "Ready for Assignment";
-  if (bucket === "active") return "In Progress";
-  return "Completed";
-}
-
-function statusClass(bucket: Bucket) {
-  if (bucket === "placed") {
-    return "border-[#39E56F]/20 bg-[#39E56F]/[0.07] text-[#82F5A4]";
-  }
-  if (bucket === "active") {
-    return "border-sky-300/15 bg-sky-300/[0.06] text-sky-200";
-  }
-  return "border-lime-300/15 bg-lime-300/[0.06] text-lime-200";
-}
-
-export function BoosterOrdersHub({
-  available,
-  active,
-  completed,
-}: {
-  available: BoosterOrderEntry[];
-  active: BoosterOrderEntry[];
-  completed: BoosterOrderEntry[];
+export function BoosterOrdersHub({ orders, viewerId, generatedAt, initialBucket = "available", initialGame = "all", initialSearch = "", initialLayout = "grid" }: {
+  orders: BoardOrder[]; viewerId: string; generatedAt: number;
+  initialBucket?: BoardBucket; initialGame?: string; initialSearch?: string; initialLayout?: "grid" | "list";
 }) {
-  const [filter, setFilter] = useState<FilterKey>("all");
-  const [game, setGame] = useState("all");
-  const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const router = useRouter();
+  const [bucket, setBucket] = useState(initialBucket);
+  const [game, setGame] = useState(initialGame);
+  const [search, setSearch] = useState(initialSearch);
+  const [layout, setLayout] = useState(initialLayout);
+  const [confirmed, setConfirmed] = useState<BoardOrder[]>([]);
+  const [unavailable, setUnavailable] = useState<string[]>([]);
+  const [claiming, setClaiming] = useState(0);
+  const [notice, setNotice] = useState<BoardOrder[] | null>(null);
+  const [newIds, setNewIds] = useState<string[]>([]);
+  const [preferred, setPreferred] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [claimNotice, setClaimNotice] = useState<string | null>(null);
+  const [refreshing, startRefresh] = useTransition();
+  const tracker = useRef<OrderAlertTracker | null>(null);
+  const chime = useRef<ReturnType<typeof createOrderChime> | null>(null);
+  const soundsOn = useRef(false);
+  const latest = useRef(orders);
+  const seenKey = `boostingpedia:order-board:seen:v1:${viewerId}`;
+  const soundKey = `boostingpedia:order-board:sounds:v1:${viewerId}`;
 
-  const entries = useMemo<MarketplaceEntry[]>(
-    () =>
-      [
-        ...available.map((entry) => ({ ...entry, bucket: "placed" as const })),
-        ...active.map((entry) => ({ ...entry, bucket: "active" as const })),
-        ...completed.map((entry) => ({ ...entry, bucket: "completed" as const })),
-      ].sort(
-        (a, b) =>
-          new Date(b.order.createdAt).getTime() - new Date(a.order.createdAt).getTime(),
-      ),
-    [available, active, completed],
-  );
-
-  const visibleOrders = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-
-    return entries.filter((entry) => {
-      if (filter !== "all" && entry.bucket !== filter) return false;
-
-      const item = entry.order.items[0];
-      const normalizedGameName = item?.gameName
-        ?.trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-
-      if (game !== "all" && normalizedGameName !== game) return false;
-
-      if (!needle) return true;
-
-      return [entry.order.orderNumber, item?.gameName, item?.serviceName]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(needle);
+  useEffect(() => { latest.current = orders; }, [orders]);
+  useEffect(() => {
+    let mounted = true;
+    void Promise.resolve().then(() => {
+      if (!mounted) return;
+      try {
+        const saved = JSON.parse(localStorage.getItem(soundKey) ?? "null");
+        if (saved?.version === 1) setPreferred(saved.enabled === true);
+      } catch { /* Audio remains off when browser storage is unavailable. */ }
     });
-  }, [entries, filter, game, search]);
+    return () => { mounted = false; void chime.current?.close().catch(() => {}); };
+  }, [soundKey]);
+  useEffect(() => {
+    if (!tracker.current) tracker.current = new OrderAlertTracker();
+    try { tracker.current.merge(readSeenIds(localStorage.getItem(seenKey))); } catch { /* Session dedupe still works. */ }
+    const fresh = tracker.current.observe(orders);
+    try { localStorage.setItem(seenKey, JSON.stringify({ version: 1, ids: tracker.current.ids() })); } catch { /* Private browsing may disable storage. */ }
+    if (fresh.length) {
+      setNotice(fresh); setNewIds((previous) => [...new Set([...previous, ...fresh.map((order) => order.id)])]);
+      if (soundsOn.current) chime.current?.play();
+    }
+  }, [orders, seenKey]);
+  useEffect(() => {
+    const mergeSeen = (event: StorageEvent) => { if (event.key === seenKey) tracker.current?.merge(readSeenIds(event.newValue)); };
+    window.addEventListener("storage", mergeSeen);
+    return () => window.removeEventListener("storage", mergeSeen);
+  }, [seenKey]);
+  useEffect(() => {
+    const refresh = () => {
+      if (canRefreshBoard(document.visibilityState === "visible", refreshing, claiming > 0)) startRefresh(() => router.refresh());
+    };
+    const timer = window.setInterval(refresh, 15000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", refresh); };
+  }, [claiming, refreshing, router]);
+  useEffect(() => {
+    if (!newIds.length) return;
+    const timer = window.setTimeout(() => setNewIds([]), 20000);
+    return () => window.clearTimeout(timer);
+  }, [newIds]);
 
-  const counts = {
-    all: entries.length,
-    placed: available.length,
-    active: active.length,
-    completed: completed.length,
-  };
-
-  return (
-    <div className="mx-auto w-full max-w-[1520px] px-4 py-7 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-gaming-label text-[9px] uppercase tracking-[0.14em] text-[#667069]">
-            Booster Orders
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-[-0.045em] text-[#F4F7F5]">
-            Orders
-          </h1>
-          <p className="mt-2 text-[10px] text-[#A0AAA4]">
-            Accept available work and manage your active services.
-          </p>
+  const merged = useMemo(() => mergeConfirmedClaims(orders, confirmed).filter((order) => order.bucket !== "available" || !unavailable.includes(order.id)), [orders, confirmed, unavailable]);
+  const visible = useMemo(() => filterBoardOrders(merged, bucket, game, search), [merged, bucket, game, search]);
+  const counts = { available: merged.filter((order) => order.bucket === "available").length, active: merged.filter((order) => order.bucket === "active").length, completed: merged.filter((order) => order.bucket === "completed").length };
+  const onSeen = useCallback((id: string) => setNewIds((previous) => previous.filter((known) => known !== id)), []);
+  const onPending = useCallback((pending: boolean) => setClaiming((count) => Math.max(0, count + (pending ? 1 : -1))), []);
+  const onClaimed = useCallback((id: string, payout: number) => {
+    setClaimNotice(null);
+    const order = latest.current.find((entry) => entry.id === id);
+    if (order) setConfirmed((previous) => [...previous.filter((entry) => entry.id !== id), { ...order, bucket: "active", payout, assignedAt: null }]);
+    startRefresh(() => router.refresh());
+  }, [router]);
+  const onConflict = useCallback((id: string) => {
+    setClaimNotice("This order is no longer available. The board is being refreshed.");
+    setUnavailable((previous) => [...new Set([...previous, id])]);
+    startRefresh(() => router.refresh());
+  }, [router]);
+  async function unlockAudio() {
+    setAudioError(null);
+    try {
+      if (!chime.current) {
+        const Audio = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Audio) throw new Error("Order sounds are unavailable in this browser.");
+        chime.current = createOrderChime(new Audio());
+      }
+      await chime.current.unlock(); setUnlocked(true); return true;
+    } catch { setAudioError("Order sounds could not be enabled. Try again after interacting with this page."); return false; }
+  }
+  async function enableSounds() {
+    if (!await unlockAudio()) return;
+    soundsOn.current = true; setPreferred(true);
+    try { localStorage.setItem(soundKey, JSON.stringify({ version: 1, enabled: true })); } catch { /* Current-session preference remains usable. */ }
+  }
+  function muteSounds() {
+    soundsOn.current = false; setPreferred(false);
+    try { localStorage.setItem(soundKey, JSON.stringify({ version: 1, enabled: false })); } catch { /* Current-session preference remains usable. */ }
+  }
+  async function testSound() { if (await unlockAudio()) chime.current?.play(); }
+  function showNewOrder() {
+    const id = notice?.[0]?.id;
+    setBucket("available"); setGame("all"); setSearch("");
+    if (id) window.requestAnimationFrame(() => document.getElementById(`board-order-${id}`)?.focus());
+  }
+  const noResults = search.trim() || game !== "all";
+  return <main className="mx-auto w-full max-w-[1520px] px-3 py-5 text-[#F4F7F5] sm:px-6 lg:px-8">
+    <header className="flex flex-wrap items-start justify-between gap-3"><div><h1 className="text-3xl font-bold tracking-tight">Orders</h1><p className="mt-1 text-xs text-[#A4AEA8]">Accept eligible work and manage your assigned orders.</p></div><Link href="/dashboard/orders?mode=customer" className={control}>Customer Orders</Link></header>
+    <div className="mt-5 grid min-w-0 gap-4 xl:grid-cols-[168px_minmax(0,1fr)]">
+      <aside className="min-w-0" aria-label="Filter orders by game">
+        <label className="block text-xs xl:hidden">Game<select value={game} onChange={(event) => setGame(event.target.value)} className="mt-1 h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#0B110E] px-3 text-sm"><option value="all">All Games</option>{boardGames.map((entry) => <option key={entry.slug} value={entry.slug}>{entry.name}</option>)}</select></label>
+        <div className="hidden space-y-1 rounded-xl border border-white/[0.08] bg-[#0B110E] p-2 xl:block">
+          <button type="button" aria-pressed={game === "all"} onClick={() => setGame("all")} className={`${control} w-full text-left ${game === "all" ? activeControl : "text-[#A4AEA8]"}`}>All Games</button>
+          {boardGames.map((entry) => <button key={entry.slug} type="button" aria-pressed={game === entry.slug} onClick={() => setGame(entry.slug)} className={`${control} flex w-full items-center gap-2 text-left ${game === entry.slug ? activeControl : "text-[#A4AEA8]"}`}>{gameLogos[entry.slug] ? <Image src={gameLogos[entry.slug]} alt="" width={24} height={20} sizes="24px" className="h-5 w-6 shrink-0 object-contain" /> : null}{entry.name}</button>)}
         </div>
-
-        <Link
-          href="/dashboard/orders"
-          className="inline-flex h-9 items-center justify-center rounded-lg border border-white/[0.08] bg-[#0B100D] px-3 text-[9px] font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
-        >
-          Customer Orders
-        </Link>
-      </div>
-
-      <div className="mt-7 grid gap-6 xl:grid-cols-[178px_minmax(0,1fr)]">
-        <aside className="xl:sticky xl:top-24 xl:self-start">
-          <div className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0B100D]">
-            <div className="relative aspect-[1.7/1] overflow-hidden border-b border-white/[0.05]">
-              <Image
-                src="/game-cards/rocket-league.webp"
-                alt=""
-                fill
-                sizes="178px"
-                className="object-cover opacity-70"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B100D] via-transparent to-transparent" />
-            </div>
-
-            <div className="p-2">
-              <button
-                type="button"
-                onClick={() => setGame("all")}
-                className={`flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[10px] font-semibold transition-colors ${
-                  game === "all"
-                    ? "bg-[#39E56F]/[0.07] text-[#82F5A4]"
-                    : "text-[#A0AAA4] hover:bg-white/[0.03]"
-                }`}
-              >
-                <Gamepad2 className="size-3.5" />
-                All Games
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setGame("rocket-league")}
-                className={`mt-1 flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-left text-[10px] font-semibold transition-colors ${
-                  game === "rocket-league"
-                    ? "bg-[#39E56F]/[0.07] text-[#82F5A4]"
-                    : "text-[#A0AAA4] hover:bg-white/[0.03]"
-                }`}
-              >
-                <span className="relative size-4 overflow-hidden rounded">
-                  <Image
-                    src="/game-cards/rocket-league.webp"
-                    alt=""
-                    fill
-                    sizes="16px"
-                    className="object-cover"
-                  />
-                </span>
-                Rocket League
-              </button>
-            </div>
+      </aside>
+      <section className="min-w-0" aria-label="Booster order board">
+        <div className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0B110E] p-3">
+          <div className="flex flex-wrap gap-2" aria-label="Order status">{(Object.keys(bucketLabels) as BoardBucket[]).map((key) => <button key={key} type="button" aria-pressed={bucket === key} onClick={() => setBucket(key)} className={`${control} ${bucket === key ? activeControl : "text-[#A4AEA8]"}`}>{bucketLabels[key]} <span className="ml-1 text-[#A4AEA8]">{counts[key]}</span></button>)}</div>
+          <label className="block text-xs text-[#A4AEA8]">Search orders<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Order ID, game, service, platform or region" className="mt-1 h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#050807] px-3 text-sm text-white focus-visible:outline-2 focus-visible:outline-[#39E56F]" /></label>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap gap-1" aria-label="Order layout">{(["grid", "list"] as const).map((view) => <button key={view} type="button" aria-pressed={layout === view} onClick={() => setLayout(view)} className={`${control} ${layout === view ? activeControl : "text-[#A4AEA8]"}`}>{view === "grid" ? "Grid" : "List"}</button>)}</div>
+            <button type="button" aria-pressed={preferred && unlocked} onClick={preferred && unlocked ? muteSounds : enableSounds} className={control}>{preferred && unlocked ? "Order sounds: On" : "Enable order sounds"}</button>
+            <button type="button" onClick={testSound} className={control}>Test sound</button>
+            <button type="button" disabled={refreshing || claiming > 0} onClick={() => startRefresh(() => router.refresh())} className={control + " disabled:opacity-40"}>{refreshing ? "Refreshing…" : "Refresh"}</button>
           </div>
-        </aside>
-
-        <section className="min-w-0">
-          <div className="flex flex-col gap-3 border-b border-white/[0.06] pb-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-wrap gap-1.5">
-              {(
-                [
-                  ["all", "All"],
-                  ["placed", "Placed"],
-                  ["active", "In Progress"],
-                  ["completed", "Completed"],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setFilter(key)}
-                  className={`h-9 rounded-lg border px-3 text-[9px] font-semibold transition-colors ${
-                    filter === key
-                      ? "border-[#39E56F]/20 bg-[#39E56F]/[0.07] text-[#82F5A4]"
-                      : "border-white/[0.07] bg-[#0B100D] text-[#A0AAA4] hover:text-[#F4F7F5]"
-                  }`}
-                >
-                  {label}
-                  <span className="ml-1.5 opacity-55">{counts[key]}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="relative min-w-0 flex-1 lg:w-[220px] lg:flex-none">
-                <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#667069]" />
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search orders"
-                  className="h-9 w-full rounded-lg border border-white/[0.07] bg-[#0B100D] pl-9 pr-3 text-[10px] text-[#F4F7F5] outline-none placeholder:text-[#667069] focus:border-white/[0.14]"
-                />
-              </label>
-
-              <div className="flex rounded-lg border border-white/[0.07] bg-[#0B100D] p-1">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("grid")}
-                  className={`grid size-7 place-items-center rounded-md ${
-                    viewMode === "grid"
-                      ? "bg-white/[0.06] text-[#F4F7F5]"
-                      : "text-[#667069]"
-                  }`}
-                  aria-label="Grid view"
-                >
-                  <Grid2X2 className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("list")}
-                  className={`grid size-7 place-items-center rounded-md ${
-                    viewMode === "list"
-                      ? "bg-white/[0.06] text-[#F4F7F5]"
-                      : "text-[#667069]"
-                  }`}
-                  aria-label="List view"
-                >
-                  <List className="size-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={
-              viewMode === "grid"
-                ? "mt-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-3"
-                : "mt-5 grid grid-cols-1 gap-3"
-            }
-          >
-            {visibleOrders.map(({ order, payout, bucket }) => {
-              const item = order.items[0];
-              const config = item?.configuration ?? {};
-              const currentRank =
-                typeof config.currentRank !== "undefined"
-                  ? config.currentRank
-                  : config.previousRank;
-              const targetRank = config.targetRank;
-              const currentResolved = resolveGameRank(item?.gameName, currentRank);
-              const targetResolved = resolveGameRank(item?.gameName, targetRank);
-              const platform =
-                typeof config.platform === "string"
-                  ? formatLabel(config.platform)
-                  : null;
-
-              return (
-                <article
-                  key={`${bucket}-${order.id}`}
-                  className="overflow-hidden rounded-xl border border-white/[0.07] bg-[#0B100D]"
-                >
-                  <div className="flex min-h-14 items-center justify-between gap-3 border-b border-white/[0.05] px-4 py-3">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <div className="relative size-7 shrink-0 overflow-hidden rounded-md border border-white/[0.07]">
-                        <Image
-                          src={gameCardAsset(item?.gameName)}
-                          alt=""
-                          fill
-                          sizes="28px"
-                          className="object-cover"
-                        />
-                      </div>
-                      <span className="font-gaming-value truncate text-[10px] font-bold text-[#F4F7F5]">
-                        {order.orderNumber}
-                      </span>
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-2.5">
-                      <span className="font-gaming-value text-sm font-bold text-[#F4F7F5]">
-                        {formatMoney(payout)}
-                      </span>
-                      {bucket === "placed" ? (
-                        <ClaimOrderButton orderId={order.id} compact />
-                      ) : (
-                        <span
-                          className={`rounded-lg border px-2.5 py-1.5 text-[8px] font-semibold ${statusClass(bucket)}`}
-                        >
-                          {statusLabel(bucket)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="font-gaming-label text-[8px] uppercase tracking-[0.12em] text-[#667069]">
-                          {item?.gameName ?? "Rocket League"}
-                        </p>
-                        <h2 className="mt-1 truncate text-[14px] font-semibold text-[#F4F7F5]">
-                          {item?.serviceName ?? "Gaming Service"}
-                        </h2>
-                      </div>
-
-                      {bucket === "placed" ? (
-                        <span
-                          className={`shrink-0 rounded-lg border px-2 py-1 text-[8px] font-semibold ${statusClass(bucket)}`}
-                        >
-                          {statusLabel(bucket)}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    {currentResolved || targetResolved ? (
-                      <div className="mt-4 flex min-h-[64px] items-center gap-3 border-y border-white/[0.05] py-3">
-                        {currentResolved ? (
-                          <div className="min-w-0 flex-1">
-                            <GameRankValue gameName={item?.gameName} value={currentRank} label="Current" />
-                          </div>
-                        ) : null}
-                        {currentResolved && targetResolved ? (
-                          <ArrowRight className="size-3.5 shrink-0 text-white/20" />
-                        ) : null}
-                        {targetResolved ? (
-                          <div className="min-w-0 flex-1">
-                            <GameRankValue gameName={item?.gameName} value={targetRank} label="Target" />
-                          </div>
-                        ) : null}
-                      </div>
-                    ) : (
-                      <div className="mt-4 border-y border-white/[0.05] py-3">
-                        <p className="text-[8px] text-[#667069]">Platform</p>
-                        <p className="mt-1 text-[10px] font-semibold text-[#F4F7F5]">
-                          {platform ?? "Not specified"}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="mt-4 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-[8px] text-[#667069]">Placed</p>
-                        <p className="mt-1 text-[9px] font-medium text-[#A0AAA4]">
-                          {formatDate(order.createdAt)}
-                        </p>
-                      </div>
-
-                      {bucket === "placed" ? (
-                        <span className="text-[9px] font-semibold text-[#82F5A4]">
-                          Available to accept
-                        </span>
-                      ) : (
-                        <Link
-                          href={`/dashboard/orders/${order.id}?mode=booster`}
-                          className="inline-flex items-center text-[9px] font-semibold text-[#82F5A4]"
-                        >
-                          Open Order
-                          <ArrowRight className="ml-1.5 size-3" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          {!visibleOrders.length ? (
-            <div className="mt-5 flex min-h-[260px] items-center justify-center border-y border-white/[0.05] text-center">
-              <div>
-                <p className="text-sm font-semibold text-[#F4F7F5]">No orders found</p>
-                <p className="mt-1.5 text-[10px] text-[#667069]">
-                  Try another status, game or search term.
-                </p>
-              </div>
-            </div>
-          ) : null}
-        </section>
-      </div>
+          <p className="text-[11px] text-[#A4AEA8]">Auto-refresh every 15 seconds while this tab is visible. Counts reflect loaded orders.</p>
+          {preferred && !unlocked ? <p className="text-xs text-[#A4AEA8]">Your sound preference is saved. Activate sounds for this browser session.</p> : null}
+          {audioError ? <p role="status" className="text-xs text-rose-300">{audioError}</p> : null}
+        </div>
+        {claimNotice ? <p role="alert" className="mt-3 rounded-lg border border-white/[0.08] bg-[#0B110E] p-3 text-xs text-[#A4AEA8]">{claimNotice}</p> : null}
+        <div aria-live="polite" aria-atomic="true">{notice ? <div key={notice.map((order) => order.id).join("-")} className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#39E56F]/25 bg-[#0B110E] p-3">
+          <div className="min-w-0 [overflow-wrap:anywhere]"><p className="text-sm font-semibold text-[#82F5A4]">New order available</p><p className="mt-1 break-words text-xs text-[#A4AEA8]">{notice[0].orderNumber} · {notice[0].gameName} · {notice[0].serviceName}{notice.length > 1 ? ` · ${notice.length - 1} more` : ""}</p></div><div className="flex gap-2"><button type="button" onClick={showNewOrder} className={control}>Show order</button><button type="button" onClick={() => setNotice(null)} className={control}>Dismiss</button></div>
+        </div> : null}</div>
+        {visible.length ? <div className={`mt-4 grid min-w-0 items-start gap-3 ${layout === "grid" ? "grid-cols-1 md:grid-cols-2 2xl:grid-cols-3" : "grid-cols-1"}`} aria-busy={refreshing}>{visible.map((order) => <BoosterOrderCardView key={order.id} order={order} now={Math.floor(generatedAt / 60000) * 60000} isNew={newIds.includes(order.id)} onSeen={onSeen} onClaimed={onClaimed} onConflict={onConflict} onPending={onPending} />)}</div> : <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#0B110E] p-6 text-center"><h2 className="text-sm font-semibold">{noResults ? "No search results" : bucket === "available" ? "No available orders" : bucket === "active" ? "No in-progress orders" : "No completed orders"}</h2><p className="mt-2 text-xs text-[#A4AEA8]">{noResults ? "Try another game or search term." : bucket === "available" ? "New eligible orders will appear here." : bucket === "active" ? "Accepted orders will appear here." : "Your completed orders will appear here."}</p></div>}
+      </section>
     </div>
-  );
+  </main>;
 }
