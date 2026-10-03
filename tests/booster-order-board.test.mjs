@@ -424,7 +424,8 @@ test("explicit customer switch selects customer render without widening booster 
       if (name === "react/jsx-runtime") return require(name);
       if (name === "next/link") return { default: () => null };
       if (name.endsWith("auth/server/auth")) return { requireUser: async () => ({ id: "viewer", profile: { role: scenario.role } }) };
-      if (name.endsWith("order-repository")) return { listCurrentUserOrders: async () => { customerCalls++; return []; } };
+      if (name.endsWith("/customer-orders")) return { customerBoardTimestamp: () => now, listDashboardCustomerOrders: async (userId) => { assert.equal(userId, "viewer"); customerCalls++; return []; } };
+      if (name.endsWith("presentation/customer-order-board")) return load(path.join(root, "src/features/orders/presentation/customer-order-board"));
       if (name.endsWith("supabase/server")) return { createSecretServerClient: () => ({ from: () => query }) };
       if (name.endsWith("server/order-board")) return { getBoosterOrderBoard: async () => { boardCalls++; return { viewerId: "viewer", orders: [], generatedAt: now }; } };
       if (name.endsWith("/booster-orders-hub")) return { BoosterOrdersHub: Board };
@@ -434,5 +435,119 @@ test("explicit customer switch selects customer render without widening booster 
     vm.runInThisContext(`(function(require,module,exports){${source}\n})`, { filename })(mockedRequire, mod, mod.exports);
     await mod.exports.default({ searchParams: Promise.resolve({ mode: scenario.mode }) });
     assert.equal(boardCalls, Number(scenario.board)); assert.equal(customerCalls, Number(!scenario.board));
+  }
+});
+
+const customerModel = load(path.join(root, "src/features/orders/presentation/customer-order-board"));
+const CustomerHub = load(path.join(root, "src/components/dashboard/dashboard-orders-hub")).DashboardOrdersHub;
+const CustomerCard = load(path.join(root, "src/components/dashboard/customer-order-card")).CustomerOrderCard;
+function customerOrder(id = "customer-one", overrides = {}) {
+  return customerModel.projectCustomerOrder({ ...entry(id).order, currency: "USD", total: 99.99, ...overrides }, overrides.operationalState ?? null);
+}
+test("customer projection sends only public purchase fields and keeps unpaid, cancelled and refunded orders", () => {
+  for (const status of ["pending_payment", "paid", "queued", "in_progress", "completed", "cancelled", "refunded"]) {
+    const order = customerOrder("own", { status, payout: 500, assignedBooster: "PRIVATE ASSIGNMENT" });
+    assert.equal(order.status, status); assert.equal(order.total, 99.99);
+    assert.doesNotMatch(JSON.stringify(order), /PRIVATE|private@|payout|customerNote|evidence|password|username|assignedBooster/);
+    assert.equal(order.items[0].configuration.currentRank, "gold-1");
+    assert.equal(order.items[0].configuration.rankInsurance, true);
+  }
+});
+test("customer filters preserve status rules and support every approved game and search", () => {
+  const orders = [customerOrder("placed", { status: "paid" }), customerOrder("active", { status: "in_progress" }), customerOrder("delivered", { status: "in_progress", operationalState: "delivered" }), customerOrder("done", { status: "completed" })];
+  for (const [filter, expected] of [["all", 4], ["placed", 1], ["active", 1], ["delivered", 1], ["completed", 1]]) assert.equal(customerModel.filterCustomerOrders(orders, filter, "all", "").length, expected);
+  for (const game of model.boardGames) {
+    const order = customerOrder("game"); order.items[0].gameName = game.name;
+    assert.equal(customerModel.filterCustomerOrders([order], "all", game.slug, "").length, 1);
+  }
+  assert.equal(customerModel.filterCustomerOrders(orders, "all", "all", "ACTIVE")[0].id, "active");
+  assert.equal(customerModel.filterCustomerOrders(orders, "all", "valorant", "").length, 0);
+});
+test("customer board controls filter, search, switch layout and keep booster switch permission gated", () => {
+  reset(); const props = { orders: [customerOrder("placed"), customerOrder("active", { status: "in_progress" })] };
+  let tree = render(CustomerHub, props);
+  const cardCount = (value) => nodes(value).filter((node) => node.props?.["data-customer-order-card"] !== undefined).length;
+  assert.equal(cardCount(tree), 2);
+  button(tree, "In Progress 1").props.onClick(); tree = render(CustomerHub, props); assert.equal(cardCount(tree), 1);
+  button(tree, "All 2").props.onClick(); tree = render(CustomerHub, props);
+  nodes(tree).find((node) => node.type === "input").props.onChange({ target: { value: "placed" } });
+  tree = render(CustomerHub, props); assert.equal(cardCount(tree), 1); assert.match(html(tree), /orders\/placed/);
+  nodes(tree).find((node) => node.type === "input").props.onChange({ target: { value: "" } });
+  tree = render(CustomerHub, props); button(tree, "List view").props.onClick(); tree = render(CustomerHub, props);
+  assert.equal(cardCount(tree), 2); assert.doesNotMatch(html(tree), /xl:grid-cols-3/);
+  button(tree, "Grid view").props.onClick(); tree = render(CustomerHub, props); assert.match(html(tree), /grid-cols-1 md:grid-cols-2 xl:grid-cols-3/);
+  nodes(tree).find((node) => node.type === "select").props.onChange({ target: { value: "valorant" } });
+  tree = render(CustomerHub, props); assert.equal(cardCount(tree), 0); assert.match(textOf(tree), /No orders found/);
+  assert.doesNotMatch(html(tree), /Accept Order|Booster payout|Available|sound|mode=booster/);
+  reset(); assert.match(html(render(CustomerHub, { ...props, canAccessBooster: true })), /mode=booster/);
+});
+test("customer cards preserve ranks, totals, all items, local dates and accessible workspace links", () => {
+  reset(); const order = customerOrder(); order.items.push({ gameName: "Valorant", serviceName: "Placement Matches", configuration: { matches: 5, platform: "pc", boostMethod: "solo" } });
+  const markup = html(render(CustomerCard, { order, shortId: "#ABC123", now }));
+  assert.match(markup, /99\.99/); assert.match(markup, /#ABC123/); assert.match(markup, /ranks\/rocket-league/);
+  assert.match(markup, /Current Rank/); assert.match(markup, /Desired Rank/); assert.match(markup, /Rank Insurance/);
+  assert.match(markup, /Placement Matches/); assert.match(markup, /Matches/); assert.match(markup, /Solo/);
+  assert.match(markup, /Open Order/); assert.match(markup, /dashboard\/orders\/customer-one/); assert.match(markup, /min-h-11/);
+  assert.match(markup, /<time dateTime=/); assert.match(markup, /1h ago/);
+  assert.doesNotMatch(markup, /Accept Order|payout|PRIVATE|private@|drop-shadow|shadow-|glow/);
+});
+function mockedServerModule(relative, mockedRequire) {
+  const filename = path.join(root, relative), mod = { exports: {} };
+  const compiled = ts.transpileModule(readFileSync(filename, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
+  vm.runInThisContext(`(function(require,module,exports){${compiled}\n})`, { filename })(mockedRequire, mod, mod.exports);
+  return mod.exports;
+}
+test("customer view scopes administrative read results to authenticated ownership and fails closed", async () => {
+  for (const error of [null, new Error("read failed")]) {
+    let calls = 0; const query = { select(value) { assert.equal(value, "id"); return query; }, async eq(key, value) { assert.equal(key, "user_id"); assert.equal(value, "signed-in-viewer"); return { data: [{ id: "own" }], error }; } };
+    const mod = mockedServerModule("src/app/dashboard/customer-orders.ts", (name) => {
+      if (name.endsWith("supabase/auth")) return { createAuthServerClient: async () => ({ from: (table) => { assert.equal(table, "orders"); return query; } }) };
+      if (name.endsWith("order-repository")) return { listCurrentUserOrders: async () => { calls++; return [{ id: "own" }, { id: "another-customer" }]; } };
+      throw new Error(name);
+    });
+    if (error) { await assert.rejects(mod.listDashboardCustomerOrders("signed-in-viewer"), /Unable to load orders/); assert.equal(calls, 0); }
+    else assert.deepEqual(await mod.listDashboardCustomerOrders("signed-in-viewer"), [{ id: "own" }]);
+  }
+});
+test("customer overview retains greeting, counts, active order and recent activity without booster data", async () => {
+  reset(); const order = { ...entry("own").order, currency: "USD" };
+  const query = { select() { return query; }, async in(key, ids) { assert.equal(key, "order_id"); assert.deepEqual(ids, ["own"]); return { data: [{ order_id: "own", state: "accepted" }] }; } };
+  const mod = mockedServerModule("src/app/dashboard/page.tsx", (name) => {
+    if (name.endsWith("auth/server/auth")) return { requireUser: async () => ({ id: "viewer", email: "viewer@example.invalid", profile: { gamer_tag: "Customer" } }) };
+    if (name.endsWith("/customer-orders")) return { customerBoardTimestamp: () => now, listDashboardCustomerOrders: async (id) => { assert.equal(id, "viewer"); return [order]; } };
+    if (name.endsWith("supabase/server")) return { createSecretServerClient: () => ({ from: () => query }) };
+    if (name.startsWith("@/")) return load(path.join(root, "src", name.slice(2)));
+    if (name === "next/link") return { default: ({ children, ...props }) => React.createElement("a", props, children) };
+    return require(name);
+  });
+  const markup = html(expand(await mod.default()));
+  for (const label of ["Welcome back, Customer", "Active Orders", "Completed Orders", "Total Orders", "Active Order", "Recent Activity", "Open Order"]) assert.ok(markup.includes(label), label);
+  assert.doesNotMatch(markup, /Accept Order|payout|Available|PRIVATE|private@/);
+});
+
+test("customer-only account keeps the shared shell without internal access links", () => {
+  reset(); pathname = "/dashboard"; mode = "";
+  const Shell = load(path.join(root, "src/components/dashboard/dashboard-shell")).DashboardShell;
+  const markup = html(render(Shell, { children: "CUSTOMER CONTENT", displayName: "Customer", email: "customer@example.invalid", avatarUrl: null, initials: "C", unreadNotifications: 0, canAccessBooster: false, canAccessAdmin: false }));
+  for (const label of ["Customer Account", "Dashboard", "Orders", "Account Settings", "Log out", "CUSTOMER CONTENT"]) assert.ok(markup.includes(label), label);
+  assert.doesNotMatch(markup, /href="\/admin|href="\/booster/);
+  pathname = "/dashboard/orders"; mode = "booster";
+});
+test("customer cards retain public cross-game quantities and canonical rank assets", () => {
+  for (const [gameName, config, expected] of [
+    ["Rocket League", { currentRank: "gold-1", targetRank: "platinum-1", rewards: 3 }, /ranks\/rocket-league/],
+    ["Valorant", { currentRank: "gold-1", targetRank: "platinum-1", matches: 5 }, /ranks\/valorant/],
+    ["Marvel Rivals", { currentRank: "gold", currentDivision: 1, targetRank: "platinum", targetDivision: 1, hero: "Hero", currentProficiency: 1, targetProficiency: 2 }, /Current proficiency/],
+    ["Overwatch 2", { driveRank: "gold", currentDrive: 500, desiredDrive: 1000 }, /Desired drive/],
+    ["Dota 2", { currentMmr: 2000, targetMmr: 3000, netWins: 3 }, /Desired MMR/],
+    ["League of Legends", { currentRank: "gold", targetRank: "platinum", currentDivision: 1, targetDivision: 1, masteryPoints: 20 }, /ranks\/league-of-legends/],
+    ["Rainbow Six Siege", { currentRank: "gold", targetRank: "platinum", tournamentTier: "gold", wins: 2 }, /Tournament tier/],
+  ]) {
+    reset(); const record = { ...entry("cross-game").order, currency: "USD", items: [{ gameName, serviceName: "Service", configuration: { ...config, platform: "pc", boostMethod: "solo" } }] };
+    const snapshot = JSON.stringify(record);
+    const projected = customerModel.projectCustomerOrder(record, null);
+    const markup = html(render(CustomerCard, { order: projected }));
+    assert.match(markup, expected, gameName); assert.match(markup, /Platform/); assert.match(markup, /Solo/);
+    assert.equal(JSON.stringify(record), snapshot); assert.doesNotMatch(markup, /NaN|PRIVATE|shadow-|drop-shadow|glow/);
   }
 });

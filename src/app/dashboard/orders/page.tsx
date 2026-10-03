@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { requireUser } from "@/features/auth/server/auth";
-import { listCurrentUserOrders } from "@/features/orders/server/order-repository";
+import { listDashboardCustomerOrders, customerBoardTimestamp } from "../customer-orders";
+import { projectCustomerOrder } from "@/features/orders/presentation/customer-order-board";
 import { createSecretServerClient } from "@/lib/supabase/server";
 import { DashboardOrdersHub } from "@/components/dashboard/dashboard-orders-hub";
 import { getBoosterOrderBoard } from "@/features/booster/server/order-board";
@@ -37,7 +37,7 @@ export default async function OrdersPage({
     return <BoosterOrdersHub key={board.viewerId} {...board} />;
   }
 
-  const orders = await listCurrentUserOrders();
+  const orders = await listDashboardCustomerOrders(identity.id);
   const orderIds = orders.map((order) => order.id);
 
   const { data: operationalRows } = orderIds.length
@@ -57,25 +57,7 @@ export default async function OrdersPage({
     ]),
   );
 
-  const dashboardOrders = orders.map((order) => ({
-    ...order,
-    operationalState: operationalByOrder.get(order.id)?.state ?? null,
-    autoCompleteAt: operationalByOrder.get(order.id)?.autoCompleteAt ?? null,
-  }));
+  const dashboardOrders = orders.map((order) => projectCustomerOrder(order, operationalByOrder.get(order.id)?.state ?? null));
 
-  return (
-    <>
-      {canAccessBooster ? (
-        <div className="mx-auto flex w-full max-w-[1520px] justify-end px-4 pt-5 sm:px-6 lg:px-8">
-          <Link
-            href="/dashboard/orders?mode=booster"
-            className="inline-flex h-9 items-center rounded-lg border border-[#39E56F]/20 bg-[#39E56F]/[0.06] px-3 text-[9px] font-semibold text-[#82F5A4] transition-colors hover:bg-[#39E56F]/[0.10]"
-          >
-            Booster Orders
-          </Link>
-        </div>
-      ) : null}
-      <DashboardOrdersHub orders={dashboardOrders} />
-    </>
-  );
+  return <DashboardOrdersHub orders={dashboardOrders} canAccessBooster={canAccessBooster} generatedAt={customerBoardTimestamp()} />;
 }

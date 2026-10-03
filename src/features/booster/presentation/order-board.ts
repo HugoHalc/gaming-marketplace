@@ -71,9 +71,9 @@ export function mergeConfirmedClaims(snapshot: BoardOrder[], confirmed: BoardOrd
 }
 
 /** Prefer existing compact public numbers; shorten long public numbers without changing IDs. */
-export function shortBoardOrderIds(orders: BoardOrder[]) {
+export function shortBoardOrderIds(orders: Pick<BoardOrder, "id" | "orderNumber">[]) {
   const unique = [...new Map(orders.map((order) => [order.id, order])).values()];
-  const source = (order: BoardOrder) => (order.orderNumber || order.id).replace(/^VB-/, "");
+  const source = (order: Pick<BoardOrder, "id" | "orderNumber">) => (order.orderNumber || order.id).replace(/^VB-/, "");
   const labels = new Map(unique.map((order) => [order.id, order.orderNumber && order.orderNumber.length <= 8 ? order.orderNumber : `#${source(order).slice(-6)}`]));
   for (let width = 7; width <= Math.max(6, ...unique.map((order) => source(order).length)); width++) {
     const counts = new Map<string, number>();

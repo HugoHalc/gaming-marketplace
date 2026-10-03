@@ -10,9 +10,8 @@ import { BoosterOrderCardView } from "@/components/booster/booster-order-card";
 import { boardGames, shortBoardOrderIds, filterBoardOrders, gameLogos, mergeConfirmedClaims, type BoardBucket, type BoardOrder } from "@/features/booster/presentation/order-board";
 import { canRefreshBoard, createOrderChime, OrderAlertTracker, readSeenIds } from "@/features/booster/presentation/order-alerts";
 
-const control = "min-h-11 shrink-0 rounded-lg px-3 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#39E56F]";
-const iconControl = "grid size-11 shrink-0 place-items-center rounded-lg text-[#A4AEA8] hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:outline-[#39E56F]";
-const activeControl = "border-[#39E56F]/30 bg-[#39E56F]/[0.07] text-[#82F5A4]";
+import { OrderBoardToolbar, orderBoardPageClass, orderBoardGridClass, orderBoardControl as control, orderBoardIconControl as iconControl, orderBoardActiveControl as activeControl } from "@/components/orders/order-board-primitives";
+
 const bucketLabels = { available: "Available", active: "In Progress", completed: "Completed" };
 
 export function BoosterOrdersHub({ orders, viewerId, generatedAt, initialBucket = "available", initialGame = "all", initialSearch = "", initialLayout = "grid" }: {
@@ -126,7 +125,7 @@ export function BoosterOrdersHub({ orders, viewerId, generatedAt, initialBucket 
     if (id) window.requestAnimationFrame(() => document.getElementById(`board-order-${id}`)?.focus());
   }
   const noResults = search.trim() || game !== "all";
-  return <main className="mx-auto w-full max-w-[1520px] px-3 py-4 text-[#F4F7F5] sm:px-6 lg:px-8">
+  return <main className={orderBoardPageClass}>
     <header className="flex min-h-11 flex-wrap items-center justify-between gap-x-3"><h1 className="text-[28px] font-bold tracking-tight">Orders</h1><Link href="/dashboard/orders?mode=customer" className="inline-flex min-h-11 items-center text-xs font-medium text-[#A4AEA8] hover:text-white focus-visible:outline-2 focus-visible:outline-[#39E56F]">Switch to Customer Orders</Link></header>
     <div className="mt-3 grid min-w-0 gap-3 min-[1600px]:grid-cols-[148px_minmax(0,1fr)]">
       <aside className="hidden min-w-0 min-[1600px]:block" aria-label="Filter orders by game">
@@ -136,7 +135,7 @@ export function BoosterOrdersHub({ orders, viewerId, generatedAt, initialBucket 
         </div>
       </aside>
       <section className="min-w-0" aria-label="Booster order board">
-        <div data-order-board-toolbar="" className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded-lg border border-white/[0.06] bg-[#0B110E] p-1 xl:flex-nowrap">
+        <OrderBoardToolbar data-order-board-toolbar="">
           <div className="flex max-w-full shrink-0 gap-0.5 overflow-x-auto" aria-label="Order status">{(Object.keys(bucketLabels) as BoardBucket[]).map((key) => <button key={key} type="button" aria-pressed={bucket === key} onClick={() => setBucket(key)} className={`${control} ${bucket === key ? activeControl : "text-[#A4AEA8]"}`}>{bucketLabels[key]} <span className="ml-1 text-[11px] font-normal text-[#A4AEA8]">{counts[key]}</span></button>)}</div>
           <div className="flex min-w-0 w-full flex-wrap items-center gap-1 xl:w-auto xl:flex-nowrap">
             <label className="w-full sm:w-44 min-[1600px]:hidden"><span className="sr-only">Game</span><select value={game} onChange={(event) => setGame(event.target.value)} className="h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#0B110E] px-2 text-xs focus-visible:outline-2 focus-visible:outline-[#39E56F]"><option value="all">All Games</option>{boardGames.map((entry) => <option key={entry.slug} value={entry.slug}>{entry.name}</option>)}</select></label>
@@ -145,12 +144,12 @@ export function BoosterOrdersHub({ orders, viewerId, generatedAt, initialBucket 
             <button type="button" aria-label="Refresh orders" title="Refresh orders" disabled={refreshing || claiming > 0} onClick={() => startRefresh(() => router.refresh())} className={iconControl + " disabled:opacity-40"}><RefreshCw aria-hidden="true" className={`size-4 ${refreshing ? "animate-spin motion-reduce:animate-none" : ""}`} /></button>
             <div className="flex rounded-lg border border-white/[0.06]" aria-label="Order layout">{(["grid", "list"] as const).map((view) => { const Icon = view === "grid" ? LayoutGrid : List; return <button key={view} type="button" aria-label={view === "grid" ? "Grid view" : "List view"} title={view === "grid" ? "Grid view" : "List view"} aria-pressed={layout === view} onClick={() => setLayout(view)} className={`${iconControl} ${layout === view ? activeControl : ""}`}><Icon aria-hidden="true" className="size-4" /></button>; })}</div>
           </div>
-        </div>
+        </OrderBoardToolbar>
         {claimNotice ? <p role="alert" className="mt-3 rounded-lg border border-white/[0.08] bg-[#0B110E] p-3 text-xs text-[#A4AEA8]">{claimNotice}</p> : null}
         <div aria-live="polite" aria-atomic="true">{notice ? <div key={notice.map((order) => order.id).join("-")} className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#39E56F]/25 bg-[#0B110E] p-3">
           <div className="min-w-0 [overflow-wrap:anywhere]"><p className="text-sm font-semibold text-[#82F5A4]">New order available</p><p className="mt-1 break-words text-xs text-[#A4AEA8]">{notice[0].orderNumber} · {notice[0].gameName} · {notice[0].serviceName}{notice.length > 1 ? ` · ${notice.length - 1} more` : ""}</p></div><div className="flex gap-2"><button type="button" onClick={showNewOrder} className={control}>Show order</button><button type="button" onClick={() => setNotice(null)} className={control}>Dismiss</button></div>
         </div> : null}</div>
-        {visible.length ? <div className={`mt-3 grid min-w-0 items-start gap-3 ${layout === "grid" ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"}`} aria-busy={refreshing}>{visible.map((order) => <BoosterOrderCardView key={order.id} order={order} shortId={shortIds.get(order.id)} now={Math.floor(generatedAt / 60000) * 60000} isNew={newIds.includes(order.id)} onSeen={onSeen} onClaimed={onClaimed} onConflict={onConflict} onPending={onPending} />)}</div> : <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#0B110E] p-6 text-center"><h2 className="text-sm font-semibold">{noResults ? "No search results" : bucket === "available" ? "No available orders" : bucket === "active" ? "No in-progress orders" : "No completed orders"}</h2><p className="mt-2 text-xs text-[#A4AEA8]">{noResults ? "Try another game or search term." : bucket === "available" ? "New eligible orders will appear here." : bucket === "active" ? "Accepted orders will appear here." : "Your completed orders will appear here."}</p></div>}
+        {visible.length ? <div className={orderBoardGridClass(layout)} aria-busy={refreshing}>{visible.map((order) => <BoosterOrderCardView key={order.id} order={order} shortId={shortIds.get(order.id)} now={Math.floor(generatedAt / 60000) * 60000} isNew={newIds.includes(order.id)} onSeen={onSeen} onClaimed={onClaimed} onConflict={onConflict} onPending={onPending} />)}</div> : <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#0B110E] p-6 text-center"><h2 className="text-sm font-semibold">{noResults ? "No search results" : bucket === "available" ? "No available orders" : bucket === "active" ? "No in-progress orders" : "No completed orders"}</h2><p className="mt-2 text-xs text-[#A4AEA8]">{noResults ? "Try another game or search term." : bucket === "available" ? "New eligible orders will appear here." : bucket === "active" ? "Accepted orders will appear here." : "Your completed orders will appear here."}</p></div>}
       </section>
     </div>
   </main>;
