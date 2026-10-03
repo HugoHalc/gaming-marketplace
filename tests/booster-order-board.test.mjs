@@ -265,9 +265,9 @@ test("cards share responsive structure, canonical flat ranks, real payout and wo
   assert.equal(Card.elapsedOrderTime("2026-10-02T05:00:00Z", now), "1h ago");
   assert.equal(Card.elapsedOrderTime("bad", now), null);
   reset(); const grid = html(render(Hub, hubProps([order()])));
-  assert.match(grid, /grid-cols-1 md:grid-cols-2 min-\[1440px\]:grid-cols-3/); assert.match(grid, /min-\[1600px\]:hidden/);
+  assert.match(grid, /grid-cols-1 md:grid-cols-2 xl:grid-cols-3/); assert.match(grid, /min-\[1600px\]:hidden/);
   reset(); const list = html(render(Hub, hubProps([order()], { initialLayout: "list" })));
-  assert.doesNotMatch(list, /min-\[1440px\]:grid-cols-3/);
+  assert.doesNotMatch(list, /xl:grid-cols-3/);
   assert.equal((grid.match(/data-order-board-card=/g) ?? []).length, (list.match(/data-order-board-card=/g) ?? []).length);
 });
 
