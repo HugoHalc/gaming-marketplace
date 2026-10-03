@@ -4,6 +4,7 @@ import { Container } from "@/components/layout/container";
 
 const marketplaceLinks = [
   { label: "Games", href: "/games" },
+  { label: "Become a Booster", href: "/become-a-booster" },
   { label: "Rocket League Boosters", href: "/boosters/rocket-league" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "FAQ", href: "/#faq" },

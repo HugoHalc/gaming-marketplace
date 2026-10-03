@@ -255,6 +255,8 @@ test("admin panel and access form render minimal account data, accessible contro
   assert.ok(!adminMarkup.includes("Disable Booster Access"));
   let allowed = true;
   const { default: Page } = load("src/app/admin/boosters/page.tsx", {
+    "@/components/admin/booster-management-header": { BoosterManagementHeader: () => React.createElement("header", {}, "Booster management", React.createElement("a", { href: "/admin/boosters?add=1" }, "Add Booster")) },
+    "@/features/booster-applications/components/admin-applications-page": { AdminApplicationsPage: () => React.createElement("section", {}, "Applications") },
     "next/link": { __esModule: true, default: ({ children, ...props }) => React.createElement("a", props, children) },
     "@/components/layout/container": { Container: ({ children }) => React.createElement("div", {}, children) },
     "@/components/marketing/site-header": { SiteHeader: () => React.createElement("header", {}, "Site header") },
