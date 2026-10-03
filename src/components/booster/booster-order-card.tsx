@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Award, Crosshair, Gamepad2, GraduationCap, Medal, Sparkles, Trophy } from "lucide-react";
 import { OrderLocalDate } from "@/components/booster/order-local-date";
 import { memo } from "react";
 import { ClaimOrderButton } from "@/components/booster/claim-order-button";
@@ -13,7 +12,6 @@ import { gameLogos, type BoardOrder } from "@/features/booster/presentation/orde
 
 import { OrderBoardCard, OrderBoardCardHeader, OrderBoardCardBody, orderBoardConfigurationClass } from "@/components/orders/order-board-primitives";
 
-const categoryIcons: Record<string, typeof Medal> = { rank: Medal, wins: Trophy, placements: Crosshair, coaching: GraduationCap, hero: Sparkles, unrated: Gamepad2 };
 const additionalFields = { rankConfidence: "Rank confidence", masteryMode: "Mastery mode", masteryPoints: "Mastery points", marks: "Mastery marks", dotaPlusConfirmed: "Dota Plus confirmed" };
 
 export { elapsedOrderTime } from "@/components/orders/order-board-time";
@@ -25,7 +23,6 @@ export const BoosterOrderCardView = memo(function BoosterOrderCardView({ order, 
   onPending: (pending: boolean) => void;
 }) {
   const payout = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(order.payout);
-  const ServiceIcon = order.gameSlug === "rocket-league" && /rewards/i.test(order.serviceName) ? Award : order.gameSlug === "rocket-league" && /tournament/i.test(order.serviceName) ? Trophy : categoryIcons[order.serviceCategory ?? ""];
   const elapsed = elapsedOrderTime(order.createdAt, now);
   return <OrderBoardCard id={`board-order-${order.id}`} tabIndex={-1} onFocusCapture={() => onSeen(order.id)} data-order-board-card="" className={`${isNew ? "border-[#39E56F]/45" : "border-white/[0.08]"}`}>
     <OrderBoardCardHeader>
@@ -36,7 +33,7 @@ export const BoosterOrderCardView = memo(function BoosterOrderCardView({ order, 
     <OrderBoardCardBody>
     <div className="flex items-center gap-2.5">
       {gameLogos[order.gameSlug] ? <Image src={gameLogos[order.gameSlug]} alt="" width={52} height={38} sizes="52px" className="h-[38px] w-[52px] shrink-0 object-contain" /> : null}
-      <div className="min-w-0 flex-1"><p className="text-xs text-[#A4AEA8]">{order.gameName}</p><div className="mt-0.5 flex items-start gap-1.5">{ServiceIcon ? <ServiceIcon aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#82F5A4]" /> : null}<h2 className="break-words text-base font-semibold leading-5 text-white">{order.serviceName}</h2></div></div>
+      <div className="min-w-0 flex-1"><p className="text-xs text-[#A4AEA8]">{order.gameName}</p><h2 className="mt-0.5 break-words text-base font-semibold leading-5 text-white">{order.serviceName}</h2></div>
       {typeof order.configuration.platform === "string" ? <PlatformIcon platform={order.configuration.platform} /> : null}
     </div>
     <div className={orderBoardConfigurationClass}>
