@@ -108,11 +108,17 @@ export interface BoosterOrderCard {
 
 export async function listAvailableBoosterOrders(): Promise<BoosterOrderCard[]> {
   const booster = await requireBooster();
+  const authClient = await createAuthServerClient();
+  const { data: eligible, error: eligibilityError } = await authClient.rpc("list_eligible_booster_order_ids");
+  if (eligibilityError) throw new Error("Unable to load eligible orders.");
+  const eligibleIds = (eligible ?? []).map((row: { order_id: string }) => row.order_id);
+  if (!eligibleIds.length) return [];
   const supabase = createSecretServerClient();
 
   const { data: rows, error } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
+    .in("id", eligibleIds)
     .eq("payment_status", "paid")
     .in("status", ["paid", "queued"])
     .order("created_at", { ascending: false })

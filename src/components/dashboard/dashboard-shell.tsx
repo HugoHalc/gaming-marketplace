@@ -202,6 +202,13 @@ function SidebarContent({
                   />
                   <NavigationItem
                     pathname={pathname}
+                    href="/admin/boosters"
+                    label="Boosters"
+                    icon={Shield}
+                    onNavigate={onNavigate}
+                  />
+                  <NavigationItem
+                    pathname={pathname}
                     href="/admin/support"
                     label="Support"
                     icon={Headphones}
