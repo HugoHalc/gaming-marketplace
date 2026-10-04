@@ -317,6 +317,15 @@ test("active booster and admin profiles keep board access; missing session/profi
     const mod = { exports: {} };
     const mockedRequire = (name) => name === "next/navigation" ? { redirect(url) { throw new Error(`Redirect:${url}`); } } : name.endsWith("/env") ? { hasPublicSupabaseEnv: () => true } : { createAuthServerClient: async () => client };
     vm.runInThisContext(`(function(require,module,exports){${source}\n})`, { filename: file })(mockedRequire, mod, mod.exports);
+    assert.equal(mod.exports.resolveEffectiveRole("booster", false), "customer");
+    assert.equal(mod.exports.resolveEffectiveRole("customer", true), "booster");
+    assert.equal(mod.exports.resolveEffectiveRole("admin", false), "admin");
+    assert.equal(mod.exports.resolveEffectiveRole("admin", true), "admin");
+    if (scenario.session) {
+      const identity = await mod.exports.getCurrentIdentity();
+      const effective = scenario.role === "admin" ? "admin" : scenario.active ? "booster" : "customer";
+      assert.equal(identity.profile.role, effective);
+    }
     if (scenario.active && scenario.session) {
       const result = await mod.exports.requireBooster(); assert.equal(result.profile.role, scenario.role); assert.equal(result.boosterProfile.payoutRateBps, 2500);
     } else await assert.rejects(mod.exports.requireBooster(), /Redirect:/);

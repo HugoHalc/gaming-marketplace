@@ -4,6 +4,14 @@ import { hasPublicSupabaseEnv } from "@/lib/supabase/env";
 
 export type AppRole = "customer" | "booster" | "admin";
 
+export function resolveEffectiveRole(
+  storedRole: AppRole | null | undefined,
+  hasActiveBoosterProfile: boolean,
+): AppRole {
+  if (storedRole === "admin") return "admin";
+  return hasActiveBoosterProfile ? "booster" : "customer";
+}
+
 export async function getCurrentIdentity() {
   if (!hasPublicSupabaseEnv()) return null;
   const supabase = await createAuthServerClient();
@@ -11,23 +19,41 @@ export async function getCurrentIdentity() {
   const claims = error ? null : data?.claims;
   if (!claims?.sub) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, full_name, phone, gamer_tag, role, avatar_url")
-    .eq("id", claims.sub)
-    .maybeSingle();
+  const [{ data: profile }, { data: boosterProfile }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, full_name, phone, gamer_tag, role, avatar_url")
+      .eq("id", claims.sub)
+      .maybeSingle(),
+    supabase
+      .from("booster_profiles")
+      .select("is_active")
+      .eq("user_id", claims.sub)
+      .eq("is_active", true)
+      .maybeSingle(),
+  ]);
+
+  const storedProfile = profile as null | {
+    id: string;
+    full_name: string | null;
+    phone: string | null;
+    gamer_tag: string | null;
+    role: AppRole;
+    avatar_url: string | null;
+  };
 
   return {
     id: claims.sub,
     email: typeof claims.email === "string" ? claims.email : "",
-    profile: profile as null | {
-      id: string;
-      full_name: string | null;
-      phone: string | null;
-      gamer_tag: string | null;
-      role: AppRole;
-      avatar_url: string | null;
-    },
+    profile: storedProfile
+      ? {
+          ...storedProfile,
+          role: resolveEffectiveRole(
+            storedProfile.role,
+            boosterProfile?.is_active === true,
+          ),
+        }
+      : null,
   };
 }
 

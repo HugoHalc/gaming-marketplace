@@ -22,6 +22,13 @@ const applicationMigration = readFileSync(
   ),
   "utf8",
 );
+const integrityMigration = readFileSync(
+  path.join(
+    root,
+    "supabase/migrations/20261004191019_booster_role_integrity.sql",
+  ),
+  "utf8",
+);
 const admin = "00000000-0000-0000-0000-000000000001";
 const customer = "00000000-0000-0000-0000-000000000002";
 const other = "00000000-0000-0000-0000-000000000003";
@@ -78,6 +85,7 @@ async function database() {
   );
   await db.exec(migration);
   await db.exec(applicationMigration);
+  await db.exec(integrityMigration);
   return db;
 }
 async function asActor(db, actor, role = "authenticated") {

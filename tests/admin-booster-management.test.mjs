@@ -8,6 +8,7 @@ import { PGlite } from "@electric-sql/pglite";
 
 const root = path.resolve(import.meta.dirname, "..");
 const migration = readFileSync(path.join(root, "supabase/migrations/20261003195546_admin_booster_management.sql"), "utf8");
+const integrityMigration = readFileSync(path.join(root, "supabase/migrations/20261004191019_booster_role_integrity.sql"), "utf8");
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
 const admin = "00000000-0000-0000-0000-000000000001";
@@ -48,13 +49,14 @@ async function database() {
     create table public.order_operational_states(order_id uuid primary key references public.orders,state text,state_note text,updated_by uuid,delivered_at timestamptz,auto_complete_at timestamptz,completed_at timestamptz);
     create table public.order_operational_history(order_id uuid,from_state text,to_state text,note text,changed_by uuid);
     insert into auth.users values('${admin}','admin@test.invalid'),('${customer}','player@test.invalid'),('${other}','other@test.invalid');
-    insert into public.profiles(id,full_name,gamer_tag,role) values('${admin}','Admin','admin','admin'),('${customer}','Player','GamerOne','customer'),('${other}','Other','OtherTag','customer');
+    insert into public.profiles(id,full_name,gamer_tag,role) values('${admin}','Admin','admin','admin'),('${customer}','Player','GamerOne','customer'),('${other}','Other','OtherTag','booster');
     insert into public.games values('20000000-0000-0000-0000-000000000001','rocket-league','Rocket League'),('20000000-0000-0000-0000-000000000002','valorant','VALORANT');
     insert into public.orders(id,status,payment_status,total_cents) values('${rlOrder}','paid','paid',10001),('${valorantOrder}','paid','paid',20000),('${nextOrder}','queued','paid',10001);
     insert into public.order_items(order_id,game_id,game_name) values('${rlOrder}','20000000-0000-0000-0000-000000000001','Rocket League'),('${valorantOrder}','20000000-0000-0000-0000-000000000002','Rocket League'),('${nextOrder}',null,'Rocket League');
   `);
   await db.exec(readFileSync(path.join(root,"supabase/migrations/phase_16g2_claim_operational_conflict_hotfix.sql"),"utf8"));
   await db.exec(migration);
+  await db.exec(integrityMigration);
   return db;
 }
 async function asActor(db, actor, role = "authenticated") {
@@ -91,6 +93,88 @@ test("SQL: role changes, admin preservation, canonical eligibility and atomic cl
     assert.equal((await value(db, `select state from public.order_operational_states where order_id='${rlOrder}'`)).state, "accepted");
     assert.equal((await value(db, "select count(*)::int as n from public.order_operational_history")).n, 1);
     assert.equal((await value(db, `select status from public.orders where id='${valorantOrder}'`)).status, "paid");
+  } finally { await db.close(); }
+});
+
+test("SQL: migration repairs orphan roles and admin listing follows active access", async () => {
+  const db = await database();
+  try {
+    await db.exec("reset role");
+    assert.deepEqual(
+      await value(db, `select p.role,(b.user_id is not null) as has_profile from public.profiles p left join public.booster_profiles b on b.user_id=p.id where p.id='${other}'`),
+      { role: "customer", has_profile: false },
+    );
+    await asActor(db, other);
+    await assert.rejects(db.query("select * from public.list_eligible_booster_order_ids()"), /Active booster access required/);
+    await asActor(db, admin);
+    assert.equal((await db.query("select * from public.admin_booster_accounts('',0,true,$1)", [other])).rows.length, 0);
+    await manage(db, customer);
+    const active = (await db.query("select * from public.admin_booster_accounts('',0,true,$1)", [customer])).rows[0];
+    assert.equal(active.role, "booster");
+    assert.equal(active.is_active, true);
+  } finally { await db.close(); }
+});
+
+test("SQL: activation and deactivation are synchronized, idempotent and atomic", async () => {
+  const db = await database();
+  try {
+    await asActor(db, admin);
+    await manage(db, customer, 6000, ["rocket-league"], "enable");
+    await db.exec("reset role");
+    const enabledAudit = (await value(db, "select count(*)::int as n from private.booster_management_audit")).n;
+    await asActor(db, admin);
+    await manage(db, customer, 6000, ["rocket-league"], "enable");
+    await db.exec("reset role");
+    assert.equal((await value(db, "select count(*)::int as n from private.booster_management_audit")).n, enabledAudit);
+    assert.deepEqual(
+      await value(db, `select p.role,b.is_active,b.payout_rate_bps from public.profiles p join public.booster_profiles b on b.user_id=p.id where p.id='${customer}'`),
+      { role: "booster", is_active: true, payout_rate_bps: 6000 },
+    );
+
+    await asActor(db, admin);
+    await manage(db, customer, 6000, [], "disable");
+    await db.exec("reset role");
+    const disabledAudit = (await value(db, "select count(*)::int as n from private.booster_management_audit")).n;
+    await asActor(db, admin);
+    await manage(db, customer, 6000, [], "disable");
+    await db.exec("reset role");
+    assert.equal((await value(db, "select count(*)::int as n from private.booster_management_audit")).n, disabledAudit);
+    assert.deepEqual(
+      await value(db, `select p.role,b.is_active from public.profiles p join public.booster_profiles b on b.user_id=p.id where p.id='${customer}'`),
+      { role: "customer", is_active: false },
+    );
+
+    await db.exec(`
+      create function private.reject_integrity_audit() returns trigger language plpgsql as $$
+      begin raise exception 'injected late failure'; end $$;
+      create trigger reject_integrity_audit before insert on private.booster_management_audit
+      for each row execute function private.reject_integrity_audit();
+    `);
+    await asActor(db, admin);
+    await assert.rejects(manage(db, customer, 7000, ["valorant"], "enable"), /injected late failure/);
+    await db.exec("reset role");
+    assert.deepEqual(
+      await value(db, `select p.role,b.is_active,b.payout_rate_bps from public.profiles p join public.booster_profiles b on b.user_id=p.id where p.id='${customer}'`),
+      { role: "customer", is_active: false, payout_rate_bps: 6000 },
+    );
+  } finally { await db.close(); }
+});
+
+test("SQL: deferred constraints reject direct orphan states and preserve admins", async () => {
+  const db = await database();
+  try {
+    await db.exec("reset role");
+    await assert.rejects(
+      db.exec(`begin; update public.profiles set role='booster' where id='${other}'; commit;`),
+      /Booster role requires an active booster profile/,
+    );
+    await db.exec("rollback");
+    await assert.rejects(
+      db.exec(`begin; insert into public.booster_profiles(user_id,is_active,payout_rate_bps) values('${other}',true,5000); commit;`),
+      /Active booster access requires the booster role/,
+    );
+    await db.exec("rollback");
+    assert.equal((await value(db, `select role from public.profiles where id='${admin}'`)).role, "admin");
   } finally { await db.close(); }
 });
 
