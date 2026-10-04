@@ -114,7 +114,9 @@ export default async function BecomeBoosterPage({
         ) : null}
         {showForm ? (
           <section className={surface}>
-            <h2 className="mb-5 text-lg font-semibold">Your application</h2>
+            <h2 className="mb-6 border-b border-white/10 pb-4 text-xl font-semibold tracking-tight">
+              Your application
+            </h2>
             <ApplicationForm
               requestId={randomUUID()}
               games={applicationGames}
@@ -172,7 +174,9 @@ function ApplicationStatus({
 }) {
   return (
     <>
-      <h2 className="text-lg font-semibold text-[#82F5A4]">
+      <h2
+        className={`text-lg font-semibold ${application.status === "withdrawn" ? "text-white/65" : "text-[#82F5A4]"}`}
+      >
         {applicationStatusLabels[application.status]}
       </h2>
       <dl className="mt-3 space-y-3 text-sm">

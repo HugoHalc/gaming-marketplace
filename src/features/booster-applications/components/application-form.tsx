@@ -3,6 +3,11 @@ import { useActionState, useState } from "react";
 import { submitApplication } from "@/app/become-a-booster/actions";
 import type { ApplicationGame } from "../catalog";
 import {
+  applicationChoiceClass,
+  applicationCheckboxClass,
+  applicationCheckboxIndicatorClass,
+} from "./checkbox-styles";
+import {
   applicationConfirmations,
   applicationInputClass,
   applicationButtonClass,
@@ -48,7 +53,7 @@ export function ApplicationForm({
           {games.map((game) => (
             <label
               key={game.slug}
-              className="flex min-h-11 items-center gap-3 rounded-lg border border-white/10 bg-[#0B110E] px-3 py-2 text-sm"
+              className={applicationChoiceClass}
             >
               <input
                 name="games"
@@ -69,9 +74,13 @@ export function ApplicationForm({
                       ),
                     );
                 }}
-                className="size-4 shrink-0 accent-[#39E56F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#82F5A4]"
+                className={applicationCheckboxClass}
               />
-              <span>{game.name}</span>
+              <span
+                aria-hidden="true"
+                className={applicationCheckboxIndicatorClass}
+              />
+              <span className="min-w-0 break-words">{game.name}</span>
             </label>
           ))}
         </div>
@@ -91,7 +100,7 @@ export function ApplicationForm({
               {game.platforms.map((platform) => (
                 <label
                   key={platform.value}
-                  className="flex min-h-11 items-center gap-3 rounded-lg border border-white/10 px-3 py-2 text-sm"
+                  className={applicationChoiceClass}
                 >
                   <input
                     type="checkbox"
@@ -109,9 +118,13 @@ export function ApplicationForm({
                           : current.filter((item) => item !== value),
                       );
                     }}
-                    className="size-4 accent-[#39E56F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#82F5A4]"
+                    className={applicationCheckboxClass}
                   />
-                  {platform.label}
+                  <span
+                    aria-hidden="true"
+                    className={applicationCheckboxIndicatorClass}
+                  />
+                  <span className="min-w-0 break-words">{platform.label}</span>
                 </label>
               ))}
             </div>
@@ -215,11 +228,11 @@ export function ApplicationForm({
       </div>
       <fieldset aria-describedby={describedBy("confirmations")}>
         <legend className="text-sm font-semibold">Before you submit</legend>
-        <div className="mt-2 space-y-1">
+        <div className="mt-3 space-y-2">
           {applicationConfirmations.map((item) => (
             <label
               key={item.name}
-              className="flex min-h-11 items-start gap-3 py-2 text-sm leading-6 text-white/75"
+              className={`${applicationChoiceClass} items-start leading-6`}
             >
               <input
                 type="checkbox"
@@ -235,9 +248,13 @@ export function ApplicationForm({
                       : current.filter((name) => name !== item.name),
                   );
                 }}
-                className="mt-1 size-4 shrink-0 accent-[#39E56F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#82F5A4]"
+                className={applicationCheckboxClass}
               />
-              <span>{item.label}</span>
+              <span
+                aria-hidden="true"
+                className={`${applicationCheckboxIndicatorClass} mt-0.5`}
+              />
+              <span className="min-w-0 break-words">{item.label}</span>
             </label>
           ))}
         </div>

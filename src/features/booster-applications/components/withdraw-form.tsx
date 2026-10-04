@@ -2,6 +2,11 @@
 import { useActionState } from "react";
 import { withdrawApplication } from "@/app/become-a-booster/actions";
 import { applicationButtonClass } from "../types";
+import {
+  applicationChoiceClass,
+  applicationCheckboxClass,
+  applicationCheckboxIndicatorClass,
+} from "./checkbox-styles";
 
 export function WithdrawApplicationForm({
   id,
@@ -18,15 +23,18 @@ export function WithdrawApplicationForm({
     >
       <input type="hidden" name="applicationId" value={id} />
       <input type="hidden" name="version" value={version} />
-      <label className="flex min-h-11 items-center gap-3 text-sm text-white/75">
+      <label className={applicationChoiceClass}>
         <input
           type="checkbox"
           name="confirmWithdraw"
           value="yes"
           required
-          className="size-4 shrink-0 accent-[#39E56F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#82F5A4]"
+          className={applicationCheckboxClass}
         />
-        I want to withdraw this application.
+        <span aria-hidden="true" className={applicationCheckboxIndicatorClass} />
+        <span className="min-w-0 break-words">
+          I want to withdraw this application.
+        </span>
       </label>
       <div aria-live="polite">
         {state.error ? (
