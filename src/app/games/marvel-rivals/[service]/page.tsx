@@ -15,6 +15,8 @@ import { MarvelRivalsServiceConfigurator } from "@/features/configurator/compone
 import { MarvelRivalsUnratedConfigurator } from "@/features/configurator/components/marvel-rivals-unrated-configurator";
 import { MarvelRivalsWinsConfigurator } from "@/features/configurator/components/marvel-rivals-wins-configurator";
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
+import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
+import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
 import { createPublicMetadata } from "@/lib/seo";
 
 interface MarvelRivalsServicePageProps {
@@ -42,6 +44,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
   const { service: serviceSlug } = await params;
   const service = getMarvelRivalsService(serviceSlug);
   if (!service) notFound();
+  const seoContent = getServiceSeoContent("marvel-rivals", service.slug);
 
   const heroTitle =
     service.slug === "rank-boost"
@@ -90,6 +93,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
       </ServicePageHeader>
 
       <section className={serviceWorkspaceClassName}>
+        <h2 className="sr-only">Configure Marvel Rivals {service.name}</h2>
         <Container>
           <div className={serviceNavigationGridClassName}>
             <GameServiceNavigation
@@ -118,6 +122,8 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
           </div>
         </Container>
       </section>
+
+      {seoContent ? <ServiceSeoContent content={seoContent} /> : null}
 
       <SiteFooter />
     </main>

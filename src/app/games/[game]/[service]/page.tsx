@@ -21,6 +21,8 @@ import { RocketLeagueRewardsConfigurator } from "@/features/configurator/compone
 import { ServiceConfigurator } from "@/features/configurator/components/service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
 import { findPublicSeoGame } from "@/features/catalog/data/public-seo-catalog";
+import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
+import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
 import { createPublicMetadata } from "@/lib/seo";
 
 interface ServicePageProps {
@@ -370,6 +372,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   const service = game.services.find((item) => item.slug === serviceSlug);
   if (!service) notFound();
+  const seoContent = getServiceSeoContent(game.slug, service.slug);
 
   const isRocketLeagueRank = game.slug === "rocket-league" && service.slug === "rank-boost";
   const isRocketLeagueWins = game.slug === "rocket-league" && service.slug === "wins";
@@ -757,6 +760,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       )}
 
       <section className={isCompactService ? serviceWorkspaceClassName : "py-6 sm:py-12 lg:py-16"}>
+        {seoContent ? <h2 className="sr-only">Configure {game.name} {service.name}</h2> : null}
         <Container>
           {isCustomRocketLeagueService ? (
             <GameServiceWorkspace gameName="Rocket League" gameSlug="rocket-league" activeSlug={service.slug} items={rocketLeagueServiceNavigation} accentTextClass="text-blue-200/60" accentBorderClass="border-blue-300/[0.20]">
@@ -783,6 +787,8 @@ export default async function ServicePage({ params }: ServicePageProps) {
           ) : null}
         </Container>
       </section>
+
+      {seoContent ? <ServiceSeoContent content={seoContent} /> : null}
 
       <section className="border-y border-white/[0.06] bg-white/[0.012] py-14 sm:py-16">
         <Container>
