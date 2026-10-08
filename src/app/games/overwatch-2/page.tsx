@@ -19,8 +19,10 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import { Button } from "@/components/ui/button";
+import { StructuredData } from "@/components/seo/structured-data";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
 const storefrontHighlights = [
   {
@@ -40,12 +42,13 @@ const storefrontHighlights = [
   },
 ] as const;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Overwatch Boosting Services",
   description:
     "Configure Overwatch Rank Boost, Competitive Wins, Competitive Drives, Placements Boost, and Unrated Matches with clear pricing.",
-  alternates: { canonical: "/games/overwatch-2" },
-};
+  path: "/games/overwatch-2",
+  image: "/game-heroes/overwatch-hero.jpg",
+});
 
 const overviewServiceMeta = {
   "rank-boost": { badge: "RANK PROGRESSION", icon: ShieldCheck },
@@ -222,6 +225,7 @@ export default async function OverwatchPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
+      <StructuredData data={gameBreadcrumbs("Overwatch 2", "overwatch-2")} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">

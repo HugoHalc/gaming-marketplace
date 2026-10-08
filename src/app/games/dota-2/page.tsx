@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   dota2AssetFoundation,
   dota2GameFoundation,
@@ -15,14 +16,15 @@ import {
   getDota2RankBadge,
   type Dota2ServiceCategory,
 } from "@/features/catalog/data/dota-2-foundation";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Dota 2 Boosting Services",
   description:
     "Choose a focused Dota 2 service for MMR progression, net wins, calibration matches, or Dota Plus hero progression.",
-  alternates: { canonical: "/games/dota-2" },
-  robots: { index: false, follow: false },
-};
+  path: "/games/dota-2",
+  image: dota2AssetFoundation.landingHero,
+});
 
 const serviceMeta: Record<Dota2ServiceCategory, { label: string }> = {
   "mmr-progression": { label: "MMR progression" },
@@ -102,6 +104,7 @@ function Dota2ServicePreview({ slug }: { slug: string }) {
 export default function Dota2FoundationPage() {
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={gameBreadcrumbs("Dota 2", "dota-2")} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

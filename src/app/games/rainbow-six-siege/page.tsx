@@ -16,17 +16,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RainbowSixSiegeRankBadge } from "@/features/catalog/components/rainbow-six-siege-rank-badge";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
-import { siteConfig } from "@/config/site";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   rainbowSixSiegeGameFoundation,
   rainbowSixSiegeServiceFoundations,
   type RainbowSixSiegeServiceSlug,
 } from "@/features/catalog/data/rainbow-six-siege-foundation";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
 export const metadata: Metadata = {
+  ...createPublicMetadata({
+    title: "Rainbow Six Siege Boosting Services",
+    description: rainbowSixSiegeGameFoundation.shortDescription,
+    path: `/games/${rainbowSixSiegeGameFoundation.slug}`,
+    image: rainbowSixSiegeGameFoundation.assets.overviewHero,
+  }),
   title: { absolute: "Rainbow Six Siege Boosting Services | BoostingPedia" },
-  description: rainbowSixSiegeGameFoundation.shortDescription,
-  alternates: { canonical: `/games/${rainbowSixSiegeGameFoundation.slug}` },
 };
 
 const servicePresentation: Record<
@@ -119,32 +124,15 @@ const overviewHighlights = [
   },
 ] as const;
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/` },
-    { "@type": "ListItem", position: 2, name: "Games", item: `${siteConfig.url}/games` },
-    {
-      "@type": "ListItem",
-      position: 3,
-      name: rainbowSixSiegeGameFoundation.name,
-      item: `${siteConfig.url}/games/${rainbowSixSiegeGameFoundation.slug}`,
-    },
-  ],
-} as const;
-
-function serializeJsonLd(value: unknown) {
-  return JSON.stringify(value).replace(/</g, "\u003c");
-}
+const breadcrumbJsonLd = gameBreadcrumbs(
+  rainbowSixSiegeGameFoundation.name,
+  rainbowSixSiegeGameFoundation.slug,
+);
 
 export default function RainbowSixSiegeOverviewPage() {
   return (
     <main className="min-h-screen overflow-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-      />
+      <StructuredData data={breadcrumbJsonLd} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

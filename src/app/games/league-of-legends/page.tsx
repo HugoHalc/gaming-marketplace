@@ -17,15 +17,18 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StructuredData } from "@/components/seo/structured-data";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "League of Legends",
+export const metadata: Metadata = createPublicMetadata({
+  title: "League of Legends Boosting Services",
   description: "Explore League of Legends boosting services on BoostingPedia.",
-  alternates: { canonical: "/games/league-of-legends" },
-};
+  path: "/games/league-of-legends",
+  image: "/game-heroes/league-of-legends-storefront.jpeg",
+});
 
 
 const storefrontHighlights = [
@@ -273,6 +276,7 @@ export default async function LeagueOfLegendsPage() {
 
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={gameBreadcrumbs("League of Legends", "league-of-legends")} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

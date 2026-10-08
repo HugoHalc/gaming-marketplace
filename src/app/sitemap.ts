@@ -1,24 +1,7 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/config/site";
-
-const publicRoutes = [
-  "/",
-  "/games",
-  "/games/rocket-league",
-  "/games/rocket-league/rank-boost",
-  "/games/rocket-league/wins",
-  "/games/rocket-league/tournament-boost",
-  "/games/rocket-league/rewards-boost",
-  "/games/rocket-league/placements-boost",
-  "/games/rainbow-six-siege",
-  "/games/rainbow-six-siege/rank-boost",
-  "/games/rainbow-six-siege/competitive-wins",
-  "/games/rainbow-six-siege/placements-boost",
-  "/games/rainbow-six-siege/unrated-matches",
-] as const;
+import { publicSeoPaths } from "@/features/catalog/data/public-seo-catalog";
+import { absoluteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return publicRoutes.map((path) => ({
-    url: path === "/" ? `${siteConfig.url}/` : `${siteConfig.url}${path}`,
-  }));
+  return publicSeoPaths.map((path) => ({ url: absoluteUrl(path) }));
 }

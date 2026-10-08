@@ -19,7 +19,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   findCatalogGameBySlug,
   listCatalogGames,
@@ -34,6 +34,8 @@ import { gameThemes } from "@/features/catalog/data/game-theme";
 import { StartingPriceDisplay } from "@/features/catalog/components/service-card";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catalog";
+import { findPublicSeoGame } from "@/features/catalog/data/public-seo-catalog";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
 interface GamePageProps {
   params: Promise<{ game: string }>;
@@ -79,10 +81,6 @@ function categoryLabel(category: ServiceSummary["category"]) {
   return "Coaching";
 }
 
-function serializeJsonLd(value: unknown) {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
-}
-
 export async function generateStaticParams() {
   const catalogGames = await listCatalogGames();
   const slugs = new Set([
@@ -100,16 +98,16 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 
   const displayName = getLaunchGameDisplayName(game.slug, game.name);
   const isRocketLeague = game.slug === "rocket-league";
+  const description = isRocketLeague
+    ? "Configure Rocket League rank boosts, competitive wins, placements, tournament boosts and season rewards with transparent pricing and order tracking."
+    : `Explore the ${displayName} storefront and available BoostingPedia services.`;
 
-  return {
-    title: isRocketLeague
-      ? { absolute: "Rocket League Boosting Services | BoostingPedia" }
-      : displayName,
-    description: isRocketLeague
-      ? "Configure Rocket League rank boosts, competitive wins, placements, tournament boosts and season rewards with transparent pricing and order tracking."
-      : `Explore the ${displayName} storefront and available BoostingPedia services.`,
-    alternates: { canonical: `/games/${game.slug}` },
-  };
+  return createPublicMetadata({
+    title: `${displayName} Boosting Services`,
+    description,
+    path: `/games/${game.slug}`,
+    image: findPublicSeoGame(game.slug)?.socialImage,
+  });
 }
 
 
@@ -566,41 +564,11 @@ export default async function GamePage({ params }: GamePageProps) {
   const shell = !catalogGame;
   const isRocketLeague = game.slug === "rocket-league";
   const isValorant = game.slug === "valorant";
-  const breadcrumbJsonLd = isRocketLeague
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: `${siteConfig.url}/`,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Games",
-            item: `${siteConfig.url}/games`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: "Rocket League",
-            item: `${siteConfig.url}/games/rocket-league`,
-          },
-        ],
-      }
-    : null;
+  const breadcrumbJsonLd = gameBreadcrumbs(displayName, game.slug);
 
   return (
     <main className="min-h-screen overflow-hidden">
-      {breadcrumbJsonLd ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
-        />
-      ) : null}
+      <StructuredData data={breadcrumbJsonLd} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

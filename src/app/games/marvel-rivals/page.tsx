@@ -17,17 +17,20 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import { Button } from "@/components/ui/button";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   marvelRivalsRanks,
   marvelRivalsServices,
   type MarvelRivalsServiceFoundation,
 } from "@/features/catalog/data/marvel-rivals-foundation";
+import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Marvel Rivals",
+export const metadata: Metadata = createPublicMetadata({
+  title: "Marvel Rivals Boosting Services",
   description: "Explore Marvel Rivals boosting services in BoostingPedia.",
-  alternates: { canonical: "/games/marvel-rivals" },
-};
+  path: "/games/marvel-rivals",
+  image: "/game-heroes/marvel-rivals-storefront.webp",
+});
 
 const highlights = [
   {
@@ -244,6 +247,7 @@ function MarvelServiceCard({
 export default function MarvelRivalsPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
+      <StructuredData data={gameBreadcrumbs("Marvel Rivals", "marvel-rivals")} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

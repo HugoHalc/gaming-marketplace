@@ -7,11 +7,14 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { publicGameNavigation } from "@/features/catalog/data/launch-games";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Games",
   description: "Explore professional boosting services for your favorite competitive titles.",
-};
+  path: "/games",
+  image: "/brand/boostingpedia-home-hero.webp",
+});
 
 
 
