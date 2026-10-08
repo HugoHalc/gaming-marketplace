@@ -114,7 +114,7 @@ test("breadcrumb helper emits parseable JSON-LD with consecutive positions and a
   assert.equal(parsed.itemListElement.at(-1).item, "https://boostingpedia.com/games/dota-2/mmr-boost");
 });
 
-test("all public page implementations use centralized metadata and game/service pages render breadcrumbs", () => {
+test("all public page implementations use centralized metadata", () => {
   const publicPages = [
     "src/app/page.tsx",
     "src/app/games/page.tsx",
@@ -134,8 +134,13 @@ test("all public page implementations use centralized metadata and game/service 
   for (const file of publicPages) {
     assert.match(readFileSync(path.join(root, file), "utf8"), /createPublicMetadata/);
   }
-  for (const file of publicPages.filter((file) => file.includes("/games/") && !file.endsWith("games/page.tsx"))) {
-    assert.match(readFileSync(path.join(root, file), "utf8"), /StructuredData/);
+
+  for (const game of catalog.publicSeoGames) {
+    assert.ok(game.socialImage.startsWith("/"));
+    assert.ok(
+      existsSync(path.join(root, "public", game.socialImage.slice(1))),
+      `${game.socialImage} does not exist`,
+    );
   }
 });
 

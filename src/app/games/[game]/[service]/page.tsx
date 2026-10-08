@@ -20,6 +20,8 @@ import { RocketLeagueTournamentConfigurator } from "@/features/configurator/comp
 import { RocketLeagueRewardsConfigurator } from "@/features/configurator/components/rocket-league-rewards-configurator";
 import { ServiceConfigurator } from "@/features/configurator/components/service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
+import { findPublicSeoGame } from "@/features/catalog/data/public-seo-catalog";
+import { createPublicMetadata } from "@/lib/seo";
 
 interface ServicePageProps {
   params: Promise<{ game: string; service: string }>;
@@ -318,8 +320,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   const isValorantWins = game.slug === "valorant" && service.slug === "wins";
   const isValorantPlacements = game.slug === "valorant" && service.slug === "placement-matches";
 
-  return {
-    title: isRocketLeagueRank
+  const title = isRocketLeagueRank
       ? "Rocket League Rank Boosting Service"
       : isRocketLeagueWins
         ? "Rocket League Win Boosting"
@@ -335,8 +336,8 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
                   ? "Valorant Competitive Wins"
                   : isValorantPlacements
                     ? "Valorant Placements Boost"
-                    : `${service.name} for ${game.name}`,
-    description: isRocketLeagueRank
+                    : `${service.name} for ${game.name}`;
+  const description = isRocketLeagueRank
       ? "Configure Rocket League rank boosting by current rank, target rank, playlist, platform and boost method with transparent server-calculated pricing."
       : isRocketLeagueWins
         ? "Configure Rocket League win boosting by current rank, number of wins, playlist, platform and boost method with server-calculated volume discounts."
@@ -352,9 +353,14 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
                   ? "Configure Valorant Competitive Wins by current rank, win quantity, RR gain, server and boost type."
                   : isValorantPlacements
                     ? "Configure Valorant Placements Boost by current rank, placement quantity, server and boost type."
-                    : `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`,
-    alternates: { canonical: `/games/${game.slug}/${service.slug}` },
-  };
+                    : `Configure ${service.name} for ${game.name}, preview server-calculated pricing, and create a secure order.`;
+
+  return createPublicMetadata({
+    title,
+    description,
+    path: `/games/${game.slug}/${service.slug}`,
+    image: findPublicSeoGame(game.slug)?.socialImage,
+  });
 }
 
 export default async function ServicePage({ params }: ServicePageProps) {

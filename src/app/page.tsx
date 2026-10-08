@@ -22,6 +22,14 @@ import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boo
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { trustFeatures } from "@/features/marketing/content";
 import { siteConfig } from "@/config/site";
+import { createPublicMetadata } from "@/lib/seo";
+
+export const metadata = createPublicMetadata({
+  title: siteConfig.name,
+  description: siteConfig.description,
+  path: "/",
+  image: "/brand/boostingpedia-home-hero.webp",
+});
 
 const gameVisual = {
   emerald: "from-emerald-500/[0.18] via-emerald-500/[0.045] to-transparent border-emerald-300/15",

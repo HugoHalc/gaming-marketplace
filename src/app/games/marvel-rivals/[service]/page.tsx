@@ -15,6 +15,7 @@ import { MarvelRivalsServiceConfigurator } from "@/features/configurator/compone
 import { MarvelRivalsUnratedConfigurator } from "@/features/configurator/components/marvel-rivals-unrated-configurator";
 import { MarvelRivalsWinsConfigurator } from "@/features/configurator/components/marvel-rivals-wins-configurator";
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
+import { createPublicMetadata } from "@/lib/seo";
 
 interface MarvelRivalsServicePageProps {
   params: Promise<{ service: string }>;
@@ -29,11 +30,12 @@ export async function generateMetadata({ params }: MarvelRivalsServicePageProps)
   const service = getMarvelRivalsService(serviceSlug);
   if (!service) return { title: "Marvel Rivals service not found" };
 
-  return {
+  return createPublicMetadata({
     title: `${service.name} | Marvel Rivals`,
     description: service.description,
-    alternates: { canonical: `/games/marvel-rivals/${service.slug}` },
-  };
+    path: `/games/marvel-rivals/${service.slug}`,
+    image: "/game-heroes/marvel-rivals-storefront.webp",
+  });
 }
 
 export default async function MarvelRivalsServicePage({ params }: MarvelRivalsServicePageProps) {

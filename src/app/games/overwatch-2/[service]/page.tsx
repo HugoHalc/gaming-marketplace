@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverwatchServiceConfigurator } from "@/features/configurator/components/overwatch-service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
+import { createPublicMetadata } from "@/lib/seo";
 
 interface OverwatchServicePageProps {
   params: Promise<{ service: string }>;
@@ -64,11 +65,12 @@ export async function generateMetadata({ params }: OverwatchServicePageProps): P
   const copy = serviceCopy[serviceSlug];
   if (!copy) return { title: "Overwatch service not found" };
 
-  return {
+  return createPublicMetadata({
     title: copy.title,
     description: copy.description,
-    alternates: { canonical: `/games/overwatch-2/${serviceSlug}` },
-  };
+    path: `/games/overwatch-2/${serviceSlug}`,
+    image: "/game-heroes/overwatch-hero.jpg",
+  });
 }
 
 export default async function OverwatchServicePage({ params }: OverwatchServicePageProps) {

@@ -15,6 +15,7 @@ import { RainbowSixSiegeWinsConfigurator } from "@/features/configurator/compone
 import { RainbowSixSiegePlacementsConfigurator } from "@/features/configurator/components/rainbow-six-siege-placements-configurator";
 import { RainbowSixSiegeUnratedConfigurator } from "@/features/configurator/components/rainbow-six-siege-unrated-configurator";
 import { RainbowSixSiegeRankConfigurator } from "@/features/configurator/components/rainbow-six-siege-rank-configurator";
+import { createPublicMetadata } from "@/lib/seo";
 
 interface RainbowSixSiegeServicePageProps {
   params: Promise<{ service: string }>;
@@ -33,11 +34,12 @@ export async function generateMetadata({
   const service = findRainbowSixSiegeServiceFoundation(slug);
   if (!service || service.status !== "active") return { title: "Service not found" };
 
-  return {
+  return createPublicMetadata({
     title: `Rainbow Six Siege ${service.name}`,
     description: service.description,
-    alternates: { canonical: service.route },
-  };
+    path: service.route,
+    image: rainbowSixSiegeGameFoundation.assets.serviceHero,
+  });
 }
 
 export default async function RainbowSixSiegeServicePage({

@@ -15,6 +15,7 @@ import {
   dota2ServiceFoundations,
   findDota2ServiceFoundation,
 } from "@/features/catalog/data/dota-2-foundation";
+import { createPublicMetadata } from "@/lib/seo";
 
 interface Dota2ServiceFoundationPageProps {
   params: Promise<{ service: string }>;
@@ -36,8 +37,7 @@ export async function generateMetadata({
   const isNetWins = service.slug === "net-wins";
   const isCalibration = service.slug === "calibration-matches";
   const isHeroLevel = service.slug === "hero-level-boost";
-  return {
-    title: isMmrBoost
+  const title = isMmrBoost
       ? "Dota 2 MMR Boost"
       : isNetWins
         ? "Dota 2 Net Wins"
@@ -45,8 +45,8 @@ export async function generateMetadata({
           ? "Dota 2 Calibration Matches"
           : isHeroLevel
             ? "Dota Plus Hero Level"
-            : `${service.name} | Dota 2`,
-    description: isMmrBoost
+            : `${service.name} | Dota 2`;
+  const description = isMmrBoost
       ? "Configure your current MMR, target MMR and preferred boost options."
       : isNetWins
         ? "Purchase a fixed number of net ranked wins. Net wins are calculated as wins minus losses."
@@ -54,10 +54,14 @@ export async function generateMetadata({
           ? "Purchase a selected number of calibration matches based on your previous rank, Rank Confidence and preferred play settings."
           : isHeroLevel
             ? "Progress one selected hero from its current Dota Plus Hero Level to your chosen target."
-            : service.description,
-    alternates: { canonical: service.route },
-    robots: { index: false, follow: false },
-  };
+            : service.description;
+
+  return createPublicMetadata({
+    title,
+    description,
+    path: service.route,
+    image: dota2AssetFoundation.serviceHero,
+  });
 }
 
 
