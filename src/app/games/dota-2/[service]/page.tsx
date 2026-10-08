@@ -6,6 +6,8 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Dota2ServiceNavigation } from "@/features/catalog/components/dota-2-service-navigation";
+import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
+import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
 import { Dota2MmrConfigurator } from "@/features/configurator/components/dota-2-mmr-configurator";
 import { Dota2NetWinsConfigurator } from "@/features/configurator/components/dota-2-net-wins-configurator";
 import { Dota2CalibrationConfigurator } from "@/features/configurator/components/dota-2-calibration-configurator";
@@ -95,6 +97,8 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
   if (!service) notFound();
   const metadata = await generateMetadata({ params: Promise.resolve({ service: slug }) });
   const title = service.slug === "hero-level-boost" ? "Dota Plus Hero Level" : `Dota 2 ${service.name}`;
+  const seoContent = getServiceSeoContent("dota-2", service.slug);
+  if (!seoContent) notFound();
   return (
     <main className="min-h-screen overflow-hidden">
       <SiteHeader />
@@ -104,11 +108,13 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
       </ServicePageHeader>
       <section className={serviceWorkspaceClassName}>
         <Container>
+          <h2 className="sr-only">Configure {title}</h2>
           <Dota2ServiceNavigation currentSlug={service.slug}>
             {service.slug === "mmr-boost" ? <Dota2MmrConfigurator /> : service.slug === "net-wins" ? <Dota2NetWinsConfigurator /> : service.slug === "calibration-matches" ? <Dota2CalibrationConfigurator /> : <Dota2HeroLevelConfigurator />}
           </Dota2ServiceNavigation>
         </Container>
       </section>
+      <ServiceSeoContent content={seoContent} />
       <SiteFooter />
     </main>
   );

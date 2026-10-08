@@ -9,6 +9,8 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverwatchServiceConfigurator } from "@/features/configurator/components/overwatch-service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
+import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
+import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
 import { createPublicMetadata } from "@/lib/seo";
 
 interface OverwatchServicePageProps {
@@ -86,6 +88,8 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
     serviceId: service.id,
     category: service.category,
   });
+  const seoContent = getServiceSeoContent("overwatch-2", serviceSlug);
+  if (!seoContent) notFound();
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
@@ -106,9 +110,12 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
 
       <section className={serviceWorkspaceClassName}>
         <Container>
+          <h2 className="sr-only">Configure {copy.title}</h2>
           <OverwatchServiceConfigurator gameSlug="overwatch-2" service={service} schema={schema} />
         </Container>
       </section>
+
+      <ServiceSeoContent content={seoContent} />
 
       <section className="border-t border-white/[0.06] py-10 sm:py-12">
         <Container>

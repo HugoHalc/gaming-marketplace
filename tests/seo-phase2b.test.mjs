@@ -23,25 +23,22 @@ function loadTypescript(relativePath) {
 const { serviceSeoContent } = loadTypescript("src/features/catalog/data/service-seo-content.ts");
 const { publicSeoPaths } = loadTypescript("src/features/catalog/data/public-seo-catalog.ts");
 const scopedPaths = [
-  "/games/league-of-legends/arena-boost",
-  "/games/league-of-legends/clash-boost",
-  "/games/league-of-legends/mastery-boost",
-  "/games/league-of-legends/placement-matches",
-  "/games/league-of-legends/rank-boost",
-  "/games/league-of-legends/unrated-matches",
-  "/games/league-of-legends/wins",
-  "/games/valorant/placement-matches",
-  "/games/valorant/rank-boost",
-  "/games/valorant/wins",
-  "/games/marvel-rivals/hero-boost",
-  "/games/marvel-rivals/placement-matches",
-  "/games/marvel-rivals/rank-boost",
-  "/games/marvel-rivals/unrated-games",
-  "/games/marvel-rivals/wins",
+  "/games/overwatch-2/competitive-drives",
+  "/games/overwatch-2/placement-matches",
+  "/games/overwatch-2/rank-boost",
+  "/games/overwatch-2/unrated-matches",
+  "/games/overwatch-2/wins",
+  "/games/dota-2/calibration-matches",
+  "/games/dota-2/hero-level-boost",
+  "/games/dota-2/mmr-boost",
+  "/games/dota-2/net-wins",
+  "/games/rainbow-six-siege/competitive-wins",
+  "/games/rainbow-six-siege/placements-boost",
+  "/games/rainbow-six-siege/rank-boost",
+  "/games/rainbow-six-siege/unrated-matches",
 ];
-const scopedContent = serviceSeoContent.filter((entry) =>
-  ["league-of-legends", "valorant", "marvel-rivals"].includes(entry.gameSlug),
-);
+const scopedGames = ["overwatch-2", "dota-2", "rainbow-six-siege"];
+const scopedContent = serviceSeoContent.filter((entry) => scopedGames.includes(entry.gameSlug));
 
 function entryPath(entry) {
   return `/games/${entry.gameSlug}/${entry.serviceSlug}`;
@@ -61,10 +58,10 @@ function renderedWords(entry) {
   ].join(" ").trim().split(/\s+/).length;
 }
 
-test("Phase 2A defines unique, complete customer content for exactly 15 scoped services", () => {
-  assert.equal(scopedContent.length, 15);
+test("Phase 2B defines unique, complete customer content for exactly 13 scoped services", () => {
+  assert.equal(scopedContent.length, 13);
   assert.deepEqual([...scopedContent.map(entryPath)].sort(), [...scopedPaths].sort());
-  assert.equal(new Set(scopedContent.map(entryPath)).size, 15);
+  assert.equal(new Set(scopedContent.map(entryPath)).size, 13);
 
   for (const entry of scopedContent) {
     const words = renderedWords(entry);
@@ -73,32 +70,35 @@ test("Phase 2A defines unique, complete customer content for exactly 15 scoped s
     assert.ok(entry.faqs.length >= 3 && entry.faqs.length <= 4, `${entryPath(entry)} FAQ count`);
     assert.equal(entry.links.length, 3, `${entryPath(entry)} related-link count`);
     assert.ok(entry.links.some((link) => link.href === `/games/${entry.gameSlug}`), `${entryPath(entry)} overview link`);
-    assert.ok(entry.links.filter((link) => link.href.startsWith(`/games/${entry.gameSlug}/`)).length >= 2, `${entryPath(entry)} sibling links`);
+    assert.equal(entry.links.filter((link) => link.href.startsWith(`/games/${entry.gameSlug}/`)).length, 2, `${entryPath(entry)} sibling links`);
     for (const link of entry.links) assert.ok(publicSeoPaths.includes(link.href), `${entryPath(entry)} links to missing ${link.href}`);
   }
 });
 
-test("FAQ questions do not repeat within a game", () => {
-  for (const gameSlug of ["league-of-legends", "valorant", "marvel-rivals"]) {
-    const questions = serviceSeoContent
+test("Phase 2B FAQ questions are unique within each game", () => {
+  for (const gameSlug of scopedGames) {
+    const questions = scopedContent
       .filter((entry) => entry.gameSlug === gameSlug)
       .flatMap((entry) => entry.faqs.map((faq) => faq.question.toLowerCase()));
     assert.equal(new Set(questions).size, questions.length, `${gameSlug} contains a repeated FAQ question`);
   }
 });
 
-test("customer copy avoids placeholders, prohibited claims and developer-facing language", () => {
-  const copy = JSON.stringify(serviceSeoContent);
+test("Phase 2B copy avoids placeholders, prohibited claims and developer-facing language", () => {
+  const copy = JSON.stringify(scopedContent);
   assert.doesNotMatch(copy, /\b(?:TODO|TBD|lorem ipsum)\b/i);
   assert.doesNotMatch(copy, /100% safe|zero ban risk|instant delivery|guaranteed no ban|best in the world|cheapest|starting from/i);
   assert.doesNotMatch(copy, /repository|rollout phase|database schema|supabase|developer terminology|API\b/i);
   assert.doesNotMatch(copy, /competitor|boostingmarket/i);
 });
 
-test("shared presentation is semantic, server-rendered and wired only into scoped route families", () => {
+test("shared presentation remains semantic, server-rendered and is wired into all Phase 2B route families", () => {
   const component = readFileSync(path.join(root, "src/features/catalog/components/service-seo-content.tsx"), "utf8");
-  const sharedPage = readFileSync(path.join(root, "src/app/games/[game]/[service]/page.tsx"), "utf8");
-  const marvelPage = readFileSync(path.join(root, "src/app/games/marvel-rivals/[service]/page.tsx"), "utf8");
+  const pages = [
+    "src/app/games/overwatch-2/[service]/page.tsx",
+    "src/app/games/dota-2/[service]/page.tsx",
+    "src/app/games/rainbow-six-siege/[service]/page.tsx",
+  ].map((filename) => readFileSync(path.join(root, filename), "utf8"));
 
   assert.doesNotMatch(component, /^\s*["']use client["']/m);
   assert.match(component, /<section/);
@@ -109,9 +109,17 @@ test("shared presentation is semantic, server-rendered and wired only into scope
   assert.match(component, /<summary/);
   assert.match(component, /<nav/);
   assert.doesNotMatch(component, /FAQPage|application\/ld\+json/);
-  assert.match(sharedPage, /getServiceSeoContent\(game\.slug, service\.slug\)/);
-  assert.match(marvelPage, /getServiceSeoContent\("marvel-rivals", service\.slug\)/);
-  assert.ok(sharedPage.indexOf("<ServiceSeoContent content={seoContent}") > sharedPage.indexOf("<ServiceConfigurator"));
-  assert.ok(marvelPage.indexOf("<ServiceSeoContent content={seoContent}") > marvelPage.indexOf("<MarvelRivalsRankConfigurator"));
+  for (const page of pages) {
+    assert.match(page, /getServiceSeoContent\(/);
+    assert.ok(page.indexOf("<ServiceSeoContent content={seoContent}") > page.indexOf("Configurator"));
+  }
 });
 
+test("Rainbow Six Siege starting-time estimator remains wired in every scoped configurator", () => {
+  for (const name of ["rank", "wins", "placements", "unrated"]) {
+    const source = readFileSync(path.join(root, `src/features/configurator/components/rainbow-six-siege-${name}-configurator.tsx`), "utf8");
+    assert.match(source, /(?:estimateRainbowSixSiegeStartingTime|R6_STARTING_TIME_RANGES)/);
+    assert.match(source, /R6_STARTING_TIME_DISCLAIMER/);
+    assert.match(source, /ServiceOrderGuidance/);
+  }
+});

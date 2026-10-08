@@ -18,6 +18,21 @@ const accentStyles = {
     marker: "border-[#A38CFF]/20 bg-[#7A63F2]/[0.06] text-[#CEC5FF]",
     link: "text-[#CEC5FF]/80 hover:text-[#E4DEFF] focus-visible:ring-[#A38CFF]/35",
   },
+  "overwatch-2": {
+    eyebrow: "text-amber-200/70",
+    marker: "border-amber-300/20 bg-amber-300/[0.055] text-amber-200",
+    link: "text-amber-200/80 hover:text-amber-100 focus-visible:ring-amber-300/35",
+  },
+  "dota-2": {
+    eyebrow: "text-red-200/65",
+    marker: "border-red-300/20 bg-red-300/[0.055] text-red-200",
+    link: "text-red-200/80 hover:text-red-100 focus-visible:ring-red-300/35",
+  },
+  "rainbow-six-siege": {
+    eyebrow: "text-emerald-200/65",
+    marker: "border-emerald-300/20 bg-emerald-300/[0.055] text-emerald-200",
+    link: "text-emerald-200/80 hover:text-emerald-100 focus-visible:ring-emerald-300/35",
+  },
 } as const;
 
 export function ServiceSeoContent({ content }: { content: ServiceSeoContentModel }) {

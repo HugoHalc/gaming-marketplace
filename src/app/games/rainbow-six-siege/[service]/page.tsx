@@ -6,6 +6,8 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { RainbowSixSiegeServiceNavigation } from "@/features/catalog/components/rainbow-six-siege-service-navigation";
+import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
+import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
 import {
   findRainbowSixSiegeServiceFoundation,
   rainbowSixSiegeGameFoundation,
@@ -48,6 +50,8 @@ export default async function RainbowSixSiegeServicePage({
   const { service: slug } = await params;
   const service = findRainbowSixSiegeServiceFoundation(slug);
   if (!service || service.status !== "active") notFound();
+  const seoContent = getServiceSeoContent("rainbow-six-siege", service.slug);
+  if (!seoContent) notFound();
 
   return (
     <main className="min-h-screen overflow-hidden">
@@ -75,45 +79,14 @@ export default async function RainbowSixSiegeServicePage({
 
       <section className={serviceWorkspaceClassName}>
         <Container>
+          <h2 className="sr-only">Configure Rainbow Six Siege {service.name}</h2>
           <RainbowSixSiegeServiceNavigation currentSlug={service.slug}>
             {service.slug === "rank-boost" ? <RainbowSixSiegeRankConfigurator /> : service.slug === "competitive-wins" ? <RainbowSixSiegeWinsConfigurator /> : service.slug === "placements-boost" ? <RainbowSixSiegePlacementsConfigurator /> : <RainbowSixSiegeUnratedConfigurator />}
           </RainbowSixSiegeServiceNavigation>
-          {service.slug === "placements-boost" ? (
-            <section className="mt-10 max-w-3xl space-y-4" aria-labelledby="placements-faq-title">
-              <h2 id="placements-faq-title" className="text-2xl font-semibold text-white">Placements Boost FAQ</h2>
-              <p className="text-sm leading-6 text-white/65">
-                Placement matches establish the start of a ranked season. Previous performance, hidden MMR and the game’s ranking system can affect your result. An exact resulting rank is not guaranteed.
-              </p>
-              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">How are my games completed?</summary>
-                <p className="mt-2 leading-6">Games are completed manually. Choose Solo for account-based play or Duo to play alongside a booster.</p>
-              </details>
-              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What do I need before ordering?</summary>
-                <p className="mt-2 leading-6">Your account must already meet Rainbow Six Siege ranked-access requirements.</p>
-              </details>
-            </section>
-          ) : null}
-          {service.slug === "unrated-matches" ? (
-            <section className="mt-10 max-w-3xl space-y-4" aria-labelledby="unrated-faq-title">
-              <h2 id="unrated-faq-title" className="text-2xl font-semibold text-white">Unrated Matches FAQ</h2>
-              <p className="text-sm leading-6 text-white/65">Purchase completed unrated matches, not Ranked games or rank progress. Matches are played manually; wins, win rate, and account outcomes are not guaranteed.</p>
-              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">How do Solo and Duo differ?</summary>
-                <p className="mt-2 leading-6">In Solo, the booster plays the selected unrated matches on your account. In Duo, you play alongside the booster.</p>
-              </details>
-              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What do I choose before checkout?</summary>
-                <p className="mt-2 leading-6">Select 1 to 10 games, your platform and region, a service mode, and any optional customizations. Review your total before placing the order.</p>
-              </details>
-              <details className="rounded-xl border border-white/10 p-4 text-sm text-white/75">
-                <summary className="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-emerald-300">What happens after checkout?</summary>
-                <p className="mt-2 leading-6">Your order appears in your dashboard, where you can follow its progress and communicate about fulfillment.</p>
-              </details>
-            </section>
-          ) : null}
         </Container>
       </section>
+
+      <ServiceSeoContent content={seoContent} />
 
       <SiteFooter />
     </main>
