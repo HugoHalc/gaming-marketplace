@@ -37,6 +37,10 @@ test("official-domain metadata, robots and sitemap match the selected environmen
       ? /<meta name="robots" content="index, follow"/i
       : /<meta name="robots" content="noindex, nofollow"/i,
     `${pathname}: robots`);
+    assert.match(html, expectIndexing
+      ? /<meta name="googlebot" content="index, follow"/i
+      : /<meta name="googlebot" content="noindex, nofollow"/i,
+    `${pathname}: googlebot`);
   }
 
   const robots = await (await fetch(new URL("/robots.txt", baseUrl))).text();

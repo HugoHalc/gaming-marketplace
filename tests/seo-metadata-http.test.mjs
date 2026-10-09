@@ -76,6 +76,13 @@ test("all 43 rendered public routes expose complete canonical and social metadat
         : /<meta name="robots" content="noindex, nofollow"/i,
       `${pathname}: robots`,
     );
+    assert.match(
+      html,
+      expectIndexing
+        ? /<meta name="googlebot" content="index, follow"/i
+        : /<meta name="googlebot" content="noindex, nofollow"/i,
+      `${pathname}: googlebot`,
+    );
 
     if (pathname === "/") {
       const schemas = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gis)]

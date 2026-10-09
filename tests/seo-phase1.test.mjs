@@ -69,11 +69,15 @@ test("central SEO metadata creates absolute canonical and complete social metada
   assert.equal(metadata.openGraph.type, "website");
   assert.equal(metadata.twitter.card, "summary_large_image");
   assert.match(metadata.openGraph.images[0].url, /^https:\/\/boostingpedia\.com\//);
-  assert.deepEqual(JSON.parse(JSON.stringify(metadata.robots)), { index: false, follow: false });
+  assert.deepEqual(JSON.parse(JSON.stringify(metadata.robots)), {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  });
   assert.doesNotMatch(metadata.title.absolute, /BoostingPedia\s*\|\s*BoostingPedia/);
 });
 
-test("indexing switch only changes approved-page metadata while root and private layouts stay noindex", () => {
+test("indexing switch controls public and root metadata while private layouts stay noindex", () => {
   const indexedSeo = loadTypescript("src/lib/seo.ts", {
     "@/config/site": {
       siteConfig: { name: "BoostingPedia", url: "https://boostingpedia.com", allowIndexing: true },
@@ -81,9 +85,12 @@ test("indexing switch only changes approved-page metadata while root and private
   });
   assert.deepEqual(
     JSON.parse(JSON.stringify(indexedSeo.createPublicMetadata({ title: "Games", description: "x", path: "/games" }).robots)),
-    { index: true, follow: true },
+    { index: true, follow: true, googleBot: { index: true, follow: true } },
   );
-  assert.match(readFileSync(path.join(root, "src/app/layout.tsx"), "utf8"), /robots:\s*\{\s*index:\s*false,\s*follow:\s*false\s*\}/);
+  const rootLayout = readFileSync(path.join(root, "src/app/layout.tsx"), "utf8");
+  assert.match(rootLayout, /index:\s*siteConfig\.allowIndexing/);
+  assert.match(rootLayout, /follow:\s*siteConfig\.allowIndexing/);
+  assert.match(rootLayout, /googleBot:/);
   for (const file of [
     "src/app/admin/layout.tsx",
     "src/app/dashboard/layout.tsx",

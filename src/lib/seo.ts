@@ -37,6 +37,10 @@ export function createPublicMetadata({
     robots: {
       index: siteConfig.allowIndexing,
       follow: siteConfig.allowIndexing,
+      googleBot: {
+        index: siteConfig.allowIndexing,
+        follow: siteConfig.allowIndexing,
+      },
     },
     openGraph: {
       title: completeTitle,

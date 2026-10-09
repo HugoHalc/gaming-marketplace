@@ -29,42 +29,35 @@ function loadTypescript(relativePath, { env = {}, mocks = {} } = {}) {
   return loadedModule.exports;
 }
 
-test("official origin is central and indexing requires the official Vercel production environment", () => {
-  const production = loadTypescript("src/config/site.ts", {
+test("official origin is central and indexing uses a strict server-side opt-in", () => {
+  const enabled = loadTypescript("src/config/site.ts", {
     env: {
-      VERCEL_ENV: "production",
       NEXT_PUBLIC_SITE_URL: "https://boostingpedia.com/",
-      NEXT_PUBLIC_ALLOW_INDEXING: "true",
+      SITE_INDEXING_ENABLED: "true",
     },
   }).siteConfig;
-  const preview = loadTypescript("src/config/site.ts", {
+  const absent = loadTypescript("src/config/site.ts", {
     env: {
-      VERCEL_ENV: "preview",
       NEXT_PUBLIC_SITE_URL: "https://boostingpedia.com",
-      NEXT_PUBLIC_ALLOW_INDEXING: "true",
     },
   }).siteConfig;
-  const misconfiguredProduction = loadTypescript("src/config/site.ts", {
+  const wrongCase = loadTypescript("src/config/site.ts", {
     env: {
-      VERCEL_ENV: "production",
-      NEXT_PUBLIC_SITE_URL: "https://gaming-marketplace-gold.vercel.app",
-      NEXT_PUBLIC_ALLOW_INDEXING: "true",
+      SITE_INDEXING_ENABLED: "TRUE",
     },
   }).siteConfig;
-  const disabledProduction = loadTypescript("src/config/site.ts", {
+  const legacyPublicFlag = loadTypescript("src/config/site.ts", {
     env: {
+      NEXT_PUBLIC_ALLOW_INDEXING: "true",
       VERCEL_ENV: "production",
-      NEXT_PUBLIC_SITE_URL: "https://boostingpedia.com",
-      NEXT_PUBLIC_ALLOW_INDEXING: "false",
     },
   }).siteConfig;
 
-  assert.equal(production.url, "https://boostingpedia.com");
-  assert.equal(production.allowIndexing, true);
-  assert.equal(preview.allowIndexing, false);
-  assert.equal(misconfiguredProduction.url, "https://boostingpedia.com");
-  assert.equal(misconfiguredProduction.allowIndexing, true);
-  assert.equal(disabledProduction.allowIndexing, false);
+  assert.equal(enabled.url, "https://boostingpedia.com");
+  assert.equal(enabled.allowIndexing, true);
+  assert.equal(absent.allowIndexing, false);
+  assert.equal(wrongCase.allowIndexing, false);
+  assert.equal(legacyPublicFlag.allowIndexing, false);
 });
 
 test("robots allows public production crawling while blocking all private route families", () => {
