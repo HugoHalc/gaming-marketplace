@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { StructuredData } from "@/components/seo/structured-data";
 import { Dota2ServiceNavigation } from "@/features/catalog/components/dota-2-service-navigation";
 import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
 import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
@@ -17,7 +18,7 @@ import {
   dota2ServiceFoundations,
   findDota2ServiceFoundation,
 } from "@/features/catalog/data/dota-2-foundation";
-import { createPublicMetadata } from "@/lib/seo";
+import { createPublicMetadata, createServicePageJsonLd } from "@/lib/seo";
 
 interface Dota2ServiceFoundationPageProps {
   params: Promise<{ service: string }>;
@@ -97,12 +98,15 @@ export default async function Dota2ServiceFoundationPage({ params }: Dota2Servic
   if (!service) notFound();
   const metadata = await generateMetadata({ params: Promise.resolve({ service: slug }) });
   const title = service.slug === "hero-level-boost" ? "Dota Plus Hero Level" : `Dota 2 ${service.name}`;
+  const description = metadata.description ?? service.description;
+  const structuredData = createServicePageJsonLd({ gameName: "Dota 2", gameSlug: "dota-2", serviceName: service.name, serviceSlug: service.slug, description });
   const seoContent = getServiceSeoContent("dota-2", service.slug);
   if (!seoContent) notFound();
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={structuredData} />
       <SiteHeader />
-      <ServicePageHeader gameName="Dota 2" gameSlug="dota-2" serviceName={service.name} title={title} description={metadata.description ?? service.description} hasArtwork background={<Dota2ServiceHeroBackground />}>
+      <ServicePageHeader gameName="Dota 2" gameSlug="dota-2" serviceName={service.name} title={title} description={description} hasArtwork background={<Dota2ServiceHeroBackground />}>
         {service.slug === "calibration-matches" ? <p className="mt-2 max-w-2xl text-xs leading-5 text-white/55">Final rank, match outcomes and Rank Confidence changes are not guaranteed.</p> : null}
         {service.slug === "hero-level-boost" ? <p className="mt-2 max-w-2xl text-xs leading-5 text-white/55">An active Dota Plus subscription is required.</p> : null}
       </ServicePageHeader>

@@ -22,7 +22,9 @@ import { Button } from "@/components/ui/button";
 import { StructuredData } from "@/components/seo/structured-data";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
+
+const description = "Configure Overwatch Rank Boost, Competitive Wins, Competitive Drives, Placements Boost, and Unrated Matches with clear pricing.";
 
 const storefrontHighlights = [
   {
@@ -44,8 +46,7 @@ const storefrontHighlights = [
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Overwatch Boosting Services",
-  description:
-    "Configure Overwatch Rank Boost, Competitive Wins, Competitive Drives, Placements Boost, and Unrated Matches with clear pricing.",
+  description,
   path: "/games/overwatch-2",
   image: "/game-heroes/overwatch-hero.jpg",
 });
@@ -222,10 +223,17 @@ function ServiceVisual({ service }: { service: ServiceSummary }) {
 export default async function OverwatchPage() {
   const game = await findCatalogGameBySlug("overwatch-2");
   if (!game) notFound();
+  const structuredData = createGameOverviewJsonLd({
+    gameName: "Overwatch 2",
+    gameSlug: "overwatch-2",
+    title: "Overwatch Boosting Services | BoostingPedia",
+    description,
+    services: game.services.map((service) => ({ name: service.name, path: `/games/overwatch-2/${service.slug}` })),
+  });
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
-      <StructuredData data={gameBreadcrumbs("Overwatch 2", "overwatch-2")} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">

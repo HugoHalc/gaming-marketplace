@@ -6,12 +6,13 @@ import { ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { StructuredData } from "@/components/seo/structured-data";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverwatchServiceConfigurator } from "@/features/configurator/components/overwatch-service-configurator";
 import { getServiceConfiguratorSchema } from "@/features/configurator/data/configurator-repository";
 import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
 import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
-import { createPublicMetadata } from "@/lib/seo";
+import { createPublicMetadata, createServicePageJsonLd } from "@/lib/seo";
 
 interface OverwatchServicePageProps {
   params: Promise<{ service: string }>;
@@ -90,9 +91,11 @@ export default async function OverwatchServicePage({ params }: OverwatchServiceP
   });
   const seoContent = getServiceSeoContent("overwatch-2", serviceSlug);
   if (!seoContent) notFound();
+  const structuredData = createServicePageJsonLd({ gameName: "Overwatch 2", gameSlug: "overwatch-2", serviceName: service.name, serviceSlug, description: copy.description });
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <ServicePageHeader gameName="Overwatch 2" gameSlug="overwatch-2" serviceName={service.name} title={copy.title} description={copy.description} hasArtwork background={<>

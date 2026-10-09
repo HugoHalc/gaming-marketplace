@@ -6,12 +6,16 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { StructuredData } from "@/components/seo/structured-data";
 import { publicGameNavigation } from "@/features/catalog/data/launch-games";
-import { createPublicMetadata } from "@/lib/seo";
+import { publicSeoGames } from "@/features/catalog/data/public-seo-catalog";
+import { createGamesDirectoryJsonLd, createPublicMetadata } from "@/lib/seo";
+
+const description = "Explore professional boosting services for your favorite competitive titles.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Games",
-  description: "Explore professional boosting services for your favorite competitive titles.",
+  description,
   path: "/games",
   image: "/brand/boostingpedia-home-hero.webp",
 });
@@ -21,6 +25,11 @@ export const metadata: Metadata = createPublicMetadata({
 export default function GamesPage() {
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={createGamesDirectoryJsonLd({
+        title: "Games | BoostingPedia",
+        description,
+        games: publicSeoGames.map((game) => ({ name: game.name, path: `/games/${game.slug}` })),
+      })} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06]">

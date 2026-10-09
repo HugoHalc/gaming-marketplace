@@ -23,11 +23,13 @@ import {
   marvelRivalsServices,
   type MarvelRivalsServiceFoundation,
 } from "@/features/catalog/data/marvel-rivals-foundation";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
+
+const description = "Explore Marvel Rivals boosting services in BoostingPedia.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Marvel Rivals Boosting Services",
-  description: "Explore Marvel Rivals boosting services in BoostingPedia.",
+  description,
   path: "/games/marvel-rivals",
   image: "/game-heroes/marvel-rivals-storefront.webp",
 });
@@ -245,9 +247,16 @@ function MarvelServiceCard({
 }
 
 export default function MarvelRivalsPage() {
+  const structuredData = createGameOverviewJsonLd({
+    gameName: "Marvel Rivals",
+    gameSlug: "marvel-rivals",
+    title: "Marvel Rivals Boosting Services | BoostingPedia",
+    description,
+    services: marvelRivalsServices.map((service) => ({ name: service.name, path: `/games/marvel-rivals/${service.slug}` })),
+  });
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
-      <StructuredData data={gameBreadcrumbs("Marvel Rivals", "marvel-rivals")} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

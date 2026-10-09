@@ -4,7 +4,8 @@ import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { Button } from "@/components/ui/button";
-import { createPublicMetadata } from "@/lib/seo";
+import { StructuredData } from "@/components/seo/structured-data";
+import { createContactPageJsonLd, createPublicMetadata } from "@/lib/seo";
 
 const description =
   "Contact BoostingPedia for help with services, accounts, or existing orders.";
@@ -18,6 +19,7 @@ export const metadata: Metadata = createPublicMetadata({
 export default function ContactPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050807]">
+      <StructuredData data={createContactPageJsonLd({ title: "Contact | BoostingPedia", description })} />
       <SiteHeader />
       <section className="relative isolate border-b border-white/[0.06] py-16 sm:py-20 lg:py-24">
         <div className="hero-grid absolute inset-0 -z-20 opacity-20" />

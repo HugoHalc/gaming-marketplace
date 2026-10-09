@@ -22,7 +22,7 @@ import {
   rainbowSixSiegeServiceFoundations,
   type RainbowSixSiegeServiceSlug,
 } from "@/features/catalog/data/rainbow-six-siege-foundation";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
   ...createPublicMetadata({
@@ -124,15 +124,18 @@ const overviewHighlights = [
   },
 ] as const;
 
-const breadcrumbJsonLd = gameBreadcrumbs(
-  rainbowSixSiegeGameFoundation.name,
-  rainbowSixSiegeGameFoundation.slug,
-);
+const structuredData = createGameOverviewJsonLd({
+  gameName: rainbowSixSiegeGameFoundation.name,
+  gameSlug: rainbowSixSiegeGameFoundation.slug,
+  title: "Rainbow Six Siege Boosting Services | BoostingPedia",
+  description: rainbowSixSiegeGameFoundation.shortDescription,
+  services: rainbowSixSiegeServiceFoundations.map((service) => ({ name: service.name, path: service.route })),
+});
 
 export default function RainbowSixSiegeOverviewPage() {
   return (
     <main className="min-h-screen overflow-hidden">
-      <StructuredData data={breadcrumbJsonLd} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

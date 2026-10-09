@@ -16,12 +16,13 @@ import {
   getDota2RankBadge,
   type Dota2ServiceCategory,
 } from "@/features/catalog/data/dota-2-foundation";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
+
+const description = "Choose a focused Dota 2 service for MMR progression, net wins, calibration matches, or Dota Plus hero progression.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Dota 2 Boosting Services",
-  description:
-    "Choose a focused Dota 2 service for MMR progression, net wins, calibration matches, or Dota Plus hero progression.",
+  description,
   path: "/games/dota-2",
   image: dota2AssetFoundation.landingHero,
 });
@@ -102,9 +103,16 @@ function Dota2ServicePreview({ slug }: { slug: string }) {
 
 
 export default function Dota2FoundationPage() {
+  const structuredData = createGameOverviewJsonLd({
+    gameName: "Dota 2",
+    gameSlug: "dota-2",
+    title: "Dota 2 Boosting Services | BoostingPedia",
+    description,
+    services: dota2ServiceFoundations.map((service) => ({ name: service.name, path: service.route })),
+  });
   return (
     <main className="min-h-screen overflow-hidden">
-      <StructuredData data={gameBreadcrumbs("Dota 2", "dota-2")} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

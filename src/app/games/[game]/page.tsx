@@ -35,7 +35,7 @@ import { StartingPriceDisplay } from "@/features/catalog/components/service-card
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { CatalogGame, ServiceSummary } from "@/features/catalog/types/catalog";
 import { findPublicSeoGame } from "@/features/catalog/data/public-seo-catalog";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
 
 interface GamePageProps {
   params: Promise<{ game: string }>;
@@ -564,11 +564,20 @@ export default async function GamePage({ params }: GamePageProps) {
   const shell = !catalogGame;
   const isRocketLeague = game.slug === "rocket-league";
   const isValorant = game.slug === "valorant";
-  const breadcrumbJsonLd = gameBreadcrumbs(displayName, game.slug);
+  const description = isRocketLeague
+    ? "Configure Rocket League rank boosts, competitive wins, placements, tournament boosts and season rewards with transparent pricing and order tracking."
+    : `Explore the ${displayName} storefront and available BoostingPedia services.`;
+  const structuredData = createGameOverviewJsonLd({
+    gameName: displayName,
+    gameSlug: game.slug,
+    title: `${displayName} Boosting Services | BoostingPedia`,
+    description,
+    services: game.services.map((service) => ({ name: service.name, path: `/games/${game.slug}/${service.slug}` })),
+  });
 
   return (
     <main className="min-h-screen overflow-hidden">
-      <StructuredData data={breadcrumbJsonLd} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { StructuredData } from "@/components/seo/structured-data";
 import { RainbowSixSiegeServiceNavigation } from "@/features/catalog/components/rainbow-six-siege-service-navigation";
 import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
 import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
@@ -17,7 +18,7 @@ import { RainbowSixSiegeWinsConfigurator } from "@/features/configurator/compone
 import { RainbowSixSiegePlacementsConfigurator } from "@/features/configurator/components/rainbow-six-siege-placements-configurator";
 import { RainbowSixSiegeUnratedConfigurator } from "@/features/configurator/components/rainbow-six-siege-unrated-configurator";
 import { RainbowSixSiegeRankConfigurator } from "@/features/configurator/components/rainbow-six-siege-rank-configurator";
-import { createPublicMetadata } from "@/lib/seo";
+import { createPublicMetadata, createServicePageJsonLd } from "@/lib/seo";
 
 interface RainbowSixSiegeServicePageProps {
   params: Promise<{ service: string }>;
@@ -52,9 +53,11 @@ export default async function RainbowSixSiegeServicePage({
   if (!service || service.status !== "active") notFound();
   const seoContent = getServiceSeoContent("rainbow-six-siege", service.slug);
   if (!seoContent) notFound();
+  const structuredData = createServicePageJsonLd({ gameName: rainbowSixSiegeGameFoundation.name, gameSlug: rainbowSixSiegeGameFoundation.slug, serviceName: service.name, serviceSlug: service.slug, description: service.description });
 
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <ServicePageHeader gameName="Rainbow Six Siege" gameSlug="rainbow-six-siege" serviceName={service.name} title={`Rainbow Six Siege ${service.name}`} description={service.description} hasArtwork background={<>

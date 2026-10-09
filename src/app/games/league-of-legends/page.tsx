@@ -21,11 +21,13 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { findCatalogGameBySlug } from "@/features/catalog/data/catalog-repository";
 import { OverviewServiceCardAction } from "@/features/catalog/components/overview-service-card-action";
 import type { ServiceSummary } from "@/features/catalog/types/catalog";
-import { createPublicMetadata, gameBreadcrumbs } from "@/lib/seo";
+import { createGameOverviewJsonLd, createPublicMetadata } from "@/lib/seo";
+
+const description = "Explore League of Legends boosting services on BoostingPedia.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "League of Legends Boosting Services",
-  description: "Explore League of Legends boosting services on BoostingPedia.",
+  description,
   path: "/games/league-of-legends",
   image: "/game-heroes/league-of-legends-storefront.jpeg",
 });
@@ -273,10 +275,17 @@ function LeagueServiceCard({ service }: { service: ServiceSummary }) {
 export default async function LeagueOfLegendsPage() {
   const game = await findCatalogGameBySlug("league-of-legends");
   if (!game) notFound();
+  const structuredData = createGameOverviewJsonLd({
+    gameName: "League of Legends",
+    gameSlug: "league-of-legends",
+    title: "League of Legends Boosting Services | BoostingPedia",
+    description,
+    services: game.services.map((service) => ({ name: service.name, path: `/games/league-of-legends/${service.slug}` })),
+  });
 
   return (
     <main className="min-h-screen overflow-hidden">
-      <StructuredData data={gameBreadcrumbs("League of Legends", "league-of-legends")} />
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-white/[0.06] bg-[#050807]">

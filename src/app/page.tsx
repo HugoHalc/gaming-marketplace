@@ -17,12 +17,13 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { StructuredData } from "@/components/seo/structured-data";
 import { publicGameNavigation } from "@/features/catalog/data/launch-games";
 import { rocketLeagueBoosters } from "@/features/boosters/data/rocket-league-boosters";
 import { boosterPlaceholders } from "@/features/marketing/booster-placeholders";
 import { trustFeatures } from "@/features/marketing/content";
 import { siteConfig } from "@/config/site";
-import { createPublicMetadata } from "@/lib/seo";
+import { createOrganizationJsonLd, createPublicMetadata, createWebsiteJsonLd } from "@/lib/seo";
 
 export const metadata = createPublicMetadata({
   title: siteConfig.name,
@@ -49,30 +50,6 @@ const heroTrustpilot = {
   reviewCount: 9,
   profileUrl: "https://www.trustpilot.com/review/boostingpedia.com",
 } as const;
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": `${siteConfig.url}/#organization`,
-  name: "BoostingPedia",
-  url: siteConfig.url,
-  logo: `${siteConfig.url}/brand/boostingpedia-mark.png`,
-} as const;
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "@id": `${siteConfig.url}/#website`,
-  url: siteConfig.url,
-  name: "BoostingPedia",
-  publisher: {
-    "@id": `${siteConfig.url}/#organization`,
-  },
-} as const;
-
-function serializeJsonLd(data: unknown) {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
-}
 
 const homepageFaqs = [
   {
@@ -184,14 +161,8 @@ function BoosterAvatar({ initials }: { initials: string }) {
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }}
-      />
+      <StructuredData data={createOrganizationJsonLd()} />
+      <StructuredData data={createWebsiteJsonLd()} />
       <SiteHeader />
 
       <section className="relative isolate overflow-hidden border-b border-[#FFFFFF14] bg-[#050807]">

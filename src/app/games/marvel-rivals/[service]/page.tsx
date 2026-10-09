@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   getMarvelRivalsService,
   marvelRivalsServices,
@@ -17,7 +18,7 @@ import { MarvelRivalsWinsConfigurator } from "@/features/configurator/components
 import { GameServiceNavigation } from "@/features/configurator/components/game-service-navigation";
 import { ServiceSeoContent } from "@/features/catalog/components/service-seo-content";
 import { getServiceSeoContent } from "@/features/catalog/data/service-seo-content";
-import { createPublicMetadata } from "@/lib/seo";
+import { createPublicMetadata, createServicePageJsonLd } from "@/lib/seo";
 
 interface MarvelRivalsServicePageProps {
   params: Promise<{ service: string }>;
@@ -45,6 +46,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
   const service = getMarvelRivalsService(serviceSlug);
   if (!service) notFound();
   const seoContent = getServiceSeoContent("marvel-rivals", service.slug);
+  const structuredData = createServicePageJsonLd({ gameName: "Marvel Rivals", gameSlug: "marvel-rivals", serviceName: service.name, serviceSlug: service.slug, description: service.description });
 
   const heroTitle =
     service.slug === "rank-boost"
@@ -83,6 +85,7 @@ export default async function MarvelRivalsServicePage({ params }: MarvelRivalsSe
 
   return (
     <main className="min-h-screen overflow-hidden">
+      <StructuredData data={structuredData} />
       <SiteHeader />
 
       <ServicePageHeader gameName="Marvel Rivals" gameSlug="marvel-rivals" serviceName={service.name} title={`Marvel Rivals ${service.name}`} description={heroTitle}>
