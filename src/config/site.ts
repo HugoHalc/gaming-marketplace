@@ -1,10 +1,12 @@
-const fallbackSiteUrl = "https://gaming-marketplace-gold.vercel.app";
-const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+export const officialSiteUrl = "https://boostingpedia.com";
+const isOfficialProduction = process.env.VERCEL_ENV === "production";
+const indexingRequested =
+  process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
 
 export const siteConfig = {
   name: "BoostingPedia",
-  url: (configuredSiteUrl || fallbackSiteUrl).replace(/\/+$/, ""),
-  allowIndexing: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
+  url: officialSiteUrl,
+  allowIndexing: isOfficialProduction && indexingRequested,
   description:
     "Premium gaming services with transparent pricing, secure checkout, and clear order tracking.",
   navigation: [

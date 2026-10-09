@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "gaming-marketplace-gold.vercel.app",
+          },
+        ],
+        destination: "https://boostingpedia.com/:path*",
+        permanent: true,
+      },
+      {
         source: "/rocket-league",
         destination: "/games/rocket-league",
         permanent: true,

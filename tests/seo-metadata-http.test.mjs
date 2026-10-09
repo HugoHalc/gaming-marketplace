@@ -8,6 +8,7 @@ import vm from "node:vm";
 const root = path.resolve(import.meta.dirname, "..");
 const baseUrl = process.env.SEO_TEST_BASE_URL;
 const expectedOrigin = (process.env.SEO_EXPECTED_ORIGIN ?? "https://boostingpedia.com").replace(/\/+$/, "");
+const expectIndexing = process.env.SEO_EXPECT_INDEXING === "true";
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
 
@@ -68,7 +69,13 @@ test("all 43 rendered public routes expose complete canonical and social metadat
       );
     }
 
-    assert.match(html, /<meta name="robots" content="noindex, nofollow"/i, `${pathname}: robots`);
+    assert.match(
+      html,
+      expectIndexing
+        ? /<meta name="robots" content="index, follow"/i
+        : /<meta name="robots" content="noindex, nofollow"/i,
+      `${pathname}: robots`,
+    );
 
     if (pathname === "/") {
       const schemas = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gis)]

@@ -147,8 +147,14 @@ test("all public page implementations use centralized metadata", () => {
 test("legacy redirects are permanent and map directly to exact live destinations", async () => {
   const config = loadTypescript("next.config.ts").default;
   const redirects = await config.redirects();
+  assert.deepEqual(JSON.parse(JSON.stringify(redirects[0])), {
+    source: "/:path*",
+    has: [{ type: "host", value: "gaming-marketplace-gold.vercel.app" }],
+    destination: "https://boostingpedia.com/:path*",
+    permanent: true,
+  });
   assert.deepEqual(
-    JSON.parse(JSON.stringify(redirects.map(({ source, destination, permanent }) => ({ source, destination, permanent })))),
+    JSON.parse(JSON.stringify(redirects.slice(1).map(({ source, destination, permanent }) => ({ source, destination, permanent })))),
     [
       { source: "/rocket-league", destination: "/games/rocket-league", permanent: true },
       { source: "/rocket-league/rocket-league", destination: "/games/rocket-league/rank-boost", permanent: true },
