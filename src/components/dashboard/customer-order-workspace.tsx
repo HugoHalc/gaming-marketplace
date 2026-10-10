@@ -24,6 +24,7 @@ import {
   isOverwatchGame,
 } from "@/components/orders/game-order-presentation";
 import { OrderWorkspaceConfiguration } from "@/components/orders/order-workspace-configuration";
+import { OrderPaymentMethods } from "@/components/checkout/order-payment-methods";
 
 interface Props {
   order: OrderRecord;
@@ -107,7 +108,7 @@ export function CustomerOrderWorkspace({
 
       {checkoutState === "success" ? (
         <div className="mt-4 border-y border-[#39E56F]/15 py-3 text-[11px] text-[#82F5A4]">
-          Payment submitted successfully. Stripe is confirming the payment.
+          Payment submitted successfully. Your payment provider is confirming the payment.
         </div>
       ) : null}
 
@@ -241,7 +242,7 @@ export function CustomerOrderWorkspace({
                   </p>
                   <p className="mt-1 text-[12px] text-[#6F7B74]">
                     {order.paymentStatus === "paid"
-                      ? "Stripe confirmed"
+                      ? "Payment confirmed"
                       : order.paymentStatus === "pending"
                         ? "Payment pending"
                         : "Payment not completed"}
@@ -265,14 +266,7 @@ export function CustomerOrderWorkspace({
                 </div>
               ) : null}
 
-              {canPay ? (
-                <form action="/api/checkout" method="post" className="mt-4">
-                  <input type="hidden" name="orderId" value={order.id} />
-                  <button className="h-10 w-full rounded-lg bg-[#39E56F] text-[10px] font-semibold text-[#050807] transition-colors hover:bg-[#20C95A]">
-                    Complete secure payment
-                  </button>
-                </form>
-              ) : null}
+              {canPay ? <OrderPaymentMethods orderId={order.id} compact /> : null}
             
 <div className="mt-3">{boosterAssignment ? (
                 <div className="mt-3 flex items-center gap-3">

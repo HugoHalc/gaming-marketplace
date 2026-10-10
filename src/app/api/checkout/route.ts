@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
-import { getCurrentUserOrder } from "@/features/orders/server/order-repository";
+import { getPayableCurrentUserOrder } from "@/features/payments/server/checkout-order";
 import { createPendingStripePayment } from "@/features/payments/server/payment-repository";
 import { getStripeClient, hasStripeSecretKey } from "@/lib/stripe";
 import { createSecretServerClient } from "@/lib/supabase/server";
@@ -11,20 +11,18 @@ export async function POST(request: Request) {
   if (!hasStripeSecretKey()) return NextResponse.redirect(new URL("/dashboard/orders?paymentError=stripe", request.url), 303);
 
   const form = await request.formData();
-  const orderId = String(form.get("orderId") ?? "");
-  if (!orderId) return NextResponse.redirect(new URL("/dashboard/orders?paymentError=order", request.url), 303);
-
-  const order = await getCurrentUserOrder(orderId);
-  if (!order || !order.items.length) return NextResponse.redirect(new URL("/dashboard/orders?paymentError=order", request.url), 303);
-  if (order.paymentStatus === "paid" || order.status !== "pending_payment") {
-    return NextResponse.redirect(new URL(`/dashboard/orders/${order.id}`, request.url), 303);
+  const result = await getPayableCurrentUserOrder(String(form.get("orderId") ?? ""));
+  if (!result.ok) {
+    if (result.reason === "state" && result.orderId) {
+      return NextResponse.redirect(new URL(`/dashboard/orders/${result.orderId}`, request.url), 303);
+    }
+    const destination = result.orderId
+      ? `/dashboard/orders/${result.orderId}?paymentError=${result.reason}`
+      : `/dashboard/orders?paymentError=${result.reason}`;
+    return NextResponse.redirect(new URL(destination, request.url), 303);
   }
-
-  const expectedTotal = order.items.reduce((sum, item) => sum + Math.round(item.total * 100), 0);
+  const { order } = result;
   const orderTotal = Math.round(order.total * 100);
-  if (expectedTotal !== orderTotal || orderTotal < 50 || order.items.some((item) => item.ruleSetVersion.startsWith("mock-"))) {
-    return NextResponse.redirect(new URL(`/dashboard/orders/${order.id}?paymentError=amount`, request.url), 303);
-  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
   const stripe = getStripeClient();

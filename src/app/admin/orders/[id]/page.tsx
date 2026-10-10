@@ -67,7 +67,7 @@ export default async function AdminOrderDetailPage({
 
         <section className="rounded-3xl border border-white/10 bg-[var(--surface)] p-6">
           <div className="flex items-center gap-2 text-violet-200"><CircleDollarSign className="size-4"/><p className="text-xs font-semibold">PAYMENT</p></div>
-          {latestPayment ? <div className="mt-4 grid gap-4 sm:grid-cols-3"><Info label="Status" value={formatLabel(latestPayment.status)}/><Info label="Amount" value={formatMoney(latestPayment.amount)}/><Info label="Paid at" value={latestPayment.paidAt ? formatDate(latestPayment.paidAt) : "Not paid"}/></div> : <p className="mt-4 text-sm text-[var(--muted-foreground)]">No Stripe payment record yet.</p>}
+          {latestPayment ? <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><Info label="Provider" value={formatLabel(latestPayment.provider)}/><Info label="Status" value={formatLabel(latestPayment.status)}/><Info label="Amount" value={formatMoney(latestPayment.amount)}/><Info label="Paid at" value={latestPayment.paidAt ? formatDate(latestPayment.paidAt) : "Not paid"}/></div> : <p className="mt-4 text-sm text-[var(--muted-foreground)]">No payment record yet.</p>}
         </section>
       </div>
 

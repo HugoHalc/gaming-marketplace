@@ -18,13 +18,13 @@ export function PaymentMethodsTrustBlock({ className = "" }: { className?: strin
             Secure payments
           </h3>
           <p className="mt-1 text-[10px] leading-4 text-white/45">
-            Processed securely by Stripe
+            Processed securely by Stripe or PayPal
           </p>
           <div
             className="mt-2.5 inline-flex max-w-full items-center rounded-lg border border-white/[0.07] bg-black/15 px-2.5 py-1.5 text-[10px] font-medium text-white/55"
             aria-label="Payment method availability"
           >
-            Payment options are shown in Stripe Checkout
+            Choose Stripe or PayPal during checkout
           </div>
           <p className="mt-2 text-[9px] leading-4 text-white/35">
             Payment method availability may vary by device and region.

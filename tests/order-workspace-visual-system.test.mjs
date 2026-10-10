@@ -131,7 +131,9 @@ for (const status of ["pending_payment", "paid", "queued", "in_progress", "compl
     assert.equal(JSON.stringify(record), before);
     assert.match(aside(html(Booster, props(record))), /\$10\.54/);
     assert.doesNotMatch(aside(html(Customer, props(record))), /Booster Payout/);
-    assert.equal(html(Customer, props(record)).includes('action="/api/checkout"'), status === "pending_payment");
+    const customerMarkup = html(Customer, props(record));
+    assert.equal(customerMarkup.includes('action="/api/checkout"'), status === "pending_payment");
+    assert.equal(customerMarkup.includes('action="/api/paypal/orders"'), status === "pending_payment");
   });
 }
 

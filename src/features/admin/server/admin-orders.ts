@@ -17,12 +17,14 @@ type DbOrderItem = {
 
 type DbPayment = {
   id: string;
-  provider: "stripe";
+  provider: "stripe" | "paypal";
   status: "pending" | "paid" | "failed" | "refunded" | "cancelled";
   amount_cents: number;
   currency: "USD";
   stripe_checkout_session_id: string | null;
   stripe_payment_intent_id: string | null;
+  paypal_order_id: string | null;
+  paypal_capture_id: string | null;
   paid_at: string | null;
   created_at: string;
 };
@@ -53,12 +55,14 @@ type DbOrder = {
 
 export interface AdminPaymentRecord {
   id: string;
-  provider: "stripe";
+  provider: "stripe" | "paypal";
   status: DbPayment["status"];
   amount: number;
   currency: "USD";
   checkoutSessionId: string | null;
   paymentIntentId: string | null;
+  paypalOrderId: string | null;
+  paypalCaptureId: string | null;
   paidAt: string | null;
   createdAt: string;
 }
@@ -78,7 +82,7 @@ const ORDER_SELECT = `
   subtotal_cents, discount_cents, total_cents, customer_note, created_at, updated_at,
   profiles!orders_user_id_fkey(full_name, gamer_tag, phone),
   order_items(id, game_name, service_name, service_category, configuration, price_breakdown, rule_set_version, subtotal_cents, discount_cents, total_cents),
-  payments(id, provider, status, amount_cents, currency, stripe_checkout_session_id, stripe_payment_intent_id, paid_at, created_at)
+  payments(id, provider, status, amount_cents, currency, stripe_checkout_session_id, stripe_payment_intent_id, paypal_order_id, paypal_capture_id, paid_at, created_at)
 `;
 
 function money(cents: number) {
@@ -130,6 +134,8 @@ function mapOrder(row: DbOrder): AdminOrderRecord {
       currency: payment.currency,
       checkoutSessionId: payment.stripe_checkout_session_id,
       paymentIntentId: payment.stripe_payment_intent_id,
+      paypalOrderId: payment.paypal_order_id,
+      paypalCaptureId: payment.paypal_capture_id,
       paidAt: payment.paid_at,
       createdAt: payment.created_at,
     })),

@@ -200,7 +200,7 @@ test("Champion III to Grand Champion I keeps approved modifiers on the new $15 b
   }
 });
 
-test("Champion III to Grand Champion I keeps $15 through quote, order snapshot, and Stripe checkout", async () => {
+test("Champion III to Grand Champion I keeps $15 through quote, order snapshot, and payment checkout", async () => {
   const selection = { ...base, currentRank: "champion-3", targetRank: "grand-champion-1", playlist: "2v2" };
   const quoteResponse = await quoteRoute.POST(request({ gameSlug: "rocket-league", serviceSlug: slug.rank, selection }));
   assert.equal(quoteResponse.status, 200);
@@ -214,8 +214,9 @@ test("Champion III to Grand Champion I keeps $15 through quote, order snapshot, 
   assert.equal(inserts[1].row.price_breakdown.reduce((sum, line) => sum + cents(line.amount), 0), 1500);
 
   const checkoutSource = readFileSync(path.join(root, "src/app/api/checkout/route.ts"), "utf8");
+  const checkoutOrderSource = readFileSync(path.join(root, "src/features/payments/server/checkout-order.ts"), "utf8");
   assert.match(checkoutSource, /const orderTotal = Math\.round\(order\.total \* 100\)/);
-  assert.match(checkoutSource, /expectedTotal !== orderTotal/);
+  assert.match(checkoutOrderSource, /itemTotal !== amountCents/);
   assert.match(checkoutSource, /unit_amount: orderTotal/);
 });
 

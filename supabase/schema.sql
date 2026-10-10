@@ -140,17 +140,20 @@ create policy service_field_options_public_read_active on public.service_field_o
 
 -- No public policies are created for pricing tables. They are server-only.
 
--- Phase 9: Stripe payments
+-- Payment providers
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   order_id uuid not null references public.orders(id) on delete cascade,
-  provider text not null default 'stripe' check (provider = 'stripe'),
+  provider text not null default 'stripe' check (provider in ('stripe','paypal')),
   status text not null default 'pending' check (status in ('pending','paid','failed','refunded','cancelled')),
   amount_cents integer not null check (amount_cents >= 0),
   currency text not null default 'USD' check (currency = 'USD'),
   stripe_checkout_session_id text unique,
   stripe_payment_intent_id text unique,
   stripe_customer_id text,
+  paypal_order_id text unique,
+  paypal_capture_id text unique,
+  paypal_payer_id text,
   paid_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -161,3 +164,13 @@ create table if not exists public.stripe_webhook_events (
   event_type text not null,
   processed_at timestamptz not null default now()
 );
+
+create table if not exists public.paypal_webhook_events (
+  id text primary key,
+  event_type text not null,
+  processed_at timestamptz not null default now()
+);
+
+alter table public.paypal_webhook_events enable row level security;
+revoke all privileges on public.paypal_webhook_events from anon, authenticated;
+grant all privileges on public.paypal_webhook_events to service_role;
