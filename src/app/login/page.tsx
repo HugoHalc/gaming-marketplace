@@ -21,7 +21,7 @@ export default async function LoginPage({
   searchParams: Promise<{
     error?: string;
     next?: string;
-    oauthError?: string;
+    oauthError?: "cancelled" | "missing" | "failed";
   }>;
 }) {
   const params = await searchParams;
@@ -35,15 +35,13 @@ export default async function LoginPage({
       ? "Email or password is incorrect."
       : params.error
         ? "Please check your details and try again."
-        : params.oauthError
-          ? "Social sign-in could not be completed. Please try again."
+        : params.oauthError === "cancelled"
+          ? "Social sign-in was cancelled. You can try again or use email and password."
+          : params.oauthError === "missing"
+            ? "The social sign-in response was incomplete. Please try again."
+            : params.oauthError
+              ? "Social sign-in could not be completed. Please try again."
           : null;
-
-  const googleEnabled =
-    process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED === "true";
-  const discordEnabled =
-    process.env.NEXT_PUBLIC_AUTH_DISCORD_ENABLED === "true";
-  const hasSocialProviders = googleEnabled || discordEnabled;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050807] px-4 py-8 text-[#F4F7F5] sm:py-12 lg:py-14">
@@ -103,25 +101,7 @@ export default async function LoginPage({
               </div>
             ) : null}
 
-            {hasSocialProviders ? (
-              <>
-                <SocialSignInButtons
-                  next={next}
-                  googleEnabled={googleEnabled}
-                  discordEnabled={discordEnabled}
-                />
-
-                <div className="my-6 flex items-center gap-3">
-                  <span className="h-px flex-1 bg-white/[0.08]" />
-                  <span className="font-gaming-label text-[11px] uppercase tracking-[0.12em] text-[#667069]">
-                    Or
-                  </span>
-                  <span className="h-px flex-1 bg-white/[0.08]" />
-                </div>
-              </>
-            ) : null}
-
-            <form action={loginAction} className={hasSocialProviders ? "" : "mt-6"}>
+            <form id="login-form" action={loginAction} className="mt-6">
               <input type="hidden" name="next" value={next} />
 
               <div className="space-y-4">
@@ -159,6 +139,16 @@ export default async function LoginPage({
                 Sign in
               </button>
             </form>
+
+            <div className="my-6 flex items-center gap-3" aria-hidden="true">
+              <span className="h-px flex-1 bg-white/[0.08]" />
+              <span className="font-gaming-label whitespace-nowrap text-[10px] uppercase tracking-[0.12em] text-[#667069]">
+                Or continue with
+              </span>
+              <span className="h-px flex-1 bg-white/[0.08]" />
+            </div>
+
+            <SocialSignInButtons next={next} formId="login-form" />
 
             <div className="mt-5 flex flex-col items-center justify-between gap-3 text-[13px] text-[#A0AAA4] sm:flex-row">
               <Link

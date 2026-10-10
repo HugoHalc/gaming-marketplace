@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
+import { SocialSignInButtons } from "@/components/auth/social-sign-in-buttons";
 import { safeNextPath } from "@/features/auth/safe-next";
 import { getCurrentIdentity } from "@/features/auth/server/auth";
 import { registerAction } from "./actions";
@@ -57,7 +58,7 @@ export default async function RegisterPage({
           ) : null}
 
           {!params.checkEmail ? (
-            <form action={registerAction} className="mt-6 space-y-4">
+            <form id="register-form" action={registerAction} className="mt-6 space-y-4">
               <input type="hidden" name="next" value={next} />
               <label className="block text-sm font-medium text-[#F4F7F5]">
                 Full name
@@ -149,6 +150,20 @@ export default async function RegisterPage({
                 Create account
               </button>
             </form>
+          ) : null}
+
+          {!params.checkEmail ? (
+            <>
+              <div className="my-6 flex items-center gap-3" aria-hidden="true">
+                <span className="h-px flex-1 bg-white/[0.08]" />
+                <span className="font-gaming-label whitespace-nowrap text-[10px] uppercase tracking-[0.12em] text-[#667069]">
+                  Or continue with
+                </span>
+                <span className="h-px flex-1 bg-white/[0.08]" />
+              </div>
+
+              <SocialSignInButtons next={next} formId="register-form" />
+            </>
           ) : null}
 
           <p className="mt-5 text-sm text-[#A0AAA4]">
