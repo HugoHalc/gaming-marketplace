@@ -6,7 +6,6 @@ import {
   attachSupportConversationIdentity,
   findSupportConversationByToken,
   listSupportMessages,
-  markSupportConversationRead,
 } from "@/features/support/server/support-repository";
 
 export const dynamic = "force-dynamic";
@@ -28,14 +27,13 @@ export async function GET(request: Request) {
     });
   }
 
-  const messages = await listSupportMessages(conversation.id);
-  const unreadCount = messages.filter(
+  const beforeId = new URL(request.url).searchParams.get("before");
+  const page = await listSupportMessages(conversation.id, { beforeId });
+  const unreadCount = page.messages.filter(
     (message) =>
       message.senderType === "admin" &&
       (!conversation.customerLastReadAt || new Date(message.createdAt) > new Date(conversation.customerLastReadAt)),
   ).length;
 
-  const markRead = new URL(request.url).searchParams.get("markRead") === "1";
-  if (markRead) await markSupportConversationRead(conversation.id, "visitor");
-  return NextResponse.json({ conversation, messages, unreadCount: markRead ? 0 : unreadCount });
+  return NextResponse.json({ conversation, messages: page.messages, unreadCount, page: { hasMore: page.hasMore, nextCursor: page.nextCursor } });
 }

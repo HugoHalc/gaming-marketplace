@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Rajdhani } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { SupportChatWidget } from "@/components/support/support-chat-widget";
 import { TawkVisitorMonitoring } from "@/components/monitoring/tawk-visitor-monitoring";
+import { AdminSupportAlerts } from "@/components/support/admin-support-alerts";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -42,6 +43,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <TawkVisitorMonitoring />
         </Suspense>
         <SupportChatWidget />
+        <Suspense fallback={null}>
+          <AdminSupportAlerts />
+        </Suspense>
       </body>
     </html>
   );

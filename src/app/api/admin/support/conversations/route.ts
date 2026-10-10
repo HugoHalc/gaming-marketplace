@@ -5,9 +5,9 @@ import { listAdminSupportConversations, type SupportConversationStatus } from "@
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  await requireAdmin();
+  const identity = await requireAdmin();
   const value = new URL(request.url).searchParams.get("status");
   const status: SupportConversationStatus | undefined = value === "open" || value === "closed" ? value : undefined;
-  const conversations = await listAdminSupportConversations(status);
+  const conversations = await listAdminSupportConversations(identity.id, status);
   return NextResponse.json({ conversations });
 }

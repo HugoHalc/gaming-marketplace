@@ -1,108 +1,74 @@
 "use client";
 
-import { Check, MessageCircle, RotateCcw, Send } from "lucide-react";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Check, ChevronUp, MessageCircle, RotateCcw, Send } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { SUPPORT_ALERT_EVENT, SUPPORT_ALERT_REFRESH_EVENT } from "@/components/support/admin-support-alerts";
 
-type ConversationSummary = {
-  id: string;
-  visitorName: string | null;
-  visitorEmail: string | null;
-  customerId: string | null;
-  status: "open" | "closed";
-  lastMessageAt: string;
-  unreadCount: number;
-  latestMessage: { body: string; senderType: "visitor" | "admin"; createdAt: string } | null;
-};
+type ConversationSummary = { id: string; visitorName: string | null; visitorEmail: string | null; customerId: string | null; status: "open" | "closed"; lastMessageAt: string; unreadCount: number; latestMessage: { body: string; senderType: "visitor" | "admin"; createdAt: string } | null };
 type Message = { id: string; senderType: "visitor" | "admin"; body: string; createdAt: string };
 type Detail = ConversationSummary & { createdAt: string };
+type Page = { hasMore: boolean; nextCursor: string | null };
+const emptyPage: Page = { hasMore: false, nextCursor: null };
 
-function shortTime(value: string) {
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value));
-}
+function shortTime(value: string) { return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value)); }
+async function responseJson(response: Response) { try { return await response.json() as Record<string, unknown>; } catch { throw new Error("The server returned an invalid response."); } }
+function nearBottom(node: HTMLElement | null) { return !node || node.scrollHeight - node.scrollTop - node.clientHeight < 96; }
 
 export function AdminSupportConsole() {
+  const router = useRouter(); const params = useSearchParams();
+  const requestedConversation = params.get("conversation");
   const [filter, setFilter] = useState<"open" | "closed">("open");
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [detail, setDetail] = useState<Detail | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [draft, setDraft] = useState("");
-  const [sending, setSending] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedId, setSelectedIdState] = useState<string | null>(requestedConversation);
+  const [detail, setDetail] = useState<Detail | null>(null); const [messages, setMessages] = useState<Message[]>([]); const [page, setPage] = useState<Page>(emptyPage);
+  const [drafts, setDrafts] = useState<Record<string, string>>({}); const [sending, setSending] = useState<Record<string, boolean>>({});
+  const [error, setError] = useState<string | null>(null); const [statusChanging, setStatusChanging] = useState(false); const [loadingOlder, setLoadingOlder] = useState(false); const [newMessages, setNewMessages] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null); const textareaRef = useRef<HTMLTextAreaElement>(null); const detailRequestRef = useRef(0); const retryRef = useRef<Record<string, { body: string; id: string }>>({}); const stickRef = useRef(true); const pageRef = useRef<Page>(emptyPage);
+  const draft = selectedId ? drafts[selectedId] ?? "" : ""; const isSending = selectedId ? Boolean(sending[selectedId]) : false;
 
-  const loadList = useCallback(async () => {
-    const response = await fetch(`/api/admin/support/conversations?status=${filter}`, { cache: "no-store" });
-    if (!response.ok) return;
-    const data = await response.json();
-    setConversations(data.conversations ?? []);
-    setSelectedId((current) => current && (data.conversations ?? []).some((item: ConversationSummary) => item.id === current) ? current : (data.conversations?.[0]?.id ?? null));
-  }, [filter]);
+  const setSelectedId = useCallback((id: string | null) => { setSelectedIdState(id); if (!id) { setDetail(null); setMessages([]); setPage(emptyPage); pageRef.current = emptyPage; } setError(null); setNewMessages(0); stickRef.current = true; const query = new URLSearchParams(params.toString()); if (id) query.set("conversation", id); else query.delete("conversation"); router.replace(`/admin/support${query.size ? `?${query}` : ""}`, { scroll: false }); }, [params, router]);
 
-  const loadDetail = useCallback(async (id: string) => {
-    const response = await fetch(`/api/admin/support/conversations/${id}`, { cache: "no-store" });
-    if (!response.ok) return;
-    const data = await response.json();
-    setDetail(data.conversation);
-    setMessages(data.messages ?? []);
-  }, []);
+  const loadList = useCallback(async () => { try { const response = await fetch(`/api/admin/support/conversations?status=${filter}`, { cache: "no-store" }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to load support conversations."); const list = Array.isArray(data.conversations) ? data.conversations as ConversationSummary[] : []; setConversations(list); setSelectedIdState((current) => current && (current === requestedConversation || list.some((item) => item.id === current)) ? current : requestedConversation || list[0]?.id || null); } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to load support conversations."); } }, [filter, requestedConversation]);
 
-  useEffect(() => { void loadList(); const timer = window.setInterval(() => void loadList(), 4000); return () => window.clearInterval(timer); }, [loadList]);
-  useEffect(() => { if (!selectedId) { setDetail(null); setMessages([]); return; } void loadDetail(selectedId); const timer = window.setInterval(() => void loadDetail(selectedId), 3000); return () => window.clearInterval(timer); }, [selectedId, loadDetail]);
-  useEffect(() => { requestAnimationFrame(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }); }, [messages]);
+  const loadDetail = useCallback(async (id: string, options: { older?: boolean; quiet?: boolean } = {}) => {
+    const requestId = ++detailRequestRef.current; const node = scrollRef.current; const wasNearBottom = nearBottom(node); const oldHeight = node?.scrollHeight ?? 0;
+    if (options.older) setLoadingOlder(true);
+    try { const cursor = options.older ? pageRef.current.nextCursor : null; const response = await fetch(`/api/admin/support/conversations/${id}${cursor ? `?before=${encodeURIComponent(cursor)}` : ""}`, { cache: "no-store" }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to load the conversation."); if (requestId !== detailRequestRef.current || id !== selectedId) return;
+      const incoming = Array.isArray(data.messages) ? data.messages as Message[] : []; const nextPage = (data.page as Page | undefined) ?? emptyPage; setDetail(data.conversation as Detail); setPage(nextPage); pageRef.current = nextPage;
+      if (options.older) { setMessages((current) => [...incoming, ...current]); requestAnimationFrame(() => { if (node) node.scrollTop += node.scrollHeight - oldHeight; }); }
+      else { setMessages((current) => { const previousLast = current.at(-1)?.id; const nextLast = incoming.at(-1)?.id; if (previousLast && nextLast !== previousLast && !wasNearBottom) setNewMessages((value) => value + incoming.filter((item) => !current.some((old) => old.id === item.id)).length); return incoming; }); stickRef.current = wasNearBottom; }
+    } catch (cause) { if (!options.quiet) setError(cause instanceof Error ? cause.message : "Unable to load the conversation."); } finally { if (options.older) setLoadingOlder(false); }
+  }, [selectedId]);
+
+  const markVisibleRead = useCallback(async () => { const node = scrollRef.current; const last = messages.at(-1); if (!selectedId || !last || document.visibilityState !== "visible" || !document.hasFocus() || !nearBottom(node)) return; try { const response = await fetch(`/api/admin/support/conversations/${selectedId}/read`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messageId: last.id }) }); if (response.ok) { setNewMessages(0); setConversations((current) => current.map((item) => item.id === selectedId ? { ...item, unreadCount: 0 } : item)); window.dispatchEvent(new Event(SUPPORT_ALERT_REFRESH_EVENT)); } } catch { /* The next visible refresh retries. */ } }, [messages, selectedId]);
+
+  useEffect(() => { const initial = window.setTimeout(() => void loadList(), 0); const timer = window.setInterval(() => void loadList(), 12_000); return () => { window.clearTimeout(initial); window.clearInterval(timer); }; }, [loadList]);
+  useEffect(() => { if (!selectedId || params.get("conversation") === selectedId) return; const query = new URLSearchParams(params.toString()); query.set("conversation", selectedId); router.replace(`/admin/support?${query}`, { scroll: false }); }, [params, router, selectedId]);
+  useEffect(() => { if (!selectedId) return; stickRef.current = true; const initial = window.setTimeout(() => void loadDetail(selectedId), 0); const timer = window.setInterval(() => void loadDetail(selectedId, { quiet: true }), 15_000); return () => { window.clearTimeout(initial); window.clearInterval(timer); }; }, [selectedId, loadDetail]);
+  useEffect(() => { if (!stickRef.current) return; requestAnimationFrame(() => { const node = scrollRef.current; if (node) { node.scrollTop = node.scrollHeight; void markVisibleRead(); } }); }, [messages, markVisibleRead]);
+  useEffect(() => { const handler = (event: Event) => { const alert = (event as CustomEvent<{ conversationId?: string }>).detail; void loadList(); if (alert?.conversationId === selectedId) void loadDetail(selectedId, { quiet: true }); }; window.addEventListener(SUPPORT_ALERT_EVENT, handler); return () => window.removeEventListener(SUPPORT_ALERT_EVENT, handler); }, [loadDetail, loadList, selectedId]);
+  useEffect(() => { const handler = () => void markVisibleRead(); document.addEventListener("visibilitychange", handler); window.addEventListener("focus", handler); return () => { document.removeEventListener("visibilitychange", handler); window.removeEventListener("focus", handler); }; }, [markVisibleRead]);
+  useEffect(() => { const node = textareaRef.current; if (!node) return; node.style.height = "0px"; node.style.height = `${Math.min(node.scrollHeight, 112)}px`; }, [draft]);
 
   async function send(event: FormEvent) {
-    event.preventDefault();
-    if (!selectedId || !draft.trim() || sending) return;
-    setSending(true);
-    const body = draft.trim();
-    setDraft("");
-    const response = await fetch(`/api/admin/support/conversations/${selectedId}/messages`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ body }) });
-    if (!response.ok) setDraft(body);
-    await Promise.all([loadDetail(selectedId), loadList()]);
-    setSending(false);
+    event.preventDefault(); if (!selectedId || !draft.trim() || isSending) return;
+    const conversationId = selectedId; const body = draft.trim(); const retry = retryRef.current[conversationId]; const clientMessageId = retry?.body === body ? retry.id : crypto.randomUUID();
+    setSending((value) => ({ ...value, [conversationId]: true })); setDrafts((value) => ({ ...value, [conversationId]: "" })); setError(null);
+    try { const response = await fetch(`/api/admin/support/conversations/${conversationId}/messages`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ body, clientMessageId }) }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to send the reply."); delete retryRef.current[conversationId]; if (selectedId === conversationId) { stickRef.current = true; await loadDetail(conversationId); } await loadList(); }
+    catch (cause) { retryRef.current[conversationId] = { body, id: clientMessageId }; setDrafts((value) => ({ ...value, [conversationId]: value[conversationId]?.trim() ? `${body}\n${value[conversationId]}` : body })); setError(cause instanceof Error ? cause.message : "Unable to send the reply."); }
+    finally { setSending((value) => ({ ...value, [conversationId]: false })); }
   }
 
-  async function toggleStatus() {
-    if (!selectedId || !detail) return;
-    const status = detail.status === "open" ? "closed" : "open";
-    await fetch(`/api/admin/support/conversations/${selectedId}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status }) });
-    setFilter(status === "closed" ? "open" : "closed");
-    setSelectedId(null);
-    await loadList();
-  }
+  async function toggleStatus() { if (!selectedId || !detail || statusChanging) return; const conversationId = selectedId; const status = detail.status === "open" ? "closed" : "open"; setStatusChanging(true); setError(null); try { const response = await fetch(`/api/admin/support/conversations/${conversationId}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status }) }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to update the conversation."); setFilter(status === "closed" ? "open" : "closed"); setSelectedId(null); await loadList(); } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to update the conversation."); } finally { setStatusChanging(false); } }
+  function keyDown(event: KeyboardEvent<HTMLTextAreaElement>) { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }
+  function jumpToLatest() { const node = scrollRef.current; if (node) node.scrollTop = node.scrollHeight; stickRef.current = true; setNewMessages(0); void markVisibleRead(); }
 
-  return (
-    <div className="grid min-h-[680px] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080C0A] lg:grid-cols-[340px_minmax(0,1fr)]">
-      <aside className="border-b border-white/[0.07] lg:border-b-0 lg:border-r">
-        <div className="border-b border-white/[0.07] p-3">
-          <div className="flex rounded-lg border border-white/[0.07] bg-white/[0.02] p-1">
-            {(["open", "closed"] as const).map((value) => <button key={value} type="button" onClick={() => { setFilter(value); setSelectedId(null); }} className={`h-8 flex-1 rounded-md text-[11px] font-semibold capitalize ${filter === value ? "bg-white/[0.07] text-white" : "text-[#75807A] hover:text-white"}`}>{value}</button>)}
-          </div>
-        </div>
-        <div className="max-h-[620px] overflow-y-auto">
-          {conversations.map((conversation) => (
-            <button key={conversation.id} type="button" onClick={() => setSelectedId(conversation.id)} className={`block w-full border-b border-white/[0.05] px-4 py-4 text-left transition-colors ${selectedId === conversation.id ? "bg-white/[0.045]" : "hover:bg-white/[0.02]"}`}>
-              <div className="flex items-center justify-between gap-3"><p className="truncate text-[12px] font-semibold text-white">{conversation.visitorName || conversation.visitorEmail || "Website visitor"}</p>{conversation.unreadCount > 0 ? <span className="min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{conversation.unreadCount}</span> : null}</div>
-              <p className="mt-1.5 line-clamp-2 text-[11px] leading-4 text-[#75807A]">{conversation.latestMessage?.body || "No messages yet"}</p>
-              <p className="mt-2 text-[9px] text-[#59645E]">{shortTime(conversation.lastMessageAt)}</p>
-            </button>
-          ))}
-          {!conversations.length ? <div className="px-6 py-16 text-center"><MessageCircle className="mx-auto size-5 text-[#59645E]"/><p className="mt-3 text-[11px] text-[#75807A]">No {filter} conversations.</p></div> : null}
-        </div>
-      </aside>
-
-      <section className="flex min-h-[680px] min-w-0 flex-col">
-        {detail ? <>
-          <header className="flex items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4">
-            <div className="min-w-0"><p className="truncate text-[14px] font-semibold text-white">{detail.visitorName || "Website visitor"}</p><p className="mt-1 truncate text-[10px] text-[#75807A]">{detail.visitorEmail || (detail.customerId ? "Signed-in customer" : "Anonymous visitor")}</p></div>
-            <button type="button" onClick={toggleStatus} className="inline-flex h-9 items-center rounded-lg border border-white/[0.08] px-3 text-[10px] font-semibold text-[#AAB5AF] hover:bg-white/[0.04] hover:text-white">{detail.status === "open" ? <><Check className="mr-1.5 size-3.5"/>Close conversation</> : <><RotateCcw className="mr-1.5 size-3.5"/>Reopen</>}</button>
-          </header>
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-            <div className="space-y-3">{messages.map((message) => <div key={message.id} className={`flex ${message.senderType === "admin" ? "justify-end" : "justify-start"}`}><div className={`max-w-[72%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-5 ${message.senderType === "admin" ? "rounded-br-md border border-[#39E56F]/10 bg-[#39E56F]/[0.055] text-[#E7ECE9]" : "rounded-bl-md border border-white/[0.07] bg-white/[0.035] text-[#D6DDD9]"}`}>{message.body}<p className="mt-1.5 text-[8px] text-[#59645E]">{shortTime(message.createdAt)}</p></div></div>)}</div>
-          </div>
-          <form onSubmit={send} className="border-t border-white/[0.07] p-4"><div className="flex items-end gap-2 rounded-xl border border-white/[0.08] bg-[#0B100D] p-2 focus-within:border-white/[0.15]"><textarea value={draft} onChange={(event) => setDraft(event.target.value)} rows={1} maxLength={1500} placeholder="Reply as BoostingPedia Support..." className="max-h-28 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-2 text-[12px] text-white outline-none placeholder:text-[#59645E]"/><button type="submit" disabled={!draft.trim() || sending} className="grid size-9 place-items-center rounded-lg bg-[#39E56F] text-[#050807] disabled:opacity-40"><Send className="size-4"/></button></div></form>
-        </> : <div className="grid flex-1 place-items-center px-6 text-center"><div><MessageCircle className="mx-auto size-6 text-[#59645E]"/><h2 className="mt-4 text-[15px] font-semibold text-white">Select a conversation</h2><p className="mt-2 text-[11px] text-[#75807A]">Open a customer question from the support queue.</p></div></div>}
-      </section>
-    </div>
-  );
+  return <div className="grid min-h-[680px] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080C0A] lg:grid-cols-[340px_minmax(0,1fr)]">
+    <aside className="border-b border-white/[0.07] lg:border-b-0 lg:border-r"><div className="border-b border-white/[0.07] p-3"><div className="flex rounded-lg border border-white/[0.07] bg-white/[0.02] p-1">{(["open", "closed"] as const).map((value) => <button key={value} type="button" onClick={() => { setFilter(value); setSelectedId(null); }} className={`h-8 flex-1 rounded-md text-[11px] font-semibold capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40 ${filter === value ? "bg-white/[0.07] text-white" : "text-[#75807A] hover:text-white"}`}>{value}</button>)}</div></div>
+      <div className="max-h-[620px] overflow-y-auto">{conversations.map((conversation) => <button key={conversation.id} type="button" onClick={() => setSelectedId(conversation.id)} className={`block w-full border-b border-white/[0.05] px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#39E56F]/40 ${selectedId === conversation.id ? "bg-white/[0.045]" : "hover:bg-white/[0.02]"}`}><div className="flex items-center justify-between gap-3"><p className="truncate text-[12px] font-semibold text-white">{conversation.visitorName || conversation.visitorEmail || "Website visitor"}</p>{conversation.unreadCount > 0 ? <span className="min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{conversation.unreadCount}</span> : null}</div><p className="mt-1.5 line-clamp-2 break-words text-[11px] leading-4 text-[#75807A]">{conversation.latestMessage?.body || "No messages yet"}</p><p className="mt-2 text-[9px] text-[#59645E]">{shortTime(conversation.lastMessageAt)}</p></button>)}{!conversations.length ? <div className="px-6 py-16 text-center"><MessageCircle className="mx-auto size-5 text-[#59645E]"/><p className="mt-3 text-[11px] text-[#75807A]">No {filter} conversations.</p></div> : null}</div></aside>
+    <section className="flex min-h-[680px] min-w-0 flex-col">{detail ? <><header className="flex items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4"><div className="min-w-0"><p className="truncate text-[14px] font-semibold text-white">{detail.visitorName || "Website visitor"}</p><p className="mt-1 truncate text-[10px] text-[#75807A]">{detail.visitorEmail || (detail.customerId ? "Signed-in customer" : "Anonymous visitor")}</p></div><button type="button" disabled={statusChanging} onClick={() => void toggleStatus()} className="inline-flex min-h-9 items-center rounded-lg border border-white/[0.08] px-3 text-[10px] font-semibold text-[#AAB5AF] hover:bg-white/[0.04] hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40">{detail.status === "open" ? <><Check className="mr-1.5 size-3.5"/>Close conversation</> : <><RotateCcw className="mr-1.5 size-3.5"/>Reopen</>}</button></header>
+      <div ref={scrollRef} onScroll={() => { stickRef.current = nearBottom(scrollRef.current); if (stickRef.current) void markVisibleRead(); }} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-5">{page.hasMore ? <div className="mb-4 text-center"><button type="button" disabled={loadingOlder} onClick={() => selectedId && void loadDetail(selectedId, { older: true })} className="inline-flex min-h-9 items-center rounded-lg border border-white/10 px-3 text-[10px] font-semibold text-[#AAB5AF] disabled:opacity-50"><ChevronUp className="mr-1 size-3.5"/>{loadingOlder ? "Loading…" : "Load earlier messages"}</button></div> : null}<div className="space-y-3">{messages.map((message) => <div key={message.id} className={`flex ${message.senderType === "admin" ? "justify-end" : "justify-start"}`}><div className={`max-w-[86%] break-words rounded-2xl px-3.5 py-2.5 text-[12px] leading-5 [overflow-wrap:anywhere] sm:max-w-[72%] ${message.senderType === "admin" ? "rounded-br-md border border-[#39E56F]/10 bg-[#39E56F]/[0.055] text-[#E7ECE9]" : "rounded-bl-md border border-white/[0.07] bg-white/[0.035] text-[#D6DDD9]"}`}><span className="whitespace-pre-wrap">{message.body}</span><p className="mt-1.5 text-[8px] text-[#59645E]">{shortTime(message.createdAt)}</p></div></div>)}</div>{newMessages > 0 ? <button type="button" onClick={jumpToLatest} className="sticky bottom-2 mx-auto mt-3 block rounded-full bg-[#39E56F] px-3 py-2 text-[10px] font-bold text-[#050807]">{newMessages} new message{newMessages === 1 ? "" : "s"}</button> : null}</div>
+      <form onSubmit={send} className="border-t border-white/[0.07] p-4"><label htmlFor="admin-support-reply" className="sr-only">Reply to support conversation</label><div className="flex items-end gap-2 rounded-xl border border-white/[0.08] bg-[#0B100D] p-2 focus-within:border-[#39E56F]/35"><textarea id="admin-support-reply" ref={textareaRef} value={draft} onChange={(event) => selectedId && setDrafts((value) => ({ ...value, [selectedId]: event.target.value }))} onKeyDown={keyDown} rows={1} maxLength={1500} placeholder="Reply as BoostingPedia Support..." className="max-h-28 min-h-9 flex-1 resize-none overflow-y-auto bg-transparent px-1.5 py-2 text-[12px] text-white outline-none placeholder:text-[#59645E]"/><button type="submit" disabled={!draft.trim() || isSending} aria-label="Send support reply" className="grid size-9 place-items-center rounded-lg bg-[#39E56F] text-[#050807] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]"><Send className="size-4"/></button></div>{error ? <p role="alert" className="mt-2 text-[10px] text-rose-200">{error}</p> : null}<p className="mt-2 text-[9px] text-[#59645E]">Enter to send · Shift + Enter for a new line</p></form></> : <div className="grid flex-1 place-items-center px-6 text-center"><div><MessageCircle className="mx-auto size-6 text-[#59645E]"/><h2 className="mt-4 text-[15px] font-semibold text-white">Select a conversation</h2><p className="mt-2 text-[11px] text-[#75807A]">Open a customer question from the support queue.</p>{error ? <p role="alert" className="mt-3 text-[10px] text-rose-200">{error}</p> : null}</div></div>}</section>
+  </div>;
 }

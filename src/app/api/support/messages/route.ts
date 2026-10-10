@@ -8,14 +8,18 @@ import {
   createSupportMessage,
   createSupportSessionToken,
   findSupportConversationByToken,
+  isValidSupportClientMessageId,
 } from "@/features/support/server/support-repository";
 
 export async function POST(request: Request) {
   try {
-    const payload = (await request.json()) as { body?: string; name?: string; email?: string };
+    const payload = (await request.json()) as { body?: string; name?: string; email?: string; clientMessageId?: string };
     const body = payload.body?.trim() ?? "";
     if (!body || body.length > SUPPORT_MAX_MESSAGE_LENGTH) {
       return NextResponse.json({ error: "Message must be between 1 and 1500 characters." }, { status: 400 });
+    }
+    if (!isValidSupportClientMessageId(payload.clientMessageId)) {
+      return NextResponse.json({ error: "Invalid message request." }, { status: 400 });
     }
 
     const store = await cookies();
@@ -43,6 +47,7 @@ export async function POST(request: Request) {
       senderType: "visitor",
       senderUserId: identity?.id ?? null,
       body,
+      clientMessageId: payload.clientMessageId,
     });
 
     const response = NextResponse.json({ conversation: { ...conversation, status: "open" }, message }, { status: 201 });

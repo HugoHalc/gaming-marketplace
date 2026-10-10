@@ -1,171 +1,63 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { MessageCircle, Send, X } from "lucide-react";
+import { ChevronUp, MessageCircle, Send, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 
-type Message = {
-  id: string;
-  senderType: "visitor" | "admin";
-  body: string;
-  createdAt: string;
-};
-
-type Conversation = {
-  id: string;
-  status: "open" | "closed";
-};
+type Message = { id: string; senderType: "visitor" | "admin"; body: string; createdAt: string };
+type Conversation = { id: string; status: "open" | "closed" };
+type Page = { hasMore: boolean; nextCursor: string | null };
+const emptyPage: Page = { hasMore: false, nextCursor: null };
+function nearBottom(node: HTMLElement | null) { return !node || node.scrollHeight - node.scrollTop - node.clientHeight < 96; }
+function messageTime(value: string) { return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(value)); }
+async function responseJson(response: Response) { try { return await response.json() as Record<string, unknown>; } catch { throw new Error("The server returned an invalid response."); } }
 
 export function SupportChatWidget() {
-  const pathname = usePathname();
-  const pathSegments = pathname.split("/").filter(Boolean);
-  const isServiceConfiguratorPage = pathSegments[0] === "games" && pathSegments.length === 3;
-  const isRocketLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "rocket-league";
-  const isLeagueConfigurator = isServiceConfiguratorPage && pathSegments[1] === "league-of-legends";
-  const isValorantConfigurator = isServiceConfiguratorPage && pathSegments[1] === "valorant";
-  const isOverwatchConfigurator = isServiceConfiguratorPage && pathSegments[1] === "overwatch-2";
-  const isMarvelRivalsConfigurator = isServiceConfiguratorPage && pathSegments[1] === "marvel-rivals";
-  const hasMobilePurchaseBar =
-    isRocketLeagueConfigurator ||
-    isLeagueConfigurator ||
-    isValorantConfigurator ||
-    isOverwatchConfigurator ||
-    isMarvelRivalsConfigurator;
-  const [open, setOpen] = useState(false);
-  const [conversation, setConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [unread, setUnread] = useState(0);
-  const [draft, setDraft] = useState("");
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname(); const enabled = !pathname.startsWith("/admin");
+  const pathSegments = pathname.split("/").filter(Boolean); const isServiceConfiguratorPage = pathSegments[0] === "games" && pathSegments.length === 3; const hasMobilePurchaseBar = isServiceConfiguratorPage;
+  const isLeagueOrOverwatch = isServiceConfiguratorPage && (pathSegments[1] === "league-of-legends" || pathSegments[1] === "overwatch-2");
+  const [open, setOpen] = useState(false); const [conversation, setConversation] = useState<Conversation | null>(null); const [messages, setMessages] = useState<Message[]>([]); const [page, setPage] = useState<Page>(emptyPage); const [unread, setUnread] = useState(0); const [draft, setDraft] = useState(""); const [sending, setSending] = useState(false); const [loadingOlder, setLoadingOlder] = useState(false); const [newMessages, setNewMessages] = useState(0); const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null); const textareaRef = useRef<HTMLTextAreaElement>(null); const pageRef = useRef<Page>(emptyPage); const stickRef = useRef(true); const requestRef = useRef(0); const retryRef = useRef<{ body: string; id: string } | null>(null);
 
-  const refresh = useCallback(async (markOpen = false) => {
-    try {
-      const response = await fetch(`/api/support/session${markOpen ? "?markRead=1" : ""}`, { cache: "no-store" });
-      if (!response.ok) return;
-      const data = await response.json();
-      setConversation(data.conversation ?? null);
-      setMessages(data.messages ?? []);
-      setUnread(markOpen ? 0 : Number(data.unreadCount ?? 0));
-    } catch {
-      // Keep the widget usable even if a background refresh fails.
-    }
-  }, []);
+  const markVisibleRead = useCallback(async () => { const last = messages.at(-1); if (!enabled || !open || !last || document.visibilityState !== "visible" || !document.hasFocus() || !nearBottom(scrollRef.current)) return; try { const response = await fetch("/api/support/session/read", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messageId: last.id }) }); if (response.ok) { setUnread(0); setNewMessages(0); } } catch { /* Polling retries without blocking the chat. */ } }, [enabled, messages, open]);
 
-  useEffect(() => {
-    void refresh(false);
-    const id = window.setInterval(() => void refresh(open), open ? 3500 : 15000);
-    return () => window.clearInterval(id);
-  }, [open, refresh]);
+  const refresh = useCallback(async (options: { older?: boolean; quiet?: boolean } = {}) => {
+    if (!enabled) return; const requestId = ++requestRef.current; const node = scrollRef.current; const wasNearBottom = nearBottom(node); const oldHeight = node?.scrollHeight ?? 0; if (options.older) setLoadingOlder(true);
+    try { const cursor = options.older ? pageRef.current.nextCursor : null; const response = await fetch(`/api/support/session${cursor ? `?before=${encodeURIComponent(cursor)}` : ""}`, { cache: "no-store" }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to load support messages."); if (requestId !== requestRef.current) return;
+      const incoming = Array.isArray(data.messages) ? data.messages as Message[] : []; const nextPage = (data.page as Page | undefined) ?? emptyPage; setConversation((data.conversation as Conversation | null) ?? null); setPage(nextPage); pageRef.current = nextPage; setUnread(Number(data.unreadCount ?? 0));
+      if (options.older) { setMessages((current) => [...incoming, ...current]); requestAnimationFrame(() => { if (node) node.scrollTop += node.scrollHeight - oldHeight; }); }
+      else { setMessages((current) => { const added = incoming.filter((item) => !current.some((old) => old.id === item.id)).length; if (current.length && added && open && !wasNearBottom) setNewMessages((value) => value + added); return incoming; }); stickRef.current = !open || wasNearBottom; }
+    } catch (cause) { if (!options.quiet) setError(cause instanceof Error ? cause.message : "Unable to load support messages."); } finally { if (options.older) setLoadingOlder(false); }
+  }, [enabled, open]);
 
-  useEffect(() => {
-    if (!open) return;
-    requestAnimationFrame(() => {
-      const node = scrollRef.current;
-      if (node) node.scrollTop = node.scrollHeight;
-    });
-  }, [messages, open]);
+  useEffect(() => { if (!enabled) return; const initial = window.setTimeout(() => void refresh({ quiet: true }), 0); const id = window.setInterval(() => void refresh({ quiet: true }), open ? 3500 : 15000); return () => { window.clearTimeout(initial); window.clearInterval(id); }; }, [enabled, open, refresh]);
+  useEffect(() => { if (!open || !stickRef.current) return; requestAnimationFrame(() => { const node = scrollRef.current; if (node) { node.scrollTop = node.scrollHeight; void markVisibleRead(); } }); }, [messages, open, markVisibleRead]);
+  useEffect(() => { const node = textareaRef.current; if (!node) return; node.style.height = "0px"; node.style.height = `${Math.min(node.scrollHeight, 112)}px`; }, [draft]);
+  useEffect(() => { const handler = () => void markVisibleRead(); document.addEventListener("visibilitychange", handler); window.addEventListener("focus", handler); return () => { document.removeEventListener("visibilitychange", handler); window.removeEventListener("focus", handler); }; }, [markVisibleRead]);
 
-  if (pathname.startsWith("/admin")) return null;
+  if (!enabled) return null;
 
   async function send(event: FormEvent) {
-    event.preventDefault();
-    const body = draft.trim();
-    if (!body || sending) return;
-    setSending(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/support/messages", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ body }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Unable to send message.");
-      setDraft("");
-      await refresh(true);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to send message.");
-    } finally {
-      setSending(false);
-    }
+    event.preventDefault(); const body = draft.trim(); if (!body || sending) return; const clientMessageId = retryRef.current?.body === body ? retryRef.current.id : crypto.randomUUID(); setSending(true); setError(null); setDraft("");
+    try { const response = await fetch("/api/support/messages", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ body, clientMessageId }) }); const data = await responseJson(response); if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Unable to send message."); retryRef.current = null; const confirmed = data.message as Message | undefined; if (confirmed) setMessages((current) => current.some((item) => item.id === confirmed.id) ? current : [...current, confirmed]); stickRef.current = true; await refresh({ quiet: true }); }
+    catch (cause) { retryRef.current = { body, id: clientMessageId }; setDraft((current) => current.trim() ? `${body}\n${current}` : body); setError(cause instanceof Error ? cause.message : "Unable to send message."); }
+    finally { setSending(false); }
   }
+  function keyDown(event: KeyboardEvent<HTMLTextAreaElement>) { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }
+  function jumpToLatest() { const node = scrollRef.current; if (node) node.scrollTop = node.scrollHeight; stickRef.current = true; setNewMessages(0); void markVisibleRead(); }
 
-  const floatingPosition = hasMobilePurchaseBar
-    ? isLeagueConfigurator
-      ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 2xl:bottom-6"
-      : isOverwatchConfigurator
-        ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
-        : "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6 xl:bottom-6"
-    : "bottom-[max(18px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6";
+  const floatingPosition = hasMobilePurchaseBar ? `${isLeagueOrOverwatch ? "xl:bottom-6" : "xl:bottom-6"} bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-3 sm:right-6` : "bottom-[max(18px,env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6";
+  const panelHeight = hasMobilePurchaseBar ? "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]" : "h-[min(620px,calc(100dvh-110px))]";
 
-  const panelHeight = hasMobilePurchaseBar
-    ? isLeagueConfigurator || isOverwatchConfigurator
-      ? "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]"
-      : "h-[min(560px,calc(100dvh-210px))] sm:h-[min(620px,calc(100dvh-190px))] xl:h-[min(620px,calc(100dvh-110px))]"
-    : "h-[min(620px,calc(100dvh-110px))]";
-
-  const launcherSize = hasMobilePurchaseBar ? "size-12 sm:size-14" : "size-14";
-  const launcherIconSize = hasMobilePurchaseBar ? "size-5 sm:size-6" : "size-6";
-
-  return (
-    <div className={`fixed z-[70] ${floatingPosition}`}>
-      {open ? (
-        <section className={`mb-3 flex ${panelHeight} w-[min(390px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-white/[0.09] bg-[#080C0A] shadow-[0_24px_80px_rgba(0,0,0,.48)]`}>
-          <header className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3.5">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full border border-[#39E56F]/15 bg-[#39E56F]/[0.06]">
-                <img src="/brand/boostingpedia-mark.png" alt="" className="size-6 object-contain" />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-[13px] font-semibold text-[#F4F7F5]">BoostingPedia Support</p>
-                <p className="mt-0.5 text-[10px] text-[#738079]">Questions before you order? We can help.</p>
-              </div>
-            </div>
-            <button type="button" onClick={() => setOpen(false)} className="grid size-8 place-items-center rounded-lg text-[#738079] hover:bg-white/[0.04] hover:text-white" aria-label="Close support chat">
-              <X className="size-4" />
-            </button>
-          </header>
-
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-            {!messages.length ? (
-              <div className="flex h-full min-h-[280px] flex-col items-center justify-center px-5 text-center">
-                <span className="grid size-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.025] text-[#8F9A94]"><MessageCircle className="size-5" /></span>
-                <h2 className="mt-4 text-[15px] font-semibold text-[#F4F7F5]">How can we help?</h2>
-                <p className="mt-2 max-w-[260px] text-[11px] leading-5 text-[#738079]">Ask us about services, account security, pricing or order questions before purchasing.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.senderType === "visitor" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-[12px] leading-5 ${message.senderType === "visitor" ? "rounded-br-md border border-blue-200/[0.08] bg-blue-300/[0.055] text-[#E7ECE9]" : "rounded-bl-md border border-white/[0.07] bg-white/[0.035] text-[#D6DDD9]"}`}>
-                      {message.body}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <footer className="border-t border-white/[0.07] p-3">
-            {conversation?.status === "closed" ? <p className="mb-2 text-[10px] text-[#738079]">This conversation was closed. Sending a new message will reopen it.</p> : null}
-            <form onSubmit={send} className="flex items-end gap-2 rounded-xl border border-white/[0.08] bg-[#0B100D] p-2 focus-within:border-white/[0.15]">
-              <textarea value={draft} onChange={(event) => setDraft(event.target.value)} rows={1} maxLength={1500} placeholder="Write a message..." className="max-h-28 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-2 text-[12px] leading-5 text-white outline-none placeholder:text-[#59645E]" />
-              <button type="submit" disabled={!draft.trim() || sending} className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#55ED82] disabled:cursor-not-allowed disabled:opacity-40" aria-label="Send support message">
-                <Send className="size-4" />
-              </button>
-            </form>
-            {error ? <p className="mt-2 text-[10px] text-rose-200">{error}</p> : null}
-            <p className="mt-2 text-center text-[9px] text-[#59645E]">Keep payments and account credentials inside BoostingPedia.</p>
-          </footer>
-        </section>
-      ) : null}
-
-      <button type="button" onClick={() => { setOpen(true); setUnread(0); void refresh(true); }} className={`relative ml-auto grid ${launcherSize} place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] shadow-[0_12px_36px_rgba(0,0,0,.36)] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40`} aria-label="Open support chat">
-        <MessageCircle className={launcherIconSize} strokeWidth={1.8} />
-        {unread > 0 ? <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{unread > 9 ? "9+" : unread}</span> : null}
-      </button>
-    </div>
-  );
+  return <div className={`fixed z-[70] ${floatingPosition}`}>
+    {open ? <section className={`mb-3 flex ${panelHeight} w-[min(390px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-white/[0.09] bg-[#080C0A]`} aria-label="BoostingPedia support chat">
+      <header className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3.5"><div className="flex min-w-0 items-center gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-full border border-[#39E56F]/15 bg-[#39E56F]/[0.06]"><img src="/brand/boostingpedia-mark.png" alt="" className="size-6 object-contain" /></span><div className="min-w-0"><p className="truncate text-[13px] font-semibold text-[#F4F7F5]">BoostingPedia Support</p><p className="mt-0.5 text-[10px] text-[#738079]">Questions before you order? We can help.</p></div></div><button type="button" onClick={() => setOpen(false)} className="grid size-8 place-items-center rounded-lg text-[#738079] hover:bg-white/[0.04] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40" aria-label="Close support chat"><X className="size-4" /></button></header>
+      <div ref={scrollRef} onScroll={() => { stickRef.current = nearBottom(scrollRef.current); if (stickRef.current) void markVisibleRead(); }} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-4">{page.hasMore ? <div className="mb-3 text-center"><button type="button" disabled={loadingOlder} onClick={() => void refresh({ older: true })} className="inline-flex min-h-9 items-center rounded-lg border border-white/10 px-3 text-[10px] text-[#A0AAA4] disabled:opacity-50"><ChevronUp className="mr-1 size-3.5"/>{loadingOlder ? "Loading…" : "Load earlier messages"}</button></div> : null}
+        {!messages.length ? <div className="flex h-full min-h-[280px] flex-col items-center justify-center px-5 text-center"><span className="grid size-11 place-items-center rounded-full border border-white/[0.08] bg-white/[0.025] text-[#8F9A94]"><MessageCircle className="size-5" /></span><h2 className="mt-4 text-[15px] font-semibold text-[#F4F7F5]">How can we help?</h2><p className="mt-2 max-w-[260px] text-[11px] leading-5 text-[#738079]">Ask us about services, account security, pricing or order questions before purchasing.</p></div> : <div className="space-y-3">{messages.map((message) => <div key={message.id} className={`flex ${message.senderType === "visitor" ? "justify-end" : "justify-start"}`}><div className={`max-w-[86%] break-words rounded-2xl px-3.5 py-2.5 text-[12px] leading-5 [overflow-wrap:anywhere] sm:max-w-[82%] ${message.senderType === "visitor" ? "rounded-br-md border border-blue-200/[0.08] bg-blue-300/[0.055] text-[#E7ECE9]" : "rounded-bl-md border border-white/[0.07] bg-white/[0.035] text-[#D6DDD9]"}`}><span className="whitespace-pre-wrap">{message.body}</span><p className="mt-1 text-[8px] text-[#59645E]">{messageTime(message.createdAt)}</p></div></div>)}</div>}
+        {newMessages > 0 ? <button type="button" onClick={jumpToLatest} className="sticky bottom-1 mx-auto mt-3 block rounded-full bg-[#39E56F] px-3 py-2 text-[10px] font-bold text-[#050807]">New messages</button> : null}</div>
+      <footer className="border-t border-white/[0.07] p-3">{conversation?.status === "closed" ? <p className="mb-2 text-[10px] text-[#738079]">This conversation was closed. Sending a new message will reopen it.</p> : null}<form onSubmit={send} className="flex items-end gap-2 rounded-xl border border-white/[0.08] bg-[#0B100D] p-2 focus-within:border-[#39E56F]/35"><label htmlFor="support-message" className="sr-only">Support message</label><textarea id="support-message" ref={textareaRef} value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={keyDown} rows={1} maxLength={1500} placeholder="Write a message..." className="max-h-28 min-h-9 flex-1 resize-none overflow-y-auto bg-transparent px-1.5 py-2 text-[12px] leading-5 text-white outline-none placeholder:text-[#59645E]" /><button type="submit" disabled={!draft.trim() || sending} className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#39E56F] text-[#050807] transition-colors hover:bg-[#55ED82] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]" aria-label="Send support message"><Send className="size-4" /></button></form>{error ? <p role="alert" className="mt-2 text-[10px] text-rose-200">{error}</p> : null}<p className="mt-2 text-center text-[9px] text-[#59645E]">Enter to send · Shift + Enter for a new line</p><p className="mt-1 text-center text-[9px] text-[#59645E]">Keep payments and account credentials inside BoostingPedia.</p></footer>
+    </section> : null}
+    <button type="button" onClick={() => { setOpen(true); stickRef.current = true; void refresh({ quiet: true }); }} className={`relative ml-auto grid ${hasMobilePurchaseBar ? "size-12 sm:size-14" : "size-14"} place-items-center rounded-full border border-[#39E56F]/20 bg-[#14231A] text-[#82F5A4] transition-transform hover:-translate-y-px hover:bg-[#182B20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39E56F]/40`} aria-label="Open support chat"><MessageCircle className={hasMobilePurchaseBar ? "size-5 sm:size-6" : "size-6"} strokeWidth={1.8} />{unread > 0 ? <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-[#39E56F] px-1 text-center text-[9px] font-bold leading-5 text-[#050807]">{unread > 9 ? "9+" : unread}</span> : null}</button>
+  </div>;
 }
