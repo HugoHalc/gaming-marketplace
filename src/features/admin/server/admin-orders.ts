@@ -35,6 +35,15 @@ type DbProfile = {
   phone: string | null;
 };
 
+type DbAssignment = {
+  booster_id: string;
+  assigned_by: string;
+  assigned_at: string;
+  is_active: boolean;
+  assignment_kind: "booster" | "admin";
+  profiles: DbProfile | DbProfile[] | null;
+};
+
 type DbOrder = {
   id: string;
   user_id: string;
@@ -51,6 +60,7 @@ type DbOrder = {
   order_items: DbOrderItem[] | null;
   payments: DbPayment[] | null;
   profiles: DbProfile | DbProfile[] | null;
+  order_booster_assignments: DbAssignment[] | null;
 };
 
 export interface AdminPaymentRecord {
@@ -75,14 +85,25 @@ export interface AdminOrderRecord extends OrderRecord {
     phone: string | null;
   };
   payments: AdminPaymentRecord[];
+  assignment: {
+    assigneeId: string;
+    assignedById: string;
+    assignedAt: string;
+    kind: "booster" | "admin";
+    displayName: string;
+  } | null;
+  isAvailable: boolean;
 }
+
+export type AdminOrderView = "available" | "mine";
 
 const ORDER_SELECT = `
   id, user_id, order_number, status, payment_status, currency,
   subtotal_cents, discount_cents, total_cents, customer_note, created_at, updated_at,
   profiles!orders_user_id_fkey(full_name, gamer_tag, phone),
   order_items(id, game_name, service_name, service_category, configuration, price_breakdown, rule_set_version, subtotal_cents, discount_cents, total_cents),
-  payments(id, provider, status, amount_cents, currency, stripe_checkout_session_id, stripe_payment_intent_id, paypal_order_id, paypal_capture_id, paid_at, created_at)
+  payments(id, provider, status, amount_cents, currency, stripe_checkout_session_id, stripe_payment_intent_id, paypal_order_id, paypal_capture_id, paid_at, created_at),
+  order_booster_assignments(booster_id, assigned_by, assigned_at, is_active, assignment_kind, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, phone))
 `;
 
 function money(cents: number) {
@@ -96,6 +117,24 @@ function firstProfile(value: DbOrder["profiles"]): DbProfile | null {
 
 function mapOrder(row: DbOrder): AdminOrderRecord {
   const profile = firstProfile(row.profiles);
+  const activeAssignment = (row.order_booster_assignments ?? []).find(
+    (assignment) => assignment.is_active,
+  );
+  const assigneeProfile = activeAssignment
+    ? firstProfile(activeAssignment.profiles)
+    : null;
+  const assignment = activeAssignment
+    ? {
+        assigneeId: activeAssignment.booster_id,
+        assignedById: activeAssignment.assigned_by,
+        assignedAt: activeAssignment.assigned_at,
+        kind: activeAssignment.assignment_kind,
+        displayName:
+          assigneeProfile?.gamer_tag ||
+          assigneeProfile?.full_name ||
+          (activeAssignment.assignment_kind === "admin" ? "Administrator" : "Booster"),
+      }
+    : null;
   return {
     id: row.id,
     userId: row.user_id,
@@ -139,16 +178,35 @@ function mapOrder(row: DbOrder): AdminOrderRecord {
       paidAt: payment.paid_at,
       createdAt: payment.created_at,
     })),
+    assignment,
+    isAvailable:
+      row.payment_status === "paid" &&
+      ["paid", "queued"].includes(row.status) &&
+      assignment === null,
   };
 }
 
-export async function listAdminOrders(status?: OrderStatus): Promise<AdminOrderRecord[]> {
+export async function listAdminOrders(
+  status?: OrderStatus,
+  options?: { view?: AdminOrderView; currentAdminId?: string },
+): Promise<AdminOrderRecord[]> {
   const supabase = createSecretServerClient();
   let query = supabase.from("orders").select(ORDER_SELECT).order("created_at", { ascending: false });
   if (status) query = query.eq("status", status);
   const { data, error } = await query;
   if (error) throw new Error(`Unable to load admin orders: ${error.message}`);
-  return (data as unknown as DbOrder[]).map(mapOrder);
+  const orders = (data as unknown as DbOrder[]).map(mapOrder);
+  if (options?.view === "available") {
+    return orders.filter((order) => order.isAvailable);
+  }
+  if (options?.view === "mine" && options.currentAdminId) {
+    return orders.filter(
+      (order) =>
+        order.assignment?.kind === "admin" &&
+        order.assignment.assigneeId === options.currentAdminId,
+    );
+  }
+  return orders;
 }
 
 export async function getAdminOrder(id: string): Promise<AdminOrderRecord | null> {

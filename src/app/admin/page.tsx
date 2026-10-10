@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { requireAdmin } from "@/features/auth/server/auth";
 import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import type { OrderStatus } from "@/features/orders/types/orders";
-import { listAdminOrders } from "@/features/admin/server/admin-orders";
+import { listAdminOrders, type AdminOrderView } from "@/features/admin/server/admin-orders";
 
 export const metadata = { title: "Admin | VantaBoost" };
 export const dynamic = "force-dynamic";
@@ -30,13 +30,24 @@ function formatDate(value: string) {
 function isOrderStatus(value: string | undefined): value is OrderStatus {
   return statuses.some((item) => item.value === value);
 }
+function isAdminOrderView(value: string | undefined): value is AdminOrderView {
+  return value === "available" || value === "mine";
+}
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ status?: string; error?: string }> }) {
-  await requireAdmin();
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ status?: string; view?: string; error?: string }> }) {
+  const admin = await requireAdmin();
   const query = await searchParams;
   const selectedStatus = isOrderStatus(query.status) ? query.status : undefined;
-  const orders = await listAdminOrders(selectedStatus);
-  const allOrders = selectedStatus ? await listAdminOrders() : orders;
+  const selectedView = isAdminOrderView(query.view) ? query.view : undefined;
+  const hasFilter = Boolean(selectedStatus || selectedView);
+  const [orders, allOrdersResult] = await Promise.all([
+    listAdminOrders(selectedStatus, {
+      view: selectedView,
+      currentAdminId: admin.id,
+    }),
+    hasFilter ? listAdminOrders() : Promise.resolve(null),
+  ]);
+  const allOrders = allOrdersResult ?? orders;
 
   const paidRevenue = allOrders.filter((order) => order.paymentStatus === "paid").reduce((sum, order) => sum + order.total, 0);
   const awaitingFulfillment = allOrders.filter((order) => ["paid", "queued", "in_progress"].includes(order.status)).length;
@@ -58,21 +69,24 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     </section>
 
     <div className="mt-8 flex flex-wrap gap-2">
-      <Link href="/admin" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${!selectedStatus ? "border-violet-300/30 bg-violet-400/10 text-violet-100" : "border-white/10 text-white/55 hover:text-white"}`}>All</Link>
+      <Link href="/admin" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${!selectedStatus && !selectedView ? "border-violet-300/30 bg-violet-400/10 text-violet-100" : "border-white/10 text-white/55 hover:text-white"}`}>All</Link>
+      <Link href="/admin?view=available" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${selectedView === "available" ? "border-[#39E56F]/30 bg-[#39E56F]/10 text-[#82F5A4]" : "border-white/10 text-white/55 hover:text-white"}`}>Available</Link>
+      <Link href="/admin?view=mine" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${selectedView === "mine" ? "border-[#39E56F]/30 bg-[#39E56F]/10 text-[#82F5A4]" : "border-white/10 text-white/55 hover:text-white"}`}>Accepted by me</Link>
       {statuses.map((status) => <Link key={status.value} href={`/admin?status=${status.value}`} className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${selectedStatus === status.value ? "border-violet-300/30 bg-violet-400/10 text-violet-100" : "border-white/10 text-white/55 hover:text-white"}`}>{status.label}</Link>)}
     </div>
 
     <section className="mt-5 overflow-hidden rounded-3xl border border-white/10 bg-[var(--surface)]">
-      <div className="border-b border-white/10 px-5 py-4 sm:px-6"><h2 className="font-semibold">{selectedStatus ? statuses.find((item) => item.value === selectedStatus)?.label : "All orders"}</h2><p className="mt-1 text-xs text-[var(--muted-foreground)]">{orders.length} result{orders.length === 1 ? "" : "s"}</p></div>
+      <div className="border-b border-white/10 px-5 py-4 sm:px-6"><h2 className="font-semibold">{selectedView === "available" ? "Available paid orders" : selectedView === "mine" ? "Accepted by me" : selectedStatus ? statuses.find((item) => item.value === selectedStatus)?.label : "All orders"}</h2><p className="mt-1 text-xs text-[var(--muted-foreground)]">{orders.length} result{orders.length === 1 ? "" : "s"}</p></div>
       {orders.length === 0 ? <div className="px-6 py-16 text-center text-sm text-[var(--muted-foreground)]">No orders match this filter.</div> : <div className="divide-y divide-white/[0.07]">{orders.map((order) => {
         const item = order.items[0];
-        return <Link key={order.id} href={`/admin/orders/${order.id}`} className="grid gap-4 px-5 py-5 transition hover:bg-white/[0.025] sm:px-6 lg:grid-cols-[1.15fr_1fr_.7fr_.7fr_auto] lg:items-center">
-          <div><div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-white">{order.orderNumber}</span><OrderStatusBadge status={order.status}/></div><p className="mt-1 text-xs text-[var(--muted-foreground)]">{formatDate(order.createdAt)}</p></div>
+        const acceptedByCurrentAdmin = order.assignment?.kind === "admin" && order.assignment.assigneeId === admin.id;
+        return <article key={order.id} className="grid gap-4 px-5 py-5 transition hover:bg-white/[0.025] sm:px-6 lg:grid-cols-[1.15fr_1fr_.7fr_.7fr_auto] lg:items-center">
+          <div><div className="flex flex-wrap items-center gap-2"><Link href={`/admin/orders/${order.id}`} className="font-semibold text-white hover:text-[#82F5A4]">{order.orderNumber}</Link><OrderStatusBadge status={order.status}/></div><p className="mt-1 text-xs text-[var(--muted-foreground)]">{formatDate(order.createdAt)}</p>{order.assignment ? <p className="mt-1 text-[11px] text-white/45">Assigned to {order.assignment.displayName}</p> : null}</div>
           <div><p className="text-sm font-medium text-white">{item?.serviceName ?? "Gaming service"}</p><p className="mt-1 text-xs text-[var(--muted-foreground)]">{item?.gameName ?? "—"}</p></div>
           <div><p className="text-xs text-[var(--muted-foreground)]">Customer</p><p className="mt-1 text-sm text-white">{order.customer.fullName || order.customer.gamerTag || "Customer"}</p></div>
           <div><p className="text-xs text-[var(--muted-foreground)]">Total</p><p className="mt-1 text-sm font-semibold text-white">{formatMoney(order.total)}</p><p className="mt-1 text-[11px] text-white/40">{order.paymentStatus}</p></div>
-          <ArrowRight className="size-4 text-white/35"/>
-        </Link>;
+          {order.isAvailable ? <form action={`/api/admin/orders/${order.id}/accept`} method="post"><button type="submit" className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#39E56F] px-4 text-xs font-bold text-[#071109] transition hover:bg-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]">Accept order</button></form> : acceptedByCurrentAdmin ? <Link href={`/admin/orders/${order.id}/workspace`} className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[#39E56F]/25 px-4 text-xs font-semibold text-[#82F5A4] hover:bg-[#39E56F]/[0.07]">Open workspace</Link> : <Link href={`/admin/orders/${order.id}`} aria-label={`View ${order.orderNumber}`} className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 px-3 text-white/55 hover:text-white"><ArrowRight className="size-4"/></Link>}
+        </article>;
       })}</div>}
     </section>
   </Container></main></>;

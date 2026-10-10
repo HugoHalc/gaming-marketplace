@@ -30,7 +30,7 @@ export default async function AdminOrderDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ updated?: string; error?: string }>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const { id } = await params;
   const query = await searchParams;
   const order = await getAdminOrder(id);
@@ -39,6 +39,9 @@ export default async function AdminOrderDetailPage({
   const nextStatuses = nextAdminStatuses(order.status);
   const item = order.items[0];
   const latestPayment = [...order.payments].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  const acceptedByCurrentAdmin =
+    order.assignment?.kind === "admin" &&
+    order.assignment.assigneeId === admin.id;
 
   return <><SiteHeader/><main className="py-10 sm:py-14"><Container>
     <Link href="/admin" className="inline-flex items-center text-sm text-[var(--muted-foreground)] hover:text-white"><ArrowLeft className="mr-2 size-4"/>Back to admin</Link>
@@ -72,6 +75,11 @@ export default async function AdminOrderDetailPage({
       </div>
 
       <aside className="space-y-6">
+        <section className="rounded-3xl border border-[#39E56F]/20 bg-[#39E56F]/[0.055] p-6">
+          <p className="text-xs font-semibold text-[#82F5A4]">ASSIGNMENT</p>
+          {order.isAvailable ? <><h2 className="mt-2 text-xl font-semibold">Work this order</h2><p className="mt-2 text-sm text-[var(--muted-foreground)]">Accept this paid order with your administrator account. No booster registration or game approval is required.</p><form action={`/api/admin/orders/${order.id}/accept`} method="post"><button type="submit" className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#39E56F] px-4 text-sm font-bold text-[#071109] transition hover:bg-[#82F5A4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]">Accept order</button></form></> : acceptedByCurrentAdmin ? <><h2 className="mt-2 text-xl font-semibold">Accepted by you</h2><p className="mt-2 text-sm text-[var(--muted-foreground)]">Continue fulfillment in the operational workspace.</p><Link href={`/admin/orders/${order.id}/workspace`} className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#39E56F]/25 px-4 text-sm font-semibold text-[#82F5A4] hover:bg-[#39E56F]/[0.08]">Open workspace</Link></> : order.assignment ? <><h2 className="mt-2 text-xl font-semibold">Already assigned</h2><p className="mt-2 text-sm text-[var(--muted-foreground)]">{order.assignment.displayName} is currently responsible for this order.</p></> : <><h2 className="mt-2 text-xl font-semibold">Not available</h2><p className="mt-2 text-sm text-[var(--muted-foreground)]">Only paid, unassigned orders in a valid acceptance state can be accepted.</p></>}
+        </section>
+
         <section className="rounded-3xl border border-violet-300/20 bg-gradient-to-br from-violet-500/[0.1] to-transparent p-6">
           <p className="text-xs font-semibold text-violet-300">FULFILLMENT</p><h2 className="mt-2 text-xl font-semibold">Update order status</h2>
           {nextStatuses.length ? <div className="mt-5 space-y-4">{nextStatuses.map((status) => <form key={status} action={updateOrderStatusAction} className="rounded-2xl border border-white/10 bg-black/15 p-4"><input type="hidden" name="orderId" value={order.id}/><input type="hidden" name="status" value={status}/><label className="block text-xs text-[var(--muted-foreground)]">Internal note (optional)<textarea name="note" maxLength={500} rows={2} className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-violet-400" placeholder="Reason or fulfillment note"/></label><button className={`mt-3 inline-flex h-10 w-full items-center justify-center rounded-xl px-4 text-sm font-semibold transition ${status === "cancelled" ? "border border-rose-300/20 bg-rose-400/10 text-rose-100 hover:bg-rose-400/15" : "bg-[var(--primary)] text-white hover:brightness-110"}`}>{statusLabels[status]}</button></form>)}</div> : <p className="mt-4 text-sm text-[var(--muted-foreground)]">No manual fulfillment transition is available from this status.</p>}

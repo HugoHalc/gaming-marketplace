@@ -175,10 +175,10 @@ export async function getOrderConversationState(
       }
     : null;
 
-  const viewerRole = isAssignedBooster
-    ? "booster"
-    : identity.profile?.role === "admin"
-      ? "admin"
+  const viewerRole = identity.profile?.role === "admin"
+    ? "admin"
+    : isAssignedBooster
+      ? "booster"
       : "customer";
 
   if (!assignment) {
@@ -327,13 +327,11 @@ export async function sendOrderMessage(orderId: string, body: string) {
   const { identity, supabase, isAssignedBooster } =
     await getAuthorizedOrder(orderId);
   const role = identity.profile?.role ?? "customer";
-  const senderRole = isAssignedBooster
-    ? "booster"
-    : role === "admin"
-      ? "admin"
-      : role === "booster"
-        ? "booster"
-        : "customer";
+  const senderRole = role === "admin"
+    ? "admin"
+    : isAssignedBooster || role === "booster"
+      ? "booster"
+      : "customer";
   const detectedTerms = detectModerationTerms(trimmed);
 
   const { data: message, error } = await supabase

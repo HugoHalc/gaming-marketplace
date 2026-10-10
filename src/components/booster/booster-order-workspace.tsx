@@ -79,12 +79,18 @@ export function BoosterOrderWorkspace({
   currentUserId,
   initialMessages,
   boosterPayout,
+  assignmentContext = "booster",
+  backHref = "/booster/orders?view=active",
+  backLabel = "Orders",
 }: {
   order: OrderRecord;
   history: OrderStatusEvent[];
   currentUserId: string;
   initialMessages: OrderWorkspaceMessage[];
-  boosterPayout: number;
+  boosterPayout: number | null;
+  assignmentContext?: "booster" | "admin";
+  backHref?: string;
+  backLabel?: string;
 }) {
   const item = order.items[0];
   const config = item?.configuration ?? {};
@@ -100,11 +106,11 @@ export function BoosterOrderWorkspace({
       <div className="mx-auto w-full max-w-[1520px] px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.05] pb-3">
           <Link
-            href="/booster/orders?view=active"
+            href={backHref}
             className="inline-flex items-center text-[10px] font-semibold text-[#A0AAA4] transition-colors hover:text-[#F4F7F5]"
           >
             <ArrowLeft className="mr-1.5 size-3.5" />
-            Orders
+            {backLabel}
           </Link>
 
           <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#667069]">
@@ -163,7 +169,7 @@ export function BoosterOrderWorkspace({
                 </div>
 
                 <span className="hidden text-[9px] text-[#667069] sm:block">
-                  Customer ↔ Booster
+                  Customer ↔ {assignmentContext === "admin" ? "BoostingPedia" : "Booster"}
                 </span>
               </div>
 
@@ -219,14 +225,25 @@ export function BoosterOrderWorkspace({
               orderStatus={order.status}
               details={<><p className="mb-2 text-xs font-semibold text-white">{item?.gameName}</p>
                 <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
-                      Booster Payout
-                    </p>
-                    <p className="font-gaming-value mt-1 text-2xl font-bold tracking-[-0.02em] text-[#82F5A4]">
-                      {formatMoney(boosterPayout)}
-                    </p>
-                  </div>
+                  {boosterPayout === null ? (
+                    <div>
+                      <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                        Staff assignment
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
+                        Administrator
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="font-gaming-label text-[8px] uppercase tracking-[0.13em] text-[#667069]">
+                        Booster Payout
+                      </p>
+                      <p className="font-gaming-value mt-1 text-2xl font-bold tracking-[-0.02em] text-[#82F5A4]">
+                        {formatMoney(boosterPayout)}
+                      </p>
+                    </div>
+                  )}
 
                   <span
                     className={`rounded-full border px-2.5 py-1 text-[8px] font-semibold ${status.className}`}
