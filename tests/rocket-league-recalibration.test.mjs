@@ -114,6 +114,16 @@ function oracle(family, selection) {
   }
   if (selection.boostMethod === "play-with-booster") percent += pack.approvedOptions.find((o) => o.title === "Play with Booster").price;
   const fixed = selection.liveStream ? BigInt(pack.approvedOptions.find((o) => o.title === "Streaming").price * 10000) : 0n;
+  if (family === "rank") {
+    const referenceBase = half(units, 100n);
+    const progressive = [...pack.progressDiscount].reverse().find((p) => referenceBase >= p.slab * 100)?.discount ?? 0;
+    const combined = pack.globalDiscount.discount + progressive;
+    const discounted = half(BigInt(referenceBase) * BigInt(100 - combined), 100n);
+    const previousBase = half(BigInt(discounted) * 60n, 100n);
+    const increasedBase = half(BigInt(previousBase) * 13514n, 10000n);
+    const total = half(BigInt(increasedBase) * BigInt(100 + percent), 100n) + Number(fixed / 100n);
+    return { raw: total, progressive, discounted: total, total, previousBase, increasedBase, referenceBase };
+  }
   const raw = half(units * BigInt(100 + percent) + fixed * 100n, 10000n);
   const progressive = [...pack.progressDiscount].reverse().find((p) => raw >= p.slab * 100)?.discount ?? 0;
   const combined = pack.globalDiscount.discount + progressive;
@@ -131,8 +141,8 @@ function* selections(family) {
   }
 }
 const anchors = [
-  ["rank", { currentRank: "grand-champion-1", targetRank: "grand-champion-3" }, 11535, 5652, 3391],
-  ["rank", { currentRank: "grand-champion-1", targetRank: "supersonic-legend" }, 23724, 10201, 6121],
+  ["rank", { currentRank: "grand-champion-1", targetRank: "grand-champion-3" }, 4583, 4583, 4583],
+  ["rank", { currentRank: "grand-champion-1", targetRank: "supersonic-legend" }, 8272, 8272, 8272],
   ["wins", { currentRank: "bronze-3", wins: 1 }, 188, 103, 62],
   ["wins", { currentRank: "bronze-3", wins: 12 }, 2257, 1241, 745],
   ["tournament", { currentRank: "gold" }, 3201, 1761, 1057],
@@ -143,6 +153,70 @@ for (const [family, selection, raw, discounted, total] of anchors) test(`verifie
   const expected = oracle(family, { ...base, ...selection });
   assert.deepEqual([expected.raw, expected.discounted, expected.total], [raw, discounted, total]);
   assert.equal(cents(calculators[family]({ ...base, ...selection }).total), total);
+});
+
+test("rank base prices increase exactly 35.14% after legacy calibration", () => {
+  const samples = [
+    ["bronze-1", "bronze-2", 96, 130],
+    ["silver-1", "silver-3", 208, 281],
+    ["gold-3", "platinum-2", 419, 566],
+    ["champion-3", "grand-champion-1", 1110, 1500],
+    ["grand-champion-1", "grand-champion-3", 3391, 4583],
+    ["grand-champion-3", "supersonic-legend", 3584, 4843],
+  ];
+  for (const [currentRank, targetRank, previousBase, increasedBase] of samples) {
+    const selection = { ...base, currentRank, targetRank, playlist: "2v2" };
+    const expected = oracle("rank", selection);
+    const quote = calculators.rank(selection);
+    assert.equal(expected.previousBase, previousBase);
+    assert.equal(expected.increasedBase, increasedBase);
+    assert.equal(cents(quote.total), increasedBase);
+    assert.equal(cents(quote.breakdown[0].amount), increasedBase);
+    assert.equal(shared.increaseRocketLeagueRankBaseCents(previousBase), increasedBase);
+  }
+});
+
+test("Champion III to Grand Champion I keeps approved modifiers on the new $15 base", () => {
+  const selection = { ...base, currentRank: "champion-3", targetRank: "grand-champion-1", playlist: "2v2" };
+  const cases = [
+    [{}, 1500, []],
+    [{ boostMethod: "play-with-booster" }, 2175, [["Play With Booster", 675]]],
+    [{ expressDelivery: true }, 1800, [["Express Delivery", 300]]],
+    [{ liveStream: true }, 2500, [["Live Stream", 1000]]],
+    [{ rankInsurance: true }, 2250, [["Rank Insurance", 750]]],
+    [{ boostMethod: "play-with-booster", expressDelivery: true, liveStream: true, rankInsurance: true }, 4225,
+      [["Play With Booster", 675], ["Express Delivery", 300], ["Rank Insurance", 750], ["Live Stream", 1000]]],
+  ];
+  for (const [patch, expectedTotal, expectedLines] of cases) {
+    const quote = calculators.rank({ ...selection, ...patch });
+    assert.equal(cents(quote.total), expectedTotal);
+    assert.equal(cents(quote.subtotal), expectedTotal);
+    assert.equal(cents(quote.discount), 0);
+    assert.equal(quote.breakdown.reduce((sum, line) => sum + cents(line.amount), 0), expectedTotal);
+    for (const [label, amount] of expectedLines) {
+      assert.equal(cents(quote.breakdown.find((line) => line.label === label).amount), amount);
+    }
+    assert.ok(quote.breakdown.every((line) => Number.isFinite(line.amount) && line.amount >= 0));
+  }
+});
+
+test("Champion III to Grand Champion I keeps $15 through quote, order snapshot, and Stripe checkout", async () => {
+  const selection = { ...base, currentRank: "champion-3", targetRank: "grand-champion-1", playlist: "2v2" };
+  const quoteResponse = await quoteRoute.POST(request({ gameSlug: "rocket-league", serviceSlug: slug.rank, selection }));
+  assert.equal(quoteResponse.status, 200);
+  const { quote } = await quoteResponse.json();
+  assert.equal(cents(quote.total), 1500);
+
+  inserts.length = 0;
+  const orderResponse = await orderRoute.POST(request(orderBody("rank", selection, quote)));
+  assert.equal(orderResponse.status, 201);
+  assert.deepEqual(inserts.map(({ row }) => row.total_cents), [1500, 1500]);
+  assert.equal(inserts[1].row.price_breakdown.reduce((sum, line) => sum + cents(line.amount), 0), 1500);
+
+  const checkoutSource = readFileSync(path.join(root, "src/app/api/checkout/route.ts"), "utf8");
+  assert.match(checkoutSource, /const orderTotal = Math\.round\(order\.total \* 100\)/);
+  assert.match(checkoutSource, /expectedTotal !== orderTotal/);
+  assert.match(checkoutSource, /unit_amount: orderTotal/);
 });
 
 for (const family of Object.keys(calculators)) test(`${family}: every base configuration, queue, platform, method and approved extra combination`, () => {
@@ -165,9 +239,11 @@ for (const family of Object.keys(calculators)) test(`${family}: every base confi
         assert.deepEqual(visible.map((line) => line.label), quote.breakdown.filter((line) => line.amount >= 0).map((line) => line.label));
         assert.ok(Number.isSafeInteger(cents(quote.total)) && quote.total >= 0);
         assert.equal(minimum.meetsMinimumOrderTotal(quote.total), expected.total >= 500);
-        const stages = shared.rocketLeaguePriceFromReferenceSubtotal(expected.raw);
-        assert.equal(stages.discountedReferenceCents, expected.discounted);
-        assert.equal(stages.progressiveDiscountBps, expected.progressive * 100);
+        if (family !== "rank") {
+          const stages = shared.rocketLeaguePriceFromReferenceSubtotal(expected.raw);
+          assert.equal(stages.discountedReferenceCents, expected.discounted);
+          assert.equal(stages.progressiveDiscountBps, expected.progressive * 100);
+        }
         count++;
       }
   console.log(`${family}: ${count} complete quote configurations verified`);

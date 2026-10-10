@@ -12,7 +12,10 @@ import {
 
 export type RocketLeaguePricingFamily = "rank" | "wins" | "tournament" | "rewards" | "placements";
 export const ROCKET_LEAGUE_PRICING_VERSION = "rocket-league-reference-2026-10-01-v2";
+export const ROCKET_LEAGUE_RANK_PRICING_VERSION = "rocket-league-rank-base-plus-35-14-v1";
 export const ROCKET_LEAGUE_PERMANENT_DISCOUNT_BPS = 4500;
+export const ROCKET_LEAGUE_RANK_BASE_INCREASE_NUMERATOR = 13514;
+export const ROCKET_LEAGUE_RANK_BASE_INCREASE_DENOMINATOR = 10000;
 
 const queueBps: Readonly<Record<string, number>> = {
   "1v1": 0, "2v2": 0, "3v3": 2000, rumble: 2000, hoops: 2000,
@@ -51,6 +54,60 @@ export function rocketLeaguePriceFromReferenceSubtotal(referenceSubtotalCents: n
   const discountedReferenceCents = roundHalfUp(referenceSubtotalCents * (10000 - combinedDiscountBps), 10000);
   const totalCents = roundHalfUp(discountedReferenceCents * 6000, 10000);
   return { referenceSubtotalCents, progressiveDiscountBps, combinedDiscountBps, discountedReferenceCents, totalCents };
+}
+
+export function increaseRocketLeagueRankBaseCents(previousBaseCents: number) {
+  if (!Number.isSafeInteger(previousBaseCents) || previousBaseCents < 0) {
+    throw new Error("Invalid Rocket League rank base cents.");
+  }
+  return roundHalfUp(
+    previousBaseCents * ROCKET_LEAGUE_RANK_BASE_INCREASE_NUMERATOR,
+    ROCKET_LEAGUE_RANK_BASE_INCREASE_DENOMINATOR,
+  );
+}
+
+function calculateIncreasedRocketLeagueRankQuote(
+  baseUnits: number,
+  selection: ConfiguratorSelection,
+  playlist: string,
+): QuotePreview {
+  // First resolve the existing commercial rank price, including its approved
+  // reference calibration. The 35.14% increase is applied once to that result.
+  const referenceBaseCents = roundHalfUp(baseUnits, ROCKET_LEAGUE_REFERENCE_UNITS_PER_CENT);
+  const previousBaseCents = rocketLeaguePriceFromReferenceSubtotal(referenceBaseCents).totalCents;
+  const baseCents = increaseRocketLeagueRankBaseCents(previousBaseCents);
+
+  // Percentage upgrades are then calculated from the new rank base. The fixed
+  // Live Stream charge remains exactly $10.00 and is never multiplied.
+  const percentageComponents: Array<{ label: string; bps: number }> = [];
+  if (queueBps[playlist]) percentageComponents.push({ label: `Playlist (${playlist})`, bps: queueBps[playlist] });
+  if (selection.boostMethod === "play-with-booster") percentageComponents.push({ label: "Play With Booster", bps: 4500 });
+  if (selection.expressDelivery === true) percentageComponents.push({ label: "Express Delivery", bps: 2000 });
+  if (selection.rankInsurance === true) percentageComponents.push({ label: "Rank Insurance", bps: 5000 });
+
+  let numerator = baseCents * 10000;
+  let cumulativeCents = baseCents;
+  const breakdown: QuoteBreakdownItem[] = [{ label: "Rank boost", amount: baseCents / 100 }];
+  for (const component of percentageComponents) {
+    numerator += baseCents * component.bps;
+    const nextCents = roundHalfUp(numerator, 10000);
+    breakdown.push({ label: component.label, amount: (nextCents - cumulativeCents) / 100 });
+    cumulativeCents = nextCents;
+  }
+  if (selection.liveStream === true) {
+    cumulativeCents += 1000;
+    breakdown.push({ label: "Live Stream", amount: 10 });
+  }
+  if (selection.appearOffline === true) breakdown.push({ label: "Appear Offline", amount: 0 });
+
+  return {
+    currency: "USD",
+    subtotal: cumulativeCents / 100,
+    discount: 0,
+    total: cumulativeCents / 100,
+    breakdown,
+    ruleSetVersion: ROCKET_LEAGUE_RANK_PRICING_VERSION,
+  };
 }
 
 function quantity(value: unknown, maximum: number): number {
@@ -96,19 +153,22 @@ export function calculateRocketLeagueReferenceQuote(family: RocketLeaguePricingF
     throw new Error("Appear Offline is not available with Play With Booster.");
   }
 
+  if (family === "rank") {
+    return calculateIncreasedRocketLeagueRankQuote(baseUnits, selection, playlist);
+  }
+
   // All percentage components use the unrounded base independently, exactly once.
   // Fixed Streaming enters this same subtotal before both reference discounts.
   const components: Array<{ label: string; bps: number; fixedUnits: number }> = [];
   if (queueBps[playlist]) components.push({ label: `Playlist (${playlist})`, bps: queueBps[playlist], fixedUnits: 0 });
   if (selection.boostMethod === "play-with-booster") components.push({ label: "Play With Booster", bps: 4500, fixedUnits: 0 });
   if (selection.expressDelivery === true) components.push({ label: "Express Delivery", bps: 2000, fixedUnits: 0 });
-  if (family === "rank" && selection.rankInsurance === true) components.push({ label: "Rank Insurance", bps: 5000, fixedUnits: 0 });
   if (selection.liveStream === true) components.push({ label: "Live Stream", bps: 0, fixedUnits: 1000 * ROCKET_LEAGUE_REFERENCE_UNITS_PER_CENT });
 
   const denominator = 10000 * ROCKET_LEAGUE_REFERENCE_UNITS_PER_CENT;
   let numerator = baseUnits * 10000;
   let cumulativeCents = roundHalfUp(numerator, denominator);
-  const baseLabel = family === "rank" ? "Rank boost" : family === "tournament" ? "Tournament boost"
+  const baseLabel = family === "tournament" ? "Tournament boost"
     : family === "placements" ? `${selection.matches} placement matches`
       : `${selection.wins} ${family === "wins" ? "competitive" : "reward"} wins`;
   const breakdown: QuoteBreakdownItem[] = [{ label: baseLabel, amount: cumulativeCents / 100 }];
