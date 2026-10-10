@@ -56,7 +56,11 @@ export async function POST(request: Request) {
       .in("payment_status", ["unpaid", "failed"]);
 
     return NextResponse.redirect(approvalUrl, 303);
-  } catch {
+  } catch (error) {
+    console.error("[paypal/orders] Unable to start checkout.", {
+      orderId: order.id,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return NextResponse.redirect(new URL(`/dashboard/orders/${order.id}?paymentError=paypal`, request.url), 303);
   }
 }

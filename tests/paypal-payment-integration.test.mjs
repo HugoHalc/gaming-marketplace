@@ -16,10 +16,10 @@ function loadTypeScript(relativePath, mocks = {}) {
     fileName: filename,
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   });
-  const module = { exports: {} };
+  const loadedModule = { exports: {} };
   const localRequire = (name) => name === "server-only" ? {} : mocks[name] ?? require(name);
-  vm.runInThisContext(`(function(require,module,exports){${compiled.outputText}\n})`, { filename })(localRequire, module, module.exports);
-  return module.exports;
+  vm.runInThisContext(`(function(require,module,exports){${compiled.outputText}\n})`, { filename })(localRequire, loadedModule, loadedModule.exports);
+  return loadedModule.exports;
 }
 
 test("checkout presents Stripe and PayPal without automatically choosing a provider", () => {
@@ -115,6 +115,24 @@ test("PayPal return capture is bound to the authenticated user's stored order", 
   assert.match(capture, /getCurrentUserOrder\(orderId\)/);
   assert.match(capture, /payment\.order_id !== order\.id/);
   assert.match(capture, /markPayPalOrderCaptured/);
+});
+
+test("PayPal persistence works with the partial unique index and reconciles concurrent retries", () => {
+  const repository = source("src/features/payments/server/paypal-payment-repository.ts");
+  assert.doesNotMatch(repository, /upsert\([\s\S]*onConflict: "paypal_order_id"/);
+  assert.match(repository, /eq\("paypal_order_id", input\.paypalOrderId\)/);
+  assert.match(repository, /from\("payments"\)\.insert\(payload\)/);
+  assert.match(repository, /error\.code === "23505"/);
+  assert.match(repository, /payment\.order_id !== input\.orderId/);
+  assert.match(repository, /payment\.status === "paid"/);
+});
+
+test("PayPal checkout logs a safe server-side diagnostic while preserving the generic customer error", () => {
+  const route = source("src/app/api/paypal/orders/route.ts");
+  assert.match(route, /console\.error\("\[paypal\/orders\] Unable to start checkout\."/);
+  assert.match(route, /error instanceof Error \? error\.message : "Unknown error"/);
+  assert.match(route, /paymentError=paypal/);
+  assert.doesNotMatch(route, /PAYPAL_CLIENT_SECRET/);
 });
 
 test("PayPal webhook verifies signatures and processes events idempotently", () => {

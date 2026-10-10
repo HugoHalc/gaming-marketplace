@@ -24,7 +24,7 @@ export async function createPendingPayPalPayment(input: {
   paypalOrderId: string;
 }) {
   const supabase = createSecretServerClient();
-  const { error } = await supabase.from("payments").upsert({
+  const payload = {
     order_id: input.orderId,
     provider: "paypal",
     status: "pending",
@@ -32,8 +32,49 @@ export async function createPendingPayPalPayment(input: {
     currency: input.currency.toUpperCase(),
     paypal_order_id: input.paypalOrderId,
     updated_at: new Date().toISOString(),
-  }, { onConflict: "paypal_order_id" });
-  if (error) throw new Error("Unable to store PayPal payment.");
+  };
+
+  async function findExistingPayment() {
+    const { data, error } = await supabase
+      .from("payments")
+      .select("id, order_id, status")
+      .eq("provider", "paypal")
+      .eq("paypal_order_id", input.paypalOrderId)
+      .maybeSingle();
+    if (error) throw new Error("Unable to inspect PayPal payment state.");
+    return data;
+  }
+
+  async function updateExistingPayment(payment: { id: string; order_id: string; status: string }) {
+    if (payment.order_id !== input.orderId) throw new Error("PayPal payment order does not match.");
+    if (payment.status === "paid") return;
+    const { error } = await supabase
+      .from("payments")
+      .update(payload)
+      .eq("id", payment.id)
+      .neq("status", "paid");
+    if (error) throw new Error("Unable to update PayPal payment.");
+  }
+
+  const existing = await findExistingPayment();
+  if (existing) {
+    await updateExistingPayment(existing);
+    return;
+  }
+
+  const { error } = await supabase.from("payments").insert(payload);
+  if (!error) return;
+
+  // A concurrent retry can race the initial lookup. The unique PayPal order
+  // index remains authoritative, so reconcile the winning row instead.
+  if (error.code === "23505") {
+    const concurrent = await findExistingPayment();
+    if (concurrent) {
+      await updateExistingPayment(concurrent);
+      return;
+    }
+  }
+  throw new Error("Unable to store PayPal payment.");
 }
 
 export async function getPayPalPayment(paypalOrderId: string) {
