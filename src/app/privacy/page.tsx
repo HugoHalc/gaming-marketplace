@@ -33,6 +33,7 @@ const sections = [
       "Authenticate users and protect accounts.",
       "Process payments, refunds, disputes and fraud reviews.",
       "Communicate about orders, account changes and customer support.",
+      "Monitor real-time activity on selected public game and service pages through Tawk without intentionally sending account identity, order or payment data to that integration.",
       "Improve reliability, security and platform performance.",
       "Comply with legal, tax, accounting, consumer-protection and regulatory obligations.",
     ],
@@ -47,7 +48,7 @@ const sections = [
   {
     title: "5. Sharing of information",
     paragraphs: [
-      "We may share information only as reasonably necessary with boosters assigned to an order, payment processors, authentication providers, hosting and infrastructure providers, support tools, fraud-prevention providers, professional advisers and authorities where legally required.",
+      "We may share information only as reasonably necessary with boosters assigned to an order, payment processors, authentication providers, hosting and infrastructure providers, Tawk for visitor monitoring on selected public pages, support tools, fraud-prevention providers, professional advisers and authorities where legally required.",
       "We do not sell personal information to advertisers.",
     ],
   },
@@ -85,7 +86,7 @@ const sections = [
   {
     title: "11. Cookies and similar technologies",
     paragraphs: [
-      "We use cookies and similar technologies for authentication, security, preferences and other website functions. Additional analytics or marketing technologies, if enabled, are addressed in our Cookie Policy and may require consent depending on your location.",
+      "We use cookies and similar technologies for authentication, security, preferences and other website functions. Tawk visitor monitoring is enabled only on selected public game and service pages and may process technical activity described in our Cookie Policy. Other analytics or marketing technologies, if enabled, are also addressed there and may require consent depending on your location.",
     ],
   },
   {
@@ -102,7 +103,7 @@ export default function PrivacyPage() {
       eyebrow="Legal"
       title="Privacy Policy"
       description="How BoostingPedia collects, uses, protects and shares personal information."
-      lastUpdated="August 30, 2026"
+      lastUpdated="October 10, 2026"
       sections={sections}
     />
   );

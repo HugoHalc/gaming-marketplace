@@ -28,7 +28,8 @@ const sections = [
   {
     title: "4. Analytics technologies",
     paragraphs: [
-      "If analytics tools are enabled, they may help us understand aggregated website usage, performance and errors. Where applicable law requires consent for analytics technologies, we will seek consent before activating them.",
+      "On selected public game and service pages, BoostingPedia uses the Tawk visitor-monitoring service to view real-time website activity. The integration may process the current page URL and title, referrer, IP address, approximate location, browser or device information, and cookies or similar identifiers. It is disabled on account, authentication, checkout, order, dashboard, administration and other private routes, and BoostingPedia does not send Tawk account names, email addresses, order details or payment information through this integration.",
+      "Other analytics tools, if enabled, may help us understand aggregated website usage, performance and errors. Where applicable law requires consent for optional analytics technologies, we will seek consent before activating them.",
     ],
   },
   {
@@ -40,7 +41,7 @@ const sections = [
   {
     title: "6. Third-party technologies",
     paragraphs: [
-      "Payment, authentication, hosting, security or other service providers may use cookies or similar technologies when their services are embedded in or used by BoostingPedia. Their processing may also be governed by their own privacy or cookie notices.",
+      "Tawk and payment, authentication, hosting, security or other service providers may use cookies or similar technologies when their services are embedded in or used by BoostingPedia. Their processing may also be governed by their own privacy or cookie notices.",
     ],
   },
   {
@@ -70,7 +71,7 @@ export default function CookiesPage() {
       eyebrow="Legal"
       title="Cookie Policy"
       description="How BoostingPedia uses cookies and similar technologies to operate and improve the platform."
-      lastUpdated="August 30, 2026"
+      lastUpdated="October 10, 2026"
       sections={sections}
     />
   );
