@@ -6,15 +6,17 @@ import type { OrderRecord } from "@/features/orders/types/orders";
 import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { OrderWorkspaceConfiguration } from "@/components/orders/order-workspace-configuration";
 import { OrderPaymentMethods } from "@/components/checkout/order-payment-methods";
+import { normalizedGameSlug } from "@/components/orders/game-order-presentation-data";
+import { gameLogos } from "@/features/booster/presentation/order-board";
 
-const gameArtwork: Record<string, string> = {
-  "Rocket League": "/game-cards/rocket-league.webp",
-  "League of Legends": "/game-cards/league-of-legends.webp",
-  Valorant: "/game-cards/valorant.webp",
-  "Marvel Rivals": "/game-cards/marvel-rivals.webp",
-  Overwatch: "/game-cards/overwatch.webp",
-  "Dota 2": "/game-cards/dota-2.webp",
-  "Rainbow Six Siege": "/game-cards/rainbow-six-siege.webp",
+const checkoutGameLogoClassNames: Record<string, string> = {
+  "rocket-league": "h-9 w-[82px]",
+  "league-of-legends": "h-10 w-[82px]",
+  valorant: "h-11 w-[66px]",
+  "marvel-rivals": "h-9 w-[84px]",
+  "overwatch-2": "h-11 w-[76px]",
+  "dota-2": "h-12 w-10",
+  "rainbow-six-siege": "h-9 w-[84px]",
 };
 
 function formatMoney(value: number) {
@@ -60,7 +62,8 @@ export function OrderCheckoutRedirect({
   const breakdown = item
     ? presentRocketLeaguePriceBreakdown(item.priceBreakdown, item.total, item.gameName)
     : [];
-  const artwork = item ? gameArtwork[item.gameName] : undefined;
+  const gameSlug = normalizedGameSlug(item?.gameName);
+  const gameLogo = gameLogos[gameSlug];
   const notice = paymentError
     ? "We could not start checkout. Your order is saved—select a provider and try again."
     : checkoutState === "cancelled"
@@ -104,10 +107,17 @@ export function OrderCheckoutRedirect({
 
               <div className="p-5">
                 <div className="flex min-w-0 items-center gap-3.5">
-                  {artwork ? (
-                    <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0F1713]">
-                      <Image src={artwork} alt="" fill sizes="48px" className="object-cover" />
-                    </div>
+                  {gameLogo ? (
+                    <span className="flex h-12 w-[84px] shrink-0 items-center justify-center" aria-hidden="true">
+                      <Image
+                        src={gameLogo}
+                        alt=""
+                        width={96}
+                        height={52}
+                        sizes="84px"
+                        className={`${checkoutGameLogoClassNames[gameSlug] ?? "h-10 w-20"} object-contain`}
+                      />
+                    </span>
                   ) : null}
                   <div className="min-w-0">
                     <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-[#82F5A4]/75">{item?.gameName ?? "Gaming service"}</p>

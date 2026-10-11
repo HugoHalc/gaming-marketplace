@@ -175,6 +175,32 @@ test("premium checkout renders the real order total, details and selectable prov
   assert.match(paypalMarkup, /PayPal wallet/);
 });
 
+test("checkout order details use every canonical game logo without photographic thumbnail treatment", () => {
+  const logos = [
+    ["Rocket League", "rocket-league-logo-transparent.png"],
+    ["League of Legends", "league-of-legends-home-logo.png"],
+    ["Valorant", "valorant-home-logo.png"],
+    ["Marvel Rivals", "marvel-rivals-home-logo.png"],
+    ["Overwatch 2", "overwatch-home-logo-light.png"],
+    ["Dota 2", "dota-2-home-logo.png"],
+    ["Rainbow Six Siege", "rainbow-six-siege-logo.png"],
+  ];
+
+  for (const [gameName, logo] of logos) {
+    reset();
+    const record = order({ status: "pending_payment", paymentStatus: "unpaid" });
+    record.items[0].gameName = gameName;
+    const markup = html(Checkout, { order: record });
+    assert.match(markup, new RegExp(`game-cards/${logo.replaceAll(".", "\\.")}`));
+    assert.match(markup, /object-contain/);
+  }
+
+  const source = readFileSync(path.join(root, "src/components/checkout/order-checkout-redirect.tsx"), "utf8");
+  assert.match(source, /gameLogos\[gameSlug\]/);
+  assert.match(source, /sizes="84px"/);
+  assert.doesNotMatch(source, /gameArtwork|object-cover|rounded-xl border.*bg-\[#0F1713\]/);
+});
+
 test("secure credential editing remains customer-only and payment/assignment-gated", () => {
   reset(); assert.match(html(Customer, props()), /type="email"/);
   assert.doesNotMatch(html(Customer, props(order(), "admin")), /type="email"/);
