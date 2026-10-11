@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import test from "node:test";
@@ -31,12 +31,17 @@ test("checkout presents one accessible provider selection and one idempotent sub
   assert.match(methods, /disabled=\{disabled\}/);
   assert.match(methods, /submittingRef\.current/);
   assert.match(methods, /event\.preventDefault\(\)/);
-  assert.match(methods, /Continue to secure payment/);
-  assert.match(methods, /Continue with PayPal/);
-  assert.match(methods, /payment-providers\/stripe-mark\.svg/);
-  assert.match(methods, /payment-providers\/paypal-mark\.svg/);
+  assert.match(methods, /Continue to Stripe/);
+  assert.match(methods, /Continue to PayPal/);
+  assert.match(methods, /images\/payments\/stripe-logo\.png/);
+  assert.match(methods, /images\/payments\/paypal-logo\.png/);
+  assert.ok(existsSync(path.join(root, "public/images/payments/stripe-logo.png")));
+  assert.ok(existsSync(path.join(root, "public/images/payments/paypal-logo.png")));
+  assert.match(methods, /object-contain/);
+  assert.doesNotMatch(methods, /visa-icon|mastercard-icon|americanexpress-icon|jcb-icon|unionpay-icon/i);
   assert.match(choice, /OrderWorkspaceConfiguration/);
   assert.match(choice, /presentRocketLeaguePriceBreakdown/);
+  assert.match(choice, /summary=\{/);
   assert.match(choice, /Payment confirmation is applied only after/);
   assert.doesNotMatch(choice, /\.submit\(\)|useEffect/);
 });

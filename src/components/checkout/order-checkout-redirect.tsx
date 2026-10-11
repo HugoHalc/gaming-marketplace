@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, ChevronRight, CreditCard, LockKeyhole } from "lucide-react";
+import { Check, ChevronRight, LockKeyhole } from "lucide-react";
 import type { OrderRecord } from "@/features/orders/types/orders";
 import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { OrderWorkspaceConfiguration } from "@/components/orders/order-workspace-configuration";
@@ -87,76 +87,60 @@ export function OrderCheckoutRedirect({
           </div>
         ) : null}
 
-        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] xl:gap-8">
-          <section aria-labelledby="payment-method-heading" className="min-w-0 rounded-[22px] border border-white/[0.08] bg-[#0B100D] p-5 sm:p-6">
-            <div className="flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-[#39E56F]/20 bg-[#39E56F]/[0.055] text-[#82F5A4]">
-                <CreditCard className="size-4.5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 id="payment-method-heading" className="text-lg font-bold tracking-[-0.02em]">Payment method</h2>
-                <p className="mt-1 text-[13px] leading-5 text-[#8C9891]">Select a provider. You will finish payment on its hosted checkout.</p>
-              </div>
-            </div>
-            <OrderPaymentMethods orderId={order.id} total={order.total} />
-          </section>
-
-          <aside aria-labelledby="order-summary-heading" className="min-w-0 overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0B100D] lg:sticky lg:top-20">
-            <div className="border-b border-white/[0.07] px-5 py-5 sm:px-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#667069]">Order summary</p>
-                  <h2 id="order-summary-heading" className="mt-1 text-lg font-bold tracking-[-0.02em]">{order.orderNumber}</h2>
+        <OrderPaymentMethods
+          orderId={order.id}
+          total={order.total}
+          summary={(
+            <>
+              <div className="border-b border-white/[0.07] px-5 py-5 sm:px-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#667069]">Order summary</p>
+                    <h2 id="order-summary-heading" className="mt-1 text-lg font-bold tracking-[-0.02em]">Order details</h2>
+                  </div>
+                  <LockKeyhole className="size-4 text-[#82F5A4]/70" aria-hidden="true" />
                 </div>
-                <LockKeyhole className="size-4 text-[#82F5A4]/70" aria-hidden="true" />
               </div>
-            </div>
 
-            <div className="p-5 sm:p-6">
-              <div className="flex min-w-0 items-center gap-4">
-                {artwork ? (
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0F1713]">
-                    <Image src={artwork} alt="" fill sizes="56px" className="object-cover" />
+              <div className="p-5 sm:p-6">
+                <div className="flex min-w-0 items-center gap-4">
+                  {artwork ? (
+                    <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0F1713]">
+                      <Image src={artwork} alt="" fill sizes="56px" className="object-cover" />
+                    </div>
+                  ) : null}
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-[#82F5A4]/75">{item?.gameName ?? "Gaming service"}</p>
+                    <p className="mt-1 break-words text-[15px] font-bold leading-5 text-[#F4F7F5]">{item?.serviceName ?? "Customer order"}</p>
+                    <p className="mt-1.5 text-[11px] text-[#77827C]">Order {order.orderNumber}</p>
+                  </div>
+                </div>
+
+                {item ? (
+                  <div className="mt-5 border-t border-white/[0.07] pt-4 text-[#8C9891]">
+                    <OrderWorkspaceConfiguration gameName={item.gameName} configuration={item.configuration} priceBreakdown={item.priceBreakdown} rankSize="md" />
                   </div>
                 ) : null}
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-[#82F5A4]/75">{item?.gameName ?? "Gaming service"}</p>
-                  <p className="mt-1 break-words text-[15px] font-bold leading-5 text-[#F4F7F5]">{item?.serviceName ?? "Customer order"}</p>
+
+                <div className="mt-5 divide-y divide-white/[0.06] border-t border-white/[0.07]">
+                  {breakdown.map((line, index) => (
+                    <div key={`${line.label}-${index}`} className="flex min-h-10 items-center justify-between gap-4 py-2.5 text-[12px]">
+                      <span className="min-w-0 break-words text-[#8C9891]">{line.label}</span>
+                      <span className={`shrink-0 font-gaming-value font-semibold ${line.amount < 0 ? "text-[#82F5A4]" : "text-[#DDE3DF]"}`}>
+                        {line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}
+                      </span>
+                    </div>
+                  ))}
                 </div>
+
+                <p className="mt-5 flex items-start gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-3 text-[10px] leading-4 text-[#6F7B74]">
+                  <ChevronRight className="mt-0.5 size-3 shrink-0 text-[#82F5A4]" aria-hidden="true" />
+                  Payment confirmation is applied only after BoostingPedia receives confirmation from the provider.
+                </p>
               </div>
-
-              {item ? (
-                <div className="mt-5 border-t border-white/[0.07] pt-4 text-[#8C9891]">
-                  <OrderWorkspaceConfiguration gameName={item.gameName} configuration={item.configuration} priceBreakdown={item.priceBreakdown} rankSize="md" />
-                </div>
-              ) : null}
-
-              <div className="mt-5 divide-y divide-white/[0.06] border-t border-white/[0.07]">
-                {breakdown.map((line, index) => (
-                  <div key={`${line.label}-${index}`} className="flex min-h-10 items-center justify-between gap-4 py-2.5 text-[12px]">
-                    <span className="min-w-0 break-words text-[#8C9891]">{line.label}</span>
-                    <span className={`shrink-0 font-gaming-value font-semibold ${line.amount < 0 ? "text-[#82F5A4]" : "text-[#DDE3DF]"}`}>
-                      {line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-3 flex items-end justify-between gap-4 border-t border-white/[0.11] pt-5">
-                <div>
-                  <p className="text-sm font-bold">Total</p>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#667069]">USD</p>
-                </div>
-                <p className="font-gaming-value text-[28px] font-bold tracking-[-0.035em]">{formatMoney(order.total)}</p>
-              </div>
-
-              <p className="mt-5 flex items-start gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-3 text-[10px] leading-4 text-[#6F7B74]">
-                <ChevronRight className="mt-0.5 size-3 shrink-0 text-[#82F5A4]" aria-hidden="true" />
-                Payment confirmation is applied only after BoostingPedia receives confirmation from the provider.
-              </p>
-            </div>
-          </aside>
-        </div>
+            </>
+          )}
+        />
       </div>
     </div>
   );
