@@ -219,6 +219,10 @@ export async function sendChatMessage(orderId: string, body: string) {
     isAdmin,
   } = await getAuthorizedChatOrder(orderId);
 
+  if (isAdmin && !isAssignedBooster) {
+    throw new Error("Supervision access is read-only.");
+  }
+
   const senderRole: Exclude<OrderChatSenderRole, "system"> = isCustomerOwner
     ? "customer"
     : isAssignedBooster

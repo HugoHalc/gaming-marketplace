@@ -41,11 +41,12 @@ export interface OrderBoosterAssignment {
   displayName: string;
   avatarUrl: string | null;
   assignedAt: string;
+  kind: "booster" | "admin";
 }
 
 export interface OrderConversationParticipant {
   userId: string;
-  role: "customer" | "booster";
+  role: "customer" | "booster" | "admin";
   displayName: string;
   avatarUrl: string | null;
   timezone: string | null;
@@ -103,7 +104,7 @@ export async function getOrderBoosterAssignment(
   const { data, error } = await supabase
     .from("order_booster_assignments")
     .select(
-      "booster_id, assigned_at, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, avatar_url)",
+      "booster_id, assigned_at, assignment_kind, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, avatar_url)",
     )
     .eq("order_id", orderId)
     .eq("is_active", true)
@@ -123,6 +124,7 @@ export async function getOrderBoosterAssignment(
     displayName: profile?.gamer_tag || profile?.full_name || "Assigned booster",
     avatarUrl: profile?.avatar_url ?? null,
     assignedAt: data.assigned_at as string,
+    kind: (data.assignment_kind as "booster" | "admin" | null) ?? "booster",
   };
 }
 
@@ -136,7 +138,7 @@ export async function getOrderConversationState(
   const { data: assignment, error: assignmentError } = await supabase
     .from("order_booster_assignments")
     .select(
-      "booster_id, assigned_at, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, avatar_url)",
+      "booster_id, assigned_at, assignment_kind, profiles!order_booster_assignments_booster_id_fkey(full_name, gamer_tag, avatar_url)",
     )
     .eq("order_id", orderId)
     .eq("is_active", true)
@@ -172,6 +174,7 @@ export async function getOrderConversationState(
           "Assigned booster",
         avatarUrl: boosterProfile?.avatar_url ?? null,
         assignedAt: assignment.assigned_at as string,
+        kind: (assignment.assignment_kind as "booster" | "admin" | null) ?? "booster",
       }
     : null;
 
@@ -216,6 +219,8 @@ export async function getOrderConversationState(
   }
 
   const boosterId = assignment.booster_id as string;
+  const assigneeRole =
+    assignment.assignment_kind === "admin" ? "admin" : "booster";
   const presence = await getUserPresenceMetadata(supabase, boosterId);
 
   return {
@@ -224,7 +229,7 @@ export async function getOrderConversationState(
     booster,
     participant: buildConversationParticipant({
       userId: boosterId,
-      role: "booster",
+      role: assigneeRole,
       displayName:
         boosterProfile?.gamer_tag ||
         boosterProfile?.full_name ||
@@ -260,7 +265,7 @@ async function getUserPresenceMetadata(
 
 function buildConversationParticipant(input: {
   userId: string;
-  role: "customer" | "booster";
+  role: "customer" | "booster" | "admin";
   displayName: string;
   avatarUrl: string | null;
   timezone: string | null;
@@ -326,6 +331,9 @@ export async function sendOrderMessage(orderId: string, body: string) {
 
   const { identity, supabase, isAssignedBooster } =
     await getAuthorizedOrder(orderId);
+  if (identity.profile?.role === "admin" && !isAssignedBooster) {
+    throw new Error("Supervision access is read-only.");
+  }
   const role = identity.profile?.role ?? "customer";
   const senderRole = role === "admin"
     ? "admin"
@@ -467,7 +475,15 @@ export async function getOrderCredentialState(orderId: string) {
 }
 
 export async function revealOrderCredentials(orderId: string) {
-  const { supabase } = await getAuthorizedOrder(orderId);
+  const { identity, order, supabase, isAssignedBooster } =
+    await getAuthorizedOrder(orderId);
+  if (
+    identity.profile?.role === "admin" &&
+    order.user_id !== identity.id &&
+    !isAssignedBooster
+  ) {
+    throw new Error("Supervision access does not include secure account details.");
+  }
 
   const { data, error } = await supabase
     .from("order_credentials")

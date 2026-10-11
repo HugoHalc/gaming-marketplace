@@ -73,9 +73,9 @@ async function getOrderAccessContext(orderId: string) {
 
   const isAdmin = identity.profile?.role === "admin";
   const isCustomer = order.user_id === identity.id;
-  const isAssignedBooster = assignment?.booster_id === identity.id;
+  const isAssignedStaff = assignment?.booster_id === identity.id;
 
-  if (!isAdmin && !isCustomer && !isAssignedBooster) {
+  if (!isAdmin && !isCustomer && !isAssignedStaff) {
     throw new Error("Order access denied.");
   }
 
@@ -90,8 +90,8 @@ async function getOrderAccessContext(orderId: string) {
     supabase,
     isAdmin,
     isCustomer,
-    isAssignedBooster,
-    canManage: isAdmin || isAssignedBooster,
+    isAssignedBooster: isAssignedStaff,
+    canManage: isAssignedStaff,
   };
 }
 
@@ -341,7 +341,10 @@ export async function transitionOperationalState(
   orderId: string,
   input: { nextState: OperationalState; note?: string },
 ) {
-  await getOrderAccessContext(orderId);
+  const context = await getOrderAccessContext(orderId);
+  if (!context.canManage) {
+    throw new Error("Only assigned staff can update the order lifecycle.");
+  }
   const supabase = await createAuthServerClient();
 
   const { error } = await supabase.rpc("transition_order_operational_state", {

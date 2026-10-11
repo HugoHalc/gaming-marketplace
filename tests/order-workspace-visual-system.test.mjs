@@ -231,6 +231,33 @@ test("chat keeps participants, timezone, messages, timestamps, safety copy and d
   }
 });
 
+test("admin supervision stays read-only, identifies the assignee and remains mobile-safe", () => {
+  reset();
+  const chatData = {
+    orderId: "order-1",
+    currentUserId: "admin-a",
+    initialMessages: [message],
+    readOnly: true,
+  };
+  const chatMarkup = html(Chat, chatData);
+  assert.match(chatMarkup, /Please keep my settings/);
+  assert.match(chatMarkup, /Supervision is read-only/);
+  assert.doesNotMatch(chatMarkup, /<textarea|aria-label="Send message"/);
+
+  const workspaceMarkup = html(Booster, {
+    ...props(),
+    currentUserId: "admin-a",
+    assignmentContext: "admin",
+    assigneeName: "Admin B",
+    supervisionMode: true,
+  });
+  assert.match(workspaceMarkup, /SUPERVISION MODE/);
+  assert.match(workspaceMarkup, /Admin B remains responsible/);
+  assert.doesNotMatch(workspaceMarkup, />Account Details<|<textarea/);
+  assert.match(workspaceMarkup, /sm:px-5/);
+  assert.match(workspaceMarkup, /break-words/);
+});
+
 test("chat submits and refreshes through existing endpoints; failures preserve draft", async () => {
   reset(); const data = { orderId: "order-1", currentUserId: "booster-1", initialMessages: [message] };
   seedChat({ 1: " Test draft " }); const calls = []; const oldFetch = globalThis.fetch;

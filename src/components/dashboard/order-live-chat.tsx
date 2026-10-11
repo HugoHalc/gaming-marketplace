@@ -42,6 +42,7 @@ interface OrderLiveChatProps {
   currentUserId: string;
   initialMessages: OrderWorkspaceMessage[];
   visualVariant?: "default" | "customer-premium";
+  readOnly?: boolean;
 }
 
 function normalizeInitialMessage(message: OrderWorkspaceMessage): ChatMessage {
@@ -130,6 +131,7 @@ export function OrderLiveChat({
   currentUserId,
   initialMessages,
   visualVariant = "default",
+  readOnly = false,
 }: OrderLiveChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(
     initialMessages.map(normalizeInitialMessage),
@@ -424,7 +426,7 @@ export function OrderLiveChat({
 
     const message = body.trim();
 
-    if (!message || sending || !chatState.enabled) {
+    if (!message || sending || !chatState.enabled || readOnly) {
       return;
     }
 
@@ -481,7 +483,11 @@ export function OrderLiveChat({
   const booster = chatState.booster;
   const participant = chatState.participant;
   const participantRoleLabel =
-    participant?.role === "booster" ? "Booster" : "Customer";
+    participant?.role === "admin"
+      ? "Administrator"
+      : participant?.role === "booster"
+        ? "Booster"
+        : "Customer";
   const participantPresence = formatParticipantPresence(participant);
   const premium = visualVariant === "customer-premium";
 
@@ -767,6 +773,11 @@ export function OrderLiveChat({
                 </div>
 
                 <div className={premium ? "shrink-0 border-t border-white/[0.07] bg-[#0F1713] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]" : "shrink-0 border-t border-white/[0.05] bg-[#0B100D] px-3 py-3 sm:px-4 sm:py-4 pb-[max(.85rem,env(safe-area-inset-bottom))]"}>
+                  {readOnly ? (
+                    <p className="rounded-xl border border-[#39E56F]/15 bg-[#39E56F]/[0.04] px-3 py-3 text-center text-[10px] text-[#A4AEA8]">
+                      Supervision is read-only. The assigned staff member and customer remain the conversation participants.
+                    </p>
+                  ) : (
                   <form ref={formRef} onSubmit={submitMessage}>
                     {error ? (
                       <div className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-rose-300/12 bg-rose-300/[0.045] px-3 py-2 text-[9px] text-rose-200">
@@ -803,6 +814,7 @@ export function OrderLiveChat({
                       </button>
                     </div>
                   </form>
+                  )}
 
                   <div className={premium ? "mt-2 flex flex-col gap-1.5 px-1 text-[11px] leading-4 text-[#6F7B74] sm:flex-row sm:items-center sm:justify-between" : "mt-2 flex flex-col gap-1 px-1 text-[8px] leading-4 text-[#667069] sm:flex-row sm:items-center sm:justify-between"}>
                     <span className="inline-flex items-center gap-1.5">

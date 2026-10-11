@@ -80,6 +80,8 @@ export function BoosterOrderWorkspace({
   initialMessages,
   boosterPayout,
   assignmentContext = "booster",
+  assigneeName,
+  supervisionMode = false,
   backHref = "/booster/orders?view=active",
   backLabel = "Orders",
 }: {
@@ -89,6 +91,8 @@ export function BoosterOrderWorkspace({
   initialMessages: OrderWorkspaceMessage[];
   boosterPayout: number | null;
   assignmentContext?: "booster" | "admin";
+  assigneeName?: string;
+  supervisionMode?: boolean;
   backHref?: string;
   backLabel?: string;
 }) {
@@ -155,6 +159,15 @@ export function BoosterOrderWorkspace({
           </div>
         </header>
 
+        {supervisionMode ? (
+          <div role="status" className="mb-5 rounded-2xl border border-[#39E56F]/20 bg-[#39E56F]/[0.055] px-4 py-3 sm:px-5">
+            <p className="text-xs font-semibold text-[#82F5A4]">SUPERVISION MODE</p>
+            <p className="mt-1 break-words text-sm text-[#DCE5DF]">
+              {assigneeName ?? "Assigned staff"} remains responsible. You can review progress, evidence, history, and chat without changing the order.
+            </p>
+          </div>
+        ) : null}
+
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_390px] 2xl:grid-cols-[minmax(0,1fr)_410px]">
           <main className="min-w-0">
             <section>
@@ -177,6 +190,7 @@ export function BoosterOrderWorkspace({
                 orderId={order.id}
                 currentUserId={currentUserId}
                 initialMessages={initialMessages}
+                readOnly={supervisionMode}
               />
             </section>
 
@@ -231,7 +245,7 @@ export function BoosterOrderWorkspace({
                         Staff assignment
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[#F4F7F5]">
-                        Administrator
+                        {assigneeName ?? (assignmentContext === "admin" ? "Administrator" : "Assigned booster")}
                       </p>
                     </div>
                   ) : (
@@ -279,7 +293,7 @@ export function BoosterOrderWorkspace({
                   </div>
                 ) : null}
               </>}
-              accountDetails={<OrderAccountDetails orderId={order.id} canEdit={false} mode={accountDetailsMode} asCard />}
+              accountDetails={supervisionMode ? undefined : <OrderAccountDetails orderId={order.id} canEdit={false} mode={accountDetailsMode} asCard />}
             />
             </div>
           </aside>

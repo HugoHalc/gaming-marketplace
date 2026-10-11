@@ -96,6 +96,7 @@ export interface AdminOrderRecord extends OrderRecord {
 }
 
 export type AdminOrderView = "available" | "mine";
+export type AdminWorkspaceMode = "operator" | "supervisor";
 
 const ORDER_SELECT = `
   id, user_id, order_number, status, payment_status, currency,
@@ -191,6 +192,20 @@ export function mapOrder(row: DbOrder): AdminOrderRecord {
       ["paid", "queued"].includes(row.status) &&
       assignment === null,
   };
+}
+
+export function getAdminWorkspaceMode(
+  order: AdminOrderRecord,
+  adminId: string,
+): AdminWorkspaceMode | null {
+  if (!order.assignment) return null;
+  if (
+    order.assignment.kind === "admin" &&
+    order.assignment.assigneeId === adminId
+  ) {
+    return "operator";
+  }
+  return order.status === "in_progress" ? "supervisor" : null;
 }
 
 export async function listAdminOrders(
