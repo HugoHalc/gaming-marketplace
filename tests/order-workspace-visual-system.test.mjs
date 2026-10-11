@@ -153,13 +153,18 @@ test("premium checkout renders the real order total, details and selectable prov
   assert.match(stripeMarkup, /Account Boost/);
   assert.match(stripeMarkup, /\$35\.00/);
   assert.match(stripeMarkup, /action="\/api\/checkout"/);
-  assert.match(stripeMarkup, /Continue to Stripe/);
+  assert.match(stripeMarkup, /Continue to secure payment/);
   assert.match(stripeMarkup, /images\/payments\/stripe-logo\.png/);
-  assert.match(stripeMarkup, /lg:grid-cols-\[minmax\(0,1\.02fr\)_minmax\(360px,0\.98fr\)\]/);
-  assert.ok(stripeMarkup.indexOf("Order summary") < stripeMarkup.indexOf("Choose how you&#x27;d like"));
-  assert.ok(stripeMarkup.indexOf("Choose how you&#x27;d like") < stripeMarkup.indexOf("Amount due"));
+  for (const logo of ["visa", "mastercard", "americanexpress", "jcb", "unionpay"]) {
+    assert.match(stripeMarkup, new RegExp(`images/payments/${logo}-icon\\.(?:png|webp)`));
+  }
+  assert.match(stripeMarkup, /lg:grid-cols-\[minmax\(0,1\.63fr\)_minmax\(340px,1fr\)\]/);
+  assert.match(stripeMarkup, /min-h-\[96px\]/);
+  assert.ok(stripeMarkup.indexOf("Order summary") < stripeMarkup.indexOf("Choose a payment method"));
+  assert.ok(stripeMarkup.indexOf("Choose a payment method") < stripeMarkup.indexOf("Amount due"));
   assert.equal((stripeMarkup.match(/Amount due/g) ?? []).length, 1);
   assert.equal((stripeMarkup.match(/<button/g) ?? []).length, 1);
+  assert.doesNotMatch(stripeMarkup, />SELECT(?:ED)?</i);
   assert.doesNotMatch(stripeMarkup, /overflow-x-auto|w-screen|min-w-\[/);
 
   fixtures.set("OrderPaymentMethods", ["paypal", null]);
@@ -167,6 +172,7 @@ test("premium checkout renders the real order total, details and selectable prov
   assert.match(paypalMarkup, /action="\/api\/paypal\/orders"/);
   assert.match(paypalMarkup, /Continue to PayPal/);
   assert.match(paypalMarkup, /images\/payments\/paypal-logo\.png/);
+  assert.match(paypalMarkup, /PayPal wallet/);
 });
 
 test("secure credential editing remains customer-only and payment/assignment-gated", () => {

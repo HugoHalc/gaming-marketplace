@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, ChevronRight, LockKeyhole } from "lucide-react";
+import { Check, LockKeyhole } from "lucide-react";
 import type { OrderRecord } from "@/features/orders/types/orders";
 import { presentRocketLeaguePriceBreakdown } from "@/features/configurator/presentation/rocket-league-price-breakdown";
 import { OrderWorkspaceConfiguration } from "@/components/orders/order-workspace-configuration";
@@ -68,13 +68,13 @@ export function OrderCheckoutRedirect({
       : null;
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-4 py-7 text-[#F4F7F5] sm:px-6 sm:py-9 lg:px-8 lg:py-11">
-      <div className="rounded-[26px] border border-white/[0.07] bg-[#080C0A] p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col gap-5 border-b border-white/[0.07] pb-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="mx-auto w-full max-w-[1280px] px-4 py-6 text-[#F4F7F5] sm:px-6 sm:py-8 lg:px-8 lg:py-9">
+      <div className="rounded-[26px] border border-white/[0.07] bg-[#080C0A] p-4 sm:p-5 lg:p-7">
+        <div className="flex flex-col gap-4 border-b border-white/[0.07] pb-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#667069]">Checkout</p>
-            <h1 className="mt-2 text-[24px] font-bold tracking-[-0.035em] sm:text-[30px]">Complete your order</h1>
-            <p className="mt-2 text-sm text-[#8C9891]">Review your order and choose where you want to pay.</p>
+            <h1 className="mt-1.5 text-[24px] font-bold tracking-[-0.035em] sm:text-[29px]">Complete your order</h1>
+            <p className="mt-1.5 text-sm text-[#8C9891]">Review your order and choose where you want to pay.</p>
           </div>
           <div className="min-w-0 lg:w-[560px]">
             <CheckoutProgress />
@@ -92,7 +92,7 @@ export function OrderCheckoutRedirect({
           total={order.total}
           summary={(
             <>
-              <div className="border-b border-white/[0.07] px-5 py-5 sm:px-6">
+              <div className="border-b border-white/[0.07] px-5 py-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#667069]">Order summary</p>
@@ -102,29 +102,29 @@ export function OrderCheckoutRedirect({
                 </div>
               </div>
 
-              <div className="p-5 sm:p-6">
-                <div className="flex min-w-0 items-center gap-4">
+              <div className="p-5">
+                <div className="flex min-w-0 items-center gap-3.5">
                   {artwork ? (
-                    <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0F1713]">
-                      <Image src={artwork} alt="" fill sizes="56px" className="object-cover" />
+                    <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0F1713]">
+                      <Image src={artwork} alt="" fill sizes="48px" className="object-cover" />
                     </div>
                   ) : null}
                   <div className="min-w-0">
                     <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-[#82F5A4]/75">{item?.gameName ?? "Gaming service"}</p>
                     <p className="mt-1 break-words text-[15px] font-bold leading-5 text-[#F4F7F5]">{item?.serviceName ?? "Customer order"}</p>
-                    <p className="mt-1.5 text-[11px] text-[#77827C]">Order {order.orderNumber}</p>
+                    <p className="mt-1 text-[11px] text-[#77827C]">Order {order.orderNumber}</p>
                   </div>
                 </div>
 
                 {item ? (
-                  <div className="mt-5 border-t border-white/[0.07] pt-4 text-[#8C9891]">
+                  <div className="mt-4 border-t border-white/[0.07] pt-3 text-[#8C9891]">
                     <OrderWorkspaceConfiguration gameName={item.gameName} configuration={item.configuration} priceBreakdown={item.priceBreakdown} rankSize="md" />
                   </div>
                 ) : null}
 
-                <div className="mt-5 divide-y divide-white/[0.06] border-t border-white/[0.07]">
+                <div className="mt-4 divide-y divide-white/[0.06] border-t border-white/[0.07]">
                   {breakdown.map((line, index) => (
-                    <div key={`${line.label}-${index}`} className="flex min-h-10 items-center justify-between gap-4 py-2.5 text-[12px]">
+                    <div key={`${line.label}-${index}`} className="flex min-h-9 items-center justify-between gap-4 py-2 text-[12px]">
                       <span className="min-w-0 break-words text-[#8C9891]">{line.label}</span>
                       <span className={`shrink-0 font-gaming-value font-semibold ${line.amount < 0 ? "text-[#82F5A4]" : "text-[#DDE3DF]"}`}>
                         {line.amount < 0 ? "−" : ""}{formatMoney(Math.abs(line.amount))}
@@ -133,10 +133,6 @@ export function OrderCheckoutRedirect({
                   ))}
                 </div>
 
-                <p className="mt-5 flex items-start gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-3 text-[10px] leading-4 text-[#6F7B74]">
-                  <ChevronRight className="mt-0.5 size-3 shrink-0 text-[#82F5A4]" aria-hidden="true" />
-                  Payment confirmation is applied only after BoostingPedia receives confirmation from the provider.
-                </p>
               </div>
             </>
           )}

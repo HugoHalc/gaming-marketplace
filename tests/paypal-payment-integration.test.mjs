@@ -31,18 +31,31 @@ test("checkout presents one accessible provider selection and one idempotent sub
   assert.match(methods, /disabled=\{disabled\}/);
   assert.match(methods, /submittingRef\.current/);
   assert.match(methods, /event\.preventDefault\(\)/);
-  assert.match(methods, /Continue to Stripe/);
+  assert.match(methods, /Continue to secure payment/);
   assert.match(methods, /Continue to PayPal/);
   assert.match(methods, /images\/payments\/stripe-logo\.png/);
   assert.match(methods, /images\/payments\/paypal-logo\.png/);
   assert.ok(existsSync(path.join(root, "public/images/payments/stripe-logo.png")));
   assert.ok(existsSync(path.join(root, "public/images/payments/paypal-logo.png")));
   assert.match(methods, /object-contain/);
-  assert.doesNotMatch(methods, /visa-icon|mastercard-icon|americanexpress-icon|jcb-icon|unionpay-icon/i);
+  for (const [network, extension] of [
+    ["visa", "png"],
+    ["mastercard", "png"],
+    ["americanexpress", "webp"],
+    ["jcb", "png"],
+    ["unionpay", "png"],
+  ]) {
+    assert.match(methods, new RegExp(`${network}-icon\\.${extension}`));
+    assert.ok(existsSync(path.join(root, `public/images/payments/${network}-icon.${extension}`)));
+  }
+  assert.match(methods, /cardNetworks: stripeCardNetworks/);
+  assert.match(methods, /fundingLabel: "PayPal wallet"/);
+  assert.doesNotMatch(methods, /id: "paypal"[\s\S]*?cardNetworks:/);
+  assert.doesNotMatch(methods, /Selected|>Select</);
   assert.match(choice, /OrderWorkspaceConfiguration/);
   assert.match(choice, /presentRocketLeaguePriceBreakdown/);
   assert.match(choice, /summary=\{/);
-  assert.match(choice, /Payment confirmation is applied only after/);
+  assert.match(methods, /order updates only after provider confirmation/);
   assert.doesNotMatch(choice, /\.submit\(\)|useEffect/);
 });
 
