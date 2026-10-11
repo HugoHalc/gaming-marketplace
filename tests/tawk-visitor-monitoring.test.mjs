@@ -180,9 +180,12 @@ function installReadyApi(harness) {
   Object.assign(harness.window.Tawk_API, {
     hideWidget: () => harness.calls.push("hide"),
     shutdown: () => harness.calls.push("shutdown"),
-    start: () => harness.calls.push("start"),
+    start: (options) => harness.calls.push(["start", options]),
   });
 }
+
+const startCalls = (harness) =>
+  harness.calls.filter((call) => Array.isArray(call) && call[0] === "start");
 
 test("Tawk starts hidden, restarts public page monitoring and shuts down on excluded routes", () => {
   const harness = monitoringHarness();
@@ -202,12 +205,29 @@ test("Tawk starts hidden, restarts public page monitoring and shuts down on excl
   harness.window.Tawk_API.onLoad();
   harness.runTimers();
   assert.equal(harness.calls.at(-1), "hide");
-  assert.equal(harness.calls.filter((call) => call === "start").length, 1);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(startCalls(harness))),
+    [["start", { showWidget: false }]],
+  );
+
+  for (const callback of [
+    "onStatusChange",
+    "onAgentJoinChat",
+    "onChatMessageAgent",
+    "onChatMessageSystem",
+    "onChatStarted",
+    "onChatMaximized",
+    "onChatMinimized",
+  ]) {
+    harness.window.Tawk_API[callback]("event");
+    assert.equal(harness.calls.at(-1), "hide", callback);
+  }
 
   harness.setPathname("/games/rocket-league");
   harness.component.TawkVisitorMonitoring();
   harness.runTimers();
-  assert.equal(harness.calls.filter((call) => call === "start").length, 2);
+  assert.equal(startCalls(harness).length, 2);
+  assert.equal(startCalls(harness).at(-1)[1].showWidget, false);
   assert.ok(harness.calls.filter((call) => call === "shutdown").length >= 2);
   assert.equal(harness.nodes.size, 1);
 
@@ -218,7 +238,8 @@ test("Tawk starts hidden, restarts public page monitoring and shuts down on excl
   harness.setPathname("/games/dota-2/mmr-boost");
   harness.component.TawkVisitorMonitoring();
   harness.runTimers();
-  assert.equal(harness.calls.filter((call) => call === "start").length, 3);
+  assert.equal(startCalls(harness).length, 3);
+  assert.equal(startCalls(harness).at(-1)[1].showWidget, false);
   assert.equal(harness.nodes.size, 1);
 });
 
@@ -234,7 +255,7 @@ test("a late Tawk callback cannot start after rapid navigation to a private rout
   installReadyApi(harness);
   lateOnLoad();
   harness.runTimers();
-  assert.equal(harness.calls.includes("start"), false);
+  assert.equal(startCalls(harness).length, 0);
   assert.equal(harness.calls.at(-1), "shutdown");
 });
 
@@ -260,9 +281,11 @@ test("the integration never sets Tawk identity, attributes, events or chat conte
   assert.doesNotMatch(source, /Tawk_API\.(?:visitor|login|setAttributes|addEvent|addTags)/);
   assert.doesNotMatch(source, /(?:name|email|userId|orderId)\s*:/);
   assert.match(source, /autoStart\s*=\s*false/);
+  assert.match(source, /start\?\.\(\{ showWidget: false \}\)/);
   assert.match(source, /hideWidget/);
   assert.match(source, /shutdown/);
   assert.match(source, /startMonitoring/);
+  assert.doesNotMatch(source, /\.(?:showWidget|maximize|toggle|popup)\?\.\(/);
 
   const rootLayout = readFileSync(path.join(root, "src/app/layout.tsx"), "utf8");
   assert.match(rootLayout, /referrer:\s*"origin"/);

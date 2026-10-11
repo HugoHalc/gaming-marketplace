@@ -11,8 +11,15 @@ const TAWK_EMBED_URL =
 type TawkApi = {
   autoStart?: boolean;
   hideWidget?: () => void;
+  onAgentJoinChat?: () => void;
   onBeforeLoad?: () => void;
+  onChatMaximized?: () => void;
+  onChatMessageAgent?: (message: string) => void;
+  onChatMessageSystem?: (message: string) => void;
+  onChatMinimized?: () => void;
+  onChatStarted?: () => void;
   onLoad?: () => void;
+  onStatusChange?: (status: string) => void;
   shutdown?: () => void;
   start?: (options?: { showWidget?: boolean }) => void;
 };
@@ -40,6 +47,10 @@ function stopMonitoring() {
   api?.shutdown?.();
 }
 
+function keepWidgetHidden(api: TawkApi) {
+  api.hideWidget?.();
+}
+
 function startMonitoring(route: string) {
   const api = window.Tawk_API;
   if (!api?.start) return;
@@ -48,8 +59,8 @@ function startMonitoring(route: string) {
   restartTimer = window.setTimeout(() => {
     restartTimer = null;
     if (activeRoute !== route) return;
-    api.start?.();
-    api.hideWidget?.();
+    api.start?.({ showWidget: false });
+    keepWidgetHidden(api);
   }, 0);
 }
 
@@ -57,11 +68,11 @@ function configureTawkApi() {
   const api = (window.Tawk_API ??= {});
   api.autoStart = false;
   api.onBeforeLoad = () => {
-    api.hideWidget?.();
+    keepWidgetHidden(api);
     if (activeRoute === null) api.shutdown?.();
   };
   api.onLoad = () => {
-    api.hideWidget?.();
+    keepWidgetHidden(api);
     const route = activeRoute;
     if (route === null) {
       api.shutdown?.();
@@ -69,6 +80,13 @@ function configureTawkApi() {
     }
     startMonitoring(route);
   };
+  api.onStatusChange = () => keepWidgetHidden(api);
+  api.onAgentJoinChat = () => keepWidgetHidden(api);
+  api.onChatMessageAgent = () => keepWidgetHidden(api);
+  api.onChatMessageSystem = () => keepWidgetHidden(api);
+  api.onChatStarted = () => keepWidgetHidden(api);
+  api.onChatMaximized = () => keepWidgetHidden(api);
+  api.onChatMinimized = () => keepWidgetHidden(api);
 }
 
 function loadTawkScript() {
