@@ -60,7 +60,7 @@ type DbOrder = {
   order_items: DbOrderItem[] | null;
   payments: DbPayment[] | null;
   profiles: DbProfile | DbProfile[] | null;
-  order_booster_assignments: DbAssignment[] | null;
+  order_booster_assignments: DbAssignment | DbAssignment[] | null;
 };
 
 export interface AdminPaymentRecord {
@@ -115,9 +115,16 @@ function firstProfile(value: DbOrder["profiles"]): DbProfile | null {
   return value;
 }
 
-function mapOrder(row: DbOrder): AdminOrderRecord {
+function normalizeAssignments(
+  value: DbOrder["order_booster_assignments"],
+): DbAssignment[] {
+  if (Array.isArray(value)) return value;
+  return value ? [value] : [];
+}
+
+export function mapOrder(row: DbOrder): AdminOrderRecord {
   const profile = firstProfile(row.profiles);
-  const activeAssignment = (row.order_booster_assignments ?? []).find(
+  const activeAssignment = normalizeAssignments(row.order_booster_assignments).find(
     (assignment) => assignment.is_active,
   );
   const assigneeProfile = activeAssignment
