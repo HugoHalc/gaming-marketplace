@@ -71,12 +71,23 @@ export default async function OrderDetailPage({
 
   const shouldStartCheckout =
     order.status === "pending_payment" &&
-    (order.paymentStatus === "unpaid" || order.paymentStatus === "failed") &&
-    !query.checkout &&
-    !query.paymentError;
+    order.paymentStatus !== "paid" &&
+    query.checkout !== "success" &&
+    (
+      order.paymentStatus === "unpaid" ||
+      order.paymentStatus === "failed" ||
+      query.checkout === "cancelled" ||
+      Boolean(query.paymentError)
+    );
 
   if (shouldStartCheckout) {
-    return <OrderCheckoutRedirect orderId={order.id} />;
+    return (
+      <OrderCheckoutRedirect
+        order={order}
+        checkoutState={query.checkout}
+        paymentError={query.paymentError}
+      />
+    );
   }
 
   const [history, initialMessages, boosterAssignment] = await Promise.all([

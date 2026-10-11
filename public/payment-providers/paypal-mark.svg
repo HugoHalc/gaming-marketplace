@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title description">
+  <title id="title">PayPal</title>
+  <desc id="description">PayPal double-P brand mark. Source reference: https://www.paypal.com/us/webapps/mpp/logo-center</desc>
+  <path fill="#003087" d="M9.2 4.5h9.1c5.1 0 7.7 2.6 7 7.1-.8 5.2-4.6 7.8-9.6 7.8h-2.3l-1.1 7H7.4L9.2 4.5Z"/>
+  <path fill="#009CDE" d="M13.1 11.1h7c4.5 0 6.7 2.3 6 6.2-.7 4.6-4 6.8-8.4 6.8h-2l-.6 3.4h-4.2l2.2-16.4Z" opacity=".92"/>
+  <path fill="#012169" d="M13.7 8.4h4.5c2.1 0 3.1 1 2.8 2.8-.3 2.1-1.8 3-3.8 3h-4.1l.6-5.8Z"/>
+</svg>

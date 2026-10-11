@@ -22,15 +22,39 @@ function loadTypeScript(relativePath, mocks = {}) {
   return loadedModule.exports;
 }
 
-test("checkout presents Stripe and PayPal without automatically choosing a provider", () => {
+test("checkout presents one accessible provider selection and one idempotent submit path", () => {
   const methods = source("src/components/checkout/order-payment-methods.tsx");
   const choice = source("src/components/checkout/order-checkout-redirect.tsx");
-  assert.match(methods, /action="\/api\/checkout"/);
-  assert.match(methods, /action="\/api\/paypal\/orders"/);
+  assert.match(methods, /provider === "stripe" \? "\/api\/checkout" : "\/api\/paypal\/orders"/);
+  assert.match(methods, /type="radio"/);
+  assert.match(methods, /name="paymentProvider"/);
   assert.match(methods, /disabled=\{disabled\}/);
-  assert.match(methods, /Pay with Stripe/);
-  assert.match(methods, /Pay with PayPal/);
+  assert.match(methods, /submittingRef\.current/);
+  assert.match(methods, /event\.preventDefault\(\)/);
+  assert.match(methods, /Continue to secure payment/);
+  assert.match(methods, /Continue with PayPal/);
+  assert.match(methods, /payment-providers\/stripe-mark\.svg/);
+  assert.match(methods, /payment-providers\/paypal-mark\.svg/);
+  assert.match(choice, /OrderWorkspaceConfiguration/);
+  assert.match(choice, /presentRocketLeaguePriceBreakdown/);
+  assert.match(choice, /Payment confirmation is applied only after/);
   assert.doesNotMatch(choice, /\.submit\(\)|useEffect/);
+});
+
+test("checkout recovery stays on the saved order and never marks confirmation in the UI", () => {
+  const page = source("src/app/dashboard/orders/[id]/page.tsx");
+  const choice = source("src/components/checkout/order-checkout-redirect.tsx");
+  const stripeRoute = source("src/app/api/checkout/route.ts");
+  const paypalRoute = source("src/app/api/paypal/orders/route.ts");
+  assert.match(page, /order\.paymentStatus !== "paid"/);
+  assert.match(page, /query\.checkout !== "success"/);
+  assert.match(page, /query\.checkout === "cancelled"/);
+  assert.match(page, /Boolean\(query\.paymentError\)/);
+  assert.match(page, /order=\{order\}/);
+  assert.match(choice, /total=\{order\.total\}/);
+  assert.match(stripeRoute, /getPayableCurrentUserOrder/);
+  assert.match(paypalRoute, /getPayableCurrentUserOrder/);
+  assert.doesNotMatch(choice, /100% secure|payment confirmed successfully/i);
 });
 
 test("PayPal Orders v2 is server configured and preserves exact USD cents", () => {

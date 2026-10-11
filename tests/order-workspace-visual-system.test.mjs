@@ -72,6 +72,7 @@ const Booster = component("booster/booster-order-workspace", "BoosterOrderWorksp
 const Operations = component("dashboard/order-operations-panel", "OrderOperationsPanel");
 const Chat = component("dashboard/order-live-chat", "OrderLiveChat");
 const Account = component("dashboard/order-account-details", "OrderAccountDetails");
+const Checkout = component("checkout/order-checkout-redirect", "OrderCheckoutRedirect");
 const now = "2026-10-01T20:00:00Z";
 const integrity = { platform: "Steam", playerId: "player-123", internalNote: null, recordedAt: now, updatedAt: now, orderId: "order-1" };
 const evidence = (type) => ({ type, url: `https://example.com/${type}.png`, submittedAt: now, updatedAt: now });
@@ -133,9 +134,35 @@ for (const status of ["pending_payment", "paid", "queued", "in_progress", "compl
     assert.doesNotMatch(aside(html(Customer, props(record))), /Booster Payout/);
     const customerMarkup = html(Customer, props(record));
     assert.equal(customerMarkup.includes('action="/api/checkout"'), status === "pending_payment");
-    assert.equal(customerMarkup.includes('action="/api/paypal/orders"'), status === "pending_payment");
+    assert.equal(customerMarkup.includes('aria-label="Pay with PayPal"'), status === "pending_payment");
   });
 }
+
+test("premium checkout renders the real order total, details and selectable provider action", () => {
+  reset();
+  const record = order({ status: "pending_payment", paymentStatus: "unpaid" });
+  fixtures.set("OrderPaymentMethods", ["stripe", null]);
+  const stripeMarkup = html(Checkout, { order: record });
+  assert.match(stripeMarkup, /Order details/);
+  assert.match(stripeMarkup, /Payment method/);
+  assert.match(stripeMarkup, /Order confirmed/);
+  assert.match(stripeMarkup, /BP-123456/);
+  assert.match(stripeMarkup, /Rocket League/);
+  assert.match(stripeMarkup, /Rank Boost/);
+  assert.match(stripeMarkup, /Platform/);
+  assert.match(stripeMarkup, /Account Boost/);
+  assert.match(stripeMarkup, /\$35\.00/);
+  assert.match(stripeMarkup, /action="\/api\/checkout"/);
+  assert.match(stripeMarkup, /Continue to secure payment/);
+  assert.match(stripeMarkup, /lg:grid-cols-\[minmax\(0,1\.08fr\)_minmax\(360px,0\.92fr\)\]/);
+  assert.doesNotMatch(stripeMarkup, /overflow-x-auto|w-screen|min-w-\[/);
+
+  fixtures.set("OrderPaymentMethods", ["paypal", null]);
+  const paypalMarkup = html(Checkout, { order: record });
+  assert.match(paypalMarkup, /action="\/api\/paypal\/orders"/);
+  assert.match(paypalMarkup, /Continue with PayPal/);
+  assert.match(paypalMarkup, /payment-providers\/paypal-mark\.svg/);
+});
 
 test("secure credential editing remains customer-only and payment/assignment-gated", () => {
   reset(); assert.match(html(Customer, props()), /type="email"/);

@@ -266,7 +266,7 @@ export function CustomerOrderWorkspace({
                 </div>
               ) : null}
 
-              {canPay ? <OrderPaymentMethods orderId={order.id} compact /> : null}
+              {canPay ? <OrderPaymentMethods orderId={order.id} total={order.total} compact /> : null}
             
 <div className="mt-3">{boosterAssignment ? (
                 <div className="mt-3 flex items-center gap-3">

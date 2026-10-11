@@ -1,62 +1,141 @@
 "use client";
 
-import { useState } from "react";
-import { LoaderCircle, LockKeyhole } from "lucide-react";
+import Image from "next/image";
+import { useRef, useState } from "react";
+import { ArrowRight, LoaderCircle, LockKeyhole } from "lucide-react";
 
-function StripeMark() {
-  return <span aria-hidden="true" className="text-[15px] font-black italic tracking-[-0.08em]">stripe</span>;
+type PaymentProvider = "stripe" | "paypal";
+
+const providers: Array<{
+  id: PaymentProvider;
+  name: string;
+  description: string;
+  logo: string;
+}> = [
+  {
+    id: "stripe",
+    name: "Stripe",
+    description: "Continue to Stripe's hosted checkout.",
+    logo: "/payment-providers/stripe-mark.svg",
+  },
+  {
+    id: "paypal",
+    name: "PayPal",
+    description: "Pay with your PayPal account or available PayPal options.",
+    logo: "/payment-providers/paypal-mark.svg",
+  },
+];
+
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
 }
 
-function PayPalMark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" className="size-5" fill="none">
-      <path fill="#003087" d="M9.2 4.5h9.1c5.1 0 7.7 2.6 7 7.1-.8 5.2-4.6 7.8-9.6 7.8h-2.3l-1.1 7H7.4L9.2 4.5Z" />
-      <path fill="#009CDE" d="M13.1 11.1h7c4.5 0 6.7 2.3 6 6.2-.7 4.6-4 6.8-8.4 6.8h-2l-.6 3.4h-4.2l2.2-16.4Z" opacity=".9" />
-      <path fill="#012169" d="M13.7 8.4h4.5c2.1 0 3.1 1 2.8 2.8-.3 2.1-1.8 3-3.8 3h-4.1l.6-5.8Z" />
-    </svg>
-  );
-}
-
-export function OrderPaymentMethods({ orderId, compact = false }: { orderId: string; compact?: boolean }) {
-  const [pendingProvider, setPendingProvider] = useState<"stripe" | "paypal" | null>(null);
+export function OrderPaymentMethods({
+  orderId,
+  total,
+  compact = false,
+}: {
+  orderId: string;
+  total: number;
+  compact?: boolean;
+}) {
+  const [provider, setProvider] = useState<PaymentProvider>("stripe");
+  const [pendingProvider, setPendingProvider] = useState<PaymentProvider | null>(null);
+  const submittingRef = useRef(false);
   const disabled = pendingProvider !== null;
+  const action = provider === "stripe" ? "/api/checkout" : "/api/paypal/orders";
+  const buttonLabel = provider === "stripe"
+    ? "Continue to secure payment"
+    : "Continue with PayPal";
 
-  const submit = (provider: "stripe" | "paypal") => () => setPendingProvider(provider);
-  const buttonBase = "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]/55 disabled:cursor-wait disabled:opacity-60";
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    if (submittingRef.current) {
+      event.preventDefault();
+      return;
+    }
+    submittingRef.current = true;
+    setPendingProvider(provider);
+  }
 
   return (
-    <div className={compact ? "mt-4" : "mt-6"}>
-      <div className={`grid gap-3 ${compact ? "" : "sm:grid-cols-2"}`}>
-        <form action="/api/checkout" method="post" onSubmit={submit("stripe")}>
-          <input type="hidden" name="orderId" value={orderId} />
-          <button
-            type="submit"
-            aria-label="Pay securely with Stripe"
-            disabled={disabled}
-            className={`${buttonBase} border border-[#39E56F]/25 bg-[#39E56F] text-[#050807] hover:bg-[#20C95A]`}
-          >
-            {pendingProvider === "stripe" ? <LoaderCircle className="size-4 animate-spin" /> : <StripeMark />}
-            {pendingProvider === "stripe" ? "Opening Stripe…" : "Pay with Stripe"}
-          </button>
-        </form>
+    <form action={action} method="post" onSubmit={handleSubmit} className={compact ? "mt-4" : "mt-6"}>
+      <input type="hidden" name="orderId" value={orderId} />
 
-        <form action="/api/paypal/orders" method="post" onSubmit={submit("paypal")}>
-          <input type="hidden" name="orderId" value={orderId} />
-          <button
-            type="submit"
-            aria-label="Pay securely with PayPal"
-            disabled={disabled}
-            className={`${buttonBase} border border-[#FFC439]/35 bg-[#FFC439] text-[#111820] hover:bg-[#FFD166]`}
-          >
-            {pendingProvider === "paypal" ? <LoaderCircle className="size-4 animate-spin" /> : <PayPalMark />}
-            {pendingProvider === "paypal" ? "Opening PayPal…" : "Pay with PayPal"}
-          </button>
-        </form>
+      <fieldset disabled={disabled} className="space-y-3">
+        <legend className="sr-only">Select a payment provider</legend>
+        {providers.map((option) => {
+          const selected = provider === option.id;
+          return (
+            <label
+              key={option.id}
+              className={`group flex min-h-[84px] cursor-pointer items-center gap-4 rounded-2xl border px-4 py-4 transition-colors sm:px-5 ${
+                selected
+                  ? "border-[#39E56F]/55 bg-[#39E56F]/[0.055]"
+                  : "border-white/[0.09] bg-[#090E0B] hover:border-white/[0.16] hover:bg-white/[0.025]"
+              } ${disabled ? "cursor-wait opacity-65" : ""}`}
+            >
+              <input
+                type="radio"
+                name="paymentProvider"
+                value={option.id}
+                checked={selected}
+                onChange={() => setProvider(option.id)}
+                className="peer sr-only"
+                aria-label={`Pay with ${option.name}`}
+              />
+              <span
+                aria-hidden="true"
+                className={`grid size-5 shrink-0 place-items-center rounded-full border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#82F5A4]/70 peer-focus-visible:ring-offset-4 peer-focus-visible:ring-offset-[#0B100D] ${
+                  selected ? "border-[#39E56F]" : "border-white/25"
+                }`}
+              >
+                {selected ? <span className="size-2 rounded-full bg-[#39E56F]" /> : null}
+              </span>
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.96]">
+                <Image src={option.logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15px] font-bold text-[#F4F7F5]">{option.name}</span>
+                <span className="mt-1 block text-[12px] leading-5 text-[#8C9891]">{option.description}</span>
+              </span>
+              <span className={`hidden text-[10px] font-semibold uppercase tracking-[0.12em] sm:block ${selected ? "text-[#82F5A4]" : "text-[#667069]"}`}>
+                {selected ? "Selected" : "Select"}
+              </span>
+            </label>
+          );
+        })}
+      </fieldset>
+
+      <div className={`${compact ? "mt-4" : "mt-6"} rounded-2xl border border-white/[0.08] bg-[#080C0A] p-4`}>
+        <div className="mb-3 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#667069]">Amount due</p>
+            <p className="mt-1 font-gaming-value text-[24px] font-bold tracking-[-0.03em] text-[#F4F7F5]">
+              {formatMoney(total)}
+            </p>
+          </div>
+          <span className="text-[11px] font-semibold text-[#8C9891]">USD</span>
+        </div>
+
+        <button
+          type="submit"
+          disabled={disabled}
+          aria-label={`${buttonLabel}, ${formatMoney(total)} USD`}
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#39E56F]/30 bg-[#39E56F] px-4 text-sm font-extrabold text-[#041007] transition-colors hover:bg-[#52EC7F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#82F5A4]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080C0A] disabled:cursor-wait disabled:opacity-65"
+        >
+          {pendingProvider ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : null}
+          {pendingProvider ? `Opening ${pendingProvider === "stripe" ? "Stripe" : "PayPal"}…` : buttonLabel}
+          {!pendingProvider ? <ArrowRight className="size-4" aria-hidden="true" /> : null}
+        </button>
+
+        <p className="mt-3 flex items-start justify-center gap-1.5 text-center text-[10px] leading-4 text-[#6F7B74]">
+          <LockKeyhole className="mt-0.5 size-3 shrink-0" aria-hidden="true" />
+          Payment details are entered and handled on the selected provider&apos;s checkout.
+        </p>
       </div>
-      <p className="mt-3 flex items-center justify-center gap-1.5 text-[10px] leading-4 text-[#6F7B74]">
-        <LockKeyhole className="size-3" aria-hidden="true" />
-        Secure checkout. Payment details are handled by your selected provider.
-      </p>
-    </div>
+    </form>
   );
 }
