@@ -122,14 +122,18 @@ export function OrderPaymentMethods({
   }
 
   const providerSelector = (
-    <fieldset disabled={disabled} className="space-y-3.5">
+    <fieldset disabled={disabled} className="space-y-3.5" data-payment-layout={compact ? "compact" : "wide"}>
       <legend className="sr-only">Select a payment provider</legend>
       {providers.map((option) => {
         const selected = provider === option.id;
         return (
           <label
             key={option.id}
-            className={`group grid min-h-[96px] cursor-pointer grid-cols-[20px_72px_minmax(0,1fr)] items-center gap-x-3 rounded-2xl border px-4 py-4 transition-colors sm:grid-cols-[20px_96px_minmax(0,1fr)_auto] sm:gap-x-4 sm:px-5 ${
+            className={`group grid min-w-0 cursor-pointer items-center gap-x-3 rounded-2xl border py-4 transition-colors ${
+              compact
+                ? "grid-cols-[20px_56px_minmax(0,1fr)] px-3.5"
+                : "min-h-[96px] grid-cols-[20px_72px_minmax(0,1fr)] px-4 sm:grid-cols-[20px_96px_minmax(0,1fr)_auto] sm:gap-x-4 sm:px-5"
+            } ${
               selected
                 ? "border-[#39E56F]/55 bg-[#39E56F]/[0.055]"
                 : "border-white/[0.09] bg-[#090E0B] hover:border-white/[0.16] hover:bg-white/[0.025]"
@@ -152,7 +156,7 @@ export function OrderPaymentMethods({
             >
               {selected ? <span className="size-2 rounded-full bg-[#39E56F]" /> : null}
             </span>
-            <span className="grid h-[52px] w-[72px] shrink-0 place-items-center sm:w-24" aria-hidden="true">
+            <span className={`grid shrink-0 place-items-center ${compact ? "h-12 w-14" : "h-[52px] w-[72px] sm:w-24"}`} aria-hidden="true">
               <Image
                 src={option.logo}
                 alt=""
@@ -162,11 +166,14 @@ export function OrderPaymentMethods({
                 className={`${option.logoClassName} object-contain`}
               />
             </span>
-            <span className="min-w-0">
+            <span className="min-w-0 break-normal whitespace-normal [overflow-wrap:normal]">
               <span className="block text-[18px] font-bold leading-6 text-[#F4F7F5]">{option.name}</span>
               <span className="mt-1 block text-[13px] leading-5 text-[#9AA59F]">{option.description}</span>
             </span>
-            <span className="col-span-2 col-start-2 mt-3 flex min-w-0 flex-wrap items-center gap-1.5 sm:col-span-1 sm:col-start-4 sm:mt-0 sm:flex-nowrap sm:justify-end" aria-label={option.cardNetworks ? "Supported card networks" : undefined}>
+            <span
+              className={`col-span-2 col-start-2 mt-3 flex min-w-0 flex-wrap items-center gap-1.5 ${compact ? "" : "sm:col-span-1 sm:col-start-4 sm:mt-0 sm:flex-nowrap sm:justify-end"}`}
+              aria-label={option.cardNetworks ? "Supported card networks" : undefined}
+            >
               {option.cardNetworks?.map((network) => (
                 <span
                   key={network.name}

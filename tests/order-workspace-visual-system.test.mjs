@@ -73,6 +73,7 @@ const Operations = component("dashboard/order-operations-panel", "OrderOperation
 const Chat = component("dashboard/order-live-chat", "OrderLiveChat");
 const Account = component("dashboard/order-account-details", "OrderAccountDetails");
 const Checkout = component("checkout/order-checkout-redirect", "OrderCheckoutRedirect");
+const Payments = component("checkout/order-payment-methods", "OrderPaymentMethods");
 const now = "2026-10-01T20:00:00Z";
 const integrity = { platform: "Steam", playerId: "player-123", internalNote: null, recordedAt: now, updatedAt: now, orderId: "order-1" };
 const evidence = (type) => ({ type, url: `https://example.com/${type}.png`, submittedAt: now, updatedAt: now });
@@ -199,6 +200,22 @@ test("checkout order details use every canonical game logo without photographic 
   assert.match(source, /gameLogos\[gameSlug\]/);
   assert.match(source, /sizes="84px"/);
   assert.doesNotMatch(source, /gameArtwork|object-cover|rounded-xl border.*bg-\[#0F1713\]/);
+});
+
+test("payment methods use their explicit compact container layout inside the order sidebar", () => {
+  reset();
+  fixtures.set("OrderPaymentMethods", ["stripe", null]);
+  const compactMarkup = html(Payments, { orderId: "order-1", total: 35, compact: true });
+  assert.match(compactMarkup, /data-payment-layout="compact"/);
+  assert.match(compactMarkup, /grid-cols-\[20px_56px_minmax\(0,1fr\)\]/);
+  assert.match(compactMarkup, /break-normal whitespace-normal \[overflow-wrap:normal\]/);
+  assert.match(compactMarkup, /flex min-w-0 flex-wrap items-center gap-1\.5/);
+  assert.doesNotMatch(compactMarkup, /data-payment-layout="compact"[^]*?sm:grid-cols-\[20px_96px_minmax\(0,1fr\)_auto\]/);
+
+  const wideMarkup = html(Payments, { orderId: "order-1", total: 35 });
+  assert.match(wideMarkup, /data-payment-layout="wide"/);
+  assert.match(wideMarkup, /sm:grid-cols-\[20px_96px_minmax\(0,1fr\)_auto\]/);
+  assert.match(wideMarkup, /sm:flex-nowrap sm:justify-end/);
 });
 
 test("secure credential editing remains customer-only and payment/assignment-gated", () => {
